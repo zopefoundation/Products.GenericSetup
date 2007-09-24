@@ -1,0 +1,20 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope">
+
+  <adapter factory=".exportimport.PluggableIndexNodeAdapter"/>
+
+  <adapter factory=".exportimport.DateIndexNodeAdapter"/>
+
+  <adapter factory=".exportimport.DateRangeIndexNodeAdapter"/>
+
+  <adapter factory=".exportimport.PathIndexNodeAdapter"/>
+
+  <adapter factory=".exportimport.VocabularyNodeAdapter"/>
+
+  <adapter factory=".exportimport.TextIndexNodeAdapter"/>
+
+  <adapter factory=".exportimport.FilteredSetNodeAdapter"/>
+
+  <adapter factory=".exportimport.TopicIndexNodeAdapter"/>
+
+</configure>
