@@ -1,14 +1,6 @@
 import os
-try:
-    from setuptools import setup
-except ImportError:
-    from distutils.core import setup
-
-try:
-    from setuptools import find_packages
-except ImportError:
-    def find_packages():
-        raise NotImplementedError('Must have setuptools to make sdist!')
+from setuptools import setup
+from setuptools import find_packages
 
 here = os.path.abspath(os.path.dirname(__file__))
 package = os.path.join(here, 'Products', 'GenericSetup')
@@ -16,6 +8,7 @@ package = os.path.join(here, 'Products', 'GenericSetup')
 def _package_doc(name):
     f = open(os.path.join(package, name))
     return f.read()
+
 NAME = 'GenericSetup'
 
 VERSION = _package_doc('version.txt').strip()
@@ -35,14 +28,17 @@ setup(name='Products.GenericSetup',
       description='Read Zope configuration state from profile dirs / tarballs',
       long_description=README,
       classifiers=[
-        "Development Status :: 5 - Stable",
+        "Development Status :: 5 - Production/Stable",
+        "Framework :: Plone",
+        "Framework :: Zope2",
         "Intended Audience :: Developers",
+        "License :: OSI Approved :: Zope Public License",
         "Programming Language :: Python",
-        "Topic :: Internet :: WWW/HTTP",
-        "Topic :: Internet :: WWW/HTTP :: Zope2",
-        "Topic :: Internet :: WWW/HTTP :: Zope2 :: Product",
+        "Topic :: Software Development",
+        "Topic :: System :: Archiving :: Packaging",
+        "Topic :: System :: Installation/Setup",
         ],
-      keywords='web application server zope zope2',
+      keywords='web application server zope zope2 cmf',
       author="Zope Corporation and contributors",
       author_email="zope-cmf@lists.zope.org",
       url="http://www.zope.org/Products/GenericSetup",
