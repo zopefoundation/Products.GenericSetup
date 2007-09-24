@@ -1,14 +1,6 @@
 import os
-try:
-    from setuptools import setup
-except ImportError:
-    from distutils.core import setup
-
-try:
-    from setuptools import find_packages
-except ImportError:
-    def find_packages():
-        raise NotImplementedError('Must have setuptools to make sdist!')
+from setuptools import setup
+from setuptools import find_packages
 
 here = os.path.abspath(os.path.dirname(__file__))
 package = os.path.join(here, 'Products', 'GenericSetup')
@@ -16,6 +8,7 @@ package = os.path.join(here, 'Products', 'GenericSetup')
 def _package_doc(name):
     f = open(os.path.join(package, name))
     return f.read()
+
 NAME = 'GenericSetup'
 
 VERSION = _package_doc('version.txt').strip()
