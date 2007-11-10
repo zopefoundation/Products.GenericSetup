@@ -1,6 +1,6 @@
-##############################################################################
+
 #
-# Copyright (c) 2006 Zope Corporation and Contributors. All Rights Reserved.
+# Copyright (c) 2006-2007 Zope Corporation and Contributors. All Rights Reserved.
 #
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.1 (ZPL).  A copy of the ZPL should accompany this distribution.
@@ -22,6 +22,8 @@ from zope.configuration.fields import PythonIdentifier
 from zope.interface import Interface
 
 from interfaces import BASE
+from registry import _import_step_registry
+from registry import _export_step_registry
 from registry import _profile_registry
 from upgrade import _upgrade_registry
 
@@ -82,6 +84,110 @@ def registerProfile(_context, name, title, description, directory=None,
         args = (name, title, description, directory, product, provides, for_)
         )
 
+
+#### genericsetup:exportStep
+
+class IExportStepDirective(Interface):
+    name = PythonIdentifier(
+        title=u'Name',
+        description=u'',
+        required=True)
+
+    title = MessageID(
+        title=u'Title',
+        description=u'',
+        required=True)
+
+    description = MessageID(
+        title=u'Description',
+        description=u'',
+        required=True)
+
+    handler = GlobalObject(
+        title=u'Handler',
+        description=u'',
+        required=True)
+
+
+_export_step_regs = []
+
+def exportStep(context, name, handler, title=None, description=None):
+    global _export_step_regs
+    _export_step_regs.append(name)
+
+    context.action(
+        discriminator = ('exportStep', name),
+        callable = _export_step_registry.registerStep,
+        args = (name, handler, title, description),
+        )
+#### genericsetup:importStep
+
+class IImportStepDirective(Interface):
+
+    """Register import steps with the global registry.
+    """
+
+    name = PythonIdentifier(
+        title=u'Name',
+        description=u'',
+        required=True)
+
+    title = MessageID(
+        title=u'Title',
+        description=u'',
+        required=True)
+
+    description = MessageID(
+        title=u'Description',
+        description=u'',
+        required=True)
+
+    handler = GlobalObject(
+        title=u'Handler',
+        description=u'',
+        required=True)
+
+    version = MessageID(
+        title=u'Version',
+        description=u'',
+        required=True)
+
+class IImportStepDependsDirective(Interface):
+    name = PythonIdentifier(
+        title=u'Name',
+        description=u'Name of another import step that has to be run first',
+        required=True)
+
+_import_step_regs = []
+
+class importStep:
+    def __init__(self, context, name, version, title, description, handler):
+        """ Add a new import step to the registry.
+        """
+        self.context=context
+        self.discriminator = ('importStep', name),
+        self.name=name
+        self.version=version
+        self.handler=handler
+        self.title=title
+        self.description=description
+        self.dependencies=()
+
+
+    def depends(self, context, name):
+        self.dependencies+=(name,)
+
+
+    def __call__(self):
+        global _import_step_regs
+        _import_step_regs.append(self.name)
+
+        self.context.action(
+            discriminator = self.discriminator,
+            callable = _import_step_registry.registerStep,
+            args = (self.name, self.version, self.handler, self.dependencies,
+                        self.title, self.description),
+            )
 
 #### genericsetup:upgradeStep
 
@@ -176,7 +282,7 @@ class upgradeSteps(object):
 
 #### cleanup
 
-def cleanUp():
+def cleanUpProfiles():
     global _profile_regs
     for profile_id in _profile_regs:
         del _profile_registry._profile_info[profile_id]
@@ -186,6 +292,28 @@ def cleanUp():
     _upgrade_registry.clear()
 
 
+def cleanUpImportSteps():
+    global _import_step_regs
+    for name in  _import_step_regs:
+        try:
+             _import_step_registry.unregisterStep( name )
+        except KeyError:
+            pass
+
+    _import_step_regs=[]
+
+def cleanUpExportSteps():
+    global _export_step_regs
+    for name in  _export_step_regs:
+        try:
+             _export_step_registry.unregisterStep( name )
+        except KeyError:
+            pass
+
+    _export_step_regs=[]
+
 from zope.testing.cleanup import addCleanUp
-addCleanUp(cleanUp)
+addCleanUp(cleanUpProfiles)
+addCleanUp(cleanUpImportSteps)
+addCleanUp(cleanUpExportSteps)
 del addCleanUp

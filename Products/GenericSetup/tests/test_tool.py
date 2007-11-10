@@ -21,6 +21,10 @@ import Testing
 
 from StringIO import StringIO
 
+from zope.component import adapter
+from zope.component import provideHandler
+from zope.component.globalregistry import base as base_registry
+
 from Acquisition import aq_base
 from OFS.Folder import Folder
 
@@ -38,6 +42,19 @@ from common import FilesystemTestBase
 from common import TarballTester
 from conformance import ConformsToISetupTool
 
+from Products.GenericSetup.interfaces import IBeforeProfileImportEvent
+from Products.GenericSetup.interfaces import IProfileImportedEvent
+
+_before_import_events = []
+@adapter(IBeforeProfileImportEvent)
+def handleBeforeProfileImportEvent(event):
+    _before_import_events.append(event)
+
+_after_import_events = []
+@adapter(IProfileImportedEvent)
+def handleProfileImportedEvent(event):
+    _after_import_events.append(event)
+
 
 class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
 
@@ -49,10 +66,18 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
         self._profile_registry_info = profile_registry._profile_info
         self._profile_registry_ids = profile_registry._profile_ids
         profile_registry.clear()
+        global _before_import_events
+        global _after_import_events
+        _before_import_events = []
+        provideHandler(handleBeforeProfileImportEvent)
+        _after_import_events = []
+        provideHandler(handleProfileImportedEvent)
 
     def beforeTearDown(self):
         profile_registry._profile_info = self._profile_registry_info
         profile_registry._profile_ids = self._profile_registry_ids
+        base_registry.unregisterHandler(handleBeforeProfileImportEvent)
+        base_registry.unregisterHandler(handleProfileImportedEvent)
         FilesystemTestBase.beforeTearDown(self)
 
     def _getTargetClass(self):
@@ -192,6 +217,18 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
 
         self.assertEqual( site.title, TITLE.upper() )
 
+        global _before_import_events
+        self.assertEqual( len(_before_import_events), 1)
+        self.assertEqual(_before_import_events[0].profile_id, '')
+        self.assertEqual(_before_import_events[0].steps, ['simple'])
+        self.assertEqual(_before_import_events[0].full_import, True)
+
+        global _after_import_events
+        self.assertEqual( len(_after_import_events), 1)
+        self.assertEqual(_after_import_events[0].profile_id, '')
+        self.assertEqual(_after_import_events[0].steps, ['simple'])
+        self.assertEqual(_after_import_events[0].full_import, True)
+
     def test_runImportStep_dependencies( self ):
 
         TITLE = 'original title'
@@ -217,6 +254,19 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
                         , 'Uppercased title' )
         self.assertEqual( site.title, TITLE.replace( ' ', '_' ).upper() )
 
+        global _before_import_events
+        self.assertEqual( len(_before_import_events), 1)
+        self.assertEqual(_before_import_events[0].profile_id, '')
+        self.assertEqual(_before_import_events[0].steps, ['dependable', 'dependent'])
+        self.assertEqual(_before_import_events[0].full_import, True)
+
+        global _after_import_events
+        self.assertEqual( len(_after_import_events), 1)
+        self.assertEqual(_after_import_events[0].profile_id, '')
+        self.assertEqual(_after_import_events[0].steps, ['dependable', 'dependent'])
+        self.assertEqual(_after_import_events[0].full_import, True)
+
+
     def test_runImportStep_skip_dependencies( self ):
 
         TITLE = 'original title'
@@ -239,6 +289,18 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
                         , 'Uppercased title' )
 
         self.assertEqual( site.title, TITLE.upper() )
+
+        global _before_import_events
+        self.assertEqual( len(_before_import_events), 1)
+        self.assertEqual(_before_import_events[0].profile_id, '')
+        self.assertEqual(_before_import_events[0].steps, ['dependent'])
+        self.assertEqual(_before_import_events[0].full_import, False)
+
+        global _after_import_events
+        self.assertEqual( len(_after_import_events), 1)
+        self.assertEqual(_after_import_events[0].profile_id, '')
+        self.assertEqual(_after_import_events[0].steps, ['dependent'])
+        self.assertEqual(_after_import_events[0].full_import, False)
 
     def test_runImportStep_default_purge( self ):
 

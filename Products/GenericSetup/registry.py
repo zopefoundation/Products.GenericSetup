@@ -36,6 +36,7 @@ from utils import _xmldir
 from utils import _getDottedName
 from utils import _resolveDottedName
 from utils import _extractDocstring
+from utils import _computeTopologicalSort
 
 
 class BaseStepRegistry( Implicit ):
@@ -108,6 +109,10 @@ class BaseStepRegistry( Implicit ):
             return default
 
         return _resolveDottedName( info[ 'handler' ] )
+
+    security.declarePrivate( 'unregisterStep' )
+    def unregisterStep( self, id ):
+        del self._registered[id]
 
     security.declarePrivate( 'clear' )
     def clear( self ):
@@ -249,50 +254,15 @@ class ImportStepRegistry( BaseStepRegistry ):
     #
     security.declarePrivate( '_computeTopologicalSort' )
     def _computeTopologicalSort( self ):
+        return _computeTopologicalSort(self._registered.values())
 
-        result = []
-
-        graph = [ ( x[ 'id' ], x[ 'dependencies' ] )
-                    for x in self._registered.values() ]
-
-        unresolved = []
-
-        while 1:
-            for node, edges in graph:
-    
-                after = -1
-                resolved = 0
-    
-                for edge in edges:
-    
-                    if edge in result:
-                        resolved += 1
-                        after = max( after, result.index( edge ) )
-                
-                if len(edges) > resolved:
-                    unresolved.append((node, edges))
-                else:
-                    result.insert( after + 1, node )
-
-            if not unresolved:
-                break
-            if len(unresolved) == len(graph):
-                # Nothing was resolved in this loop. There must be circular or
-                # missing dependencies. Just add them to the end. We can't
-                # raise an error, because checkComplete relies on this method.
-                for node, edges in unresolved:
-                    result.append(node)
-                break
-            graph = unresolved
-            unresolved = []
-        
-        return result
 
     security.declarePrivate( '_exportTemplate' )
     _exportTemplate = PageTemplateFile( 'isrExport.xml', _xmldir )
 
 InitializeClass( ImportStepRegistry )
 
+_import_step_registry = ImportStepRegistry()
 
 class ExportStepRegistry( BaseStepRegistry ):
 
@@ -378,6 +348,9 @@ class ExportStepRegistry( BaseStepRegistry ):
     _exportTemplate = PageTemplateFile( 'esrExport.xml', _xmldir )
 
 InitializeClass( ExportStepRegistry )
+
+_export_step_registry = ExportStepRegistry()
+
 
 class ToolsetRegistry( Implicit ):
 

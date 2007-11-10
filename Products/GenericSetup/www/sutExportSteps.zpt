@@ -25,12 +25,11 @@ Download selected export steps as tarball.
   </tr>
  </thead>
 
- <tbody tal:define="registry here/getExportStepRegistry;
-                    step_ids registry/listSteps;
+ <tbody tal:define="step_ids here/listExportSteps;
                    ">
   <tal:loop tal:repeat="step_id step_ids">
   <tr valign="top"
-      tal:define="info python: registry.getStepMetadata( step_id );"
+      tal:define="info python: here.getExportStepMetadata( step_id );"
       tal:attributes="class python:
                      repeat[ 'step_id' ].odd and 'row-normal' or 'row-hilite'" >
    <td class="list-item" width="16">

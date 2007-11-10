@@ -55,12 +55,11 @@ procedure, in order to pick up changes since the site was created.
   </tr>
  </thead>
 
- <tbody tal:define="registry context/getImportStepRegistry;
-                    step_ids registry/sortSteps;
+ <tbody tal:define="step_ids context/getSortedImportSteps;
                    ">
   <tal:loop tal:repeat="step_id step_ids">
   <tr valign="top"
-      tal:define="info python: registry.getStepMetadata( step_id );"
+      tal:define="info python: context.getImportStepMetadata( step_id );"
       tal:attributes="class python:
                      repeat[ 'step_id' ].odd and 'row-normal' or 'row-hilite';
                      style python:info['invalid'] and 'background: red' or None" >

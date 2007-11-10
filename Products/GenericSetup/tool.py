@@ -27,14 +27,18 @@ from Globals import InitializeClass
 from OFS.Folder import Folder
 from OFS.Image import File
 from Products.PageTemplates.PageTemplateFile import PageTemplateFile
+from ZODB.POSException import ConflictError
 from zope.interface import implements
 from zope.interface import implementedBy
+from zope import event 
 
 from interfaces import BASE
 from interfaces import EXTENSION
 from interfaces import ISetupTool
 from interfaces import SKIPPED_FILES
 from permissions import ManagePortal
+from events import BeforeProfileImportEvent
+from events import ProfileImportedEvent
 from context import DirectoryImportContext
 from context import SnapshotImportContext
 from context import TarballExportContext
@@ -45,6 +49,8 @@ from registry import ImportStepRegistry
 from registry import ExportStepRegistry
 from registry import ToolsetRegistry
 from registry import _profile_registry
+from registry import _import_step_registry
+from registry import _export_step_registry
 
 from upgrade import listUpgradeSteps
 from upgrade import listProfilesWithUpgrades
@@ -53,6 +59,7 @@ from upgrade import _upgrade_registry
 from utils import _getDottedName
 from utils import _resolveDottedName
 from utils import _wwwdir
+from utils import _computeTopologicalSort
 
 IMPORT_STEPS_XML = 'import_steps.xml'
 EXPORT_STEPS_XML = 'export_steps.xml'
@@ -105,23 +112,25 @@ def importToolset(context):
         tool_class = _resolveDottedName(info['class'])
 
         existing = getattr(aq_base(site), tool_id, None)
-        try:
-            new_tool = tool_class()
-        except TypeError:
-            new_tool = tool_class(tool_id)
-        else:
-            try:
-                new_tool._setId(tool_id)
-            except: # XXX:  ImmutableId raises result of calling MessageDialog
-                pass
-
+        # Don't even initialize the tool again, if it already exists.
         if existing is None:
-            site._setObject(tool_id, new_tool)
+            try:
+                new_tool = tool_class()
+            except TypeError:
+                new_tool = tool_class(tool_id)
+            else:
+                try:
+                    new_tool._setId(tool_id)
+                except (ConflictError, KeyboardInterrupt):
+                    raise
+                except:
+                    # XXX: ImmutableId raises result of calling MessageDialog
+                    pass
 
+            site._setObject(tool_id, new_tool)
         else:
             unwrapped = aq_base(existing)
             if not isinstance(unwrapped, tool_class):
-
                 site._delObject(tool_id)
                 site._setObject(tool_id, tool_class())
 
@@ -247,6 +256,47 @@ class SetupTool(Folder):
         """
         return self._export_registry
 
+
+    security.declareProtected(ManagePortal, 'getExportStep')
+    def getExportStep(self, step, default=None):
+        """Simple wrapper to query both the global and local step registry."""
+        res=_export_step_registry.getStep(step, default)
+        if res is not default:
+            return res
+        return self._export_registry.getStep(step, default)
+
+
+    security.declareProtected(ManagePortal, 'listExportSteps')
+    def listExportSteps(self):
+        steps = _export_step_registry._registered.keys() + \
+                self._export_registry._registered.keys()
+        return steps
+
+
+    security.declareProtected(ManagePortal, 'getImportStep')
+    def getImportStep(self, step, default=None):
+        """Simple wrapper to query both the global and local step registry."""
+        res=_import_step_registry.getStep(step, default)
+        if res is not default:
+            return res
+        return self._import_registry.getStep(step, default)
+
+
+    security.declareProtected(ManagePortal, 'getSortedImportSteps')
+    def getSortedImportSteps(self):
+        steps = _import_step_registry._registered.values() + \
+                self._import_registry._registered.values()
+        return _computeTopologicalSort(steps)
+    
+    security.declareProtected(ManagePortal, 'getImportStep')
+    def getImportStepMetadata(self, step, default=None):
+        """Simple wrapper to query both the global and local step registry."""
+        res=_import_step_registry.getStepMetadata(step, default)
+        if res is not default:
+            return res
+        return self._import_registry.getStepMetadata(step, default)
+
+
     security.declareProtected(ManagePortal, 'getToolsetRegistry')
     def getToolsetRegistry(self):
 
@@ -264,7 +314,7 @@ class SetupTool(Folder):
 
         self.applyContext(context)
 
-        info = self._import_registry.getStepMetadata(step_id)
+        info = self.getImportStepMetadata(step_id)
 
         if info is None:
             self._import_context_id = old_context
@@ -274,21 +324,27 @@ class SetupTool(Folder):
 
         messages = {}
         steps = []
+
         if run_dependencies:
             for dependency in dependencies:
-
                 if dependency not in steps:
-                    message = self._doRunImportStep(dependency, context)
-                    messages[dependency] = message or ''
                     steps.append(dependency)
+        steps.append (step_id)
 
-        message = self._doRunImportStep(step_id, context)
+        full_import=(set(steps)==set(self.getSortedImportSteps()))
+        event.notify(BeforeProfileImportEvent(self, profile_id, steps, full_import))
+
+        for step in steps:
+            message = self._doRunImportStep(step, context)
+            messages[step] = message or ''
+
         message_list = filter(None, [message])
         message_list.extend( ['%s: %s' % x[1:] for x in context.listNotes()] )
         messages[step_id] = '\n'.join(message_list)
-        steps.append(step_id)
 
         self._import_context_id = old_context
+
+        event.notify(ProfileImportedEvent(self, profile_id, steps, full_import))
 
         return { 'steps' : steps, 'messages' : messages }
 
@@ -316,7 +372,7 @@ class SetupTool(Folder):
         old_context = self._import_context_id
         context = self._getImportContext(profile_id, purge_old)
 
-        result = self._runImportStepsFromContext(context, purge_old=purge_old)
+        result = self._runImportStepsFromContext(context, purge_old=purge_old, profile_id=profile_id)
         prefix = 'import-all-%s' % profile_id.replace(':', '_')
         name = self._mangleTimestampName(prefix, 'log')
         self._createReport(name, result['steps'], result['messages'])
@@ -349,7 +405,7 @@ class SetupTool(Folder):
 
         """ See ISetupTool.
         """
-        return self._doRunExportSteps(self._export_registry.listSteps())
+        return self._doRunExportSteps(self.listExportSteps())
 
     security.declareProtected(ManagePortal, 'createSnapshot')
     def createSnapshot(self, snapshot_id):
@@ -358,7 +414,7 @@ class SetupTool(Folder):
         """
         context = SnapshotExportContext(self, snapshot_id)
         messages = {}
-        steps = self._export_registry.listSteps()
+        steps = self.listExportSteps()
 
         for step_id in steps:
 
@@ -968,7 +1024,7 @@ class SetupTool(Folder):
         __traceback_info__ = step_id
         marker = object()
 
-        handler = self._import_registry.getStep(step_id)
+        handler = self.getImportStep(step_id)
 
         if handler is marker:
             raise ValueError('Invalid import step: %s' % step_id)
@@ -1012,13 +1068,14 @@ class SetupTool(Folder):
                }
 
     security.declarePrivate('_runImportStepsFromContext')
-    def _runImportStepsFromContext(self, context, steps=None, purge_old=None):
+    def _runImportStepsFromContext(self, context, steps=None, purge_old=None, profile_id=None):
         self.applyContext(context)
 
         if steps is None:
-            steps = self._import_registry.sortSteps()
+            steps = self.getSortedImportSteps()
         messages = {}
 
+        event.notify(BeforeProfileImportEvent(self, profile_id, steps, True))
         for step in steps:
             message = self._doRunImportStep(step, context)
             message_list = filter(None, [message])
@@ -1026,6 +1083,8 @@ class SetupTool(Folder):
                                   for x in context.listNotes()] )
             messages[step] = '\n'.join(message_list)
             context.clearNotes()
+
+        event.notify(ProfileImportedEvent(self, profile_id, steps, True))
 
         return { 'steps' : steps, 'messages' : messages }
 

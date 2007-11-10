@@ -11,6 +11,24 @@
         />
 
     <meta:directive
+        name="exportStep"
+        schema=".zcml.IExportStepDirective"
+        handler=".zcml.exportStep"
+        />
+    <meta:complexDirective
+        name="importStep"
+        schema=".zcml.IImportStepDirective"
+        handler=".zcml.importStep"
+        >
+
+      <meta:subdirective
+          name="depends"
+          schema=".zcml.IImportStepDependsDirective"
+          />
+
+    </meta:complexDirective>
+
+    <meta:directive
         name="upgradeStep"
         schema=".zcml.IUpgradeStepDirective"
         handler=".zcml.upgradeStep"

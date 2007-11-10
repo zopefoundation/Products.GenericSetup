@@ -15,6 +15,7 @@
 $Id$
 """
 
+from zope.interface import Attribute
 from zope.interface import Interface
 from zope.schema import Text
 from zope.schema import TextLine
@@ -811,3 +812,27 @@ class IDAVAware(Interface):
           method, whose headers (e.g., "Content-Type") may affect the
           processing of the body.
         """
+
+class IBeforeProfileImportEvent(Interface):
+    """ An event which is fired before (part of) a profile is imported.
+    """
+    profile_id = Attribute("id of the profile to be imported or None for non-profile imports.")
+
+    steps = Attribute("list of steps that will be imported")
+
+    full_import = Attribute("True if all steps will be imported")
+
+    tool = Attribute("The tool which is performing the import")
+
+
+class IProfileImportedEvent(Interface):
+    """ An event which is fired when (part of) a profile is imported.
+    """
+    profile_id = Attribute("id of the imported profile")
+
+    steps = Attribute("list of steps have been imported")
+
+    full_import = Attribute("True if all steps are imported")
+
+    tool = Attribute("The tool which is performing the import")
+
