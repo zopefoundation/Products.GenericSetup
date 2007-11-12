@@ -258,8 +258,7 @@ class ImportStepTests(unittest.TestCase):
                                  name="name"
                                  title="title"
                                  description="description"
-                                 handler="Products.GenericSetup.tests.test_zcml.dummy_importstep_handler"
-                                 version="version">
+                                 handler="Products.GenericSetup.tests.test_zcml.dummy_importstep_handler">
                              </genericsetup:importStep>
                             </configure>""")
         from Products.GenericSetup.zcml import _import_step_regs
@@ -269,7 +268,6 @@ class ImportStepTests(unittest.TestCase):
         self.assertEqual(data["handler"],
                 'Products.GenericSetup.tests.test_zcml.dummy_importstep_handler')
         self.assertEqual(data["description"], u"description")
-        self.assertEqual(data["version"], u"version")
         self.assertEqual(data["title"], u"title")
         self.assertEqual(data["dependencies"], ())
         self.assertEqual(data["id"], u"name")
@@ -283,8 +281,7 @@ class ImportStepTests(unittest.TestCase):
                                  name="name"
                                  title="title"
                                  description="description"
-                                 handler="Products.GenericSetup.tests.test_zcml.dummy_importstep_handler"
-                                 version="version">
+                                 handler="Products.GenericSetup.tests.test_zcml.dummy_importstep_handler">
                                 <depends name="something.else"/>
                              </genericsetup:importStep>
                             </configure>""")

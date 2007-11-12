@@ -147,10 +147,6 @@ class IImportStepDirective(Interface):
         description=u'',
         required=True)
 
-    version = MessageID(
-        title=u'Version',
-        description=u'',
-        required=True)
 
 class IImportStepDependsDirective(Interface):
     name = PythonIdentifier(
@@ -161,13 +157,12 @@ class IImportStepDependsDirective(Interface):
 _import_step_regs = []
 
 class importStep:
-    def __init__(self, context, name, version, title, description, handler):
+    def __init__(self, context, name, title, description, handler):
         """ Add a new import step to the registry.
         """
         self.context=context
         self.discriminator = ('importStep', name),
         self.name=name
-        self.version=version
         self.handler=handler
         self.title=title
         self.description=description
@@ -185,7 +180,7 @@ class importStep:
         self.context.action(
             discriminator = self.discriminator,
             callable = _import_step_registry.registerStep,
-            args = (self.name, self.version, self.handler, self.dependencies,
+            args = (self.name, None, self.handler, self.dependencies,
                         self.title, self.description),
             )
 
