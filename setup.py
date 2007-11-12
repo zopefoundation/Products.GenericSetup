@@ -47,7 +47,10 @@ setup(name='Products.GenericSetup',
       include_package_data=True,
       namespace_packages=['Products'],
       zip_safe=False,
-      #install_requires=['Zope >= 2.10']
+      install_requires=[
+          "setuptools",
+#          'Zope >= 2.10',
+          ],
       entry_points="""
       [zope2.initialize]
       Products.GenericSetup = Products.GenericSetup:initialize
