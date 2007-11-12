@@ -28,7 +28,6 @@ ONE_STEP_ZCML = '''<configure xmlns:genericsetup="http://namespaces.zope.org/gen
     title="step title"
     description="step description"
     handler="Products.GenericSetup.initialize"
-    version="1.0"
     />
 </configure>'''
 
@@ -56,8 +55,6 @@ class ImportStepTests(unittest.TestCase):
                 u'step title' )
         self.assertEqual( info['handler'],
                 'Products.GenericSetup.initialize')
-        self.assertEqual( info['version'],
-                u'1.0' )
         self.assertEqual( info['id'],
                 u'Products.GenericSetup.teststep' )
 
