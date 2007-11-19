@@ -954,11 +954,13 @@ class SetupTool(Folder):
                 should_purge = (info.get('type') != EXTENSION)
             return DirectoryImportContext(self, path, should_purge, encoding)
 
-        # else snapshot
-        context_id = context_id[len('snapshot-'):]
-        if should_purge is None:
-            should_purge = True
-        return SnapshotImportContext(self, context_id, should_purge, encoding)
+        elif context_id.startswith('snapshot-'):
+            context_id = context_id[len('snapshot-'):]
+            if should_purge is None:
+                should_purge = True
+            return SnapshotImportContext(self, context_id, should_purge, encoding)
+        else:
+            raise KeyError, 'Unknown context %s' % context_id
 
     security.declarePrivate('_updateImportStepsRegistry')
     def _updateImportStepsRegistry(self, context, encoding):

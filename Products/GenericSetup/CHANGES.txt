@@ -2,6 +2,8 @@ GenericSetup Product Changelog
 
   GenericSetup 1.4 (unreleased)
   
+    - Be more careful in checking context id validity.
+
     - Fire events before and after importing.
 
     - Use zcml to register import and export steps.
