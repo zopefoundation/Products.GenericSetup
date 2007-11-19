@@ -1,7 +1,8 @@
 <tal:block define="base_context_id context/getBaselineContextID;
                    context_id request/context_id|base_context_id;
                    contexts context/listContextInfos;
-                   context_title python:[c['title'] for c in contexts if c['id']==context_id][0];
+                   context_title python:[c['title'] for c in contexts if c['id']==context_id];
+                   context_title python:context_title and context_title[0] or 'UNKNOWN';
                    extension_contexts python:[c for c in contexts if c['type'] in ['extension','snapshot']];
                    ">
 <h1 tal:replace="structure context/manage_page_header">PAGE HEADER</h1>
