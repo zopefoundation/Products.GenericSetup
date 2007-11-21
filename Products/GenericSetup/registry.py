@@ -24,6 +24,7 @@ from Globals import InitializeClass
 import App.Product
 from Products.PageTemplates.PageTemplateFile import PageTemplateFile
 from zope.interface import implements
+from warnings import warn
 
 from interfaces import BASE
 from interfaces import IImportStepRegistry
@@ -168,8 +169,8 @@ class ImportStepRegistry( BaseStepRegistry ):
     security.declarePrivate( 'registerStep' )
     def registerStep( self
                     , id
-                    , version
-                    , handler
+                    , version=None
+                    , handler=None
                     , dependencies=()
                     , title=None
                     , description=None
@@ -205,6 +206,13 @@ class ImportStepRegistry( BaseStepRegistry ):
           the handler is used, or default to ''.
         """
         already = self.getStepMetadata( id )
+
+        if version is not None:
+            warn('The version parameter for registerStep.ImportStepRegistry '
+                 'is deprecated.')
+
+        if handler is None:
+            raise ValueError, 'No handler specified'
 
         if already and already[ 'version' ] > version:
             raise KeyError( 'Existing registration for step %s, version %s'
@@ -559,6 +567,9 @@ class ProfileRegistry( Implicit ):
                         fhandle = open( fpath, 'r' )
                         version = fhandle.read().strip()
                         fhandle.close()
+                        warn('Version for profile %s taken from version.txt. '
+                             'This is deprecated behaviour: please specify the '
+                             'version in metadata.xml.' % profile_id)
                         break
                     except IOError:
                         continue

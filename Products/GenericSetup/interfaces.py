@@ -242,8 +242,8 @@ class IImportStepRegistry( IStepRegistry ):
         """
 
     def registerStep( id
-                    , version
-                    , handler
+                    , version=None
+                    , handler=None
                     , dependencies=()
                     , title=None
                     , description=None
@@ -261,6 +261,8 @@ class IImportStepRegistry( IStepRegistry ):
 
           - Attempting to register an older one after a newer one results
             in a KeyError.
+
+          NOTE: The version argument is deprecated.
 
         o 'handler' should implement IImportPlugin.
 
