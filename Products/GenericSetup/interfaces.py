@@ -545,7 +545,7 @@ class ISetupTool( Interface ):
         DEPRECATED.  Use runImportStepFromProfile instead.
         """
 
-    def runAllImportStepsFromProfile(profile_id, purge_old=None):
+    def runAllImportStepsFromProfile(profile_id, purge_old=None, ignore_dependencies=False):
 
         """ Run all setup steps for the given profile in dependency order.
 
@@ -555,6 +555,9 @@ class ISetupTool( Interface ):
         o If 'purge_old' is True, then run each step after purging any
           "old" setup first (this is the responsibility of the step,
           which must check the context we supply).
+
+        o Unless 'ignore_dependencies' is true this will also import
+          all profiles this profile depends on.
 
         o Return a mapping, with keys:
 

@@ -2,6 +2,8 @@ GenericSetup Product Changelog
 
   GenericSetup 1.4 (unreleased)
   
+    - Add support for context dependencies in profiles.
+
     - Deprecate the version field for import steps.
 
     - Deprecate reading of version.txt to get the version for a profile.

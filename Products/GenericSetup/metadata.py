@@ -19,6 +19,8 @@ import os
 from utils import ImportConfiguratorBase
 from utils import CONVERTER, DEFAULT, KEY
 
+METADATA_XML = 'metadata.xml'
+
 class ProfileMetadata( ImportConfiguratorBase ):
     """ Extracts profile metadata from metadata.xml file.
     """
@@ -32,7 +34,7 @@ class ProfileMetadata( ImportConfiguratorBase ):
 
     def __call__( self ):
         
-        full_path = os.path.join( self._path, 'metadata.xml' )
+        full_path = os.path.join( self._path, METADATA_XML )
         if not os.path.exists( full_path ):
             return {}
 

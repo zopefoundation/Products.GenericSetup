@@ -28,8 +28,7 @@ version = 'VERSION'
 dep1 = 'DEPENDENCY 1'
 dep2 = 'DEPENDENCY 2'
 
-_METADATA_XML = """\
-<?xml version="1.0"?>
+_METADATA_XML = """<?xml version="1.0"?>
 <metadata>
   <description>%s</description>
   <version>%s</version>

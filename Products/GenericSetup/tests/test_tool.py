@@ -55,12 +55,22 @@ _after_import_events = []
 def handleProfileImportedEvent(event):
     _after_import_events.append(event)
 
+_METADATA_XML = """<?xml version="1.0"?>
+<metadata>
+  <version>1.0</version>
+  <dependencies>
+    <dependency>profile-other:bar</dependency>
+  </dependencies>
+</metadata>
+"""
+
 
 class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
 
     layer = ExportImportZCMLLayer
 
     _PROFILE_PATH = '/tmp/STT_test'
+    _PROFILE_PATH2 = '/tmp/STT_test2'
 
     def afterSetUp(self):
         self._profile_registry_info = profile_registry._profile_info
@@ -490,6 +500,45 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
         self.assertEqual( result[ 'steps' ][ 1 ], 'dependable' )
         self.assertEqual( result[ 'steps' ][ 2 ], 'dependent' )
         self.failIf( site.purged )
+
+    def test_runAllImportStepsFromProfileWithoutDepends( self ):
+        from Products.GenericSetup.metadata import METADATA_XML
+
+        self._makeFile(METADATA_XML, _METADATA_XML)
+
+        site = self._makeSite()
+        tool = self._makeOne('setup_tool').__of__( site )
+
+        profile_registry.registerProfile('foo', 'Foo', '', self._PROFILE_PATH)
+
+        _imported = []
+        def applyContext(context):
+            _imported.append(context._profile_path)
+
+        tool.applyContext=applyContext
+        result = tool.runAllImportStepsFromProfile('profile-other:foo', ignore_dependencies=True)
+        self.assertEqual(_imported, [self._PROFILE_PATH])
+
+    def test_runAllImportStepsFromProfileWithDepends( self ):
+        from Products.GenericSetup.metadata import METADATA_XML
+
+        self._makeFile(METADATA_XML, _METADATA_XML)
+
+        site = self._makeSite()
+        tool = self._makeOne('setup_tool').__of__( site )
+
+        profile_registry.registerProfile('foo', 'Foo', '', self._PROFILE_PATH)
+        profile_registry.registerProfile('bar', 'Bar', '', self._PROFILE_PATH2)
+
+        _imported = []
+        def applyContext(context):
+            _imported.append(context._profile_path)
+
+        tool.applyContext=applyContext
+        result = tool.runAllImportStepsFromProfile('profile-other:foo',
+                                                   ignore_dependencies=False)
+        self.assertEqual(_imported, [self._PROFILE_PATH2, self._PROFILE_PATH])
+
 
     def test_runExportStep_nonesuch( self ):
 

@@ -29,7 +29,6 @@ from OFS.Image import File
 from Products.PageTemplates.PageTemplateFile import PageTemplateFile
 from ZODB.POSException import ConflictError
 from zope.interface import implements
-from zope.interface import implementedBy
 from zope import event 
 
 from interfaces import BASE
@@ -363,16 +362,22 @@ class SetupTool(Folder):
                                              )
 
     security.declareProtected(ManagePortal, 'runAllImportStepsFromProfile')
-    def runAllImportStepsFromProfile(self, profile_id, purge_old=None):
+    def runAllImportStepsFromProfile(self,
+                                     profile_id,
+                                     purge_old=None,
+                                     ignore_dependencies=False,
+                                     archive=None):
 
         """ See ISetupTool.
         """
         __traceback_info__ = profile_id
 
         old_context = self._import_context_id
-        context = self._getImportContext(profile_id, purge_old)
 
-        result = self._runImportStepsFromContext(context, purge_old=purge_old, profile_id=profile_id)
+        result = self._runImportStepsFromContext(purge_old=purge_old,
+                                                 profile_id=profile_id,
+                                                 archive=archive,
+                                                 ignore_dependencies=ignore_dependencies)
         prefix = 'import-all-%s' % profile_id.replace(':', '_')
         name = self._mangleTimestampName(prefix, 'log')
         self._createReport(name, result['steps'], result['messages'])
@@ -613,17 +618,9 @@ class SetupTool(Folder):
         if getattr(tarball, 'read', None) is not None:
             tarball = tarball.read()
 
-        context = TarballImportContext(tool=self,
-                                       archive_bits=tarball,
-                                       encoding='UTF8',
-                                       should_purge=True,
-                                      )
-        result = self._runImportStepsFromContext(context,
-                                                 purge_old=True)
-        steps_run = 'Steps run: %s' % ', '.join(result['steps'])
+        result = self.runAllImportStepsFromProfile(None, True, archive=tarball)
 
-        name = self._mangleTimestampName('import-all', 'log')
-        self._createReport(name, result['steps'], result['messages'])
+        steps_run = 'Steps run: %s' % ', '.join(result['steps'])
 
         return self.manage_importSteps(manage_tabs_message=steps_run,
                                        messages=result['messages'])
@@ -847,8 +844,33 @@ class SetupTool(Folder):
         """Return the registered filesystem version for the specified
         profile.
         """
-        info = _profile_registry.getProfileInfo(profile_id)
-        return info.get('version', 'unknown')
+        return self.getProfileInfo( profile_id ).get('version', 'unknown')
+
+    security.declareProtected(ManagePortal, 'profileExists')
+    def profileExists(self, profile_id):
+        """Check if a profile exists."""
+        try:
+            self.getProfileInfo( profile_id )
+        except KeyError:
+            return False
+        else:
+            return True
+
+    security.declareProtected(ManagePortal, "getProfileInfo")
+    def getProfileInfo(self, profile_id):
+        if profile_id.startswith("profile-"):
+            profile_id = profile_id[len('profile-'):]
+        elif profile_id.startswith("snapshot-"):
+            profile_id = profile_id[len('snapshot-'):]
+        return _profile_registry.getProfileInfo(profile_id)
+
+    security.declareProtected(ManagePortal, 'getDependenciesForProfile')
+    def getDependenciesForProfile(self, profile_id):
+        try:
+            return self.getProfileInfo( profile_id ).get('dependencies', ())
+        except KeyError:
+            return ()
+
 
     security.declareProtected(ManagePortal, 'listProfilesWithUpgrades')
     def listProfilesWithUpgrades(self):
@@ -934,7 +956,7 @@ class SetupTool(Folder):
         return product.__path__[0]
 
     security.declarePrivate('_getImportContext')
-    def _getImportContext(self, context_id, should_purge=None):
+    def _getImportContext(self, context_id, should_purge=None, archive=None):
 
         """ Crack ID and generate appropriate import context.
         """
@@ -959,6 +981,12 @@ class SetupTool(Folder):
             if should_purge is None:
                 should_purge = True
             return SnapshotImportContext(self, context_id, should_purge, encoding)
+        elif context_id is None and archive is not None:
+            return TarballImportContext(tool=self,
+                                       archive_bits=archive,
+                                       encoding='UTF8',
+                                       should_purge=should_purge,
+                                      )
         else:
             raise KeyError, 'Unknown context %s' % context_id
 
@@ -1070,7 +1098,35 @@ class SetupTool(Folder):
                }
 
     security.declarePrivate('_runImportStepsFromContext')
-    def _runImportStepsFromContext(self, context, steps=None, purge_old=None, profile_id=None):
+    def _runImportStepsFromContext(self,
+                                   steps=None,
+                                   purge_old=None,
+                                   profile_id=None,
+                                   archive=None,
+                                   ignore_dependencies=False,
+                                   seen=None):
+
+        results = []
+
+        if not ignore_dependencies:
+            if seen is None:
+                seen=set()
+            seen.add( profile_id )
+
+            dependencies = self.getDependenciesForProfile( profile_id )
+            for dependency in dependencies:
+                if dependency not in seen:
+                    if not self.profileExists( dependency ):
+                        warn("Profile %s depends on unknown profile %s" % (profile_id, dependency))
+                        continue
+                    res = self._runImportStepsFromContext(steps=steps,
+                                                    purge_old=purge_old,
+                                                    profile_id=dependency,
+                                                    ignore_dependencies=ignore_dependencies,
+                                                    seen=seen)
+                    results.append( res )
+
+        context = self._getImportContext(profile_id, purge_old, archive)
         self.applyContext(context)
 
         if steps is None:
@@ -1088,7 +1144,22 @@ class SetupTool(Folder):
 
         event.notify(ProfileImportedEvent(self, profile_id, steps, True))
 
-        return { 'steps' : steps, 'messages' : messages }
+        results.append({'steps' : steps, 'messages' : messages })
+
+        data = { 'steps' : [], 'messages' : {}}
+        for result in results:
+            for step in result['steps']:
+                if step not in data['steps']:
+                    data['steps'].append(step)
+
+            for (step, msg) in result['messages'].items():
+                if step in data['messages']:
+                    data['messages'][step]+="\n"+msg
+                else:
+                    data['messages'][step]=msg
+        data['steps'] = list(data['steps'])
+
+        return data
 
     security.declarePrivate('_mangleTimestampName')
     def _mangleTimestampName(self, prefix, ext=None):
