@@ -59,6 +59,7 @@ from utils import _getDottedName
 from utils import _resolveDottedName
 from utils import _wwwdir
 from utils import _computeTopologicalSort
+from utils import _getProductPath
 
 IMPORT_STEPS_XML = 'import_steps.xml'
 EXPORT_STEPS_XML = 'export_steps.xml'
@@ -936,25 +937,6 @@ class SetupTool(Folder):
     #
     #   Helper methods
     #
-    security.declarePrivate('_getProductPath')
-    def _getProductPath(self, product_name):
-
-        """ Return the absolute path of the product's directory.
-        """
-        try:
-            # BBB: for GenericSetup 1.1 style product names
-            product = __import__('Products.%s' % product_name
-                                , globals(), {}, ['initialize'])
-        except ImportError:
-            try:
-                product = __import__(product_name
-                                    , globals(), {}, ['initialize'])
-            except ImportError:
-                raise ValueError('Not a valid product name: %s'
-                                 % product_name)
-
-        return product.__path__[0]
-
     security.declarePrivate('_getImportContext')
     def _getImportContext(self, context_id, should_purge=None, archive=None):
 
@@ -968,7 +950,7 @@ class SetupTool(Folder):
             info = _profile_registry.getProfileInfo(context_id)
 
             if info.get('product'):
-                path = os.path.join(self._getProductPath(info['product'])
+                path = os.path.join(_getProductPath(info['product'])
                                    , info['path'])
             else:
                 path = info['path']

@@ -69,6 +69,17 @@ class ProfileMetadataTests( ZopeTestCase ):
         product = getattr(self.app.Control_Panel.Products, product_name)
         self.assertEqual(profile_info['version'], product.version)
 
+    def test_relativePath(self):
+        profile_id = 'dummy_profile2'
+        product_name = 'GenericSetup'
+        profile_registry.registerProfile(
+            profile_id, 'Dummy Profile', 'This is a dummy profile',
+            'tests/metadata_profile', product=product_name)
+        profile_info = profile_registry.getProfileInfo(
+            '%s:%s' % (product_name, profile_id))
+        self.assertEqual(profile_info['description'],
+                         'Description from metadata')
+
 def test_suite():
     return unittest.TestSuite((
         unittest.makeSuite( ProfileMetadataTests ),
