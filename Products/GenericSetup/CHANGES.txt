@@ -4,8 +4,6 @@ GenericSetup Product Changelog
 
     - Be more careful in checking context id validity.
 
-    - Fire events before and after importing.
-
     - tool: Fixed toolset import handler not to initialize tools again, when
       they already exist in the site.
 
