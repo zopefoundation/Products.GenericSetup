@@ -38,7 +38,6 @@ from utils import _getDottedName
 from utils import _resolveDottedName
 from utils import _extractDocstring
 from utils import _computeTopologicalSort
-from utils import _getProductPath
 
 
 class BaseStepRegistry( Implicit ):
@@ -552,8 +551,7 @@ class ProfileRegistry( Implicit ):
                , 'for': for_
                }
 
-        metadata = ProfileMetadata(
-            os.path.join(_getProductPath(product), path) )()
+        metadata = ProfileMetadata(path, product=product)()
 
         version = metadata.get( 'version', None )
         if version is None and product is not None:

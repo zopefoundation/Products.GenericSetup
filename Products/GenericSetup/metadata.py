@@ -16,7 +16,7 @@ $Id:$
 """
 import os
 
-from utils import ImportConfiguratorBase
+from utils import ImportConfiguratorBase, _getProductPath
 from utils import CONVERTER, DEFAULT, KEY
 
 METADATA_XML = 'metadata.xml'
@@ -25,11 +25,21 @@ class ProfileMetadata( ImportConfiguratorBase ):
     """ Extracts profile metadata from metadata.xml file.
     """
 
-    def __init__( self, path, encoding=None ):
+    def __init__( self, path, encoding=None, product=None ):
 
         # don't call the base class __init__ b/c we don't have (or need)
         # a site
+
         self._path = path
+        if product is not None:
+            # Handle relative paths
+            try:
+                product_path = _getProductPath(product)
+            except ValueError:
+                pass
+            else:
+                self._path = os.path.join(product_path, path)
+
         self._encoding = encoding
 
     def __call__( self ):
