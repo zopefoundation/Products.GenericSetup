@@ -27,6 +27,7 @@ from Globals import InitializeClass
 from OFS.Folder import Folder
 from OFS.Image import File
 from Products.PageTemplates.PageTemplateFile import PageTemplateFile
+from ZODB.POSException import ConflictError
 from zope.interface import implements
 from zope.interface import implementedBy
 
@@ -105,23 +106,25 @@ def importToolset(context):
         tool_class = _resolveDottedName(info['class'])
 
         existing = getattr(aq_base(site), tool_id, None)
-        try:
-            new_tool = tool_class()
-        except TypeError:
-            new_tool = tool_class(tool_id)
-        else:
-            try:
-                new_tool._setId(tool_id)
-            except: # XXX:  ImmutableId raises result of calling MessageDialog
-                pass
-
+        # Don't even initialize the tool again, if it already exists.
         if existing is None:
-            site._setObject(tool_id, new_tool)
+            try:
+                new_tool = tool_class()
+            except TypeError:
+                new_tool = tool_class(tool_id)
+            else:
+                try:
+                    new_tool._setId(tool_id)
+                except (ConflictError, KeyboardInterrupt):
+                    raise
+                except:
+                    # XXX: ImmutableId raises result of calling MessageDialog
+                    pass
 
+            site._setObject(tool_id, new_tool)
         else:
             unwrapped = aq_base(existing)
             if not isinstance(unwrapped, tool_class):
-
                 site._delObject(tool_id)
                 site._setObject(tool_id, tool_class())
 
