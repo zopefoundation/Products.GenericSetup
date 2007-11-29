@@ -424,7 +424,7 @@ class SetupTool(Folder):
 
         for step_id in steps:
 
-            handler = self._export_registry.getStep(step_id)
+            handler = self.getExportStep(step_id)
 
             if handler is None:
                 logger = logging.getLogger('GenericSetup')
