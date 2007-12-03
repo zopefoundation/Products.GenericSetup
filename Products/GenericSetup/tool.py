@@ -296,6 +296,13 @@ class SetupTool(Folder):
             return res
         return self._import_registry.getStepMetadata(step, default)
 
+    security.declareProtected(ManagePortal, 'getExportStep')
+    def getExportStepMetadata(self, step, default=None):
+        """Simple wrapper to query both the global and local step registry."""
+        res=_export_step_registry.getStepMetadata(step, default)
+        if res is not default:
+            return res
+        return self._export_registry.getStepMetadata(step, default)
 
     security.declareProtected(ManagePortal, 'getToolsetRegistry')
     def getToolsetRegistry(self):
