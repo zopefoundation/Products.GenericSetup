@@ -977,7 +977,7 @@ class SetupTool(Folder):
                                        should_purge=should_purge,
                                       )
         else:
-            raise KeyError, 'Unknown context %s' % context_id
+            raise KeyError, 'Unknown context "%s"' % context_id
 
     security.declarePrivate('_updateImportStepsRegistry')
     def _updateImportStepsRegistry(self, context, encoding):
