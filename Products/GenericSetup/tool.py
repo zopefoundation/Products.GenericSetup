@@ -907,7 +907,7 @@ class SetupTool(Folder):
                 should_purge = True
             return SnapshotImportContext(self, context_id, should_purge, encoding)
         else:
-            raise KeyError, 'Unknown context %s' % context_id
+            raise KeyError, 'Unknown context "%s"' % context_id
 
     security.declarePrivate('_updateImportStepsRegistry')
     def _updateImportStepsRegistry(self, context, encoding):
