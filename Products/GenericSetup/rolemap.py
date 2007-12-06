@@ -100,7 +100,7 @@ def importRolemap( context ):
         for permission in rolemap_info[ 'permissions' ]:
 
             site.manage_permission( permission[ 'name' ]
-                                  , permission[ 'roles' ]
+                                  , permission.get('roles', [])
                                   , permission[ 'acquire' ]
                                   )
 
