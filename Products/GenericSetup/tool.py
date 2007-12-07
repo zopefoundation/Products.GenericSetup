@@ -72,13 +72,21 @@ def exportStepRegistries(context):
     setup_tool = context.getSetupTool()
     logger = context.getLogger('registries')
 
-    import_steps_xml = setup_tool.getImportStepRegistry().generateXML()
-    context.writeDataFile('import_steps.xml', import_steps_xml, 'text/xml')
+    import_step_registry = setup_tool.getImportStepRegistry()
+    if len(import_step_registry.listSteps()) > 0:
+        import_steps_xml = import_step_registry.generateXML()
+        context.writeDataFile('import_steps.xml', import_steps_xml, 'text/xml')
+        logger.info('Local import steps exported.')
+    else:
+        logger.info('No local import steps.')
 
-    export_steps_xml = setup_tool.getExportStepRegistry().generateXML()
-    context.writeDataFile('export_steps.xml', export_steps_xml, 'text/xml')
-
-    logger.info('Step registries exported.')
+    export_step_registry = setup_tool.getExportStepRegistry()
+    if len(export_step_registry.listSteps()) > 0:
+        export_steps_xml = export_step_registry.generateXML()
+        context.writeDataFile('export_steps.xml', export_steps_xml, 'text/xml')
+        logger.info('Local export steps exported.')
+    else:
+        logger.info('No local export steps.')
 
 def importToolset(context):
 

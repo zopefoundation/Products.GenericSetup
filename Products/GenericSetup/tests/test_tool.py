@@ -547,13 +547,30 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
 
         self.assertRaises( ValueError, tool.runExportStep, 'nonesuch' )
 
-    def test_runExportStep_step_registry( self ):
-
-        from test_registry import _EMPTY_IMPORT_XML
-
+    def test_runExportStep_step_registry_empty(self):
         site = self._makeSite()
         site.setup_tool = self._makeOne('setup_tool')
         tool = site.setup_tool
+
+        result = tool.runExportStep( 'step_registries' )
+
+        self.assertEqual( len( result[ 'steps' ] ), 1 )
+        self.assertEqual( result[ 'steps' ][ 0 ], 'step_registries' )
+        self.assertEqual( result[ 'messages' ][ 'step_registries' ]
+                        , None
+                        )
+        fileish = StringIO( result[ 'tarball' ] )
+
+        self._verifyTarballContents( fileish, [ 'export_steps.xml'
+                                              ] )
+        self._verifyTarballEntryXML( fileish, 'export_steps.xml'
+                                   , _DEFAULT_STEP_REGISTRIES_EXPORT_XML )
+
+    def test_runExportStep_step_registry_default(self):
+        site = self._makeSite()
+        site.setup_tool = self._makeOne('setup_tool')
+        tool = site.setup_tool
+        tool._import_registry.registerStep('foo', handler='foo.bar')
 
         result = tool.runExportStep( 'step_registries' )
 
@@ -568,17 +585,34 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
                                               , 'export_steps.xml'
                                               ] )
         self._verifyTarballEntryXML( fileish, 'import_steps.xml'
-                                   , _EMPTY_IMPORT_XML )
+                                   , _DEFAULT_STEP_REGISTRIES_IMPORT_XML )
         self._verifyTarballEntryXML( fileish, 'export_steps.xml'
                                    , _DEFAULT_STEP_REGISTRIES_EXPORT_XML )
 
-    def test_runAllExportSteps_default( self ):
-
-        from test_registry import _EMPTY_IMPORT_XML
-
+    def test_runAllExportSteps_empty(self):
         site = self._makeSite()
         site.setup_tool = self._makeOne('setup_tool')
         tool = site.setup_tool
+
+        result = tool.runAllExportSteps()
+
+        self.assertEqual( len( result[ 'steps' ] ), 1 )
+        self.assertEqual( result[ 'steps' ][ 0 ], 'step_registries' )
+        self.assertEqual( result[ 'messages' ][ 'step_registries' ]
+                        , None
+                        )
+        fileish = StringIO( result[ 'tarball' ] )
+
+        self._verifyTarballContents( fileish, [ 'export_steps.xml'
+                                              ] )
+        self._verifyTarballEntryXML( fileish, 'export_steps.xml'
+                                   , _DEFAULT_STEP_REGISTRIES_EXPORT_XML )
+
+    def test_runAllExportSteps_default(self):
+        site = self._makeSite()
+        site.setup_tool = self._makeOne('setup_tool')
+        tool = site.setup_tool
+        tool._import_registry.registerStep('foo', handler='foo.bar')
 
         result = tool.runAllExportSteps()
 
@@ -593,14 +627,11 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
                                               , 'export_steps.xml'
                                               ] )
         self._verifyTarballEntryXML( fileish, 'import_steps.xml'
-                                   , _EMPTY_IMPORT_XML )
+                                   , _DEFAULT_STEP_REGISTRIES_IMPORT_XML )
         self._verifyTarballEntryXML( fileish, 'export_steps.xml'
                                    , _DEFAULT_STEP_REGISTRIES_EXPORT_XML )
 
     def test_runAllExportSteps_extras( self ):
-
-        from test_registry import _EMPTY_IMPORT_XML
-
         site = self._makeSite()
         site.setup_tool = self._makeOne('setup_tool')
         tool = site.setup_tool
@@ -645,18 +676,13 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
                                 , _PROPERTIES_INI % site.title  )
 
     def test_createSnapshot_default( self ):
-
-        from test_registry import _EMPTY_IMPORT_XML
-
-        _EXPECTED = [ ( 'import_steps.xml', _EMPTY_IMPORT_XML )
-                    , ( 'export_steps.xml'
-                      , _DEFAULT_STEP_REGISTRIES_EXPORT_XML
-                      )
-                    ]
+        _EXPECTED = [('import_steps.xml', _DEFAULT_STEP_REGISTRIES_IMPORT_XML),
+                     ('export_steps.xml', _DEFAULT_STEP_REGISTRIES_EXPORT_XML)]
 
         site = self._makeSite()
         site.setup_tool = self._makeOne('setup_tool')
         tool = site.setup_tool
+        tool._import_registry.registerStep('foo', handler='foo.bar')
 
         self.assertEqual( len( tool.listSnapshotInfo() ), 0 )
 
@@ -683,10 +709,9 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
 
         fileobj = snapshot._getOb( 'import_steps.xml' )
         self.assertEqual( normalize_xml( fileobj.read() ),
-                          _EMPTY_IMPORT_XML )
+                          _DEFAULT_STEP_REGISTRIES_IMPORT_XML )
 
         fileobj = snapshot._getOb( 'export_steps.xml' )
-
         self.assertEqual( normalize_xml( fileobj.read() ),
                           _DEFAULT_STEP_REGISTRIES_EXPORT_XML )
 
@@ -894,6 +919,15 @@ _EXTRAS_STEP_REGISTRIES_EXPORT_XML = """\
 
  </export-step>
 </export-steps>
+"""
+
+_DEFAULT_STEP_REGISTRIES_IMPORT_XML = """\
+<?xml version="1.0"?>
+<import-steps>
+ <import-step id="foo" handler="foo.bar" title="foo">
+  
+ </import-step>
+</import-steps>
 """
 
 _EXTRAS_STEP_REGISTRIES_IMPORT_XML = """\

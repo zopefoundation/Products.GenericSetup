@@ -2,6 +2,8 @@ GenericSetup Product Changelog
 
   GenericSetup 1.4.0 (unreleased)
 
+    - Don't create empty 'import_steps.xml' and 'export_steps.xml' files.
+
     - Fix relative paths for profile dependencies.
 
     - Add support for context dependencies in profiles.
