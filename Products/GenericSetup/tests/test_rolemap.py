@@ -71,14 +71,6 @@ class RolemapExportConfiguratorTests(BaseRegistryTests):
 
     def test_listPermissions_nooverrides( self ):
 
-        self.app.site = Folder(id='site')
-        site = self.app.site
-        configurator = self._makeOne( site )
-
-        self.assertEqual( len( configurator.listPermissions() ), 0 )
-
-    def test_listPermissions_nooverrides( self ):
-
         site = Folder(id='site').__of__(self.app)
         configurator = self._makeOne( site )
 
