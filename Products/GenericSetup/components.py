@@ -221,8 +221,12 @@ class ComponentRegistryXMLAdapter(XMLAdapterBase):
             if getattr(comp, 'aq_base', None) is not None:
                 if aq_base(comp) is site:
                     child.setAttribute('object', '')
-                else:
+                elif hasattr(aq_base(comp), 'getId'):
                     child.setAttribute('object', comp.getId())
+                else:
+                    # This is a five.localsitemanager wrapped utility
+                    factory = _getDottedName(type(aq_base(comp)))
+                    child.setAttribute('factory', factory)
             else:
                 factory = _getDottedName(type(comp))
                 child.setAttribute('factory', factory)
