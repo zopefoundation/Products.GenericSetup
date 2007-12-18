@@ -115,8 +115,7 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
 
         export_registry = tool.getExportStepRegistry()
         export_steps = export_registry.listSteps()
-        self.assertEqual( len( export_steps ), 1 )
-        self.assertEqual( export_steps[ 0 ], 'step_registries' )
+        self.assertEqual(len(export_steps), 0)
 
         toolset_registry = tool.getToolsetRegistry()
         self.assertEqual( len( toolset_registry.listForbiddenTools() ), 0 )
@@ -559,18 +558,15 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
         self.assertEqual( result[ 'messages' ][ 'step_registries' ]
                         , None
                         )
-        fileish = StringIO( result[ 'tarball' ] )
-
-        self._verifyTarballContents( fileish, [ 'export_steps.xml'
-                                              ] )
-        self._verifyTarballEntryXML( fileish, 'export_steps.xml'
-                                   , _DEFAULT_STEP_REGISTRIES_EXPORT_XML )
 
     def test_runExportStep_step_registry_default(self):
         site = self._makeSite()
         site.setup_tool = self._makeOne('setup_tool')
         tool = site.setup_tool
         tool._import_registry.registerStep('foo', handler='foo.bar')
+        tool._export_registry.registerStep('step_registries',
+                'Products.GenericSetup.tool.exportStepRegistries',
+                'Export import / export steps.')
 
         result = tool.runExportStep( 'step_registries' )
 
@@ -601,18 +597,15 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
         self.assertEqual( result[ 'messages' ][ 'step_registries' ]
                         , None
                         )
-        fileish = StringIO( result[ 'tarball' ] )
-
-        self._verifyTarballContents( fileish, [ 'export_steps.xml'
-                                              ] )
-        self._verifyTarballEntryXML( fileish, 'export_steps.xml'
-                                   , _DEFAULT_STEP_REGISTRIES_EXPORT_XML )
 
     def test_runAllExportSteps_default(self):
         site = self._makeSite()
         site.setup_tool = self._makeOne('setup_tool')
         tool = site.setup_tool
         tool._import_registry.registerStep('foo', handler='foo.bar')
+        tool._export_registry.registerStep('step_registries',
+                'Products.GenericSetup.tool.exportStepRegistries',
+                'Export import / export steps.')
 
         result = tool.runAllExportSteps()
 
@@ -635,6 +628,9 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
         site = self._makeSite()
         site.setup_tool = self._makeOne('setup_tool')
         tool = site.setup_tool
+        tool._export_registry.registerStep('step_registries',
+                'Products.GenericSetup.tool.exportStepRegistries',
+                'Export import / export steps.')
 
         import_reg = tool.getImportStepRegistry()
         import_reg.registerStep( 'dependable', '1'
@@ -683,6 +679,9 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
         site.setup_tool = self._makeOne('setup_tool')
         tool = site.setup_tool
         tool._import_registry.registerStep('foo', handler='foo.bar')
+        tool._export_registry.registerStep('step_registries',
+                'Products.GenericSetup.tool.exportStepRegistries',
+                'Export import / export steps.')
 
         self.assertEqual( len( tool.listSnapshotInfo() ), 0 )
 

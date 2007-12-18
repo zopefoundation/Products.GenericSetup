@@ -2,6 +2,8 @@ GenericSetup Product Changelog
 
   GenericSetup 1.4.0 (unreleased)
 
+    - The 'step_registries' export step is now registered globally.
+
     - Remove duplicated test (https://bugs.launchpad.net/zope-cmf/+bug/174910)
 
     - Don't create empty 'import_steps.xml' and 'export_steps.xml' files.

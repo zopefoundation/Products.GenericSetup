@@ -1,6 +1,7 @@
 <configure
     xmlns="http://namespaces.zope.org/zope"
-    >
+    xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
+    i18n_domain="genericsetup">
 
   <include package=".browser"/>
 
@@ -56,6 +57,13 @@
 
   <adapter
       factory=".components.ComponentRegistryXMLAdapter"
+      />
+
+  <genericsetup:exportStep
+      name="step_registries"
+      title="Step Registries"
+      description="Export current contents of import step registry and export step registry."
+      handler="Products.GenericSetup.tool.exportStepRegistries"
       />
 
 </configure>

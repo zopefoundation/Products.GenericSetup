@@ -19,10 +19,8 @@ import unittest
 import Testing
 from zope.testing import doctest
 from zope.testing.doctest import ELLIPSIS
+from zope.testing.cleanup import cleanUp
 
-from Products.GenericSetup.testing import ExportImportZCMLLayer
-from Products.GenericSetup.zcml import cleanUpImportSteps
-from Products.GenericSetup.zcml import cleanUpExportSteps
 from Products.GenericSetup.registry import _import_step_registry
 from Products.GenericSetup.registry import _export_step_registry
 from Products.Five import zcml
@@ -245,10 +243,13 @@ def test_registerUpgradeSteps(self):
 
 
 class ImportStepTests(unittest.TestCase):
-    layer = ExportImportZCMLLayer
+
+    def setUp(self):
+        import Products.GenericSetup
+        zcml.load_config('meta.zcml', Products.GenericSetup)
 
     def tearDown(self):
-        cleanUpImportSteps()
+        cleanUp()
 
     def testNoDependencies(self):
         zcml.load_string("""<configure
@@ -291,10 +292,13 @@ class ImportStepTests(unittest.TestCase):
 
 
 class ExportStepTests(unittest.TestCase):
-    layer = ExportImportZCMLLayer
+
+    def setUp(self):
+        import Products.GenericSetup
+        zcml.load_config('meta.zcml', Products.GenericSetup)
 
     def tearDown(self):
-        cleanUpExportSteps()
+        cleanUp()
 
     def testRegistration(self):
         zcml.load_string("""<configure
@@ -324,8 +328,6 @@ def test_suite():
     suite.addTest(doctest.DocTestSuite(optionflags=ELLIPSIS))
     suite.addTest(unittest.makeSuite(ImportStepTests))
     suite.addTest(unittest.makeSuite(ExportStepTests))
-    return suite
-
     return suite
 
 if __name__ == '__main__':

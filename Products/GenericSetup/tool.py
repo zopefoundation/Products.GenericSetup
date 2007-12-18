@@ -179,10 +179,6 @@ class SetupTool(Folder):
         self.id = str(id)
         self._import_registry = ImportStepRegistry()
         self._export_registry = ExportStepRegistry()
-        self._export_registry.registerStep('step_registries',
-                                           _getDottedName(exportStepRegistries),
-                                           'Export import / export steps.',
-                                          )
         self._toolset_registry = ToolsetRegistry()
 
     #
