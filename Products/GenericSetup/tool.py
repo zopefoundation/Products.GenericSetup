@@ -264,7 +264,6 @@ class SetupTool(Folder):
         """
         return self._export_registry
 
-
     security.declareProtected(ManagePortal, 'getExportStep')
     def getExportStep(self, step, default=None):
         """Simple wrapper to query both the global and local step registry."""
@@ -273,13 +272,11 @@ class SetupTool(Folder):
             return res
         return self._export_registry.getStep(step, default)
 
-
     security.declareProtected(ManagePortal, 'listExportSteps')
     def listExportSteps(self):
         steps = _export_step_registry._registered.keys() + \
                 self._export_registry._registered.keys()
-        return steps
-
+        return tuple(set(steps))
 
     security.declareProtected(ManagePortal, 'getImportStep')
     def getImportStep(self, step, default=None):
@@ -289,13 +286,12 @@ class SetupTool(Folder):
             return res
         return self._import_registry.getStep(step, default)
 
-
     security.declareProtected(ManagePortal, 'getSortedImportSteps')
     def getSortedImportSteps(self):
         steps = _import_step_registry._registered.values() + \
                 self._import_registry._registered.values()
         return _computeTopologicalSort(steps)
-    
+
     security.declareProtected(ManagePortal, 'getImportStepMetadata')
     def getImportStepMetadata(self, step, default=None):
         """Simple wrapper to query both the global and local step registry."""
