@@ -270,8 +270,8 @@ class SetupTool(Folder):
 
     security.declareProtected(ManagePortal, 'listExportSteps')
     def listExportSteps(self):
-        steps = _export_step_registry._registered.keys() + \
-                self._export_registry._registered.keys()
+        steps = _export_step_registry.listSteps() + \
+                self._export_registry.listSteps()
         return tuple(set(steps))
 
     security.declareProtected(ManagePortal, 'getImportStep')
@@ -284,9 +284,11 @@ class SetupTool(Folder):
 
     security.declareProtected(ManagePortal, 'getSortedImportSteps')
     def getSortedImportSteps(self):
-        steps = _import_step_registry._registered.values() + \
-                self._import_registry._registered.values()
-        return _computeTopologicalSort(steps)
+        steps = _import_step_registry.listSteps() + \
+                self._import_registry.listSteps()
+        step_infos = [ self.getImportStepMetadata(step)
+                       for step in set(steps) ]
+        return tuple(_computeTopologicalSort(step_infos))
 
     security.declareProtected(ManagePortal, 'getImportStepMetadata')
     def getImportStepMetadata(self, step, default=None):

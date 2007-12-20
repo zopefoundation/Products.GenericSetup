@@ -891,6 +891,33 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
         (profile_registry._profile_info,
          profile_registry._profile_ids) = orig_profile_reg
 
+    def test_listExportSteps(self):
+        site = self._makeSite()
+        site.setup_tool = self._makeOne('setup_tool')
+        tool = site.setup_tool
+        self.assertEqual(tool.listExportSteps(),
+                         (u'step_registries',))
+
+        tool._export_registry.registerStep(u'foo', handler='foo.export')
+        tool._export_registry.registerStep(u'toolset',
+                                           handler='toolset.export')
+        self.assertEqual(tool.listExportSteps(),
+                         (u'toolset', u'step_registries', u'foo'))
+
+    def test_getSortedImportSteps(self):
+        site = self._makeSite()
+        site.setup_tool = self._makeOne('setup_tool')
+        tool = site.setup_tool
+        self.assertEqual(tool.getSortedImportSteps(),
+                         ())
+
+        tool._import_registry.registerStep(u'foo', handler='foo.import')
+        tool._import_registry.registerStep(u'toolset',
+                                           handler='toolset.import')
+        self.assertEqual(tool.getSortedImportSteps(),
+                         (u'foo', u'toolset'))
+
+
 _DEFAULT_STEP_REGISTRIES_EXPORT_XML = """\
 <?xml version="1.0"?>
 <export-steps>
