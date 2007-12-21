@@ -239,13 +239,13 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
         self.assertEqual( len(_before_import_events), 1)
         self.assertEqual(_before_import_events[0].profile_id, 'snapshot-dummy')
         self.assertEqual(_before_import_events[0].steps, ['simple'])
-        self.assertEqual(_before_import_events[0].full_import, True)
+        self.assertEqual(_before_import_events[0].full_import, False)
 
         global _after_import_events
         self.assertEqual( len(_after_import_events), 1)
         self.assertEqual(_after_import_events[0].profile_id, 'snapshot-dummy')
         self.assertEqual(_after_import_events[0].steps, ['simple'])
-        self.assertEqual(_after_import_events[0].full_import, True)
+        self.assertEqual(_after_import_events[0].full_import, False)
 
     def test_runImportStep_dependencies( self ):
 
@@ -276,13 +276,13 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
         self.assertEqual( len(_before_import_events), 1)
         self.assertEqual(_before_import_events[0].profile_id, 'snapshot-dummy')
         self.assertEqual(_before_import_events[0].steps, ['dependable', 'dependent'])
-        self.assertEqual(_before_import_events[0].full_import, True)
+        self.assertEqual(_before_import_events[0].full_import, False)
 
         global _after_import_events
         self.assertEqual( len(_after_import_events), 1)
         self.assertEqual(_after_import_events[0].profile_id, 'snapshot-dummy')
         self.assertEqual(_after_import_events[0].steps, ['dependable', 'dependent'])
-        self.assertEqual(_after_import_events[0].full_import, True)
+        self.assertEqual(_after_import_events[0].full_import, False)
 
 
     def test_runImportStep_skip_dependencies( self ):
@@ -389,7 +389,7 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
 
         result = tool.runAllImportStepsFromProfile('snapshot-dummy')
 
-        self.assertEqual( len( result[ 'steps' ] ), 0 )
+        self.assertEqual( len(result['steps']), 3 )
 
     def test_runAllImportSteps_sorted_default_purge( self ):
 
@@ -408,17 +408,17 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
 
         result = tool.runAllImportStepsFromProfile(PROFILE_ID)
 
-        self.assertEqual( len( result[ 'steps' ] ), 3 )
+        self.assertEqual( len(result['steps']), 6 )
 
-        self.assertEqual( result[ 'steps' ][ 0 ], 'purging' )
+        self.assertEqual( result['steps'][3], 'purging' )
         self.assertEqual( result[ 'messages' ][ 'purging' ]
                         , 'Purged' )
 
-        self.assertEqual( result[ 'steps' ][ 1 ], 'dependable' )
+        self.assertEqual( result['steps'][4], 'dependable' )
         self.assertEqual( result[ 'messages' ][ 'dependable' ]
                         , 'Underscored title' )
 
-        self.assertEqual( result[ 'steps' ][ 2 ], 'dependent' )
+        self.assertEqual( result['steps'][5], 'dependent' )
         self.assertEqual( result[ 'messages' ][ 'dependent' ]
                         , 'Uppercased title' )
 
@@ -465,14 +465,14 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
 
         result = tool.runAllImportStepsFromProfile( 'snapshot-dummy', purge_old=True )
 
-        self.assertEqual( len( result[ 'steps' ] ), 3 )
+        self.assertEqual( len(result['steps']), 6 )
 
-        self.assertEqual( result[ 'steps' ][ 0 ], 'purging' )
+        self.assertEqual( result['steps'][3], 'purging' )
         self.assertEqual( result[ 'messages' ][ 'purging' ]
                         , 'Purged' )
 
-        self.assertEqual( result[ 'steps' ][ 1 ], 'dependable' )
-        self.assertEqual( result[ 'steps' ][ 2 ], 'dependent' )
+        self.assertEqual( result['steps'][4], 'dependable' )
+        self.assertEqual( result['steps'][5], 'dependent' )
         self.failUnless( site.purged )
 
     def test_runAllImportSteps_sorted_skip_purge( self ):
@@ -490,14 +490,14 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
 
         result = tool.runAllImportStepsFromProfile( 'snapshot-dummy', purge_old=False )
 
-        self.assertEqual( len( result[ 'steps' ] ), 3 )
+        self.assertEqual( len(result['steps']), 6 )
 
-        self.assertEqual( result[ 'steps' ][ 0 ], 'purging' )
+        self.assertEqual( result['steps'][3], 'purging' )
         self.assertEqual( result[ 'messages' ][ 'purging' ]
                         , 'Unpurged' )
 
-        self.assertEqual( result[ 'steps' ][ 1 ], 'dependable' )
-        self.assertEqual( result[ 'steps' ][ 2 ], 'dependent' )
+        self.assertEqual( result['steps'][4], 'dependable' )
+        self.assertEqual( result['steps'][5], 'dependent' )
         self.failIf( site.purged )
 
     def test_runAllImportStepsFromProfileWithoutDepends( self ):
@@ -592,8 +592,8 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
 
         result = tool.runAllExportSteps()
 
-        self.assertEqual( len( result[ 'steps' ] ), 1 )
-        self.assertEqual( result[ 'steps' ][ 0 ], 'step_registries' )
+        self.assertEqual( len(result['steps'] ), 4 )
+        self.assertEqual( result['steps'][1], 'step_registries' )
         self.assertEqual( result[ 'messages' ][ 'step_registries' ]
                         , None
                         )
@@ -609,15 +609,18 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
 
         result = tool.runAllExportSteps()
 
-        self.assertEqual( len( result[ 'steps' ] ), 1 )
-        self.assertEqual( result[ 'steps' ][ 0 ], 'step_registries' )
+        self.assertEqual( len(result['steps']), 4 )
+        self.assertEqual( result['steps'][1], 'step_registries' )
         self.assertEqual( result[ 'messages' ][ 'step_registries' ]
                         , None
                         )
         fileish = StringIO( result[ 'tarball' ] )
 
-        self._verifyTarballContents( fileish, [ 'import_steps.xml'
+        self._verifyTarballContents( fileish, [ 'componentregistry.xml'
+                                              , 'import_steps.xml'
                                               , 'export_steps.xml'
+                                              , 'rolemap.xml'
+                                              , 'toolset.xml'
                                               ] )
         self._verifyTarballEntryXML( fileish, 'import_steps.xml'
                                    , _DEFAULT_STEP_REGISTRIES_IMPORT_XML )
@@ -646,7 +649,7 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
 
         result = tool.runAllExportSteps()
 
-        self.assertEqual( len( result[ 'steps' ] ), 2 )
+        self.assertEqual( len(result['steps']), 5 )
 
         self.failUnless( 'properties' in result[ 'steps' ] )
         self.assertEqual( result[ 'messages' ][ 'properties' ]
@@ -660,9 +663,12 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
 
         fileish = StringIO( result[ 'tarball' ] )
 
-        self._verifyTarballContents( fileish, [ 'import_steps.xml'
+        self._verifyTarballContents( fileish, [ 'componentregistry.xml'
+                                              , 'import_steps.xml'
                                               , 'export_steps.xml'
                                               , 'properties.ini'
+                                              , 'rolemap.xml'
+                                              , 'toolset.xml'
                                               ] )
         self._verifyTarballEntryXML( fileish, 'import_steps.xml'
                                    , _EXTRAS_STEP_REGISTRIES_IMPORT_XML )
@@ -673,7 +679,10 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
 
     def test_createSnapshot_default( self ):
         _EXPECTED = [('import_steps.xml', _DEFAULT_STEP_REGISTRIES_IMPORT_XML),
-                     ('export_steps.xml', _DEFAULT_STEP_REGISTRIES_EXPORT_XML)]
+                     ('export_steps.xml', _DEFAULT_STEP_REGISTRIES_EXPORT_XML),
+                     ('rolemap.xml', 'dummy'),
+                     ('toolset.xml', 'dummy'),
+                     ('componentregistry.xml', 'dummy')]
 
         site = self._makeSite()
         site.setup_tool = self._makeOne('setup_tool')
@@ -687,8 +696,8 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
 
         result = tool.createSnapshot( 'default' )
 
-        self.assertEqual( len( result[ 'steps' ] ), 1 )
-        self.assertEqual( result[ 'steps' ][ 0 ], 'step_registries' )
+        self.assertEqual( len(result['steps']), 4 )
+        self.assertEqual( result['steps'][1], 'step_registries' )
         self.assertEqual( result[ 'messages' ][ 'step_registries' ]
                         , None
                         )
@@ -896,26 +905,29 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
         site.setup_tool = self._makeOne('setup_tool')
         tool = site.setup_tool
         self.assertEqual(tool.listExportSteps(),
-                         (u'step_registries',))
+                         (u'toolset', u'step_registries', u'rolemap',
+                          u'componentregistry'))
 
         tool._export_registry.registerStep(u'foo', handler='foo.export')
         tool._export_registry.registerStep(u'toolset',
                                            handler='toolset.export')
         self.assertEqual(tool.listExportSteps(),
-                         (u'toolset', u'step_registries', u'foo'))
+                         (u'toolset', u'foo', u'step_registries', u'rolemap',
+                          u'componentregistry'))
 
     def test_getSortedImportSteps(self):
         site = self._makeSite()
         site.setup_tool = self._makeOne('setup_tool')
         tool = site.setup_tool
         self.assertEqual(tool.getSortedImportSteps(),
-                         ())
+                         (u'rolemap', u'toolset', u'componentregistry'))
 
         tool._import_registry.registerStep(u'foo', handler='foo.import')
         tool._import_registry.registerStep(u'toolset',
                                            handler='toolset.import')
         self.assertEqual(tool.getSortedImportSteps(),
-                         (u'foo', u'toolset'))
+                         (u'rolemap', u'foo', u'toolset',
+                          u'componentregistry'))
 
 
 _DEFAULT_STEP_REGISTRIES_EXPORT_XML = """\

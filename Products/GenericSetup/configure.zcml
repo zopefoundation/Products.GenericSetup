@@ -66,4 +66,47 @@
       handler="Products.GenericSetup.tool.exportStepRegistries"
       />
 
+  <genericsetup:importStep
+      name="toolset"
+      title="Required Tools"
+      description="Create required tools, replacing any of the wrong class, and remove forbidden ones."
+      handler="Products.GenericSetup.tool.importToolset"
+      />
+
+  <genericsetup:exportStep
+      name="toolset"
+      title="Required Tools"
+      description="Export required / forbidden tools."
+      handler="Products.GenericSetup.tool.exportToolset"
+      />
+
+  <genericsetup:importStep
+      name="rolemap"
+      title="Role / Permission Map"
+      description="Import custom roles and non-default role-permission mappings."
+      handler="Products.GenericSetup.rolemap.importRolemap"
+      />
+
+  <genericsetup:exportStep
+      name="rolemap"
+      title="Role / Permission Map"
+      description="Export custom roles and non-default role-permission mappings."
+      handler="Products.GenericSetup.rolemap.exportRolemap"
+      />
+
+  <genericsetup:importStep
+      name="componentregistry"
+      title="Local Component Registry"
+      description="Import local component registry configuration."
+      handler="Products.GenericSetup.components.importComponentRegistry">
+    <depends name="toolset"/>
+  </genericsetup:importStep>
+
+  <genericsetup:exportStep
+      name="componentregistry"
+      title="Local Component Registry"
+      description="Export local component registry configuration."
+      handler="Products.GenericSetup.components.exportComponentRegistry"
+      />
+
 </configure>

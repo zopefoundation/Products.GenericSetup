@@ -11,12 +11,15 @@
 #
 ##############################################################################
 """Unit tests for import/export step zcml module.
+
+$Id$
 """
+
 import unittest
-from Products.GenericSetup.zcml import cleanUpImportSteps
+from zope.testing.cleanup import cleanUp
+
 import Products.GenericSetup
 from Products.GenericSetup.registry import _import_step_registry
-from Products.GenericSetup.testing import ExportImportZCMLLayer
 from Products.Five import zcml
 
 EMPTY_ZCML = '''<configure xmlns:genericsetup="http://namespaces.zope.org/genericsetup">
@@ -32,13 +35,12 @@ ONE_STEP_ZCML = '''<configure xmlns:genericsetup="http://namespaces.zope.org/gen
 </configure>'''
 
 class ImportStepTests(unittest.TestCase):
-    layer = ExportImportZCMLLayer
 
     def setUp(self):
         zcml.load_config('meta.zcml', Products.GenericSetup)
 
     def tearDown(self):
-        cleanUpImportSteps()
+        cleanUp()
 
     def testEmptyImport(self):
         zcml.load_string(EMPTY_ZCML)
