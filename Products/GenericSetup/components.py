@@ -257,7 +257,7 @@ def exportComponentRegistry(context):
     sm = getSiteManager(context.getSite())
     if sm is None or not IComponentRegistry.providedBy(sm):
         logger = context.getLogger('componentregistry')
-        logger.info("Nothing to export.")
+        logger.debug("Nothing to export.")
         return
 
     exporter = queryMultiAdapter((sm, context), IBody)
