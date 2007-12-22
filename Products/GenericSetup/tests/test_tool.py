@@ -904,30 +904,47 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
         site = self._makeSite()
         site.setup_tool = self._makeOne('setup_tool')
         tool = site.setup_tool
-        self.assertEqual(tool.listExportSteps(),
-                         (u'toolset', u'step_registries', u'rolemap',
-                          u'componentregistry'))
+        result = tool.listExportSteps()
+        self.assertEqual(len(result), 4)
+        self.failUnless(u'componentregistry' in result)
+        self.failUnless(u'rolemap' in result)
+        self.failUnless(u'step_registries' in result)
+        self.failUnless(u'toolset' in result)
 
         tool._export_registry.registerStep(u'foo', handler='foo.export')
         tool._export_registry.registerStep(u'toolset',
                                            handler='toolset.export')
-        self.assertEqual(tool.listExportSteps(),
-                         (u'toolset', u'foo', u'step_registries', u'rolemap',
-                          u'componentregistry'))
+        result = tool.listExportSteps()
+        self.assertEqual(len(result), 5)
+        self.failUnless(u'componentregistry' in result)
+        self.failUnless(u'foo' in result)
+        self.failUnless(u'rolemap' in result)
+        self.failUnless(u'step_registries' in result)
+        self.failUnless(u'toolset' in result)
 
     def test_getSortedImportSteps(self):
         site = self._makeSite()
         site.setup_tool = self._makeOne('setup_tool')
         tool = site.setup_tool
-        self.assertEqual(tool.getSortedImportSteps(),
-                         (u'rolemap', u'toolset', u'componentregistry'))
+        result = tool.getSortedImportSteps()
+        self.assertEqual(len(result), 3)
+        self.failUnless(u'componentregistry' in result)
+        self.failUnless(u'rolemap' in result)
+        self.failUnless(u'toolset' in result)
+        self.failUnless(list(result).index(u'componentregistry') >
+                        list(result).index(u'toolset'))
 
         tool._import_registry.registerStep(u'foo', handler='foo.import')
         tool._import_registry.registerStep(u'toolset',
                                            handler='toolset.import')
-        self.assertEqual(tool.getSortedImportSteps(),
-                         (u'rolemap', u'foo', u'toolset',
-                          u'componentregistry'))
+        result = tool.getSortedImportSteps()
+        self.assertEqual(len(result), 4)
+        self.failUnless(u'componentregistry' in result)
+        self.failUnless(u'foo' in result)
+        self.failUnless(u'rolemap' in result)
+        self.failUnless(u'toolset' in result)
+        self.failUnless(list(result).index(u'componentregistry') >
+                        list(result).index(u'toolset'))
 
 
 _DEFAULT_STEP_REGISTRIES_EXPORT_XML = """\
