@@ -2,6 +2,9 @@ GenericSetup Product Changelog
 
   GenericSetup 1.4.0 (unreleased)
 
+    - Add a ZMI interface to find and remove invalid steps from the
+      persistent registries.
+
     - All GenericSetup import and export steps are now registered globally.
 
     - Remove duplicated test (https://bugs.launchpad.net/zope-cmf/+bug/174910)

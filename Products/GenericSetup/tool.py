@@ -538,6 +538,9 @@ class SetupTool(Folder):
                        {'label' : 'Comparison',
                         'action' : 'manage_showDiff'
                        },
+                       {'label' : 'Manage',
+                        'action' : 'manage_stepRegistry'
+                       },
                       )
                     + Folder.manage_options[3:] # skip "View", "Properties"
                      )
@@ -828,6 +831,27 @@ class SetupTool(Folder):
                                           missing_as_empty,
                                           ignore_blanks,
                                          )
+
+    security.declareProtected(ManagePortal, 'manage_stepRegistry')
+    manage_stepRegistry = PageTemplateFile('sutManage', _wwwdir)
+
+    security.declareProtected(ManagePortal, 'manage_deleteImportSteps')
+    def manage_deleteImportSteps(self, ids, request=None):
+        if request is None:
+            request = self.REQUEST
+        for id in ids:
+            self._import_registry.unregisterStep(id)
+        url = self.absolute_url()
+        request.RESPONSE.redirect("%s/manage_stepRegistry" % url)
+
+    security.declareProtected(ManagePortal, 'manage_deleteExportSteps')
+    def manage_deleteExportSteps(self, ids, request=None):
+        if request is None:
+            request = self.REQUEST
+        for id in ids:
+            self._export_registry.unregisterStep(id)
+        url = self.absolute_url()
+        request.RESPONSE.redirect("%s/manage_stepRegistry" % url)
 
     #
     # Upgrades management

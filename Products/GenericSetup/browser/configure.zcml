@@ -18,4 +18,18 @@
       permission="five.ManageSite"
       />
 
+  <browser:page
+      for="..interfaces.ISetupTool"
+      name="manage_importsteps"
+      class=".manage.ImportStepsView"
+      permission="five.ManageSite"
+      />
+
+  <browser:page
+      for="..interfaces.ISetupTool"
+      name="manage_exportsteps"
+      class=".manage.ExportStepsView"
+      permission="five.ManageSite"
+      />
+
 </configure>
