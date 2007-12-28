@@ -408,10 +408,6 @@ class ImportStepRegistry( BaseStepRegistry ):
         """
         already = self.getStepMetadata( id )
 
-        if version is not None:
-            warn('The version parameter for registerStep.ImportStepRegistry '
-                 'is deprecated.')
-
         if handler is None:
             raise ValueError, 'No handler specified'
 
