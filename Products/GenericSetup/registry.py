@@ -39,6 +39,192 @@ from utils import _resolveDottedName
 from utils import _extractDocstring
 from utils import _computeTopologicalSort
 
+#
+#   XML parser
+#
+
+class _HandlerBase(ContentHandler):
+
+    _MARKER = object()
+
+    def _extract(self, attrs, key):
+        result = attrs.get(key, self._MARKER)
+
+        if result is self._MARKER:
+            return None
+
+        return self._encode(result)
+
+    def _encode(self, content):
+        if self._encoding is None:
+            return content
+
+        return content.encode(self._encoding)
+
+
+class _ToolsetParser(_HandlerBase):
+
+    security = ClassSecurityInfo()
+    security.declareObjectPrivate()
+    security.setDefaultAccess( 'deny' )
+
+    def __init__( self, encoding ):
+
+        self._encoding = encoding
+        self._required = {}
+        self._forbidden = []
+
+    def startElement( self, name, attrs ):
+
+        if name == 'tool-setup':
+            pass
+
+        elif name == 'forbidden':
+
+            tool_id = self._extract( attrs, 'tool_id' )
+
+            if tool_id not in self._forbidden:
+                self._forbidden.append( tool_id )
+
+        elif name == 'required':
+
+            tool_id = self._extract( attrs, 'tool_id' )
+            dotted_name = self._extract( attrs, 'class' )
+            self._required[ tool_id ] = dotted_name
+
+        else:
+            raise ValueError, 'Unknown element %s' % name
+
+InitializeClass( _ToolsetParser )
+
+class _ImportStepRegistryParser(_HandlerBase):
+
+    security = ClassSecurityInfo()
+    security.declareObjectPrivate()
+    security.setDefaultAccess( 'deny' )
+
+    def __init__( self, encoding ):
+
+        self._encoding = encoding
+        self._started = False
+        self._pending = None
+        self._parsed = []
+
+    def startElement( self, name, attrs ):
+
+        if name == 'import-steps':
+
+            if self._started:
+                raise ValueError, 'Duplicated setup-steps element: %s' % name
+
+            self._started = True
+
+        elif name == 'import-step':
+
+            if self._pending is not None:
+                raise ValueError, 'Cannot nest setup-step elements'
+
+            self._pending = dict( [ ( k, self._extract( attrs, k ) )
+                                    for k in attrs.keys() ] )
+
+            self._pending[ 'dependencies' ] = []
+
+        elif name == 'dependency':
+
+            if not self._pending:
+                raise ValueError, 'Dependency outside of step'
+
+            depended = self._extract( attrs, 'step' )
+            self._pending[ 'dependencies' ].append( depended )
+
+        else:
+            raise ValueError, 'Unknown element %s' % name
+
+    def characters( self, content ):
+
+        if self._pending is not None:
+            content = self._encode( content )
+            self._pending.setdefault( 'description', [] ).append( content )
+
+    def endElement(self, name):
+
+        if name == 'import-steps':
+            pass
+
+        elif name == 'import-step':
+
+            if self._pending is None:
+                raise ValueError, 'No pending step!'
+
+            deps = tuple( self._pending[ 'dependencies' ] )
+            self._pending[ 'dependencies' ] = deps
+
+            desc = ''.join( self._pending[ 'description' ] )
+            self._pending[ 'description' ] = desc
+
+            self._parsed.append( self._pending )
+            self._pending = None
+
+InitializeClass( _ImportStepRegistryParser )
+
+
+class _ExportStepRegistryParser(_HandlerBase):
+
+    security = ClassSecurityInfo()
+    security.declareObjectPrivate()
+    security.setDefaultAccess( 'deny' )
+
+    def __init__( self, encoding ):
+
+        self._encoding = encoding
+        self._started = False
+        self._pending = None
+        self._parsed = []
+
+    def startElement( self, name, attrs ):
+
+        if name == 'export-steps':
+
+            if self._started:
+                raise ValueError, 'Duplicated export-steps element: %s' % name
+
+            self._started = True
+
+        elif name == 'export-step':
+
+            if self._pending is not None:
+                raise ValueError, 'Cannot nest export-step elements'
+
+            self._pending = dict( [ ( k, self._extract( attrs, k ) )
+                                    for k in attrs.keys() ] )
+
+        else:
+            raise ValueError, 'Unknown element %s' % name
+
+    def characters( self, content ):
+
+        if self._pending is not None:
+            content = self._encode( content )
+            self._pending.setdefault( 'description', [] ).append( content )
+
+    def endElement(self, name):
+
+        if name == 'export-steps':
+            pass
+
+        elif name == 'export-step':
+
+            if self._pending is None:
+                raise ValueError, 'No pending step!'
+
+            desc = ''.join( self._pending[ 'description' ] )
+            self._pending[ 'description' ] = desc
+
+            self._parsed.append( self._pending )
+            self._pending = None
+
+InitializeClass( _ExportStepRegistryParser )
+
 
 class BaseStepRegistry( Implicit ):
 
@@ -581,189 +767,3 @@ InitializeClass( ProfileRegistry )
 _profile_registry = ProfileRegistry()
 
 
-#
-#   XML parser
-#
-
-class _HandlerBase(ContentHandler):
-
-    _MARKER = object()
-
-    def _extract(self, attrs, key):
-        result = attrs.get(key, self._MARKER)
-
-        if result is self._MARKER:
-            return None
-
-        return self._encode(result)
-
-    def _encode(self, content):
-        if self._encoding is None:
-            return content
-
-        return content.encode(self._encoding)
-
-
-class _ImportStepRegistryParser(_HandlerBase):
-
-    security = ClassSecurityInfo()
-    security.declareObjectPrivate()
-    security.setDefaultAccess( 'deny' )
-
-    def __init__( self, encoding ):
-
-        self._encoding = encoding
-        self._started = False
-        self._pending = None
-        self._parsed = []
-
-    def startElement( self, name, attrs ):
-
-        if name == 'import-steps':
-
-            if self._started:
-                raise ValueError, 'Duplicated setup-steps element: %s' % name
-
-            self._started = True
-
-        elif name == 'import-step':
-
-            if self._pending is not None:
-                raise ValueError, 'Cannot nest setup-step elements'
-
-            self._pending = dict( [ ( k, self._extract( attrs, k ) )
-                                    for k in attrs.keys() ] )
-
-            self._pending[ 'dependencies' ] = []
-
-        elif name == 'dependency':
-
-            if not self._pending:
-                raise ValueError, 'Dependency outside of step'
-
-            depended = self._extract( attrs, 'step' )
-            self._pending[ 'dependencies' ].append( depended )
-
-        else:
-            raise ValueError, 'Unknown element %s' % name
-
-    def characters( self, content ):
-
-        if self._pending is not None:
-            content = self._encode( content )
-            self._pending.setdefault( 'description', [] ).append( content )
-
-    def endElement(self, name):
-
-        if name == 'import-steps':
-            pass
-
-        elif name == 'import-step':
-
-            if self._pending is None:
-                raise ValueError, 'No pending step!'
-
-            deps = tuple( self._pending[ 'dependencies' ] )
-            self._pending[ 'dependencies' ] = deps
-
-            desc = ''.join( self._pending[ 'description' ] )
-            self._pending[ 'description' ] = desc
-
-            self._parsed.append( self._pending )
-            self._pending = None
-
-InitializeClass( _ImportStepRegistryParser )
-
-
-class _ExportStepRegistryParser(_HandlerBase):
-
-    security = ClassSecurityInfo()
-    security.declareObjectPrivate()
-    security.setDefaultAccess( 'deny' )
-
-    def __init__( self, encoding ):
-
-        self._encoding = encoding
-        self._started = False
-        self._pending = None
-        self._parsed = []
-
-    def startElement( self, name, attrs ):
-
-        if name == 'export-steps':
-
-            if self._started:
-                raise ValueError, 'Duplicated export-steps element: %s' % name
-
-            self._started = True
-
-        elif name == 'export-step':
-
-            if self._pending is not None:
-                raise ValueError, 'Cannot nest export-step elements'
-
-            self._pending = dict( [ ( k, self._extract( attrs, k ) )
-                                    for k in attrs.keys() ] )
-
-        else:
-            raise ValueError, 'Unknown element %s' % name
-
-    def characters( self, content ):
-
-        if self._pending is not None:
-            content = self._encode( content )
-            self._pending.setdefault( 'description', [] ).append( content )
-
-    def endElement(self, name):
-
-        if name == 'export-steps':
-            pass
-
-        elif name == 'export-step':
-
-            if self._pending is None:
-                raise ValueError, 'No pending step!'
-
-            desc = ''.join( self._pending[ 'description' ] )
-            self._pending[ 'description' ] = desc
-
-            self._parsed.append( self._pending )
-            self._pending = None
-
-InitializeClass( _ExportStepRegistryParser )
-
-
-class _ToolsetParser(_HandlerBase):
-
-    security = ClassSecurityInfo()
-    security.declareObjectPrivate()
-    security.setDefaultAccess( 'deny' )
-
-    def __init__( self, encoding ):
-
-        self._encoding = encoding
-        self._required = {}
-        self._forbidden = []
-
-    def startElement( self, name, attrs ):
-
-        if name == 'tool-setup':
-            pass
-
-        elif name == 'forbidden':
-
-            tool_id = self._extract( attrs, 'tool_id' )
-
-            if tool_id not in self._forbidden:
-                self._forbidden.append( tool_id )
-
-        elif name == 'required':
-
-            tool_id = self._extract( attrs, 'tool_id' )
-            dotted_name = self._extract( attrs, 'class' )
-            self._required[ tool_id ] = dotted_name
-
-        else:
-            raise ValueError, 'Unknown element %s' % name
-
-InitializeClass( _ToolsetParser )
