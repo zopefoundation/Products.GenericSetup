@@ -120,6 +120,20 @@ class BaseStepRegistry( Implicit ):
 
         self._registered = {}
 
+    security.declarePrivate( 'parseXML' )
+    def parseXML( self, text, encoding=None ):
+
+        """ Parse 'text'.
+        """
+        reader = getattr( text, 'read', None )
+
+        if reader is not None:
+            text = reader()
+
+        parser = self.RegistryParser( encoding )
+        parseString( text, parser )
+
+        return parser._parsed
 InitializeClass( BaseStepRegistry )
 
 class ImportStepRegistry( BaseStepRegistry ):
@@ -131,6 +145,7 @@ class ImportStepRegistry( BaseStepRegistry ):
     implements(IImportStepRegistry)
 
     security = ClassSecurityInfo()
+    RegistryParser = _ImportStepRegistryParser
 
 
     security.declareProtected( ManagePortal, 'sortSteps' )
@@ -242,20 +257,6 @@ class ImportStepRegistry( BaseStepRegistry ):
 
         self._registered[ id ] = info
 
-    security.declarePrivate( 'parseXML' )
-    def parseXML( self, text, encoding=None ):
-
-        """ Parse 'text'.
-        """
-        reader = getattr( text, 'read', None )
-
-        if reader is not None:
-            text = reader()
-
-        parser = _ImportStepRegistryParser( encoding )
-        parseString( text, parser )
-
-        return parser._parsed
 
     #
     #   Helper methods
@@ -293,6 +294,7 @@ class ExportStepRegistry( BaseStepRegistry ):
     implements(IExportStepRegistry)
 
     security = ClassSecurityInfo()
+    RegistryParser = _ExportStepRegistryParser
 
     security.declarePrivate( 'registerStep' )
     def registerStep( self, id, handler, title=None, description=None ):
@@ -334,20 +336,6 @@ class ExportStepRegistry( BaseStepRegistry ):
 
         self._registered[ id ] = info
 
-    security.declarePrivate( 'parseXML' )
-    def parseXML( self, text, encoding=None ):
-
-        """ Parse 'text'.
-        """
-        reader = getattr( text, 'read', None )
-
-        if reader is not None:
-            text = reader()
-
-        parser = _ExportStepRegistryParser( encoding )
-        parseString( text, parser )
-
-        return parser._parsed
 
     #
     #   Helper methods
