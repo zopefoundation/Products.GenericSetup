@@ -1,6 +1,6 @@
 GenericSetup Product Changelog
 
-  GenericSetup 1.3.3 (unreleased)
+  GenericSetup 1.3.3 (2007/12/29)
 
     - Be more careful in checking context id validity.
 
