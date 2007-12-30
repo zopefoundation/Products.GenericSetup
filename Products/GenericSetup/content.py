@@ -162,10 +162,11 @@ class FolderishExporterImporter(object):
         stream = StringIO(objects)
 
         rowiter = reader(stream, dialect)
+        rows = filter(None, tuple(rowiter))
 
         existing = context.objectIds()
 
-        for object_id, type_name in rowiter:
+        for object_id, type_name in rows:
 
             if object_id not in existing:
                 object = self._makeInstance(object_id, type_name,
