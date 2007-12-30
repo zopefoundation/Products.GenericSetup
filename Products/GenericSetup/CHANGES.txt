@@ -1,5 +1,12 @@
 GenericSetup Product Changelog
 
+  GenericSetup 1.3.4 (unreleased)
+
+    - content: Add simple guard against import failures when
+      the ".objects" file contains empty lines.
+      (https://bugs.launchpad.net/zope-cmf/+bug/176328)
+
+
   GenericSetup 1.3.3 (2007/12/29)
 
     - Be more careful in checking context id validity.

@@ -549,6 +549,35 @@ class FolderishExporterImporterTests(unittest.TestCase):
         for found_id, expected_id in zip(after, ITEM_IDS):
             self.assertEqual(found_id, expected_id)
 
+    def test_import_site_with_subitems_and_blanklines_dotobjects(self):
+        from Products.GenericSetup.utils import _getDottedName
+        from faux_objects import KNOWN_INI
+        from faux_objects import TestINIAware
+        dotted = _getDottedName(TestINIAware)
+        self._setUpAdapters()
+        ITEM_IDS = ('foo', 'bar', 'baz')
+
+        site = _makeFolder('site')
+
+        context = DummyImportContext(site)
+        # We want to add 'baz' to 'foo', without losing 'bar'
+        correct = '\n'.join(['%s,%s' % (x, dotted) for x in ITEM_IDS])
+        broken = correct + '\n\n'
+        context._files['structure/.objects'] = broken
+        for index in range(len(ITEM_IDS)):
+            id = ITEM_IDS[index]
+            context._files[
+                    'structure/%s.ini' % id] = KNOWN_INI % ('Title: %s' % id,
+                                                            'xyzzy',
+                                                           )
+        importer = self._getImporter()
+        importer(context)
+
+        after = site.objectIds()
+        self.assertEqual(len(after), len(ITEM_IDS))
+        for found_id, expected_id in zip(after, ITEM_IDS):
+            self.assertEqual(found_id, expected_id)
+
     def test_import_site_with_subitem_unknown_portal_type(self):
         from faux_objects import KNOWN_INI
         self._setUpAdapters()
