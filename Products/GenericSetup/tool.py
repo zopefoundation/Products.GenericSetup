@@ -841,6 +841,7 @@ class SetupTool(Folder):
             request = self.REQUEST
         for id in ids:
             self._import_registry.unregisterStep(id)
+        self._p_changed=True
         url = self.absolute_url()
         request.RESPONSE.redirect("%s/manage_stepRegistry" % url)
 
@@ -850,6 +851,7 @@ class SetupTool(Folder):
             request = self.REQUEST
         for id in ids:
             self._export_registry.unregisterStep(id)
+        self._p_changed=True
         url = self.absolute_url()
         request.RESPONSE.redirect("%s/manage_stepRegistry" % url)
 
