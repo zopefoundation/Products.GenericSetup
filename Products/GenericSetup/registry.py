@@ -300,7 +300,7 @@ class BaseStepRegistry( Implicit ):
     security.declarePrivate( 'unregisterStep' )
     def unregisterStep( self, id ):
         del self._registered[id]
-        self._p_changed = True
+        self.aq_parent._p_changed = True
 
     security.declarePrivate( 'clear' )
     def clear( self ):
