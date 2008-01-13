@@ -496,6 +496,14 @@ class ISetupTool( Interface ):
         """ Return the IToolsetRegistry for the tool.
         """
 
+    def getProfileDependencyChain( profile_id ):
+
+        """Return a list of dependencies for a profile.
+
+        The list is ordered by install order, with the requested profile as
+        last item.
+        """
+
     def runImportStepFromProfile(profile_id, step_id,
                                  run_dependencies=True, purge_old=None):
 

@@ -902,6 +902,11 @@ class SetupTool(Folder):
 
     security.declareProtected(ManagePortal, 'getDependenciesForProfile')
     def getDependenciesForProfile(self, profile_id):
+        if profile_id.startswith("snapshot-"):
+            return ()
+
+        if not self.profileExists( profile_id ):
+            raise KeyError, profile_id
         try:
             return self.getProfileInfo( profile_id ).get('dependencies', ())
         except KeyError:
@@ -1114,6 +1119,25 @@ class SetupTool(Folder):
                , 'filename' : context.getArchiveFilename()
                }
 
+
+    security.declareProtected(ManagePortal, 'getProfileInstallChain')
+    def getProfileDependencyChain(self, profile_id, seen=None):
+        if seen is None:
+            seen = set()
+        elif profile_id in seen:
+            return [] # cycle break
+        seen.add( profile_id )
+        chain = []
+
+        dependencies = self.getDependenciesForProfile( profile_id )
+        for dependency in dependencies:
+            chain.extend(self.getProfileDependencyChain( dependency, seen ))
+
+        chain.append(profile_id)
+
+        return chain
+
+
     security.declarePrivate('_runImportStepsFromContext')
     def _runImportStepsFromContext(self,
                                    steps=None,
@@ -1123,45 +1147,42 @@ class SetupTool(Folder):
                                    ignore_dependencies=False,
                                    seen=None):
 
-        results = []
-
         if not ignore_dependencies:
+            try: 
+                chain = self.getProfileDependencyChain( profile_id )
+            except KeyError, e:
+                logger = logging.getLogger('GenericSetup')
+                logger.error('Unknown step in dependency chain: %s' % str(e))
+                raise
+        else:
+            chain = [ profile_id ]
             if seen is None:
                 seen=set()
             seen.add( profile_id )
 
-            dependencies = self.getDependenciesForProfile( profile_id )
-            for dependency in dependencies:
-                if dependency not in seen:
-                    if not self.profileExists( dependency ):
-                        warn("Profile %s depends on unknown profile %s" % (profile_id, dependency))
-                        continue
-                    res = self._runImportStepsFromContext(steps=steps,
-                                                    purge_old=purge_old,
-                                                    profile_id=dependency,
-                                                    ignore_dependencies=ignore_dependencies,
-                                                    seen=seen)
-                    results.append( res )
+        
+        results = []
 
-        context = self._getImportContext(profile_id, purge_old, archive)
-        self.applyContext(context)
+        for profile_id in chain:
+            context = self._getImportContext(profile_id, purge_old, archive)
+            self.applyContext(context)
 
-        if steps is None:
-            steps = self.getSortedImportSteps()
-        messages = {}
+            if steps is None:
+                steps = self.getSortedImportSteps()
+            messages = {}
 
-        event.notify(BeforeProfileImportEvent(self, profile_id, steps, True))
-        for step in steps:
-            message = self._doRunImportStep(step, context)
-            message_list = filter(None, [message])
-            message_list.extend( ['%s: %s' % x[1:]
-                                  for x in context.listNotes()] )
-            messages[step] = '\n'.join(message_list)
-            context.clearNotes()
+            event.notify(BeforeProfileImportEvent(self, profile_id, steps, True))
+            for step in steps:
+                message = self._doRunImportStep(step, context)
+                message_list = filter(None, [message])
+                message_list.extend( ['%s: %s' % x[1:]
+                                      for x in context.listNotes()] )
+                messages[step] = '\n'.join(message_list)
+                context.clearNotes()
 
-        event.notify(ProfileImportedEvent(self, profile_id, steps, True))
+            event.notify(ProfileImportedEvent(self, profile_id, steps, True))
 
-        results.append({'steps' : steps, 'messages' : messages })
+            results.append({'steps' : steps, 'messages' : messages })
 
         data = { 'steps' : [], 'messages' : {}}
         for result in results:
