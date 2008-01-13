@@ -1120,7 +1120,7 @@ class SetupTool(Folder):
                }
 
 
-    security.declareProtected(ManagePortal, 'getProfileInstallChain')
+    security.declareProtected(ManagePortal, 'getProfileDependencyChain')
     def getProfileDependencyChain(self, profile_id, seen=None):
         if seen is None:
             seen = set()
