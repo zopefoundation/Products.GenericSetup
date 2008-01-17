@@ -36,18 +36,21 @@ class IRegisterProfileDirective(Interface):
 
     name = PythonIdentifier(
         title=u'Name',
-        description=u'',
-        required=True)
+        description=u"If not specified 'default' is used.",
+        default=u'default',
+        required=False)
 
     title = MessageID(
         title=u'Title',
-        description=u'',
-        required=True)
+        description=u'Optional title for the profile.',
+        default=None,
+        required=False)
 
     description = MessageID(
         title=u'Description',
-        description=u'',
-        required=True)
+        description=u'Optional description for the profile.',
+        default=None,
+        required=False)
 
     directory = Path(
         title=u'Path',
@@ -68,13 +71,19 @@ class IRegisterProfileDirective(Interface):
 
 
 _profile_regs = []
-def registerProfile(_context, name, title, description, directory=None,
-                    provides=BASE, for_=None):
+def registerProfile(_context, name=u'default', title=None, description=None,
+                    directory=None, provides=BASE, for_=None):
     """ Add a new profile to the registry.
     """
     product = _context.package.__name__
     if directory is None:
         directory = 'profiles/%s' % name
+
+    if title is None:
+        title = u"Profile '%s' from '%s'" % (name, product)
+
+    if description is None:
+        description = u''
 
     _profile_regs.append('%s:%s' % (product, name))
 

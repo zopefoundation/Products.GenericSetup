@@ -40,6 +40,56 @@ def b_dummy_upgrade_handler(context):
 def c_dummy_upgrade_handler(context):
     pass
 
+def test_simpleRegisterProfile():
+    """
+    Use the genericsetup:registerProfile directive::
+
+      >>> import Products.GenericSetup
+      >>> from Products.Five import zcml
+      >>> configure_zcml = '''
+      ... <configure
+      ...     xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
+      ...     i18n_domain="foo">
+      ...   <genericsetup:registerProfile
+      ...       provides="Products.GenericSetup.interfaces.EXTENSION"
+      ...       />
+      ... </configure>'''
+      >>> zcml.load_config('meta.zcml', Products.GenericSetup)
+      >>> zcml.load_string(configure_zcml)
+
+    Make sure the profile is registered correctly::
+
+      >>> from Products.GenericSetup.registry import _profile_registry
+      >>> profile_id = 'Products.GenericSetup:default'
+      >>> profile_id in _profile_registry._profile_ids
+      True
+      >>> info = _profile_registry._profile_info[profile_id]
+      >>> info['id']
+      u'Products.GenericSetup:default'
+      >>> info['title']
+      u"Profile 'default' from 'Products.GenericSetup'"
+      >>> info['description']
+      u''
+      >>> info['path']
+      u'profiles/default'
+      >>> info['product']
+      'Products.GenericSetup'
+      >>> from Products.GenericSetup.interfaces import EXTENSION
+      >>> info['type'] is EXTENSION
+      True
+      >>> info['for'] is None
+      True
+
+    Clean up and make sure the cleanup works::
+
+      >>> from zope.testing.cleanup import cleanUp
+      >>> cleanUp()
+      >>> profile_id in _profile_registry._profile_ids
+      False
+      >>> profile_id in _profile_registry._profile_info
+      False
+    """
+
 def test_registerProfile():
     """
     Use the genericsetup:registerProfile directive::
