@@ -1147,7 +1147,7 @@ class SetupTool(Folder):
                                    ignore_dependencies=False,
                                    seen=None):
 
-        if not ignore_dependencies:
+        if profile_id is not None or not ignore_dependencies:
             try: 
                 chain = self.getProfileDependencyChain( profile_id )
             except KeyError, e:
