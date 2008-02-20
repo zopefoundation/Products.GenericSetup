@@ -388,7 +388,10 @@ class SetupTool(Folder):
                                                  profile_id=profile_id,
                                                  archive=archive,
                                                  ignore_dependencies=ignore_dependencies)
-        prefix = 'import-all-%s' % profile_id.replace(':', '_')
+        if profile_id is None:
+            prefix = 'import-all-from-tar'
+        else:
+            prefix = 'import-all-%s' % profile_id.replace(':', '_')
         name = self._mangleTimestampName(prefix, 'log')
         self._createReport(name, result['steps'], result['messages'])
 
@@ -984,26 +987,26 @@ class SetupTool(Folder):
         """
         encoding = self.getEncoding()
 
-        if context_id.startswith('profile-'):
+        if context_id is not None:
+            if context_id.startswith('profile-'):
+                context_id = context_id[len('profile-'):]
+                info = _profile_registry.getProfileInfo(context_id)
 
-            context_id = context_id[len('profile-'):]
-            info = _profile_registry.getProfileInfo(context_id)
+                if info.get('product'):
+                    path = os.path.join(_getProductPath(info['product'])
+                                       , info['path'])
+                else:
+                    path = info['path']
+                if should_purge is None:
+                    should_purge = (info.get('type') != EXTENSION)
+                return DirectoryImportContext(self, path, should_purge, encoding)
 
-            if info.get('product'):
-                path = os.path.join(_getProductPath(info['product'])
-                                   , info['path'])
-            else:
-                path = info['path']
-            if should_purge is None:
-                should_purge = (info.get('type') != EXTENSION)
-            return DirectoryImportContext(self, path, should_purge, encoding)
-
-        elif context_id.startswith('snapshot-'):
-            context_id = context_id[len('snapshot-'):]
-            if should_purge is None:
-                should_purge = True
-            return SnapshotImportContext(self, context_id, should_purge, encoding)
-        elif context_id is None and archive is not None:
+            elif context_id.startswith('snapshot-'):
+                context_id = context_id[len('snapshot-'):]
+                if should_purge is None:
+                    should_purge = True
+                return SnapshotImportContext(self, context_id, should_purge, encoding)
+        elif archive is not None:
             return TarballImportContext(tool=self,
                                        archive_bits=archive,
                                        encoding='UTF8',
@@ -1147,7 +1150,7 @@ class SetupTool(Folder):
                                    ignore_dependencies=False,
                                    seen=None):
 
-        if profile_id is not None or not ignore_dependencies:
+        if profile_id is not None and not ignore_dependencies:
             try: 
                 chain = self.getProfileDependencyChain( profile_id )
             except KeyError, e:
