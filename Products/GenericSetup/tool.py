@@ -1006,14 +1006,15 @@ class SetupTool(Folder):
                 if should_purge is None:
                     should_purge = True
                 return SnapshotImportContext(self, context_id, should_purge, encoding)
-        elif archive is not None:
+
+        if archive is not None:
             return TarballImportContext(tool=self,
                                        archive_bits=archive,
                                        encoding='UTF8',
                                        should_purge=should_purge,
                                       )
-        else:
-            raise KeyError, 'Unknown context "%s"' % context_id
+
+        raise KeyError, 'Unknown context "%s"' % context_id
 
     security.declarePrivate('_updateImportStepsRegistry')
     def _updateImportStepsRegistry(self, context, encoding):
