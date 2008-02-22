@@ -21,6 +21,7 @@ import Testing
 from xml.dom.minidom import parseString
 
 import Products.Five
+from OFS.interfaces import IItem
 from Products.Five import zcml
 from zope.component import getMultiAdapter
 from zope.interface import implements
@@ -62,6 +63,11 @@ class DummySetupEnviron(object):
 
     def shouldPurge(self):
         return self._should_purge
+
+
+class IDummyMarker(IItem):
+
+    pass
 
 
 class _AdapterTestCaseBase(unittest.TestCase):

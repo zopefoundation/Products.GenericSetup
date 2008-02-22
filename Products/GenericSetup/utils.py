@@ -33,8 +33,10 @@ from Acquisition import Implicit
 from Globals import InitializeClass
 from Globals import package_home
 from OFS.interfaces import IOrderedContainer
+from Products.Five.utilities.interfaces import IMarkerInterfaces
 from zope.component import queryMultiAdapter
 from zope.deprecation import deprecated
+from zope.interface import directlyProvides
 from zope.interface import implements
 from zope.interface import implementsOnly
 from zope.interface import providedBy
@@ -751,6 +753,37 @@ class PropertyManagerHelpers(object):
                                   tuple(prop_value))
 
             obj._updateProperty(prop_id, prop_value)
+
+
+class MarkerInterfaceHelpers(object):
+
+    """Marker interface im- and export helpers.
+    """
+
+    def _extractMarkers(self):
+        fragment = self._doc.createDocumentFragment()
+        adapted = IMarkerInterfaces(self.context)
+
+        for marker_id in adapted.getDirectlyProvidedNames():
+            node = self._doc.createElement('marker')
+            node.setAttribute('name', marker_id)
+            fragment.appendChild(node)
+
+        return fragment
+
+    def _purgeMarkers(self):
+        directlyProvides(self.context)
+
+    def _initMarkers(self, node):
+        markers = []
+        adapted = IMarkerInterfaces(self.context)
+
+        for child in node.childNodes:
+            if child.nodeName != 'marker':
+                continue
+            markers.append(str(child.getAttribute('name')))
+
+        adapted.update(adapted.dottedToInterfaces(markers))
 
 
 def exportObjects(obj, parent_path, context):

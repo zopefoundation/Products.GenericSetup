@@ -20,8 +20,17 @@ import Testing
 
 from xml.dom.minidom import parseString
 
-from Products.GenericSetup.utils import PrettyDocument
+from OFS.interfaces import IItem
+from OFS.SimpleItem import Item
+from Products.Five.utilities.marker import MarkerInterfacesAdapter
+from zope.component import provideAdapter
+from zope.component.interface import provideInterface
+from zope.interface import directlyProvides
+from zope.testing.cleanup import cleanUp
+
 from Products.GenericSetup.testing import DummySetupEnviron
+from Products.GenericSetup.testing import IDummyMarker
+from Products.GenericSetup.utils import PrettyDocument
 
 
 _EMPTY_PROPERTY_EXPORT = """\
@@ -142,6 +151,13 @@ _NOPURGE_IMPORT = """\
   <element value="Foo"/>
   <element value="Bar"/>
  </property>
+</dummy>
+"""
+
+_NORMAL_MARKER_EXPORT = """\
+<?xml version="1.0"?>
+<dummy>
+ <marker name="Products.GenericSetup.testing.IDummyMarker"/>
 </dummy>
 """
 
@@ -383,6 +399,64 @@ class PropertyManagerHelpersTests(unittest.TestCase):
         self.assertEquals(obj.lines3, ('Gee', 'Foo', 'Bar'))
 
 
+class MarkerInterfaceHelpersTests(unittest.TestCase):
+
+    def _getTargetClass(self):
+        from Products.GenericSetup.utils import MarkerInterfaceHelpers
+
+        return MarkerInterfaceHelpers
+
+    def _makeOne(self, *args, **kw):
+        from Products.GenericSetup.utils import NodeAdapterBase
+
+        class Foo(self._getTargetClass(), NodeAdapterBase):
+
+            pass
+
+        return Foo(*args, **kw)
+
+    def _populate(self, obj):
+        directlyProvides(obj, IDummyMarker)
+
+    def setUp(self):
+        obj = Item('obj')
+        self.helpers = self._makeOne(obj, DummySetupEnviron())
+        provideAdapter(MarkerInterfacesAdapter, (IItem,))
+        provideInterface('', IDummyMarker)
+
+    def tearDown(self):
+        cleanUp()
+
+    def test__extractMarkers(self):
+        self._populate(self.helpers.context)
+        doc = self.helpers._doc = PrettyDocument()
+        node = doc.createElement('dummy')
+        node.appendChild(self.helpers._extractMarkers())
+        doc.appendChild(node)
+
+        self.assertEqual(doc.toprettyxml(' '), _NORMAL_MARKER_EXPORT)
+
+    def test__purgeMarkers(self):
+        obj = self.helpers.context
+        self._populate(obj)
+        self.failUnless(IDummyMarker.providedBy(obj))
+
+        self.helpers._purgeMarkers()
+        self.failIf(IDummyMarker.providedBy(obj))
+
+    def test__initMarkers(self):
+        node = parseString(_NORMAL_MARKER_EXPORT).documentElement
+        self.helpers._initMarkers(node)
+        self.failUnless(IDummyMarker.providedBy(self.helpers.context))
+
+        doc = self.helpers._doc = PrettyDocument()
+        node = doc.createElement('dummy')
+        node.appendChild(self.helpers._extractMarkers())
+        doc.appendChild(node)
+
+        self.assertEqual(doc.toprettyxml(' '), _NORMAL_MARKER_EXPORT)
+
+
 class PrettyDocumentTests(unittest.TestCase):
 
     def test_attr_quoting(self):
@@ -414,6 +488,7 @@ class PrettyDocumentTests(unittest.TestCase):
         e = parseString(expected).documentElement
         self.assertEqual(e.childNodes[0].nodeValue, original)
 
+
 def test_suite():
     # reimport to make sure tests are run from Products
     from Products.GenericSetup.tests.test_utils import UtilsTests
@@ -421,6 +496,7 @@ def test_suite():
     return unittest.TestSuite((
         unittest.makeSuite(UtilsTests),
         unittest.makeSuite(PropertyManagerHelpersTests),
+        unittest.makeSuite(MarkerInterfaceHelpersTests),
         unittest.makeSuite(PrettyDocumentTests),
         ))
 

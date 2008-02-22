@@ -2,6 +2,8 @@ GenericSetup Product Changelog
 
   GenericSetup 1.4.0 (unreleased)
 
+    - utils: Added MarkerInterfaceHelpers.
+
     - Added default values to the registerProfile ZCML directive.
 
     - Add a ZMI interface to find and remove invalid steps from the
