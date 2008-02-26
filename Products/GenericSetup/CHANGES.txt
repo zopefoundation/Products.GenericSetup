@@ -2,6 +2,9 @@ GenericSetup Product Changelog
 
   GenericSetup 1.3.4 (unreleased)
 
+    - During object manager imports do not throw an error when
+      trying to remove an object that was already removed.
+
     - content: Add simple guard against import failures when
       the ".objects" file contains empty lines.
       (https://bugs.launchpad.net/zope-cmf/+bug/176328)

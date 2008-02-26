@@ -145,6 +145,19 @@ _NOPURGE_IMPORT = """\
 </dummy>
 """
 
+_ADD_IMPORT = """\
+<?xml version="1.0"?>
+<dummy>
+ <object name="history" meta_type="Folder"/>
+</dummy>
+"""
+_REMOVE_IMPORT = """\
+<?xml version="1.0"?>
+<dummy>
+ <object name="history" remove="True"/>
+</dummy>
+"""
+
 
 def _testFunc( *args, **kw ):
 
@@ -383,6 +396,49 @@ class PropertyManagerHelpersTests(unittest.TestCase):
         self.assertEquals(obj.lines3, ('Gee', 'Foo', 'Bar'))
 
 
+class ObjectManagerHelpersTests(unittest.TestCase):
+
+    def _getTargetClass(self):
+        from Products.GenericSetup.utils import ObjectManagerHelpers
+
+        return ObjectManagerHelpers
+
+    def _makeOne(self, *args, **kw):
+        from Products.GenericSetup.utils import NodeAdapterBase
+
+        class Foo(self._getTargetClass(), NodeAdapterBase):
+
+            pass
+
+        return Foo(*args, **kw)
+
+    def setUp(self):
+        from OFS.ObjectManager import ObjectManager
+
+        obj = ObjectManager('obj')
+        self.helpers = self._makeOne(obj, DummySetupEnviron())
+
+    def test__initObjects(self):
+        obj = self.helpers.context
+        self.failIf('history' in obj.objectIds())
+
+        # Add object
+        node = parseString(_ADD_IMPORT).documentElement
+        self.helpers._initObjects(node)
+        self.failUnless('history' in obj.objectIds())
+
+        # Remove it again
+        node = parseString(_REMOVE_IMPORT).documentElement
+        self.helpers._initObjects(node)
+        self.failIf('history' in obj.objectIds())
+        
+        # Removing it a second time should not throw an
+        # AttributeError.
+        node = parseString(_REMOVE_IMPORT).documentElement
+        self.helpers._initObjects(node)
+        self.failIf('history' in obj.objectIds())
+        
+
 class PrettyDocumentTests(unittest.TestCase):
 
     def test_attr_quoting(self):
@@ -421,6 +477,7 @@ def test_suite():
     return unittest.TestSuite((
         unittest.makeSuite(UtilsTests),
         unittest.makeSuite(PropertyManagerHelpersTests),
+        unittest.makeSuite(ObjectManagerHelpersTests),
         unittest.makeSuite(PrettyDocumentTests),
         ))
 
