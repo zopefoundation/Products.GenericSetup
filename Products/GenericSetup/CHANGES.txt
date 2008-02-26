@@ -2,6 +2,9 @@ GenericSetup Product Changelog
 
   GenericSetup 1.4.0 (unreleased)
 
+    - During object manager imports do not throw an error when
+      trying to remove an object that was already removed.
+
     - utils: Added MarkerInterfaceHelpers.
 
     - Added default values to the registerProfile ZCML directive.

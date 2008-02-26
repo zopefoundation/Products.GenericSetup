@@ -589,7 +589,8 @@ class ObjectManagerHelpers(object):
 
             obj_id = str(child.getAttribute('name'))
             if child.hasAttribute('remove'):
-                parent._delObject(obj_id)
+                if obj_id in parent.objectIds():
+                    parent._delObject(obj_id)
                 continue
 
             if obj_id not in parent.objectIds():
