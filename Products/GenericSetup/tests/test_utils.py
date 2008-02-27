@@ -23,6 +23,7 @@ from xml.dom.minidom import parseString
 from OFS.interfaces import IItem
 from OFS.SimpleItem import Item
 from Products.Five.utilities.marker import MarkerInterfacesAdapter
+from Testing.ZopeTestCase import ZopeTestCase
 from zope.component import provideAdapter
 from zope.component.interface import provideInterface
 from zope.interface import directlyProvides
@@ -470,7 +471,7 @@ class MarkerInterfaceHelpersTests(unittest.TestCase):
         self.assertEqual(doc.toprettyxml(' '), _NORMAL_MARKER_EXPORT)
 
 
-class ObjectManagerHelpersTests(unittest.TestCase):
+class ObjectManagerHelpersTests(ZopeTestCase):
 
     def _getTargetClass(self):
         from Products.GenericSetup.utils import ObjectManagerHelpers

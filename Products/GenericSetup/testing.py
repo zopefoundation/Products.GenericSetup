@@ -161,6 +161,15 @@ class ExportImportZCMLLayer:
         cleanUp()
 
 
+# Derive from ZopeLite layer if available
+try:
+    from Testing.ZopeTestCase.layer import ZopeLite
+except ImportError:
+    pass # Zope < 2.11
+else:
+    ExportImportZCMLLayer.__bases__ = (ZopeLite,)
+
+
 def run(test_suite):
     options = testrunner.get_options()
     options.resume_layer = None
