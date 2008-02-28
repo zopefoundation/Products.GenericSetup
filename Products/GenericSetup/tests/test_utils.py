@@ -165,7 +165,7 @@ _NORMAL_MARKER_EXPORT = """\
 _ADD_IMPORT = """\
 <?xml version="1.0"?>
 <dummy>
- <object name="history" meta_type="Folder"/>
+ <object name="history" meta_type="Generic Setup Tool"/>
 </dummy>
 """
 _REMOVE_IMPORT = """\
