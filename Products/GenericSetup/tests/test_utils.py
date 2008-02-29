@@ -19,7 +19,7 @@ import unittest
 import Testing
 
 from xml.dom.minidom import parseString
-
+from Testing.ZopeTestCase import ZopeTestCase
 from Products.GenericSetup.utils import PrettyDocument
 from Products.GenericSetup.testing import DummySetupEnviron
 
@@ -148,7 +148,7 @@ _NOPURGE_IMPORT = """\
 _ADD_IMPORT = """\
 <?xml version="1.0"?>
 <dummy>
- <object name="history" meta_type="Folder"/>
+ <object name="history" meta_type="FolderMaurits"/>
 </dummy>
 """
 _REMOVE_IMPORT = """\
@@ -396,7 +396,7 @@ class PropertyManagerHelpersTests(unittest.TestCase):
         self.assertEquals(obj.lines3, ('Gee', 'Foo', 'Bar'))
 
 
-class ObjectManagerHelpersTests(unittest.TestCase):
+class ObjectManagerHelpersTests(ZopeTestCase):
 
     def _getTargetClass(self):
         from Products.GenericSetup.utils import ObjectManagerHelpers
