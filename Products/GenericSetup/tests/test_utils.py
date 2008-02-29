@@ -148,7 +148,7 @@ _NOPURGE_IMPORT = """\
 _ADD_IMPORT = """\
 <?xml version="1.0"?>
 <dummy>
- <object name="history" meta_type="FolderMaurits"/>
+ <object name="history" meta_type="Folder"/>
 </dummy>
 """
 _REMOVE_IMPORT = """\
