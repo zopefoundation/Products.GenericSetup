@@ -24,6 +24,7 @@ from OFS.interfaces import IItem
 from OFS.SimpleItem import Item
 from Products.Five.utilities.marker import MarkerInterfacesAdapter
 from Testing.ZopeTestCase import ZopeTestCase
+from Testing.ZopeTestCase import installProduct
 from zope.component import provideAdapter
 from zope.component.interface import provideInterface
 from zope.interface import directlyProvides
@@ -32,6 +33,8 @@ from zope.testing.cleanup import cleanUp
 from Products.GenericSetup.testing import DummySetupEnviron
 from Products.GenericSetup.testing import IDummyMarker
 from Products.GenericSetup.utils import PrettyDocument
+
+installProduct('GenericSetup')
 
 
 _EMPTY_PROPERTY_EXPORT = """\
