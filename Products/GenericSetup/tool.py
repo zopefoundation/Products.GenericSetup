@@ -140,7 +140,7 @@ def importToolset(context):
             unwrapped = aq_base(existing)
             if not isinstance(unwrapped, tool_class):
                 site._delObject(tool_id)
-                site._setObject(tool_id, new_tool)
+                site._setObject(tool_id, tool_class())
 
     logger.info('Toolset imported.')
 
