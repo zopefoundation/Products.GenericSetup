@@ -738,8 +738,9 @@ class ProfileRegistry( Implicit ):
                         version = fhandle.read().strip()
                         fhandle.close()
                         warn('Version for profile %s taken from version.txt. '
-                             'This is deprecated behaviour: please specify the '
-                             'version in metadata.xml.' % profile_id,
+                             'This is deprecated behaviour and will be '
+                             'removed in GenericSetup 1.5: please specify '
+                             'the version in metadata.xml.' % profile_id,
                              DeprecationWarning)
                         break
                     except IOError:
