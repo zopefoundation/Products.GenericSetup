@@ -1,5 +1,8 @@
 GenericSetup Product Changelog
 
+  GenericSetup 1.4.0 (unreleased)
+
+
   GenericSetup 1.4.0-beta (2008/02/07)
 
     - During object manager imports do not throw an error when
