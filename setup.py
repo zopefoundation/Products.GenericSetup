@@ -47,8 +47,13 @@ setup(name='Products.GenericSetup',
       include_package_data=True,
       namespace_packages=['Products'],
       zip_safe=False,
+      tests_require=[
+          "five.localsitemanager >= 0.2",
+          ],
+      test_suite="Products.GenericSetup.tests",
       install_requires=[
           "setuptools",
+          "five.localsitemanager >= 0.2",
 #          'Zope >= 2.10',
           ],
       entry_points="""
