@@ -8,6 +8,9 @@ GenericSetup Product Changelog
     - Make getProfileImportDate handle situations where one object's id
       is a prefix of another id.
 
+
+  GenericSetup 1.4.0-beta (2008/02/07)
+
     - During object manager imports do not throw an error when
       trying to remove an object that was already removed.
 
