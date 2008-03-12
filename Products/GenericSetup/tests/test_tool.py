@@ -851,6 +851,21 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
         self.assertEqual(tool.getProfileImportDate('foo:bar'),
                          '2007-03-15T12:34:56Z')
 
+    def test_getProfileImportDate_id_with_prefix(self):
+        # Test if getProfileImportDate does not fail if there is another
+        # item id with id with a longer id which starts with the same
+        # prefix
+        from OFS.Image import File
+        site = self._makeSite()
+        site.setup_tool = self._makeOne('setup_tool')
+        tool = site.setup_tool
+        filename = 'import-all-foo_bar-20070315123456.log'
+        tool._setObject(filename, File(filename, '', ''))
+        filename2 = 'import-all-foo_bar-boo-20070315123456.log'
+        tool._setObject(filename2, File(filename2, '', ''))
+        self.assertEqual(tool.getProfileImportDate('foo:bar'),
+                         '2007-03-15T12:34:56Z')
+
     def test_profileVersioning(self):
         site = self._makeSite()
         site.setup_tool = self._makeOne('setup_tool')

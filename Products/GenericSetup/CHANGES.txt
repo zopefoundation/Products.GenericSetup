@@ -2,6 +2,9 @@ GenericSetup Product Changelog
 
   GenericSetup 1.4.0 (unreleased)
 
+    - Make getProfileImportDate handle situations where one object's id
+      is a prefix of another id.
+
 
   GenericSetup 1.4.0-beta (2008/02/07)
 

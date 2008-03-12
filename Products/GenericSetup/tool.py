@@ -764,13 +764,12 @@ class SetupTool(Folder):
         """
         prefix = ('import-all-%s-' % profile_id).replace(':', '_')
         candidates = [x for x in self.objectIds('File')
-                        if x.startswith(prefix)]
+                        if x[:-18]==prefix and x.endswith('.log')]
         if len(candidates) == 0:
             return None
         candidates.sort()
         last = candidates[-1]
-        stamp = last[len(prefix):-4]
-        assert(len(stamp) == 14)
+        stamp = last[-18:-4]
         return '%s-%s-%sT%s:%s:%sZ' % (stamp[0:4],
                                        stamp[4:6],
                                        stamp[6:8],
