@@ -1,5 +1,8 @@
 GenericSetup Product Changelog
 
+  GenericSetup 1.4.1-beta (unreleased)
+
+
   GenericSetup 1.4.0 (2008/03/23)
 
     - Make getProfileImportDate handle situations where one object's id
