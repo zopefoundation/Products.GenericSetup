@@ -539,6 +539,37 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
         self.assertEqual(_imported, [self._PROFILE_PATH2, self._PROFILE_PATH])
 
 
+    def test_runAllImportStepsFromProfileStepRegistrationWithDepends( self ):
+        from Products.GenericSetup.metadata import METADATA_XML
+
+        self._makeFile(METADATA_XML, _METADATA_XML)
+
+        _IMPORT_STEPS_XML = """<?xml version="1.0"?>
+<import-steps>
+ <import-step id="one"
+             version="1"
+             handler="Products.GenericSetup.tests.common.dummy_handler"
+             title="One Step">
+  One small step
+ </import-step>
+</import-steps>
+"""
+        self._makeFile('import_steps.xml', _IMPORT_STEPS_XML)
+
+        site = self._makeSite()
+        tool = self._makeOne('setup_tool').__of__( site )
+
+        profile_registry.registerProfile('foo', 'Foo', '', self._PROFILE_PATH)
+        profile_registry.registerProfile('bar', 'Bar', '', self._PROFILE_PATH2)
+
+        result = tool.runAllImportStepsFromProfile('profile-other:foo',
+                                                   ignore_dependencies=False)
+
+        # ensure the additional step on foo was imported
+        self.failUnless('one' in result['steps'])
+
+
+
     def test_runExportStep_nonesuch( self ):
 
         site = self._makeSite()
