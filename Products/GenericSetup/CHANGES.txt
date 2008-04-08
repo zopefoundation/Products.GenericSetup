@@ -6,7 +6,7 @@ GenericSetup Product Changelog
       each import. https://bugs.launchpad.net/zope-cmf/+bug/213905
 
 
-  GenericSetup 1.4.0 (unreleased)
+  GenericSetup 1.4.0 (2008/03/23)
 
     - Make getProfileImportDate handle situations where one object's id
       is a prefix of another id.
