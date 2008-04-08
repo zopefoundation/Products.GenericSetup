@@ -1166,12 +1166,15 @@ class SetupTool(Folder):
         
         results = []
 
+        detect_steps = steps is None
+
         for profile_id in chain:
             context = self._getImportContext(profile_id, purge_old, archive)
             self.applyContext(context)
 
-            if steps is None:
+            if detect_steps:
                 steps = self.getSortedImportSteps()
+
             messages = {}
 
             event.notify(BeforeProfileImportEvent(self, profile_id, steps, True))
