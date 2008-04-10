@@ -18,6 +18,7 @@ $Id$
 from operator import itemgetter
 
 from zope.component import adapts
+from zope.component import getAllUtilitiesRegisteredFor
 from zope.component import getSiteManager
 from zope.component import queryMultiAdapter
 from zope.component.interfaces import IComponentRegistry
@@ -25,11 +26,14 @@ from zope.component.interfaces import IComponentRegistry
 from Acquisition import aq_base
 from Acquisition import aq_parent
 
-from interfaces import IBody
-from interfaces import ISetupEnviron
-from utils import XMLAdapterBase
-from utils import _getDottedName
-from utils import _resolveDottedName
+from Products.GenericSetup.interfaces import IBody
+from Products.GenericSetup.interfaces import IComponentsHandlerBlacklist
+from Products.GenericSetup.interfaces import ISetupEnviron
+from Products.GenericSetup.utils import XMLAdapterBase
+from Products.GenericSetup.utils import _getDottedName
+from Products.GenericSetup.utils import _resolveDottedName
+
+BLACKLIST_SELF = _getDottedName(IComponentsHandlerBlacklist)
 
 
 class ComponentRegistryXMLAdapter(XMLAdapterBase):
@@ -42,6 +46,14 @@ class ComponentRegistryXMLAdapter(XMLAdapterBase):
     _LOGGER_ID = 'componentregistry'
 
     name = 'componentregistry'
+
+    def _constructBlacklist(self):
+        blacklist = set((BLACKLIST_SELF, ))
+        utils = getAllUtilitiesRegisteredFor(IComponentsHandlerBlacklist)
+        for util in utils:
+            names = [_getDottedName(i) for i in util.getExcludedInterfaces()]
+            blacklist.update(names)
+        return blacklist
 
     def _exportNode(self):
         node = self._doc.createElement('componentregistry')
@@ -78,12 +90,15 @@ class ComponentRegistryXMLAdapter(XMLAdapterBase):
 
     def _purgeAdapters(self):
         registrations = tuple(self.context.registeredAdapters())
-        
+        blacklist = self._constructBlacklist()
+
         for registration in registrations:
             factory = registration.factory
             required = registration.required
             provided = registration.provided
             name = registration.name
+            if _getDottedName(provided) in blacklist:
+                continue
 
             self.context.unregisterAdapter(factory=factory,
                                            required=required,
@@ -92,19 +107,29 @@ class ComponentRegistryXMLAdapter(XMLAdapterBase):
 
     def _purgeUtilities(self):
         registrations = tuple(self.context.registeredUtilities())
-        
+        blacklist = self._constructBlacklist()
+
         for registration in registrations:
             provided = registration.provided
             name = registration.name
+            if _getDottedName(provided) in blacklist:
+                continue
             self.context.unregisterUtility(provided=provided, name=name)
 
     def _initAdapters(self, node):
+        blacklist = self._constructBlacklist()
+
         for child in node.childNodes:
             if child.nodeName != 'adapter':
                 continue
 
             factory = _resolveDottedName(child.getAttribute('factory'))
-            provided = _resolveDottedName(child.getAttribute('provides'))
+
+            provided = child.getAttribute('provides')
+            if provided in blacklist:
+                continue
+
+            provided = _resolveDottedName(provided)
             name = unicode(str(child.getAttribute('name')))
 
             for_ = child.getAttribute('for_')
@@ -127,11 +152,17 @@ class ComponentRegistryXMLAdapter(XMLAdapterBase):
 
     def _initUtilities(self, node):
         site = self._getSite()
+        blacklist = self._constructBlacklist()
+
         for child in node.childNodes:
             if child.nodeName != 'utility':
                 continue
 
-            provided = _resolveDottedName(child.getAttribute('interface'))
+            provided = child.getAttribute('interface')
+            if provided in blacklist:
+                continue
+
+            provided = _resolveDottedName(provided)
             name = unicode(str(child.getAttribute('name')))
 
             component = child.getAttribute('component')
@@ -178,8 +209,12 @@ class ComponentRegistryXMLAdapter(XMLAdapterBase):
                           for reg in self.context.registeredAdapters() ]
         registrations.sort(key=itemgetter('name'))
         registrations.sort(key=itemgetter('provided'))
+        blacklist = self._constructBlacklist()
 
         for reg_info in registrations:
+            if reg_info['provided'] in blacklist:
+                continue
+
             child = self._doc.createElement('adapter')
 
             for_ = u''
@@ -206,10 +241,13 @@ class ComponentRegistryXMLAdapter(XMLAdapterBase):
         registrations.sort(key=itemgetter('name'))
         registrations.sort(key=itemgetter('provided'))
         site = aq_base(self._getSite())
+        blacklist = self._constructBlacklist()
 
         for reg_info in registrations:
-            child = self._doc.createElement('utility')
+            if reg_info['provided'] in blacklist:
+                continue
 
+            child = self._doc.createElement('utility')
             child.setAttribute('interface', reg_info['provided'])
 
             if reg_info['name']:

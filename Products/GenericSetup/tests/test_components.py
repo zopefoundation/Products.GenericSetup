@@ -26,13 +26,18 @@ from OFS.SimpleItem import SimpleItem
 from Products.Five.component import enableSite
 from Products.Five.component.interfaces import IObjectManagerSite
 from zope.app.component.hooks import setSite, clearSite, setHooks
+from zope.component import getMultiAdapter
+from zope.component import getGlobalSiteManager
 from zope.component import getSiteManager
 from zope.component import queryUtility
 from zope.component.globalregistry import base
 from zope.interface import implements
 from zope.interface import Interface
 
+from Products.GenericSetup.interfaces import IBody
+from Products.GenericSetup.interfaces import IComponentsHandlerBlacklist
 from Products.GenericSetup.testing import BodyAdapterTestCase
+from Products.GenericSetup.testing import DummySetupEnviron
 from Products.GenericSetup.testing import ExportImportZCMLLayer
 
 try:
@@ -51,6 +56,12 @@ def createComponentRegistry(context):
 
 class IDummyInterface(Interface):
     """A dummy interface."""
+
+    def verify():
+        """Returns True."""
+
+class IDummyInterface2(Interface):
+    """A second dummy interface."""
 
     def verify():
         """Returns True."""
@@ -81,7 +92,7 @@ InitializeClass(DummyTool)
 
 class DummyTool2(SimpleItem):
     """A second dummy tool."""
-    implements(IDummyInterface)
+    implements(IDummyInterface2)
 
     id = 'dummy_tool2'
     meta_type = 'dummy tool2'
@@ -92,6 +103,15 @@ class DummyTool2(SimpleItem):
         return True
 
 InitializeClass(DummyTool2)
+
+
+class DummyBlacklist(object):
+    """A blacklist."""
+
+    implements(IComponentsHandlerBlacklist)
+
+    def getExcludedInterfaces(self):
+        return (IDummyInterface, )
 
 
 _COMPONENTS_BODY = """\
@@ -105,11 +125,11 @@ _COMPONENTS_BODY = """\
      interface="Products.GenericSetup.tests.test_components.IDummyInterface"
      object="dummy_tool"/>
   <utility name="dummy tool name2"
-     interface="Products.GenericSetup.tests.test_components.IDummyInterface"
+     interface="Products.GenericSetup.tests.test_components.IDummyInterface2"
      object="dummy_tool2"/>
   <utility name="foo"
      factory="Products.GenericSetup.tests.test_components.DummyUtility"
-     interface="Products.GenericSetup.tests.test_components.IDummyInterface"/>
+     interface="Products.GenericSetup.tests.test_components.IDummyInterface2"/>
  </utilities>
 </componentregistry>
 """
@@ -126,16 +146,16 @@ class ComponentRegistryXMLAdapterTests(BodyAdapterTestCase):
 
     def _populate(self, obj):
         obj.registerUtility(DummyUtility(), IDummyInterface)
-        obj.registerUtility(DummyUtility(), IDummyInterface, name=u'foo')
+        obj.registerUtility(DummyUtility(), IDummyInterface2, name=u'foo')
 
         tool = aq_base(obj.aq_parent['dummy_tool'])
         obj.registerUtility(tool, IDummyInterface, name=u'dummy tool name')
 
         tool2 = aq_base(obj.aq_parent['dummy_tool2'])
-        obj.registerUtility(tool2, IDummyInterface, name=u'dummy tool name2')
+        obj.registerUtility(tool2, IDummyInterface2, name=u'dummy tool name2')
 
     def _verifyImport(self, obj):
-        util = queryUtility(IDummyInterface, name=u'foo')
+        util = queryUtility(IDummyInterface2, name=u'foo')
         self.failUnless(IDummyInterface.providedBy(util))
         self.failUnless(util.verify())
 
@@ -153,8 +173,8 @@ class ComponentRegistryXMLAdapterTests(BodyAdapterTestCase):
         self.assertEqual(tool.meta_type, 'dummy tool')
         self.assertEquals(repr(aq_base(util)), repr(aq_base(tool)))
 
-        util = queryUtility(IDummyInterface, name='dummy tool name2')
-        self.failUnless(IDummyInterface.providedBy(util))
+        util = queryUtility(IDummyInterface2, name='dummy tool name2')
+        self.failUnless(IDummyInterface2.providedBy(util))
         self.failUnless(util.verify())
         self.assertEqual(util.meta_type, 'dummy tool2')
 
@@ -162,6 +182,62 @@ class ComponentRegistryXMLAdapterTests(BodyAdapterTestCase):
         tool = getattr(obj.aq_parent, 'dummy_tool2')
         self.assertEqual(tool.meta_type, 'dummy tool2')
         self.assertEquals(repr(aq_base(util)), repr(aq_base(tool)))
+
+    def test_blacklist_get(self):
+        obj = self._obj
+        self._populate(obj)
+
+        # Register our blacklist
+        gsm = getGlobalSiteManager()
+        gsm.registerUtility(DummyBlacklist(),
+                            IComponentsHandlerBlacklist,
+                            name=u'dummy')
+
+        context = DummySetupEnviron()
+        adapted = getMultiAdapter((obj, context), IBody)
+
+        body = adapted.body
+        self.failIf('IComponentsHandlerBlacklist' in body)
+        self.failIf('test_components.IDummyInterface"' in body)
+
+    def test_blacklist_set(self):
+        obj = self._obj
+        # Register our blacklist
+        gsm = getGlobalSiteManager()
+        gsm.registerUtility(DummyBlacklist(),
+                            IComponentsHandlerBlacklist,
+                            name=u'dummy')
+
+        context = DummySetupEnviron()
+        adapted = getMultiAdapter((obj, context), IBody)
+        adapted.body = self._BODY
+
+        util = queryUtility(IDummyInterface2, name=u'foo')
+        self.failUnless(IDummyInterface.providedBy(util))
+        self.failUnless(util.verify())
+        util = queryUtility(IDummyInterface)
+        self.failUnless(util is None)
+
+        # now in update mode
+        context._should_purge = False
+        adapted = getMultiAdapter((obj, context), IBody)
+        adapted.body = self._BODY
+
+        util = queryUtility(IDummyInterface2, name=u'foo')
+        self.failUnless(IDummyInterface.providedBy(util))
+        self.failUnless(util.verify())
+        util = queryUtility(IDummyInterface)
+        self.failUnless(util is None)
+
+        # and again in update mode
+        adapted = getMultiAdapter((obj, context), IBody)
+        adapted.body = self._BODY
+
+        util = queryUtility(IDummyInterface2, name=u'foo')
+        self.failUnless(IDummyInterface.providedBy(util))
+        self.failUnless(util.verify())
+        util = queryUtility(IDummyInterface)
+        self.failUnless(util is None)
 
     def setUp(self):
         # Create and enable a local component registry
@@ -182,6 +258,11 @@ class ComponentRegistryXMLAdapterTests(BodyAdapterTestCase):
 
     def tearDown(self):
         clearSite()
+        # Make sure our global utility is gone again
+        gsm = getGlobalSiteManager()
+        gsm.unregisterUtility(provided=IComponentsHandlerBlacklist,
+                              name=u'dummy')
+
 
 if PersistentComponents is not None:
     def test_suite():

@@ -849,3 +849,15 @@ class IProfileImportedEvent(Interface):
 
     tool = Attribute("The tool which is performing the import")
 
+
+class IComponentsHandlerBlacklist(Interface):
+    """ Interface for named utilities which can exclude specified interfaces
+    from being handled by the components export and import handlers.
+    """
+
+    def getExcludedInterfaces():
+        """ Return a sequence of interfaces.
+
+        Objects providing any of the returned interfaces should be ignored by
+        the export and import handlers.
+        """
