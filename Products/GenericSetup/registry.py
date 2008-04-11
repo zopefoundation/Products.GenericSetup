@@ -723,32 +723,6 @@ class ProfileRegistry( Implicit ):
 
         metadata = ProfileMetadata(path, product=product)()
 
-        version = metadata.get( 'version', None )
-        if version is None and product is not None:
-            prod_name = product.split('.')[-1]
-            prod_module = getattr(App.Product.Products, prod_name, None)
-            if prod_module is not None:
-                prod_path = prod_module.__path__[0]
-
-                # Retrieve version number from any suitable version.txt
-                for fname in ('version.txt', 'VERSION.txt', 'VERSION.TXT'):
-                    try:
-                        fpath = os.path.join( prod_path, fname )
-                        fhandle = open( fpath, 'r' )
-                        version = fhandle.read().strip()
-                        fhandle.close()
-                        warn('Version for profile %s taken from version.txt. '
-                             'This is deprecated behaviour and will be '
-                             'removed in GenericSetup 1.5: please specify '
-                             'the version in metadata.xml.' % profile_id,
-                             DeprecationWarning)
-                        break
-                    except IOError:
-                        continue
-
-            if version is not None:
-                metadata[ 'version' ] = version
-
         # metadata.xml description trumps ZCML description... awkward
         info.update( metadata )
 

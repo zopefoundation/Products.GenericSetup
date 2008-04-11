@@ -54,26 +54,6 @@ class ProfileMetadataTests( ZopeTestCase ):
         parsed = metadata.parseXML( _METADATA_XML )
         self.assertEqual(parsed, _METADATA_MAP)
 
-    def test_versionFromProduct(self):
-        import warnings
-        warnings.filterwarnings('ignore')
-        try:
-            profile_id = 'dummy_profile'
-            product_name = 'GenericSetup'
-            directory = os.path.split(__file__)[0]
-            path = os.path.join(directory, 'default_profile')
-            profile_registry.registerProfile( profile_id,
-                                              'Dummy Profile',
-                                              'This is a dummy profile',
-                                              path,
-                                              product=product_name)
-            profile_info = profile_registry.getProfileInfo(
-                                '%s:%s' % (product_name, profile_id))
-            product = getattr(self.app.Control_Panel.Products, product_name)
-            self.assertEqual(profile_info['version'], product.version)
-        finally:
-            warnings.resetwarnings()
-
     def test_relativePath(self):
         profile_id = 'dummy_profile2'
         product_name = 'GenericSetup'
