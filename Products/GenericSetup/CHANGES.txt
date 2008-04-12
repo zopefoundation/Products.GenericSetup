@@ -2,6 +2,8 @@ GenericSetup Product Changelog
 
   GenericSetup 1.5.0 (unreleased)
 
+    - Fixed the upgrade step directive schema. Description is not required.
+
     - Introduced a new IComponentsHandlerBlacklist interface. You can register
       named utilities for it and provide sequences of interfaces which should
       not be handled by the standard components registry adapter. This allows

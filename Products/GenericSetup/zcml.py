@@ -230,7 +230,7 @@ class IUpgradeStepsStepSubDirective(Interface):
 
     description = zope.schema.TextLine(
         title=u"Upgrade step description",
-        required=True)
+        required=False)
 
     handler = GlobalObject(
         title=u"Upgrade handler",
