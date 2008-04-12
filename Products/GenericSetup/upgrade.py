@@ -11,9 +11,19 @@
 #
 ##############################################################################
 
+from pkg_resources import parse_version
 from BTrees.OOBTree import OOBTree
 
 from registry import _profile_registry
+
+
+def normalize_version(version):
+    if isinstance(version, tuple):
+        version = '.'.join(version)
+    if version in (None, 'unknown', 'all'):
+        return version
+    return parse_version(version)
+
 
 class UpgradeRegistry(object):
     """Registry of upgrade steps, by profile.
@@ -92,9 +102,8 @@ class UpgradeStep(object):
         self.profile = profile
 
     def versionMatch(self, source):
-        return (source is None or
-                self.source is None or
-                source <= self.source)
+        return (source is None or self.source is None or
+                normalize_version(source) <= normalize_version(self.source))
 
     def isProposed(self, tool, source):
         """Check if a step can be applied.
@@ -129,7 +138,8 @@ def _extractStepInfo(tool, id, step, source):
     proposed = step.isProposed(tool, source)
     if (not proposed
         and source is not None
-        and (step.source is None or source > step.source)):
+        and (step.source is None or
+             normalize_version(source) > normalize_version(step.source))):
         return
     info = {
         'id': id,

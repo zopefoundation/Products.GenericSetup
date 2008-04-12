@@ -2,6 +2,10 @@ GenericSetup Product Changelog
 
   GenericSetup 1.5.0 (unreleased)
 
+    - Use the parse_version function from pkg_resources to normalize versions
+      before comparing them inside the upgrade code. This ensures pre-release
+      versions are handled correctly.
+
     - Fixed the upgrade step directive schema. Description is not required.
 
     - Introduced a new IComponentsHandlerBlacklist interface. You can register
