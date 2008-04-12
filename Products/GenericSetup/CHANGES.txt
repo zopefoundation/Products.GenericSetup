@@ -3,7 +3,8 @@ GenericSetup Product Changelog
   GenericSetup 1.5.0 (unreleased)
 
     - Changed upgrade logic to set the current version after an upgrade to the
-      version of the last step, instead of the current profile version.
+      destination version of the last step run, instead of the current profile
+      version.
 
     - Use the parse_version function from pkg_resources to normalize versions
       before comparing them inside the upgrade code. This ensures pre-release
