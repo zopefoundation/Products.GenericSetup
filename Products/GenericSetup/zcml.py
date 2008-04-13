@@ -267,9 +267,10 @@ class upgradeSteps(object):
         self.sortkey = sortkey
         self.id = None
 
-    def upgradeStep(self, _context, title, description, handler, checker=None):
-        step = UpgradeStep(title, self.profile, self.source, self.dest, description,
-                           handler, checker, self.sortkey)
+    def upgradeStep(self, _context, title, handler,
+                    description=None, checker=None):
+        step = UpgradeStep(title, self.profile, self.source, self.dest,
+                           description, handler, checker, self.sortkey)
         if self.id is None:
             self.id = str(abs(hash('%s%s%s%s' % (title, self.source, self.dest,
                                                  self.sortkey))))
