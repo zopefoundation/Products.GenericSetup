@@ -8,7 +8,8 @@ GenericSetup Product Changelog
 
     - Use the parse_version function from pkg_resources to normalize versions
       before comparing them inside the upgrade code. This ensures pre-release
-      versions are handled correctly.
+      versions are handled correctly. Also use the normalize code when sorting
+      versions on the tools ZMI upgrades page.
 
     - Fixed the upgrade step directive schema. Description is not required.
 

@@ -167,7 +167,8 @@ def listUpgradeSteps(tool, profile_id, source):
             info = _extractStepInfo(tool, id, step, source)
             if info is None:
                 continue
-            res.append(((step.source or '', step.sortkey, info['proposed']), info))
+            normsrc = normalize_version(step.source)
+            res.append(((normsrc or '', step.sortkey, info['proposed']), info))
         else: # nested steps
             nested = []
             outer_proposed = False
@@ -180,7 +181,8 @@ def listUpgradeSteps(tool, profile_id, source):
             if nested:
                 src = nested[0]['source']
                 sortkey = nested[0]['sortkey']
-                res.append(((src or '', sortkey, outer_proposed), nested))
+                normsrc = normalize_version(src)
+                res.append(((normsrc or '', sortkey, outer_proposed), nested))
     res.sort()
     res = [i[1] for i in res]
     return res
