@@ -54,25 +54,30 @@
 <input type="hidden" name="profile_id" value="VALUE"
        tal:attributes="value profile_id" />
 <table>
-  <tr valign="top" tal:repeat="upgrade_info upgrades">
+  <tal:block tal:repeat="upgrade_info upgrades">
 
-    <tal:single condition="python:not same_type(upgrade_info, [])"
-                define="info upgrade_info">
-      <metal:insert-step use-macro="context/upgradeStepMacro/macros/upgrade-step" />
-    </tal:single>
-
-    <tal:multiple condition="python: same_type(upgrade_info, [])">
-      <table>
-        <tr>
-          <td colspan="5">Upgrade Step Group</td>
-        </tr>
-        <tr tal:repeat="info upgrade_info">
-          <td>-></td>
+      <tal:single condition="python:not same_type(upgrade_info, [])"
+                  define="info upgrade_info">
+        <tr valign="top">
           <metal:insert-step use-macro="context/upgradeStepMacro/macros/upgrade-step" />
         </tr>
-      </table>
-    </tal:multiple>
-  </tr>
+      </tal:single>
+
+      <tal:multiple condition="python: same_type(upgrade_info, [])">
+        <tr valign="top"><td colspan="4">
+          <table style="padding-top: 5px; padding-bottom: 5px; width: 100%;
+                        border: 1px dotted;">
+            <tr>
+              <th colspan="5" style="text-align: left;">Upgrade Step Group</th>
+            </tr>
+            <tr tal:repeat="info upgrade_info">
+              <td>-></td>
+              <metal:insert-step use-macro="context/upgradeStepMacro/macros/upgrade-step" />
+            </tr>
+          </table>
+        </td></tr>
+      </tal:multiple>
+  </tal:block>
 
   <tr valign="top">
     <td colspan="4">
