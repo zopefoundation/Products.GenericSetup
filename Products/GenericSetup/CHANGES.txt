@@ -2,6 +2,9 @@ GenericSetup Product Changelog
 
   GenericSetup 1.5.0 (unreleased)
 
+    - Added logic to respect the destination of upgrade steps when determining
+      their applicability. 
+
     - Enhanced the readability of the upgrades tab on the tool.
 
     - Changed upgrade logic to set the current version after an upgrade to the

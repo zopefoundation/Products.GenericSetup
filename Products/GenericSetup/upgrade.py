@@ -102,8 +102,16 @@ class UpgradeStep(object):
         self.profile = profile
 
     def versionMatch(self, source):
-        return (source is None or self.source is None or
-                normalize_version(source) <= normalize_version(self.source))
+        source = normalize_version(source)
+        return (
+            source is None or
+            (self.source is None and
+                (self.dest is None or source < normalize_version(self.dest))
+            ) or
+            (source <= normalize_version(self.source) and
+                (self.dest is None or source > normalize_version(self.dest))
+            )
+        )
 
     def isProposed(self, tool, source):
         """Check if a step can be applied.
