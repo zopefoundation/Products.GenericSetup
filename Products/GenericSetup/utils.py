@@ -556,7 +556,7 @@ class XMLAdapterBase(BodyAdapterBase):
 
 class ObjectManagerHelpers(object):
 
-    """ObjectManager im- and export helpers.
+    """ObjectManager in- and export helpers.
     """
 
     def _extractObjects(self):
