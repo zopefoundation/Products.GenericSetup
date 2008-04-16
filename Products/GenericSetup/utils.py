@@ -660,7 +660,7 @@ class PropertyManagerHelpers(object):
             if isinstance(prop, (tuple, list)):
                 for value in prop:
                     if isinstance(value, str):
-                        value.decode(self._encoding)
+                        value = value.decode(self._encoding)
                     child = self._doc.createElement('element')
                     child.setAttribute('value', value)
                     node.appendChild(child)
