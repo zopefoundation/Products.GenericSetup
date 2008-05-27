@@ -635,11 +635,40 @@ class ObjectManagerHelpers(object):
 
 
 class PropertyManagerHelpers(object):
-
     """PropertyManager im- and export helpers.
+    
+      o Derived classes can supply a '_PROPERTIES' scehma, which is then used
+        to mock up a temporary propertysheet for the object.  The adapter's 
+        methods ('_extractProperties', '_purgeProperties', '_initProperties')
+        then run against that propertysheet.
     """
+    _PROPERTIES = ()
 
     _encoding = default_encoding
+
+    def __init__(self, context, environ):
+        from OFS.PropertyManager import PropertyManager
+        if not isinstance(context, PropertyManager):
+            context = self._fauxAdapt(context)
+            
+        super(PropertyManagerHelpers, self).__init__(context, environ)
+
+    def _fauxAdapt(self, context):
+        from OFS.PropertySheets import PropertySheet
+        helper_self = self
+        class Adapted(PropertySheet):
+            def __init__(self, real, properties):
+                self._real = real
+                self._properties = properties
+            def p_self(self):
+                return self
+            def v_self(self):
+                return self._real
+            def propdict(self):
+                # PropertyManager method used by _initProperties
+                return dict([(p['id'], p) for p in self._properties])
+
+        return Adapted(context, self._PROPERTIES)
 
     def _extractProperties(self):
         fragment = self._doc.createDocumentFragment()

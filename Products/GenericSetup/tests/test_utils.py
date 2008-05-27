@@ -284,6 +284,9 @@ class PropertyManagerHelpersTests(unittest.TestCase):
         obj._properties[-1]['mode'] = 'w' # Not deletable
         return obj
 
+    def _getReal(self, obj):
+        return obj
+
     def _populate(self, obj):
         obj._updateProperty('foo_boolean', 'True')
         obj._updateProperty('foo_date', '2000/01/01')
@@ -315,7 +318,8 @@ class PropertyManagerHelpersTests(unittest.TestCase):
     def test__extractProperties_normal(self):
         from Products.GenericSetup.utils import PrettyDocument
         helpers = self._makeOne()
-        self._populate(helpers.context)
+        obj = self._getReal(helpers.context)
+        self._populate(obj)
         doc = helpers._doc = PrettyDocument()
         node = doc.createElement('dummy')
         node.appendChild(helpers._extractProperties())
@@ -325,7 +329,7 @@ class PropertyManagerHelpersTests(unittest.TestCase):
 
     def test__purgeProperties(self):
         helpers = self._makeOne()
-        obj = helpers.context
+        obj = self._getReal(helpers.context)
         self._populate(obj)
         helpers._purgeProperties()
 
@@ -346,12 +350,13 @@ class PropertyManagerHelpersTests(unittest.TestCase):
     def test__initProperties_normal(self):
         from Products.GenericSetup.utils import PrettyDocument
         helpers = self._makeOne()
+        obj = self._getReal(helpers.context)
         node = _getDocumentElement(_NORMAL_PROPERTY_EXPORT)
         helpers._initProperties(node)
-        self.assertEqual(type(helpers.context.foo_int), int)
-        self.assertEqual(type(helpers.context.foo_string), str)
-        self.assertEqual(type(helpers.context.foo_tokens), tuple)
-        self.assertEqual(type(helpers.context.foo_tokens[0]), str)
+        self.assertEqual(type(obj.foo_int), int)
+        self.assertEqual(type(obj.foo_string), str)
+        self.assertEqual(type(obj.foo_tokens), tuple)
+        self.assertEqual(type(obj.foo_tokens[0]), str)
 
         doc = helpers._doc = PrettyDocument()
         node = doc.createElement('dummy')
@@ -392,7 +397,8 @@ class PropertyManagerHelpersTests(unittest.TestCase):
         node = _getDocumentElement(_I18N_IMPORT)
         helpers._initProperties(node)
 
-        self.assertEqual(helpers.context.i18n_domain, 'dummy_domain')
+        self.assertEqual(helpers.context.getProperty('i18n_domain'),
+                        'dummy_domain')
 
     def test__initProperties_nopurge_base(self):
         helpers = self._makeOne()
@@ -405,9 +411,9 @@ class PropertyManagerHelpersTests(unittest.TestCase):
         obj.manage_addProperty('lines3', ('Foo', 'Gee'), 'lines')
         helpers._initProperties(node)
 
-        self.assertEquals(obj.lines1, ('Foo', 'Bar'))
-        self.assertEquals(obj.lines2, ('Foo', 'Bar'))
-        self.assertEquals(obj.lines3, ('Gee', 'Foo', 'Bar'))
+        self.assertEquals(obj.getProperty('lines1'), ('Foo', 'Bar'))
+        self.assertEquals(obj.getProperty('lines2'), ('Foo', 'Bar'))
+        self.assertEquals(obj.getProperty('lines3'), ('Gee', 'Foo', 'Bar'))
 
     def test__initProperties_nopurge_extension(self):
         helpers = self._makeOne()
@@ -420,10 +426,92 @@ class PropertyManagerHelpersTests(unittest.TestCase):
         obj.manage_addProperty('lines3', ('Foo', 'Gee'), 'lines')
         helpers._initProperties(node)
 
-        self.assertEquals(obj.lines1, ('Foo', 'Bar'))
-        self.assertEquals(obj.lines2, ('Foo', 'Bar'))
-        self.assertEquals(obj.lines3, ('Gee', 'Foo', 'Bar'))
+        self.assertEquals(obj.getProperty('lines1'), ('Foo', 'Bar'))
+        self.assertEquals(obj.getProperty('lines2'), ('Foo', 'Bar'))
+        self.assertEquals(obj.getProperty('lines3'), ('Gee', 'Foo', 'Bar'))
 
+
+class PropertyManagerHelpersNonPMContextTests(PropertyManagerHelpersTests):
+
+    def _makeOne(self, context=None, environ=None):
+        from Products.GenericSetup.utils import NodeAdapterBase
+        from Products.GenericSetup.testing import DummySetupEnviron
+
+        class Foo(self._getTargetClass(), NodeAdapterBase):
+            _PROPERTIES = (
+                {'id': 'foo_boolean', 'type': 'boolean', 'mode': 'wd'},
+                {'id': 'foo_date', 'type': 'date', 'mode': 'wd'},
+                {'id': 'foo_float', 'type': 'float', 'mode': 'wd'},
+                {'id': 'foo_int', 'type': 'int', 'mode': 'wd'},
+                {'id': 'foo_lines', 'type': 'lines', 'mode': 'wd'},
+                {'id': 'foo_long', 'type': 'long', 'mode': 'wd'},
+                {'id': 'foo_string', 'type': 'string', 'mode': 'wd'},
+                {'id': 'foo_text', 'type': 'text', 'mode': 'wd'},
+                {'id': 'foo_tokens', 'type': 'tokens', 'mode': 'wd'},
+                {'id': 'foo_selection', 'type': 'selection',
+                       'select_variable': 'foobarbaz', 'mode': 'wd'},
+                {'id': 'foo_mselection', 'type': 'multiple selection',
+                       'select_variable': 'foobarbaz', 'mode': 'wd'},
+                {'id': 'foo_boolean0', 'type': 'boolean', 'mode': 'wd'},
+                {'id': 'foo_ro', 'type': 'string', 'mode': ''},
+                {'id': 'foo_int_nodel', 'type': 'int', 'mode': 'w'},
+                {'id': 'foo_float_nodel', 'type': 'float', 'mode': 'w'},
+                {'id': 'foo_boolean_nodel', 'type': 'boolean', 'mode': 'w'},
+            )
+
+        if context is None:
+            context = self._makeContext()
+
+        if environ is None:
+            environ = DummySetupEnviron()
+
+        return Foo(context, environ)
+
+    def _makeContext(self):
+        from DateTime.DateTime import DateTime
+        class NonPropertyManager:
+            pass
+        obj = NonPropertyManager()
+        obj.foobarbaz = ('Foo', 'Bar', 'Baz')
+        obj.foo_boolean = False
+        obj.foo_date = DateTime('1970/01/01')
+        obj.foo_float = 0.0
+        obj.foo_int = 0
+        obj.foo_lines = []
+        obj.foo_long = 0
+        obj.foo_string = ''
+        obj.foo_text = ''
+        obj.foo_tokens = ()
+        obj.foo_selection = ''
+        obj.foo_mselection = ()
+        obj.foo_boolean0 = 0
+        obj.foo_ro = ''
+        obj.foo_int_nodel = 0
+        obj.foo_float_nodel = 0.0
+        obj.foo_boolean_nodel = False
+        return obj
+
+    def _getReal(self, obj):
+        return obj._real
+
+    def _populate(self, obj):
+        from DateTime.DateTime import DateTime
+        obj.foo_boolean = True
+        obj.foo_date = DateTime('2000/01/01')
+        obj.foo_float = 1.1
+        obj.foo_int = 1
+        obj.foo_lines = ['Foo', 'Lines']
+        obj.foo_long = 1
+        obj.foo_string = 'Foo String'
+        obj.foo_text = 'Foo\nText'
+        obj.foo_tokens = ('Foo', 'Tokens')
+        obj.foo_selection = 'Foo'
+        obj.foo_mselection = ('Foo', 'Baz')
+        obj.foo_boolean0 = 0
+        obj.foo_ro = 'RO'
+        obj.foo_int_nodel = 1789
+        obj.foo_float_nodel = 3.1415
+        obj.foo_boolean_nodel = True
 
 class MarkerInterfaceHelpersTests(unittest.TestCase):
 
@@ -595,6 +683,7 @@ def test_suite():
     return unittest.TestSuite((
         unittest.makeSuite(UtilsTests),
         unittest.makeSuite(PropertyManagerHelpersTests),
+        unittest.makeSuite(PropertyManagerHelpersNonPMContextTests),
         unittest.makeSuite(MarkerInterfaceHelpersTests),
         unittest.makeSuite(ObjectManagerHelpersTests),
         unittest.makeSuite(PrettyDocumentTests),

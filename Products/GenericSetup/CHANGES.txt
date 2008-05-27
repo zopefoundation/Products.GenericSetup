@@ -2,6 +2,13 @@ GenericSetup Product Changelog
 
   GenericSetup 1.5.0 (unreleased)
 
+    - Made PropertyManagerHelpers class work for non-PropertyManager objects
+    
+      o Derived classes can supply a '_PROPERTIES' scehma, which is then used
+        to mock up a temporary propertysheet for the object.  The adapter's 
+        methods ('_extractProperties', '_purgeProperties', '_initProperties')
+        then run against that propertysheet.
+
     - Added logic to respect the destination of upgrade steps when determining
       their applicability. 
 
