@@ -1,5 +1,10 @@
 GenericSetup Product Changelog
 
+  GenericSetup 1.4.2 (unreleased)
+
+    ...
+
+
   GenericSetup 1.4.1 (2008/05/27)
 
     - When loading multiple profiles reload the list of steps to use after
