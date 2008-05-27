@@ -18,24 +18,10 @@ $Id$
 import unittest
 import Testing
 
-from xml.dom.minidom import parseString
-
-from OFS.interfaces import IItem
-from OFS.SimpleItem import Item
-from Products.Five.utilities.marker import MarkerInterfacesAdapter
 from Testing.ZopeTestCase import ZopeTestCase
 from Testing.ZopeTestCase import installProduct
-from zope.component import provideAdapter
-from zope.component.interface import provideInterface
-from zope.interface import directlyProvides
-from zope.testing.cleanup import cleanUp
-
-from Products.GenericSetup.testing import DummySetupEnviron
-from Products.GenericSetup.testing import IDummyMarker
-from Products.GenericSetup.utils import PrettyDocument
 
 installProduct('GenericSetup')
-
 
 _EMPTY_PROPERTY_EXPORT = """\
 <?xml version="1.0"?>
@@ -178,6 +164,10 @@ _REMOVE_IMPORT = """\
 </dummy>
 """
 
+def _getDocumentElement(text):
+    from xml.dom.minidom import parseString
+    return parseString(text).documentElement
+
 
 def _testFunc( *args, **kw ):
 
@@ -251,18 +241,23 @@ class PropertyManagerHelpersTests(unittest.TestCase):
 
         return PropertyManagerHelpers
 
-    def _makeOne(self, *args, **kw):
+    def _makeOne(self, context=None, environ=None):
         from Products.GenericSetup.utils import NodeAdapterBase
+        from Products.GenericSetup.testing import DummySetupEnviron
 
         class Foo(self._getTargetClass(), NodeAdapterBase):
-
             pass
 
-        return Foo(*args, **kw)
+        if context is None:
+            context = self._makeContext()
 
-    def setUp(self):
+        if environ is None:
+            environ = DummySetupEnviron()
+
+        return Foo(context, environ)
+
+    def _makeContext(self):
         from OFS.PropertyManager import PropertyManager
-
         obj = PropertyManager('obj')
         obj.foobarbaz = ('Foo', 'Bar', 'Baz')
         obj._properties = ()
@@ -287,7 +282,10 @@ class PropertyManagerHelpersTests(unittest.TestCase):
         obj._properties[-1]['mode'] = 'w' # Not deletable
         obj.manage_addProperty('foo_boolean_nodel', '', 'boolean')
         obj._properties[-1]['mode'] = 'w' # Not deletable
-        self.helpers = self._makeOne(obj, DummySetupEnviron())
+        return obj
+
+    def setUp(self):
+        self.helpers = self._makeOne()
 
     def _populate(self, obj):
         obj._updateProperty('foo_boolean', 'True')
@@ -308,6 +306,7 @@ class PropertyManagerHelpersTests(unittest.TestCase):
         obj._updateProperty('foo_boolean_nodel', 'True')
 
     def test__extractProperties_empty(self):
+        from Products.GenericSetup.utils import PrettyDocument
         doc = self.helpers._doc = PrettyDocument()
         node = doc.createElement('dummy')
         node.appendChild(self.helpers._extractProperties())
@@ -316,6 +315,7 @@ class PropertyManagerHelpersTests(unittest.TestCase):
         self.assertEqual(doc.toprettyxml(' '), _EMPTY_PROPERTY_EXPORT)
 
     def test__extractProperties_normal(self):
+        from Products.GenericSetup.utils import PrettyDocument
         self._populate(self.helpers.context)
         doc = self.helpers._doc = PrettyDocument()
         node = doc.createElement('dummy')
@@ -344,7 +344,8 @@ class PropertyManagerHelpersTests(unittest.TestCase):
         self.assertEqual(getattr(obj, 'foo_ro', None), 'RO')
 
     def test__initProperties_normal(self):
-        node = parseString(_NORMAL_PROPERTY_EXPORT).documentElement
+        from Products.GenericSetup.utils import PrettyDocument
+        node = _getDocumentElement(_NORMAL_PROPERTY_EXPORT)
         self.helpers._initProperties(node)
         self.assertEqual(type(self.helpers.context.foo_int), int)
         self.assertEqual(type(self.helpers.context.foo_string), str)
@@ -359,7 +360,8 @@ class PropertyManagerHelpersTests(unittest.TestCase):
         self.assertEqual(doc.toprettyxml(' '), _NORMAL_PROPERTY_EXPORT)
 
     def test__initProperties_fixed(self):
-        node = parseString(_FIXED_PROPERTY_EXPORT).documentElement
+        from Products.GenericSetup.utils import PrettyDocument
+        node = _getDocumentElement(_FIXED_PROPERTY_EXPORT)
         self.helpers._initProperties(node)
 
         doc = self.helpers._doc = PrettyDocument()
@@ -370,7 +372,8 @@ class PropertyManagerHelpersTests(unittest.TestCase):
         self.assertEqual(doc.toprettyxml(' '), _NORMAL_PROPERTY_EXPORT)
 
     def test__initProperties_special(self):
-        node = parseString(_SPECIAL_IMPORT).documentElement
+        from Products.GenericSetup.utils import PrettyDocument
+        node = _getDocumentElement(_SPECIAL_IMPORT)
         self.helpers._initProperties(node)
 
         doc = self.helpers._doc = PrettyDocument()
@@ -382,13 +385,13 @@ class PropertyManagerHelpersTests(unittest.TestCase):
 
     def test__initProperties_i18n(self):
         self.helpers.context.manage_addProperty('i18n_domain', '', 'string')
-        node = parseString(_I18N_IMPORT).documentElement
+        node = _getDocumentElement(_I18N_IMPORT)
         self.helpers._initProperties(node)
 
         self.assertEqual(self.helpers.context.i18n_domain, 'dummy_domain')
 
     def test__initProperties_nopurge_base(self):
-        node = parseString(_NOPURGE_IMPORT).documentElement
+        node = _getDocumentElement(_NOPURGE_IMPORT)
         self.helpers.environ._should_purge = True # base profile
         obj = self.helpers.context
         obj._properties = ()
@@ -402,7 +405,7 @@ class PropertyManagerHelpersTests(unittest.TestCase):
         self.assertEquals(obj.lines3, ('Gee', 'Foo', 'Bar'))
 
     def test__initProperties_nopurge_extension(self):
-        node = parseString(_NOPURGE_IMPORT).documentElement
+        node = _getDocumentElement(_NOPURGE_IMPORT)
         self.helpers.environ._should_purge = False # extension profile
         obj = self.helpers.context
         obj._properties = ()
@@ -423,28 +426,46 @@ class MarkerInterfaceHelpersTests(unittest.TestCase):
 
         return MarkerInterfaceHelpers
 
-    def _makeOne(self, *args, **kw):
+    def _makeOne(self, context=None, environ=None):
         from Products.GenericSetup.utils import NodeAdapterBase
+        from Products.GenericSetup.testing import DummySetupEnviron
 
         class Foo(self._getTargetClass(), NodeAdapterBase):
-
             pass
 
-        return Foo(*args, **kw)
+        if context is None:
+            context = self._makeContext()
+
+        if environ is None:
+            environ = DummySetupEnviron()
+
+        return Foo(context, environ)
+
+    def _makeContext(self):
+        from OFS.SimpleItem import Item
+        return Item('obj')
 
     def _populate(self, obj):
+        from zope.interface import directlyProvides
+        from Products.GenericSetup.testing import IDummyMarker
         directlyProvides(obj, IDummyMarker)
 
     def setUp(self):
-        obj = Item('obj')
-        self.helpers = self._makeOne(obj, DummySetupEnviron())
+        from zope.component import provideAdapter
+        from zope.component.interface import provideInterface
+        from OFS.interfaces import IItem
+        from Products.Five.utilities.marker import MarkerInterfacesAdapter
+        from Products.GenericSetup.testing import IDummyMarker
+        self.helpers = self._makeOne()
         provideAdapter(MarkerInterfacesAdapter, (IItem,))
         provideInterface('', IDummyMarker)
 
     def tearDown(self):
+        from zope.testing.cleanup import cleanUp
         cleanUp()
 
     def test__extractMarkers(self):
+        from Products.GenericSetup.utils import PrettyDocument
         self._populate(self.helpers.context)
         doc = self.helpers._doc = PrettyDocument()
         node = doc.createElement('dummy')
@@ -454,6 +475,7 @@ class MarkerInterfaceHelpersTests(unittest.TestCase):
         self.assertEqual(doc.toprettyxml(' '), _NORMAL_MARKER_EXPORT)
 
     def test__purgeMarkers(self):
+        from Products.GenericSetup.testing import IDummyMarker
         obj = self.helpers.context
         self._populate(obj)
         self.failUnless(IDummyMarker.providedBy(obj))
@@ -462,7 +484,9 @@ class MarkerInterfaceHelpersTests(unittest.TestCase):
         self.failIf(IDummyMarker.providedBy(obj))
 
     def test__initMarkers(self):
-        node = parseString(_NORMAL_MARKER_EXPORT).documentElement
+        from Products.GenericSetup.utils import PrettyDocument
+        from Products.GenericSetup.testing import IDummyMarker
+        node = _getDocumentElement(_NORMAL_MARKER_EXPORT)
         self.helpers._initMarkers(node)
         self.failUnless(IDummyMarker.providedBy(self.helpers.context))
 
@@ -481,38 +505,45 @@ class ObjectManagerHelpersTests(ZopeTestCase):
 
         return ObjectManagerHelpers
 
-    def _makeOne(self, *args, **kw):
+    def _makeOne(self, context=None, environ=None):
         from Products.GenericSetup.utils import NodeAdapterBase
+        from Products.GenericSetup.testing import DummySetupEnviron
 
         class Foo(self._getTargetClass(), NodeAdapterBase):
-
             pass
 
-        return Foo(*args, **kw)
+        if context is None:
+            context = self._makeContext()
+
+        if environ is None:
+            environ = DummySetupEnviron()
+
+        return Foo(context, environ)
+
+    def _makeContext(self):
+        from OFS.ObjectManager import ObjectManager
+        return ObjectManager('obj')
 
     def setUp(self):
-        from OFS.ObjectManager import ObjectManager
-
-        obj = ObjectManager('obj')
-        self.helpers = self._makeOne(obj, DummySetupEnviron())
+        self.helpers = self._makeOne()
 
     def test__initObjects(self):
         obj = self.helpers.context
         self.failIf('history' in obj.objectIds())
 
         # Add object
-        node = parseString(_ADD_IMPORT).documentElement
+        node = _getDocumentElement(_ADD_IMPORT)
         self.helpers._initObjects(node)
         self.failUnless('history' in obj.objectIds())
 
         # Remove it again
-        node = parseString(_REMOVE_IMPORT).documentElement
+        node = _getDocumentElement(_REMOVE_IMPORT)
         self.helpers._initObjects(node)
         self.failIf('history' in obj.objectIds())
         
         # Removing it a second time should not throw an
         # AttributeError.
-        node = parseString(_REMOVE_IMPORT).documentElement
+        node = _getDocumentElement(_REMOVE_IMPORT)
         self.helpers._initObjects(node)
         self.failIf('history' in obj.objectIds())
         
@@ -520,6 +551,7 @@ class ObjectManagerHelpersTests(ZopeTestCase):
 class PrettyDocumentTests(unittest.TestCase):
 
     def test_attr_quoting(self):
+        from Products.GenericSetup.utils import PrettyDocument
         original = 'baz &nbsp;<bar>&"\''
         expected = ('<?xml version="1.0"?>\n'
                     '<doc foo="baz &amp;nbsp;&lt;bar&gt;&amp;&quot;\'"/>\n')
@@ -530,10 +562,11 @@ class PrettyDocumentTests(unittest.TestCase):
         doc.appendChild(node)
         self.assertEqual(doc.toprettyxml(' '), expected)
         # Reparse
-        e = parseString(expected).documentElement
+        e = _getDocumentElement(expected)
         self.assertEqual(e.getAttribute('foo'), original)
 
     def test_text_quoting(self):
+        from Products.GenericSetup.utils import PrettyDocument
         original = 'goo &nbsp;<hmm>&"\''
         expected = ('<?xml version="1.0"?>\n'
                     '<doc>goo &amp;nbsp;&lt;hmm&gt;&amp;"\'</doc>\n')
@@ -545,7 +578,7 @@ class PrettyDocumentTests(unittest.TestCase):
         doc.appendChild(node)
         self.assertEqual(doc.toprettyxml(' '), expected)
         # Reparse
-        e = parseString(expected).documentElement
+        e = _getDocumentElement(expected)
         self.assertEqual(e.childNodes[0].nodeValue, original)
 
 
