@@ -284,9 +284,6 @@ class PropertyManagerHelpersTests(unittest.TestCase):
         obj._properties[-1]['mode'] = 'w' # Not deletable
         return obj
 
-    def setUp(self):
-        self.helpers = self._makeOne()
-
     def _populate(self, obj):
         obj._updateProperty('foo_boolean', 'True')
         obj._updateProperty('foo_date', '2000/01/01')
@@ -307,27 +304,30 @@ class PropertyManagerHelpersTests(unittest.TestCase):
 
     def test__extractProperties_empty(self):
         from Products.GenericSetup.utils import PrettyDocument
-        doc = self.helpers._doc = PrettyDocument()
+        helpers = self._makeOne()
+        doc = helpers._doc = PrettyDocument()
         node = doc.createElement('dummy')
-        node.appendChild(self.helpers._extractProperties())
+        node.appendChild(helpers._extractProperties())
         doc.appendChild(node)
 
         self.assertEqual(doc.toprettyxml(' '), _EMPTY_PROPERTY_EXPORT)
 
     def test__extractProperties_normal(self):
         from Products.GenericSetup.utils import PrettyDocument
-        self._populate(self.helpers.context)
-        doc = self.helpers._doc = PrettyDocument()
+        helpers = self._makeOne()
+        self._populate(helpers.context)
+        doc = helpers._doc = PrettyDocument()
         node = doc.createElement('dummy')
-        node.appendChild(self.helpers._extractProperties())
+        node.appendChild(helpers._extractProperties())
         doc.appendChild(node)
 
         self.assertEqual(doc.toprettyxml(' '), _NORMAL_PROPERTY_EXPORT)
 
     def test__purgeProperties(self):
-        obj = self.helpers.context
+        helpers = self._makeOne()
+        obj = helpers.context
         self._populate(obj)
-        self.helpers._purgeProperties()
+        helpers._purgeProperties()
 
         self.assertEqual(getattr(obj, 'foo_boolean', None), None)
         self.assertEqual(getattr(obj, 'foo_date', None), None)
@@ -345,74 +345,80 @@ class PropertyManagerHelpersTests(unittest.TestCase):
 
     def test__initProperties_normal(self):
         from Products.GenericSetup.utils import PrettyDocument
+        helpers = self._makeOne()
         node = _getDocumentElement(_NORMAL_PROPERTY_EXPORT)
-        self.helpers._initProperties(node)
-        self.assertEqual(type(self.helpers.context.foo_int), int)
-        self.assertEqual(type(self.helpers.context.foo_string), str)
-        self.assertEqual(type(self.helpers.context.foo_tokens), tuple)
-        self.assertEqual(type(self.helpers.context.foo_tokens[0]), str)
+        helpers._initProperties(node)
+        self.assertEqual(type(helpers.context.foo_int), int)
+        self.assertEqual(type(helpers.context.foo_string), str)
+        self.assertEqual(type(helpers.context.foo_tokens), tuple)
+        self.assertEqual(type(helpers.context.foo_tokens[0]), str)
 
-        doc = self.helpers._doc = PrettyDocument()
+        doc = helpers._doc = PrettyDocument()
         node = doc.createElement('dummy')
-        node.appendChild(self.helpers._extractProperties())
+        node.appendChild(helpers._extractProperties())
         doc.appendChild(node)
 
         self.assertEqual(doc.toprettyxml(' '), _NORMAL_PROPERTY_EXPORT)
 
     def test__initProperties_fixed(self):
         from Products.GenericSetup.utils import PrettyDocument
+        helpers = self._makeOne()
         node = _getDocumentElement(_FIXED_PROPERTY_EXPORT)
-        self.helpers._initProperties(node)
+        helpers._initProperties(node)
 
-        doc = self.helpers._doc = PrettyDocument()
+        doc = helpers._doc = PrettyDocument()
         node = doc.createElement('dummy')
-        node.appendChild(self.helpers._extractProperties())
+        node.appendChild(helpers._extractProperties())
         doc.appendChild(node)
 
         self.assertEqual(doc.toprettyxml(' '), _NORMAL_PROPERTY_EXPORT)
 
     def test__initProperties_special(self):
         from Products.GenericSetup.utils import PrettyDocument
+        helpers = self._makeOne()
         node = _getDocumentElement(_SPECIAL_IMPORT)
-        self.helpers._initProperties(node)
+        helpers._initProperties(node)
 
-        doc = self.helpers._doc = PrettyDocument()
+        doc = helpers._doc = PrettyDocument()
         node = doc.createElement('dummy')
-        node.appendChild(self.helpers._extractProperties())
+        node.appendChild(helpers._extractProperties())
         doc.appendChild(node)
 
         self.assertEqual(doc.toprettyxml(' '), _EMPTY_PROPERTY_EXPORT)
 
     def test__initProperties_i18n(self):
-        self.helpers.context.manage_addProperty('i18n_domain', '', 'string')
+        helpers = self._makeOne()
+        helpers.context.manage_addProperty('i18n_domain', '', 'string')
         node = _getDocumentElement(_I18N_IMPORT)
-        self.helpers._initProperties(node)
+        helpers._initProperties(node)
 
-        self.assertEqual(self.helpers.context.i18n_domain, 'dummy_domain')
+        self.assertEqual(helpers.context.i18n_domain, 'dummy_domain')
 
     def test__initProperties_nopurge_base(self):
+        helpers = self._makeOne()
         node = _getDocumentElement(_NOPURGE_IMPORT)
-        self.helpers.environ._should_purge = True # base profile
-        obj = self.helpers.context
+        helpers.environ._should_purge = True # base profile
+        obj = helpers.context
         obj._properties = ()
         obj.manage_addProperty('lines1', ('Foo', 'Gee'), 'lines')
         obj.manage_addProperty('lines2', ('Foo', 'Gee'), 'lines')
         obj.manage_addProperty('lines3', ('Foo', 'Gee'), 'lines')
-        self.helpers._initProperties(node)
+        helpers._initProperties(node)
 
         self.assertEquals(obj.lines1, ('Foo', 'Bar'))
         self.assertEquals(obj.lines2, ('Foo', 'Bar'))
         self.assertEquals(obj.lines3, ('Gee', 'Foo', 'Bar'))
 
     def test__initProperties_nopurge_extension(self):
+        helpers = self._makeOne()
         node = _getDocumentElement(_NOPURGE_IMPORT)
-        self.helpers.environ._should_purge = False # extension profile
-        obj = self.helpers.context
+        helpers.environ._should_purge = False # extension profile
+        obj = helpers.context
         obj._properties = ()
         obj.manage_addProperty('lines1', ('Foo', 'Gee'), 'lines')
         obj.manage_addProperty('lines2', ('Foo', 'Gee'), 'lines')
         obj.manage_addProperty('lines3', ('Foo', 'Gee'), 'lines')
-        self.helpers._initProperties(node)
+        helpers._initProperties(node)
 
         self.assertEquals(obj.lines1, ('Foo', 'Bar'))
         self.assertEquals(obj.lines2, ('Foo', 'Bar'))
@@ -456,7 +462,6 @@ class MarkerInterfaceHelpersTests(unittest.TestCase):
         from OFS.interfaces import IItem
         from Products.Five.utilities.marker import MarkerInterfacesAdapter
         from Products.GenericSetup.testing import IDummyMarker
-        self.helpers = self._makeOne()
         provideAdapter(MarkerInterfacesAdapter, (IItem,))
         provideInterface('', IDummyMarker)
 
@@ -466,33 +471,36 @@ class MarkerInterfaceHelpersTests(unittest.TestCase):
 
     def test__extractMarkers(self):
         from Products.GenericSetup.utils import PrettyDocument
-        self._populate(self.helpers.context)
-        doc = self.helpers._doc = PrettyDocument()
+        helpers = self._makeOne()
+        self._populate(helpers.context)
+        doc = helpers._doc = PrettyDocument()
         node = doc.createElement('dummy')
-        node.appendChild(self.helpers._extractMarkers())
+        node.appendChild(helpers._extractMarkers())
         doc.appendChild(node)
 
         self.assertEqual(doc.toprettyxml(' '), _NORMAL_MARKER_EXPORT)
 
     def test__purgeMarkers(self):
         from Products.GenericSetup.testing import IDummyMarker
-        obj = self.helpers.context
+        helpers = self._makeOne()
+        obj = helpers.context
         self._populate(obj)
         self.failUnless(IDummyMarker.providedBy(obj))
 
-        self.helpers._purgeMarkers()
+        helpers._purgeMarkers()
         self.failIf(IDummyMarker.providedBy(obj))
 
     def test__initMarkers(self):
         from Products.GenericSetup.utils import PrettyDocument
         from Products.GenericSetup.testing import IDummyMarker
+        helpers = self._makeOne()
         node = _getDocumentElement(_NORMAL_MARKER_EXPORT)
-        self.helpers._initMarkers(node)
-        self.failUnless(IDummyMarker.providedBy(self.helpers.context))
+        helpers._initMarkers(node)
+        self.failUnless(IDummyMarker.providedBy(helpers.context))
 
-        doc = self.helpers._doc = PrettyDocument()
+        doc = helpers._doc = PrettyDocument()
         node = doc.createElement('dummy')
-        node.appendChild(self.helpers._extractMarkers())
+        node.appendChild(helpers._extractMarkers())
         doc.appendChild(node)
 
         self.assertEqual(doc.toprettyxml(' '), _NORMAL_MARKER_EXPORT)
@@ -524,27 +532,25 @@ class ObjectManagerHelpersTests(ZopeTestCase):
         from OFS.ObjectManager import ObjectManager
         return ObjectManager('obj')
 
-    def setUp(self):
-        self.helpers = self._makeOne()
-
     def test__initObjects(self):
-        obj = self.helpers.context
+        helpers = self._makeOne()
+        obj = helpers.context
         self.failIf('history' in obj.objectIds())
 
         # Add object
         node = _getDocumentElement(_ADD_IMPORT)
-        self.helpers._initObjects(node)
+        helpers._initObjects(node)
         self.failUnless('history' in obj.objectIds())
 
         # Remove it again
         node = _getDocumentElement(_REMOVE_IMPORT)
-        self.helpers._initObjects(node)
+        helpers._initObjects(node)
         self.failIf('history' in obj.objectIds())
         
         # Removing it a second time should not throw an
         # AttributeError.
         node = _getDocumentElement(_REMOVE_IMPORT)
-        self.helpers._initObjects(node)
+        helpers._initObjects(node)
         self.failIf('history' in obj.objectIds())
         
 
