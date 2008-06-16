@@ -10,6 +10,15 @@ in their "canonical" filesystem representations.
 
 .. contents::
 
+Manual Installation
+===================
+
+If you want to install this package manually, without using setuptools,
+simply untar the package file downloaded from the PyPI site and look for
+the folder named "GenericSetup" underneath the "Products" folder at the
+root of the extracted tarball. Copy or link this "GenericSetup" 
+folder into your Zope "Products" folder and restart Zope.
+
 Configurations Included
 =======================
 
