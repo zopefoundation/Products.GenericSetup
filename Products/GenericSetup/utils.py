@@ -758,14 +758,23 @@ class PropertyManagerHelpers(object):
             if not 'w' in prop_map.get('mode', 'wd'):
                 raise BadRequest('%s cannot be changed' % prop_id)
 
-            elements = []
+            new_elements = []
+            remove_elements = []
             for sub in child.childNodes:
                 if sub.nodeName == 'element':
-                    value = sub.getAttribute('value')
-                    elements.append(value.encode(self._encoding))
+                    value = sub.getAttribute('value').encode(self._encoding)
+                    if self._convertToBoolean(sub.getAttribute('remove')
+                                          or 'False'):
+                        remove_elements.append(value)
+                        if value in new_elements:
+                            new_elements.remove(value)
+                    else:
+                        new_elements.append(value)
+                        if value in remove_elements:
+                            remove_elements.remove(value)
 
-            if elements or prop_map.get('type') == 'multiple selection':
-                prop_value = tuple(elements) or ()
+            if new_elements or prop_map.get('type') == 'multiple selection':
+                prop_value = tuple(new_elements) or ()
             elif prop_map.get('type') == 'boolean':
                 prop_value = self._convertToBoolean(self._getNodeText(child))
             else:
@@ -779,7 +788,8 @@ class PropertyManagerHelpers(object):
                 prop = obj.getProperty(prop_id)
                 if isinstance(prop, (tuple, list)):
                     prop_value = (tuple([p for p in prop
-                                         if p not in prop_value]) +
+                                         if p not in prop_value and 
+                                            p not in remove_elements]) +
                                   tuple(prop_value))
 
             obj._updateProperty(prop_id, prop_value)

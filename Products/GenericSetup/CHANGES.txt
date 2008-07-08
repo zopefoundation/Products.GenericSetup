@@ -4,6 +4,11 @@ GenericSetup Product Changelog
 GenericSetup 1.5.0 (unreleased)
 -------------------------------
 
+- Update PropertyManagerHelpers to make it possible to remove elements from a
+  property by adding a remove="True" attribute to the element. This can
+  also be used to reorder elements since new elements are always added
+  at the end of the list.
+
 - Made PropertyManagerHelpers class work for non-PropertyManager objects
 
   o Derived classes can supply a '_PROPERTIES' scehma, which is then used

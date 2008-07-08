@@ -143,6 +143,15 @@ _NOPURGE_IMPORT = """\
  </property>
 </dummy>
 """
+_REMOVE_ELEMENT_IMPORT = """\
+<?xml version="1.0"?>
+<dummy>
+ <property name="lines1" purge="False">
+   <element value="Foo" remove="True" />
+   <element value="Bar" />
+  </property>
+</dummy>
+"""
 
 _NORMAL_MARKER_EXPORT = """\
 <?xml version="1.0"?>
@@ -430,6 +439,15 @@ class PropertyManagerHelpersTests(unittest.TestCase):
         self.assertEquals(obj.getProperty('lines2'), ('Foo', 'Bar'))
         self.assertEquals(obj.getProperty('lines3'), ('Gee', 'Foo', 'Bar'))
 
+    def test_initProperties_remove_elements(self):
+        node = parseString(_REMOVE_ELEMENT_IMPORT).documentElement
+        self.helpers.environ._should_purge = False # extension profile
+        obj = self.helpers.context
+        obj._properties = ()
+        obj.manage_addProperty('lines1', ('Foo', 'Gee'), 'lines')
+        self.helpers._initProperties(node)
+
+        self.assertEquals(obj.lines1, ('Gee', 'Bar'))
 
 class PropertyManagerHelpersNonPMContextTests(PropertyManagerHelpersTests):
 
@@ -512,6 +530,7 @@ class PropertyManagerHelpersNonPMContextTests(PropertyManagerHelpersTests):
         obj.foo_int_nodel = 1789
         obj.foo_float_nodel = 3.1415
         obj.foo_boolean_nodel = True
+
 
 class MarkerInterfaceHelpersTests(unittest.TestCase):
 
