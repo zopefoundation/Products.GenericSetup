@@ -440,7 +440,7 @@ class PropertyManagerHelpersTests(unittest.TestCase):
         self.assertEquals(obj.getProperty('lines3'), ('Gee', 'Foo', 'Bar'))
 
     def test_initProperties_remove_elements(self):
-        node = parseString(_REMOVE_ELEMENT_IMPORT).documentElement
+        node = _getDocumentElement(_REMOVE_ELEMENT_IMPORT)
         self.helpers.environ._should_purge = False # extension profile
         obj = self.helpers.context
         obj._properties = ()
