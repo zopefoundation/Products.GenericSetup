@@ -440,14 +440,15 @@ class PropertyManagerHelpersTests(unittest.TestCase):
         self.assertEquals(obj.getProperty('lines3'), ('Gee', 'Foo', 'Bar'))
 
     def test_initProperties_remove_elements(self):
+        helpers = self._makeOne()
         node = _getDocumentElement(_REMOVE_ELEMENT_IMPORT)
-        self.helpers.environ._should_purge = False # extension profile
-        obj = self.helpers.context
+        helpers.environ._should_purge = False # extension profile
+        obj = helpers.context
         obj._properties = ()
         obj.manage_addProperty('lines1', ('Foo', 'Gee'), 'lines')
-        self.helpers._initProperties(node)
+        helpers._initProperties(node)
 
-        self.assertEquals(obj.lines1, ('Gee', 'Bar'))
+        self.assertEquals(obj.getProperty('lines1'), ('Gee', 'Bar'))
 
 class PropertyManagerHelpersNonPMContextTests(PropertyManagerHelpersTests):
 
