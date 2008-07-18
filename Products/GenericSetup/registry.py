@@ -24,7 +24,6 @@ from Globals import InitializeClass
 import App.Product
 from Products.PageTemplates.PageTemplateFile import PageTemplateFile
 from zope.interface import implements
-from warnings import warn
 
 from interfaces import BASE
 from interfaces import IImportStepRegistry

@@ -15,10 +15,9 @@
 $Id$
 """
 
+import logging
 import os
 import time
-import logging
-from warnings import warn
 from cgi import escape
 
 from AccessControl import ClassSecurityInfo
@@ -28,38 +27,35 @@ from OFS.Folder import Folder
 from OFS.Image import File
 from Products.PageTemplates.PageTemplateFile import PageTemplateFile
 from ZODB.POSException import ConflictError
-from zope.interface import implements
 from zope import event 
+from zope.interface import implements
 
+from context import DirectoryImportContext
+from context import SnapshotExportContext
+from context import SnapshotImportContext
+from context import TarballExportContext
+from context import TarballImportContext
+from differ import ConfigDiff
+from events import BeforeProfileImportEvent
+from events import ProfileImportedEvent
 from interfaces import BASE
 from interfaces import EXTENSION
 from interfaces import ISetupTool
 from interfaces import SKIPPED_FILES
 from permissions import ManagePortal
-from events import BeforeProfileImportEvent
-from events import ProfileImportedEvent
-from context import DirectoryImportContext
-from context import SnapshotImportContext
-from context import TarballExportContext
-from context import TarballImportContext
-from context import SnapshotExportContext
-from differ import ConfigDiff
-from registry import ImportStepRegistry
 from registry import ExportStepRegistry
+from registry import ImportStepRegistry
 from registry import ToolsetRegistry
-from registry import _profile_registry
-from registry import _import_step_registry
 from registry import _export_step_registry
-
-from upgrade import listUpgradeSteps
-from upgrade import listProfilesWithUpgrades
+from registry import _import_step_registry
+from registry import _profile_registry
 from upgrade import _upgrade_registry
-
-from utils import _getDottedName
-from utils import _resolveDottedName
-from utils import _wwwdir
+from upgrade import listProfilesWithUpgrades
+from upgrade import listUpgradeSteps
 from utils import _computeTopologicalSort
 from utils import _getProductPath
+from utils import _resolveDottedName
+from utils import _wwwdir
 
 IMPORT_STEPS_XML = 'import_steps.xml'
 EXPORT_STEPS_XML = 'export_steps.xml'
@@ -168,8 +164,6 @@ class SetupTool(Folder):
     meta_type = 'Generic Setup Tool'
 
     _baseline_context_id = ''
-    # BBB _import_context_id is a vestige of a stateful import context
-    _import_context_id = ''
 
     _profile_upgrade_versions = {}
 
@@ -186,46 +180,15 @@ class SetupTool(Folder):
     #
     security.declareProtected(ManagePortal, 'getEncoding')
     def getEncoding(self):
-
         """ See ISetupTool.
         """
         return 'utf-8'
 
-    security.declareProtected(ManagePortal, 'getImportContextID')
-    def getImportContextID(self):
-
-        """ See ISetupTool.
-        """
-        warn('getImportContextId, and the very concept of a stateful '
-             'active import context, is deprecated.  You can find the '
-             'base profile that was applied using getBaselineContextID.',
-             DeprecationWarning, stacklevel=2)
-        return self._import_context_id
-
     security.declareProtected(ManagePortal, 'getBaselineContextID')
     def getBaselineContextID(self):
-
         """ See ISetupTool.
         """
         return self._baseline_context_id
-
-    security.declareProtected(ManagePortal, 'setImportContext')
-    def setImportContext(self, context_id, encoding=None):
-        """ See ISetupTool.
-        """
-        warn('setImportContext is deprecated.  Use setBaselineContext to '
-             'specify the baseline context, and/or runImportStepFromProfile '
-             'to run the steps from a specific import context.',
-             DeprecationWarning, stacklevel=2)
-        self._import_context_id = context_id
-
-        context_type = BASE  # snapshots are always baseline contexts
-        if context_id.startswith('profile-'):
-            profile_info = _profile_registry.getProfileInfo(context_id[8:])
-            context_type = profile_info['type']
-
-        if context_type == BASE:
-            self.setBaselineContext(context_id, encoding)
 
     security.declareProtected(ManagePortal, 'setBaselineContext')
     def setBaselineContext(self, context_id, encoding=None):
@@ -234,12 +197,10 @@ class SetupTool(Folder):
         self._baseline_context_id = context_id
         self.applyContextById(context_id, encoding)
 
-
     security.declareProtected(ManagePortal, 'applyContextById')
     def applyContextById(self, context_id, encoding=None):
         context = self._getImportContext(context_id)
         self.applyContext(context, encoding)
-
 
     security.declareProtected(ManagePortal, 'applyContext')
     def applyContext(self, context, encoding=None):
@@ -248,14 +209,12 @@ class SetupTool(Folder):
 
     security.declareProtected(ManagePortal, 'getImportStepRegistry')
     def getImportStepRegistry(self):
-
         """ See ISetupTool.
         """
         return self._import_registry
 
     security.declareProtected(ManagePortal, 'getExportStepRegistry')
     def getExportStepRegistry(self):
-
         """ See ISetupTool.
         """
         return self._export_registry
@@ -308,7 +267,6 @@ class SetupTool(Folder):
 
     security.declareProtected(ManagePortal, 'getToolsetRegistry')
     def getToolsetRegistry(self):
-
         """ See ISetupTool.
         """
         return self._toolset_registry
@@ -318,7 +276,6 @@ class SetupTool(Folder):
                                  run_dependencies=True, purge_old=None):
         """ See ISetupTool.
         """
-        old_context = self._import_context_id
         context = self._getImportContext(profile_id, purge_old)
 
         self.applyContext(context)
@@ -326,7 +283,6 @@ class SetupTool(Folder):
         info = self.getImportStepMetadata(step_id)
 
         if info is None:
-            self._import_context_id = old_context
             raise ValueError, 'No such import step: %s' % step_id
 
         dependencies = info.get('dependencies', ())
@@ -351,25 +307,9 @@ class SetupTool(Folder):
         message_list.extend( ['%s: %s' % x[1:] for x in context.listNotes()] )
         messages[step_id] = '\n'.join(message_list)
 
-        self._import_context_id = old_context
-
         event.notify(ProfileImportedEvent(self, profile_id, steps, full_import))
 
         return { 'steps' : steps, 'messages' : messages }
-
-    security.declareProtected(ManagePortal, 'runImportStep')
-    def runImportStep(self, step_id, run_dependencies=True, purge_old=None):
-
-        """ See ISetupTool.
-        """
-        warn('The runImportStep method is deprecated.  Please use '
-             'runImportStepFromProfile instead.',
-             DeprecationWarning, stacklevel=2)
-        return self.runImportStepFromProfile(self._import_context_id,
-                                             step_id,
-                                             run_dependencies,
-                                             purge_old,
-                                             )
 
     security.declareProtected(ManagePortal, 'runAllImportStepsFromProfile')
     def runAllImportStepsFromProfile(self,
@@ -377,12 +317,9 @@ class SetupTool(Folder):
                                      purge_old=None,
                                      ignore_dependencies=False,
                                      archive=None):
-
         """ See ISetupTool.
         """
         __traceback_info__ = profile_id
-
-        old_context = self._import_context_id
 
         result = self._runImportStepsFromContext(purge_old=purge_old,
                                                  profile_id=profile_id,
@@ -395,39 +332,22 @@ class SetupTool(Folder):
         name = self._mangleTimestampName(prefix, 'log')
         self._createReport(name, result['steps'], result['messages'])
 
-        self._import_context_id = old_context
-
         return result
-
-    security.declareProtected(ManagePortal, 'runAllImportSteps')
-    def runAllImportSteps(self, purge_old=None):
-
-        """ See ISetupTool.
-        """
-        warn('The runAllImportSteps method is deprecated.  Please use '
-             'runAllImportStepsFromProfile instead.',
-             DeprecationWarning, stacklevel=2)
-        context_id = self._import_context_id
-        return self.runAllImportStepsFromProfile(self._import_context_id,
-                                                 purge_old)
 
     security.declareProtected(ManagePortal, 'runExportStep')
     def runExportStep(self, step_id):
-
         """ See ISetupTool.
         """
         return self._doRunExportSteps([step_id])
 
     security.declareProtected(ManagePortal, 'runAllExportSteps')
     def runAllExportSteps(self):
-
         """ See ISetupTool.
         """
         return self._doRunExportSteps(self.listExportSteps())
 
     security.declareProtected(ManagePortal, 'createSnapshot')
     def createSnapshot(self, snapshot_id):
-
         """ See ISetupTool.
         """
         context = SnapshotExportContext(self, snapshot_id)
@@ -473,7 +393,6 @@ class SetupTool(Folder):
 
     security.declareProtected(ManagePortal, 'markupComparison')
     def markupComparison(self, lines):
-
         """ See ISetupTool.
         """
         result = []
@@ -592,7 +511,6 @@ class SetupTool(Folder):
 
     security.declareProtected(ManagePortal, 'manage_importSelectedSteps')
     def manage_importAllSteps(self, context_id=None):
-
         """ Import all steps.
         """
         if context_id is None:
@@ -606,7 +524,6 @@ class SetupTool(Folder):
 
     security.declareProtected(ManagePortal, 'manage_importExtensions')
     def manage_importExtensions(self, RESPONSE, profile_ids=()):
-
         """ Import all steps for the selected extension profiles.
         """
         detail = {}
@@ -646,7 +563,6 @@ class SetupTool(Folder):
 
     security.declareProtected(ManagePortal, 'manage_exportSelectedSteps')
     def manage_exportSelectedSteps(self, ids, RESPONSE):
-
         """ Export the steps selected by the user.
         """
         if not ids:
@@ -661,7 +577,6 @@ class SetupTool(Folder):
 
     security.declareProtected(ManagePortal, 'manage_exportAllSteps')
     def manage_exportAllSteps(self, RESPONSE):
-
         """ Export all steps.
         """
         result = self.runAllExportSteps()
@@ -681,7 +596,6 @@ class SetupTool(Folder):
 
     security.declareProtected(ManagePortal, 'listSnapshotInfo')
     def listSnapshotInfo(self):
-
         """ Return a list of mappings describing available snapshots.
 
         o Keys include:
@@ -707,7 +621,6 @@ class SetupTool(Folder):
 
     security.declareProtected(ManagePortal, 'listProfileInfo')
     def listProfileInfo(self):
-
         """ Return a list of mappings describing registered profiles.
         Base profile is listed first, extensions are sorted.
 
@@ -735,7 +648,6 @@ class SetupTool(Folder):
 
     security.declareProtected(ManagePortal, 'listContextInfos')
     def listContextInfos(self):
-
         """ List registered profiles and snapshots.
         """
         def readableType(x):
@@ -780,7 +692,6 @@ class SetupTool(Folder):
 
     security.declareProtected(ManagePortal, 'manage_createSnapshot')
     def manage_createSnapshot(self, RESPONSE, snapshot_id=None):
-
         """ Create a snapshot with the given ID.
 
         o If no ID is passed, generate one.
@@ -914,7 +825,6 @@ class SetupTool(Folder):
         except KeyError:
             return ()
 
-
     security.declareProtected(ManagePortal, 'listProfilesWithUpgrades')
     def listProfilesWithUpgrades(self):
         return listProfilesWithUpgrades()
@@ -980,7 +890,6 @@ class SetupTool(Folder):
     #
     security.declarePrivate('_getImportContext')
     def _getImportContext(self, context_id, should_purge=None, archive=None):
-
         """ Crack ID and generate appropriate import context.
         """
         encoding = self.getEncoding()
@@ -1016,11 +925,8 @@ class SetupTool(Folder):
 
     security.declarePrivate('_updateImportStepsRegistry')
     def _updateImportStepsRegistry(self, context, encoding):
-
         """ Update our import steps registry from our profile.
         """
-        if context is None:
-            context = self._getImportContext(self._import_context_id)
         xml = context.readDataFile(IMPORT_STEPS_XML)
         if xml is None:
             return
@@ -1046,11 +952,8 @@ class SetupTool(Folder):
 
     security.declarePrivate('_updateExportStepsRegistry')
     def _updateExportStepsRegistry(self, context, encoding):
-
         """ Update our export steps registry from our profile.
         """
-        if context is None:
-            context = self._getImportContext(self._import_context_id)
         xml = context.readDataFile(EXPORT_STEPS_XML)
         if xml is None:
             return
@@ -1072,7 +975,6 @@ class SetupTool(Folder):
 
     security.declarePrivate('_doRunImportStep')
     def _doRunImportStep(self, step_id, context):
-
         """ Run a single import step, using a pre-built context.
         """
         __traceback_info__ = step_id
@@ -1093,7 +995,6 @@ class SetupTool(Folder):
 
     security.declarePrivate('_doRunExportSteps')
     def _doRunExportSteps(self, steps):
-
         """ See ISetupTool.
         """
         context = TarballExportContext(self)
@@ -1121,7 +1022,6 @@ class SetupTool(Folder):
                , 'filename' : context.getArchiveFilename()
                }
 
-
     security.declareProtected(ManagePortal, 'getProfileDependencyChain')
     def getProfileDependencyChain(self, profile_id, seen=None):
         if seen is None:
@@ -1138,7 +1038,6 @@ class SetupTool(Folder):
         chain.append(profile_id)
 
         return chain
-
 
     security.declarePrivate('_runImportStepsFromContext')
     def _runImportStepsFromContext(self,
@@ -1206,7 +1105,6 @@ class SetupTool(Folder):
 
     security.declarePrivate('_mangleTimestampName')
     def _mangleTimestampName(self, prefix, ext=None):
-
         """ Create a mangled ID using a timestamp.
         """
         timestamp = time.gmtime()
@@ -1222,7 +1120,6 @@ class SetupTool(Folder):
 
     security.declarePrivate('_createReport')
     def _createReport(self, name, steps, messages):
-
         """ Record the results of a run.
         """
         lines = []
@@ -1251,6 +1148,7 @@ class SetupTool(Folder):
         self._setObject(name, file)
 
 InitializeClass(SetupTool)
+
 
 _PLAINTEXT_DIFF_HEADER ="""\
 Comparing configurations: '%s' and '%s'

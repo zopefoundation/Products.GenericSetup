@@ -451,24 +451,8 @@ class ISetupTool( Interface ):
         o Return None if the data should not be encoded.
         """
 
-    def getImportContextID():
-
-        """ Get the ID of the active import context.
-
-        DEPRECATED.  The idea of a stateful active import context is
-        going away.
-        """
-
     def getBaselineContextID():
         """ Get the ID of the base profile for this configuration.
-        """
-
-    def setImportContext( context_id ):
-
-        """ Set the ID of the active import context and update the registries.
-
-        DEPRECATED.  The idea of a stateful active import context is
-        going away.
         """
 
     def setBaselineContext( context_id, encoding=None):
@@ -529,30 +513,6 @@ class ISetupTool( Interface ):
             step
         """
 
-    def runImportStep(step_id, run_dependencies=True, purge_old=None):
-
-        """ Execute a given setup step from the current
-        _import_context_id context.
-
-        o 'step_id' is the ID of the step to run.
-
-        o If 'purge_old' is True, then run the step after purging any
-          "old" setup first (this is the responsibility of the step,
-          which must check the context we supply).
-
-        o If 'run_dependencies' is True, then run any out-of-date
-          dependency steps first.
-
-        o Return a mapping, with keys:
-
-          'steps' -- a sequence of IDs of the steps run.
-
-          'messages' -- a dictionary holding messages returned from each
-            step
-
-        DEPRECATED.  Use runImportStepFromProfile instead.
-        """
-
     def runAllImportStepsFromProfile(profile_id, purge_old=None, ignore_dependencies=False):
 
         """ Run all setup steps for the given profile in dependency order.
@@ -573,25 +533,6 @@ class ISetupTool( Interface ):
 
           'messages' -- a dictionary holding messages returned from each
             step
-        """
-
-    def runAllImportSteps(purge_old=None):
-
-        """ Run all setup steps for the _import_context_id profile in
-        dependency order.
-
-        o If 'purge_old' is True, then run each step after purging any
-          "old" setup first (this is the responsibility of the step,
-          which must check the context we supply).
-
-        o Return a mapping, with keys:
-
-          'steps' -- a sequence of IDs of the steps run.
-
-          'messages' -- a dictionary holding messages returned from each
-            step
-
-        DEPRECATED.  Use runAllImportStepsFromProfile instead.
         """
 
     def runExportStep( step_id ):

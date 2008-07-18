@@ -24,7 +24,6 @@ from xml.dom.minidom import Document
 from xml.dom.minidom import Element
 from xml.dom.minidom import Node
 from xml.dom.minidom import parseString
-from xml.sax.handler import ContentHandler
 from xml.parsers.expat import ExpatError
 
 import Products
@@ -35,7 +34,6 @@ from Globals import package_home
 from OFS.interfaces import IOrderedContainer
 from Products.Five.utilities.interfaces import IMarkerInterfaces
 from zope.component import queryMultiAdapter
-from zope.deprecation import deprecated
 from zope.interface import directlyProvides
 from zope.interface import implements
 from zope.interface import implementsOnly
@@ -151,42 +149,6 @@ def _extractDocstring( func, default_title, default_description ):
         description = '\n'.join( lines[ 1: ] )
 
     return title, description
-
-
-deprecated('HandlerBase',
-           'SAX based XML parsing is no longer supported by GenericSetup. '
-           'HandlerBase will be removed in GenericSetup 1.5.')
-
-class HandlerBase( ContentHandler ):
-
-    _encoding = None
-    _MARKER = object()
-
-    def _extract( self, attrs, key, default=None ):
-
-        result = attrs.get( key, self._MARKER )
-
-        if result is self._MARKER:
-            return default
-
-        return self._encode( result )
-
-    def _extractBoolean( self, attrs, key, default ):
-
-        result = attrs.get( key, self._MARKER )
-
-        if result is self._MARKER:
-            return default
-
-        result = result.lower()
-        return result in ( '1', 'yes', 'true' )
-
-    def _encode( self, content ):
-
-        if self._encoding is None:
-            return content
-
-        return content.encode( self._encoding )
 
 
 ##############################################################################

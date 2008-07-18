@@ -165,7 +165,7 @@ class ExportImportZCMLLayer:
 try:
     from Testing.ZopeTestCase.layer import ZopeLite
 except ImportError:
-    pass # Zope < 2.11
+    pass # BBB: Zope < 2.11
 else:
     ExportImportZCMLLayer.__bases__ = (ZopeLite,)
 

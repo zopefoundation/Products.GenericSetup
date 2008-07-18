@@ -4,6 +4,8 @@ GenericSetup Product Changelog
 GenericSetup 1.5.0 (unreleased)
 -------------------------------
 
+- tool and utils: Removed deprecated code.
+
 - Update PropertyManagerHelpers to make it possible to remove elements from a
   property by adding a remove="True" attribute to the element. This can
   also be used to reorder elements since new elements are always added
