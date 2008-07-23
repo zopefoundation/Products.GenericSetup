@@ -18,7 +18,7 @@ $Id$
 from operator import itemgetter
 
 from zope.component import adapts
-from zope.component import getAllUtilitiesRegisteredFor
+from zope.component import getUtilitiesFor
 from zope.component import getSiteManager
 from zope.component import queryMultiAdapter
 from zope.component.interfaces import IComponentRegistry
@@ -49,8 +49,8 @@ class ComponentRegistryXMLAdapter(XMLAdapterBase):
 
     def _constructBlacklist(self):
         blacklist = set((BLACKLIST_SELF, ))
-        utils = getAllUtilitiesRegisteredFor(IComponentsHandlerBlacklist)
-        for util in utils:
+        utils = getUtilitiesFor(IComponentsHandlerBlacklist)
+        for _, util in utils:
             names = [_getDottedName(i) for i in util.getExcludedInterfaces()]
             blacklist.update(names)
         return blacklist
@@ -154,6 +154,8 @@ class ComponentRegistryXMLAdapter(XMLAdapterBase):
         site = self._getSite()
         blacklist = self._constructBlacklist()
 
+        current_utilities = self.context.registeredUtilities()
+
         for child in node.childNodes:
             if child.nodeName != 'utility':
                 continue
@@ -170,6 +172,11 @@ class ComponentRegistryXMLAdapter(XMLAdapterBase):
 
             factory = child.getAttribute('factory')
             factory = factory and _resolveDottedName(factory) or None
+
+            if component and factory:
+                raise ValueError, "Can not specify both a factory and a " \
+                                  "component in a utility registration."
+
 
             obj_path = child.getAttribute('object')
             if not component and not factory and obj_path is not None:
@@ -193,8 +200,20 @@ class ComponentRegistryXMLAdapter(XMLAdapterBase):
                                          % (repr(obj), obj_path, repr(site)))
             elif component:
                 self.context.registerUtility(component, provided, name)
-            elif factory is not None:
-                self.context.registerUtility(factory(), provided, name)
+            elif factory:
+                current = [ utility for utility in current_utilities
+                                    if utility.provided==provided and 
+                                       utility.name==name ]
+                assert len(current) <=1
+
+                if current and getattr(current[0], "factory", None)==factory:
+                    continue
+
+                try:
+                    self.context.registerUtility(None, provided, name, factory=factory)
+                except TypeError:
+                    # zope.component < 3.5.0
+                    self.context.registerUtility(factory(), provided, name)
             else:
                 self._logger.warning("Invalid utility registration for "
                                      "interface %s" % provided)
@@ -235,9 +254,10 @@ class ComponentRegistryXMLAdapter(XMLAdapterBase):
         fragment = self._doc.createDocumentFragment()
 
         registrations = [ {'component': reg.component,
+                           'factory' : getattr(reg, 'factory', None),
                            'provided': _getDottedName(reg.provided),
                            'name': reg.name}
-                          for reg in self.context.registeredUtilities() ]
+                           for reg in self.context.registeredUtilities() ]
         registrations.sort(key=itemgetter('name'))
         registrations.sort(key=itemgetter('provided'))
         site = aq_base(self._getSite())
@@ -253,21 +273,24 @@ class ComponentRegistryXMLAdapter(XMLAdapterBase):
             if reg_info['name']:
                 child.setAttribute('name', reg_info['name'])
 
-            comp = reg_info['component']
-            # check if the component is acquisition wrapped. If it is, export
-            # an object reference instead of a factory reference
-            if getattr(comp, 'aq_base', None) is not None:
-                if aq_base(comp) is site:
-                    child.setAttribute('object', '')
-                elif hasattr(aq_base(comp), 'getId'):
-                    child.setAttribute('object', comp.getId())
-                else:
-                    # This is a five.localsitemanager wrapped utility
-                    factory = _getDottedName(type(aq_base(comp)))
-                    child.setAttribute('factory', factory)
+            if reg_info['factory'] is not None:
+                child.setAttribute('factory', _getDottedName(reg_info['factory']))
             else:
-                factory = _getDottedName(type(comp))
-                child.setAttribute('factory', factory)
+                comp = reg_info['component']
+                # check if the component is acquisition wrapped. If it is, export
+                # an object reference instead of a factory reference
+                if getattr(comp, 'aq_base', None) is not None:
+                    if aq_base(comp) is site:
+                        child.setAttribute('object', '')
+                    elif hasattr(aq_base(comp), 'getId'):
+                        child.setAttribute('object', comp.getId())
+                    else:
+                        # This is a five.localsitemanager wrapped utility
+                        factory = _getDottedName(type(aq_base(comp)))
+                        child.setAttribute('factory', factory)
+                else:
+                    factory = _getDottedName(type(comp))
+                    child.setAttribute('factory', factory)
 
             fragment.appendChild(child)
 
@@ -304,3 +327,4 @@ def exportComponentRegistry(context):
         if body is not None:
             context.writeDataFile('componentregistry.xml', body,
                                   exporter.mime_type)
+

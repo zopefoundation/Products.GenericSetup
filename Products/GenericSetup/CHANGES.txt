@@ -4,6 +4,8 @@ GenericSetup Product Changelog
 GenericSetup 1.5.0 (unreleased)
 -------------------------------
 
+- Handle utility factories cleanly if zope.component >=3.5.0 is used.
+ 
 - tool and utils: Removed deprecated code.
 
 - Update PropertyManagerHelpers to make it possible to remove elements from a
