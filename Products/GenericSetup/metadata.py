@@ -12,7 +12,7 @@
 ##############################################################################
 """ GenericSetup profile metadata
 
-$Id:$
+$Id$
 """
 import os
 
@@ -66,7 +66,7 @@ class ProfileMetadata( ImportConfiguratorBase ):
             { '#text': { KEY: None },
               },
             'dependencies':
-            {'dependency': { KEY: None },},
+            {'dependency': { KEY: None, DEFAULT: () },},
             'dependency':
             { '#text': { KEY: None },
               },

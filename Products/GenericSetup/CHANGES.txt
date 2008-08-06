@@ -4,6 +4,10 @@ GenericSetup Product Changelog
 GenericSetup 1.4.2 (unreleased)
 -------------------------------
 
+- Provide default for dependencies when processing metadata.xml, to
+  avoid a KeyError.
+  (https://bugs.launchpad.net/zope-cmf/+bug/255301)
+
 - Update PropertyManagerHelpers to make it possible to remove elements from a
   property by adding a remove="True" attribute to the element. This can
   also be used to reorder elements since new elements are always added
