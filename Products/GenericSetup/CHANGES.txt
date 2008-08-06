@@ -4,6 +4,10 @@ GenericSetup Product Changelog
 GenericSetup 1.5.0 (unreleased)
 -------------------------------
 
+- Provide default for dependencies when processing metadata.xml, to
+  avoid a KeyError.
+  (https://bugs.launchpad.net/zope-cmf/+bug/255301)
+
 - Handle utility factories cleanly if zope.component >=3.5.0 is used.
  
 - tool and utils: Removed deprecated code.
