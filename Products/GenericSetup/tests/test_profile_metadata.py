@@ -12,7 +12,7 @@
 ##############################################################################
 """ Unit tests for ProfileMetadata.
 
-$Id:$
+$Id$
 """
 import unittest
 import os
@@ -46,6 +46,20 @@ _METADATA_MAP = {
     'dependencies': (dep1, dep2),
     }
 
+_METADATA_EMPTY_DEPENDENCIES_XML = """<?xml version="1.0"?>
+<metadata>
+  <description>%s</description>
+  <version>%s</version>
+  <dependencies></dependencies>
+</metadata>
+""" % (desc, version)
+
+_METADATA_MAP_EMPTY_DEPENDENCIES = {
+    'description': desc,
+    'version': version,
+    'dependencies': (),
+    }
+
 class ProfileMetadataTests( ZopeTestCase ):
 
     installProduct('GenericSetup')
@@ -69,6 +83,12 @@ class ProfileMetadataTests( ZopeTestCase ):
                                                                   profile_id))
         product = getattr(self.app.Control_Panel.Products, product_name)
         self.assertEqual(profile_info['version'], product.version)
+
+    def test_parseXML_empty_dependencies(self):
+        # https://bugs.launchpad.net/bugs/255301
+        metadata = ProfileMetadata( '')
+        parsed = metadata.parseXML(_METADATA_EMPTY_DEPENDENCIES_XML)
+        self.assertEqual(parsed, _METADATA_MAP_EMPTY_DEPENDENCIES)
 
 def test_suite():
     return unittest.TestSuite((
