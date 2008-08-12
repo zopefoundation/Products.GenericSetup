@@ -45,6 +45,15 @@ class ConformsToIExportContext:
 
         verifyClass( IExportContext, self._getTargetClass() )
 
+class ConformsToIChunkableExportContext:
+
+    def test_IChunkableExportContext_conformance( self ):
+
+        from Products.GenericSetup.interfaces import IChunkableExportContext
+        from zope.interface.verify import verifyClass
+
+        verifyClass( IChunkableExportContext, self._getTargetClass() )
+
 class ConformsToIStepRegistry:
 
     def test_IStepRegistry_conformance( self ):

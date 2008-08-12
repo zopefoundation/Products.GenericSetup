@@ -164,6 +164,24 @@ class IExportContext( ISetupContext ):
           "root" of the target.
         """
 
+class IChunkableExportContext( IExportContext ):
+
+    def openDataFile( filename, content_type, subdir=None ):
+
+        """ Open a datafile for writing into the specified location.
+
+        o 'filename' is the unqualified name of the file.
+
+        o 'content_type' is the MIMEtype of the file.
+
+        o 'subdir', if passed, is a path to a subdirectory / folder in
+          which to write the file;  if not passed, write the file to the
+          "root" of the target.
+
+        o Return a writeable file-like object;  the caller is responsible
+          for calling 'close' on it.
+        """
+
 class IExportPlugin( IPseudoInterface ):
 
     """ Signature for callables used to export portions of site configuration.

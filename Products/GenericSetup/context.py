@@ -39,6 +39,7 @@ from Products.PageTemplates.ZopePageTemplate import ZopePageTemplate
 from Products.PythonScripts.PythonScript import PythonScript
 from zope.interface import implements
 
+from interfaces import IChunkableExportContext
 from interfaces import IExportContext
 from interfaces import IImportContext
 from interfaces import ISetupEnviron
@@ -265,7 +266,7 @@ InitializeClass( DirectoryImportContext )
 
 class DirectoryExportContext( BaseContext ):
 
-    implements(IExportContext)
+    implements(IChunkableExportContext)
 
     security = ClassSecurityInfo()
 
@@ -274,10 +275,10 @@ class DirectoryExportContext( BaseContext ):
         BaseContext.__init__( self, tool, encoding )
         self._profile_path = profile_path
 
-    security.declareProtected( ManagePortal, 'writeDataFile' )
-    def writeDataFile( self, filename, text, content_type, subdir=None ):
+    security.declareProtected( ManagePortal, 'openDataFile' )
+    def openDataFile( self, filename, content_type, subdir=None ):
 
-        """ See IExportContext.
+        """ See IChunkableExportContext.
         """
         if subdir is None:
             prefix = self._profile_path
@@ -291,7 +292,14 @@ class DirectoryExportContext( BaseContext ):
 
         mode = content_type.startswith( 'text/' ) and 'w' or 'wb'
 
-        file = open( full_path, mode )
+        return open( full_path, mode )
+
+    security.declareProtected( ManagePortal, 'writeDataFile' )
+    def writeDataFile( self, filename, text, content_type, subdir=None ):
+
+        """ See IExportContext.
+        """
+        file = self.openDataFile( filename, content_type, subdir )
         file.write( text )
         file.close()
 

@@ -4,6 +4,10 @@ GenericSetup Product Changelog
 GenericSetup 1.5.0 (unreleased)
 -------------------------------
 
+- Add 'IChunkedExportContext' interface, allowing RAM-efficient chunked
+  writes of large files, and implement for 'DirectoryExportContext'.
+  (https://bugs.launchpad.net/zope-cmf/+bug/257365)
+
 - Provide default for dependencies when processing metadata.xml, to
   avoid a KeyError.
   (https://bugs.launchpad.net/zope-cmf/+bug/255301)
