@@ -4,6 +4,10 @@ GenericSetup Product Changelog
 GenericSetup 1.5.0 (unreleased)
 -------------------------------
 
+- Add <genericsetup:upgradeDepends> ZCML tag; defines a specialized upgrade
+  step that re-applies one or more import steps from the GS profile during
+  an upgrade process
+
 - Add 'IChunkedExportContext' interface, allowing RAM-efficient chunked
   writes of large files, and implement for 'DirectoryExportContext'.
   (https://bugs.launchpad.net/zope-cmf/+bug/257365)
