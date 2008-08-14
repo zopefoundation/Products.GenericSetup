@@ -78,11 +78,12 @@ class UpgradeRegistry(object):
 
 _upgrade_registry = UpgradeRegistry()
 
-class UpgradeStep(object):
-    """A step to upgrade a component.
+class UpgradeEntity(object):
     """
-    def __init__(self, title, profile, source, dest, desc, handler,
-                 checker=None, sortkey=0):
+    Base class for actions to be taken during an upgrade process.
+    """
+    def __init__(self, title, profile, source, dest, desc, checker=None,
+                 sortkey=0):
         self.id = str(abs(hash('%s%s%s%s' % (title, source, dest, sortkey))))
         self.title = title
         if source == '*':
@@ -96,7 +97,6 @@ class UpgradeStep(object):
             dest = tuple(dest.split('.'))
         self.dest = dest
         self.description = desc
-        self.handler = handler
         self.checker = checker
         self.sortkey = sortkey
         self.profile = profile
@@ -125,8 +125,46 @@ class UpgradeStep(object):
         else:
             return checker(tool)
 
+    
+class UpgradeStep(UpgradeEntity):
+    """A step to upgrade a component.
+    """
+    def __init__(self, title, profile, source, dest, desc, handler,
+                 checker=None, sortkey=0):
+        super(UpgradeStep, self).__init__(title, profile, source, dest,
+                                          desc, checker, sortkey)
+        self.handler = handler
+
     def doStep(self, tool):
         self.handler(tool)
+
+
+class UpgradeDepends(UpgradeEntity):
+    """A specialized upgrade step that re-runs a particular import
+    step from the profile.
+    """
+    def __init__(self, title, profile, source, dest, desc, import_steps=[],
+                 run_deps=False, purge=False, checker=None, sortkey=0):
+        super(UpgradeDepends, self).__init__(title, profile, source, dest,
+                                          desc, checker, sortkey)
+        self.import_steps = import_steps
+        self.run_deps = run_deps
+        self.purge = purge
+
+    def doStep(self, tool):
+        profile_id = 'profile-%s' % self.profile
+        if self.import_steps:
+            for step in self.import_steps:
+                tool.runImportStepFromProfile(profile_id, step,
+                                              run_dependencies=self.run_deps,
+                                              purge_old=self.purge)
+        else:
+            # if no steps are specified we assume we want to reimport
+            # the entire profile
+            ign_deps = not self.run_deps
+            tool.runAllImportStepsFromProfile(profile_id,
+                                              purge_old=self.purge,
+                                              ignore_dependencies=ign_deps)
 
 def _registerUpgradeStep(step):
     profile_id = step.profile

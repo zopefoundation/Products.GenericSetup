@@ -145,7 +145,7 @@ def test_registerProfile():
 
 def test_registerUpgradeStep(self):
     """
-    Use the genericsetup:upgradeStep directive::
+    Use the standalone genericsetup:upgradeStep directive::
 
       >>> import Products.GenericSetup
       >>> from Products.Five import zcml
@@ -187,6 +187,52 @@ def test_registerUpgradeStep(self):
       >>> cleanUp()
     """
 
+def test_registerUpgradeDepends(self):
+    """
+    Use the standalone genericsetup:upgradeDepends directive::
+
+      >>> import Products.GenericSetup
+      >>> from Products.Five import zcml
+      >>> configure_zcml = '''
+      ... <configure
+      ...     xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
+      ...     i18n_domain="foo">
+      ...   <genericsetup:upgradeDepends
+      ...       title="Upgrade Foo Product"
+      ...       description="Upgrades Foo from 1.0 to 1.1."
+      ...       source="1.0"
+      ...       destination="1.1"
+      ...       sortkey="1"
+      ...       profile="default"
+      ...       />
+      ... </configure>'''
+      >>> zcml.load_config('meta.zcml', Products.GenericSetup)
+      >>> zcml.load_string(configure_zcml)
+
+    Make sure the upgrade step is registered correctly::
+
+      >>> from Products.GenericSetup.upgrade import _upgrade_registry
+      >>> profile_steps = _upgrade_registry.getUpgradeStepsForProfile('default')
+      >>> keys = profile_steps.keys()
+      >>> len(keys)
+      1
+      >>> step = profile_steps[keys[0]]
+      >>> step.source
+      ('1', '0')
+      >>> step.dest
+      ('1', '1')
+      >>> step.import_steps
+      []
+      >>> step.run_deps
+      False
+      >>> step.purge
+      False
+
+    Clean up and make sure the cleanup works::
+
+      >>> from zope.testing.cleanup import cleanUp
+      >>> cleanUp()
+    """
 
 def test_registerUpgradeSteps(self):
     """
@@ -231,6 +277,13 @@ def test_registerUpgradeSteps(self):
       ...           description="Does another Bar upgrade thing."
       ...           handler="Products.GenericSetup.tests.test_zcml.c_dummy_upgrade_handler"
       ...           />
+      ...       <genericsetup:upgradeDepends
+      ...           title="Bar Upgrade dependency profile import steps"
+      ...           description="Re-imports steps from the profile"
+      ...           import_steps="baz bat"
+      ...           run_deps="True"
+      ...           purge="True"
+      ...           />
       ...   </genericsetup:upgradeSteps>
       ... </configure>'''
       >>> zcml.load_config('meta.zcml', Products.GenericSetup)
@@ -249,11 +302,11 @@ def test_registerUpgradeSteps(self):
       >>> type(steps)
       <type 'list'>
       >>> len(steps)
-      2
-      >>> step1, step2 = steps
-      >>> step1['source'] == step2['source'] == ('1', '0')
+      3
+      >>> step1, step2, step3 = steps
+      >>> step1['source'] == step2['source'] == step3['source'] == ('1', '0')
       True
-      >>> step1['dest'] == step2['dest'] == ('1', '1')
+      >>> step1['dest'] == step2['dest'] == step3['dest'] == ('1', '1')
       True
       >>> step1['step'].handler
       <function b_dummy_upgrade_handler at ...>
@@ -263,6 +316,12 @@ def test_registerUpgradeSteps(self):
       <function c_dummy_upgrade_handler at ...>
       >>> step2['title']
       u'Bar Upgrade Step 2'
+      >>> step3['step'].import_steps
+      [u'baz', u'bat']
+      >>> step3['step'].run_deps
+      True
+      >>> step3['step'].purge
+      True
       
     First one listed should be second in the registry due to sortkey:
 

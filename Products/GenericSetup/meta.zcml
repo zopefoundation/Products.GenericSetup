@@ -15,17 +15,16 @@
         schema=".zcml.IExportStepDirective"
         handler=".zcml.exportStep"
         />
+
     <meta:complexDirective
         name="importStep"
         schema=".zcml.IImportStepDirective"
         handler=".zcml.importStep"
         >
-
       <meta:subdirective
           name="depends"
           schema=".zcml.IImportStepDependsDirective"
           />
-
     </meta:complexDirective>
 
     <meta:directive
@@ -34,17 +33,25 @@
         handler=".zcml.upgradeStep"
         />
 
+    <meta:directive
+       name="upgradeDepends"
+       schema=".zcml.IUpgradeDependsDirective"
+       handler=".zcml.upgradeDepends"
+       />
+
     <meta:complexDirective
         name="upgradeSteps"
         schema=".zcml.IUpgradeStepsDirective"
         handler=".zcml.upgradeSteps"
         >
-       
       <meta:subdirective
-          name="upgradeStep"
-          schema=".zcml.IUpgradeStepsStepSubDirective"
-          />
-
+         name="upgradeStep"
+         schema=".zcml.IUpgradeStepsStepSubDirective"
+         />
+      <meta:subdirective
+         name="upgradeDepends"
+         schema=".zcml.IUpgradeDependsSubDirective"
+         />
     </meta:complexDirective>
         
 

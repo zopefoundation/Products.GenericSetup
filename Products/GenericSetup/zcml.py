@@ -196,7 +196,9 @@ class importStep:
 #### genericsetup:upgradeStep
 
 import zope.schema
+import zope.configuration
 from upgrade import UpgradeStep
+from upgrade import UpgradeDepends
 from upgrade import _registerUpgradeStep
 from upgrade import _registerNestedUpgradeStep
 
@@ -242,9 +244,46 @@ class IUpgradeStepsStepSubDirective(Interface):
 
 class IUpgradeStepDirective(IUpgradeStepsDirective, IUpgradeStepsStepSubDirective):
     """
-    Define multiple upgrade steps without repeating all of the parameters
+    Define a standalone upgrade step
     """
 
+class IUpgradeDependsSubDirective(Interface):
+    """
+    Define a profile import step dependency of an upgrade process
+    (i.e. a profile step that should be reimported when performing an
+    upgrade due to a profile change.
+    """
+    title = zope.schema.TextLine(
+        title=u"Title",
+        required=True,
+        )
+
+    description = zope.schema.TextLine(
+        title=u"Upgrade dependency description",
+        required=False,
+        )
+
+    import_steps = zope.configuration.fields.Tokens(
+        title=u"Import steps to rerun",
+        required=False,
+        value_type=zope.schema.TextLine(title=u"Import step"),
+        )
+
+    run_deps = zope.schema.Bool(
+        title=u"Run import step dependencies?",
+        required=False,
+        )
+
+    purge = zope.schema.Bool(
+        title=u"Import steps w/ purge=True?",
+        required=False,
+        )
+        
+class IUpgradeDependsDirective(IUpgradeStepsDirective,
+                               IUpgradeDependsSubDirective):
+    """
+    Define a standalone upgrade profile import step dependency
+    """
 
 def upgradeStep(_context, title, profile, handler, description=None, source='*',
                 destination='*', sortkey=0, checker=None):
@@ -255,6 +294,19 @@ def upgradeStep(_context, title, profile, handler, description=None, source='*',
         callable = _registerUpgradeStep,
         args = (step,),
         )
+
+def upgradeDepends(_context, title, profile, description, import_steps=[],
+                   source='*', destination='*', run_deps=False, purge=False,
+                   checker=None, sortkey=0):
+    step = UpgradeDepends(title, profile, source, destination, description,
+                          import_steps, run_deps, purge, checker, sortkey)
+    _context.action(
+        discriminator = ('upgradeDepends', source, destination, str(import_steps),
+                         checker, sortkey),
+        callable = _registerUpgradeStep,
+        args = (step,),
+        )
+
 
 class upgradeSteps(object):
     """
@@ -269,6 +321,7 @@ class upgradeSteps(object):
 
     def upgradeStep(self, _context, title, handler,
                     description=None, checker=None):
+        """ nested upgradeStep directive """
         step = UpgradeStep(title, self.profile, self.source, self.dest,
                            description, handler, checker, self.sortkey)
         if self.id is None:
@@ -279,6 +332,22 @@ class upgradeSteps(object):
                              self.sortkey),
             callable = _registerNestedUpgradeStep,
             args = (step, self.id),
+            )
+
+    def upgradeDepends(self, _context, title, description=None, import_steps=[],
+                       run_deps=False, purge=False, checker=None):
+        """ nested upgradeDepends directive """
+        step = UpgradeDepends(title, self.profile, self.source, self.dest,
+                              description, import_steps, run_deps, purge,
+                              checker, self.sortkey)
+        if self.id is None:
+            self.id = str(abs(hash('%s%s%s%s' % (title, self.source, self.dest,
+                                                 self.sortkey))))
+        _context.action(
+            discriminator = ('upgradeDepends', self.source, self.dest,
+                             str(import_steps), self.sortkey),
+            callable = _registerNestedUpgradeStep,
+            args = (step, self.id)
             )
 
     def __call__(self):
