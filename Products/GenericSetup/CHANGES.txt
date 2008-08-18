@@ -4,6 +4,10 @@ GenericSetup Product Changelog
 GenericSetup 1.5.0 (unreleased)
 -------------------------------
 
+- Add 'IChunkedImportContext' interface, allowing RAM-efficient chunked
+  reads of large files, and implement for 'DirectoryImportContext'.
+  (https://bugs.launchpad.net/zope-cmf/+bug/259233)
+
 - Add <genericsetup:upgradeDepends> ZCML tag; defines a specialized upgrade
   step that re-applies one or more import steps from the GS profile during
   an upgrade process

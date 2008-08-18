@@ -133,6 +133,21 @@ class IImportContext( ISetupContext ):
         o If 'path' does not point to a directory / folder, return None.
         """
 
+class IChunkableImportContext( IImportContext ):
+
+    def openDataFile( filename, subdir=None ):
+
+        """ Open a datafile for reading from the specified location.
+
+        o 'filename' is the unqualified name of the file.
+
+        o 'subdir', if passed, is a path to a subdirectory / folder in
+          which to find the file;  if not passed, write the file to the
+          "root" of the target.
+
+        o Return a readable file-like object;  the caller is responsible
+          for calling 'close' on it.
+        """
 
 class IImportPlugin( IPseudoInterface ):
 

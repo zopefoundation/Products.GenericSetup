@@ -40,6 +40,7 @@ from Products.PythonScripts.PythonScript import PythonScript
 from zope.interface import implements
 
 from interfaces import IChunkableExportContext
+from interfaces import IChunkableImportContext
 from interfaces import IExportContext
 from interfaces import IImportContext
 from interfaces import ISetupEnviron
@@ -179,7 +180,7 @@ class BaseContext(SetupEnviron):
 
 class DirectoryImportContext( BaseContext ):
 
-    implements(IImportContext)
+    implements(IChunkableImportContext)
 
     security = ClassSecurityInfo()
 
@@ -194,8 +195,8 @@ class DirectoryImportContext( BaseContext ):
         self._profile_path = profile_path
         self._should_purge = bool( should_purge )
 
-    security.declareProtected( ManagePortal, 'readDataFile' )
-    def readDataFile( self, filename, subdir=None ):
+    security.declareProtected( ManagePortal, 'openDataFile' )
+    def openDataFile( self, filename, subdir=None ):
 
         """ See IImportContext.
         """
@@ -207,10 +208,18 @@ class DirectoryImportContext( BaseContext ):
         if not os.path.exists( full_path ):
             return None
 
-        file = open( full_path, 'rb' )
-        result = file.read()
-        file.close()
+        return open( full_path, 'rb' )
 
+    security.declareProtected( ManagePortal, 'readDataFile' )
+    def readDataFile( self, filename, subdir=None ):
+
+        """ See IImportContext.
+        """
+        result = None
+        file = self.openDataFile( filename, subdir )
+        if file is not None:
+            result = file.read()
+            file.close()
         return result
 
     security.declareProtected( ManagePortal, 'getLastModified' )
