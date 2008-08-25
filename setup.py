@@ -11,20 +11,16 @@ def _package_doc(name):
 
 NAME = 'GenericSetup'
 
-VERSION = _package_doc('version.txt').strip()
-if VERSION.startswith(NAME):
-    VERSION = VERSION[len(NAME):]
-while VERSION and VERSION[0] in '-_.':
-    VERSION = VERSION[1:]
-
-_boundary = '\n' + ('-' * 60) + '\n'
+_boundary = '\n' + ('-' * 60) + '\n\n'
 README = ( _package_doc('README.txt')
-         + _boundary + _package_doc('CHANGES.txt')
-         + _boundary + "\nDownload\n========"
+         + _boundary 
+         + _package_doc('CHANGES.txt')
+         + _boundary 
+         + "\nDownload\n========"
          )
 
 setup(name='Products.GenericSetup',
-      version=VERSION,
+      version=_package_doc('version.txt').strip(),
       description='Read Zope configuration state from profile dirs / tarballs',
       long_description=README,
       classifiers=[
@@ -40,7 +36,7 @@ setup(name='Products.GenericSetup',
         ],
       keywords='web application server zope zope2 cmf',
       author="Zope Corporation and contributors",
-      author_email="zope-cmf@lists.zope.org",
+      author_email="zope-cmf@zope.org",
       url="http://pypi.python.org/pypi/Products.GenericSetup",
       license="ZPL 2.1 (http://www.zope.org/Resources/License/ZPL-2.1)",
       packages=find_packages(),
