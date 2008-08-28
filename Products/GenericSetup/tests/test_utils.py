@@ -46,7 +46,7 @@ _EMPTY_PROPERTY_EXPORT = """\
 </dummy>
 """
 
-_NORMAL_PROPERTY_EXPORT = """\
+_NORMAL_PROPERTY_EXPORT = u"""\
 <?xml version="1.0"?>
 <dummy>
  <property name="foo_boolean" type="boolean">True</property>
@@ -56,6 +56,7 @@ _NORMAL_PROPERTY_EXPORT = """\
  <property name="foo_lines" type="lines">
   <element value="Foo"/>
   <element value="Lines"/>
+  <element value="\xfcbrigens"/>
  </property>
  <property name="foo_long" type="long">1</property>
  <property name="foo_string" type="string">Foo String</property>
@@ -77,9 +78,9 @@ _NORMAL_PROPERTY_EXPORT = """\
  <property name="foo_float_nodel">3.1415</property>
  <property name="foo_boolean_nodel">True</property>
 </dummy>
-"""
+""".encode('utf-8')
 
-_FIXED_PROPERTY_EXPORT = """\
+_FIXED_PROPERTY_EXPORT = u"""\
 <?xml version="1.0"?>
 <dummy>
  <property name="foo_boolean">True</property>
@@ -89,6 +90,7 @@ _FIXED_PROPERTY_EXPORT = """\
  <property name="foo_lines">
   <element value="Foo"/>
   <element value="Lines"/>
+ <element value="\xfcbrigens"/>
  </property>
  <property name="foo_long">1</property>
  <property name="foo_string">Foo String</property>
@@ -108,7 +110,7 @@ _FIXED_PROPERTY_EXPORT = """\
  <property name="foo_float_nodel">3.1415</property>
  <property name="foo_boolean_nodel">True</property>
 </dummy>
-"""
+""".encode('utf-8')
 
 _SPECIAL_IMPORT = """\
 <?xml version="1.0"?>
@@ -301,7 +303,8 @@ class PropertyManagerHelpersTests(unittest.TestCase):
         obj._updateProperty('foo_date', '2000/01/01')
         obj._updateProperty('foo_float', '1.1')
         obj._updateProperty('foo_int', '1')
-        obj._updateProperty('foo_lines', 'Foo\nLines')
+        obj._updateProperty('foo_lines', 
+                u'Foo\nLines\n\xfcbrigens'.encode('utf-8'))
         obj._updateProperty('foo_long', '1')
         obj._updateProperty('foo_string', 'Foo String')
         obj._updateProperty('foo_text', 'Foo\nText')
@@ -331,6 +334,12 @@ class PropertyManagerHelpersTests(unittest.TestCase):
         self._populate(obj)
         doc = helpers._doc = PrettyDocument()
         node = doc.createElement('dummy')
+
+        # The extraction process wants to decode text properties
+        # to unicode using the default ZPublisher encoding, which
+        # defaults to iso-8859-15. We force UTF-8 here because we 
+        # forced our properties to be UTF-8 encoded.
+        helpers._encoding = 'utf-8'
         node.appendChild(helpers._extractProperties())
         doc.appendChild(node)
 
@@ -519,7 +528,7 @@ class PropertyManagerHelpersNonPMContextTests(PropertyManagerHelpersTests):
         obj.foo_date = DateTime('2000/01/01')
         obj.foo_float = 1.1
         obj.foo_int = 1
-        obj.foo_lines = ['Foo', 'Lines']
+        obj.foo_lines = ['Foo', 'Lines', u'\xfcbrigens'.encode('utf-8')]
         obj.foo_long = 1
         obj.foo_string = 'Foo String'
         obj.foo_text = 'Foo\nText'

@@ -4,6 +4,10 @@ GenericSetup Product Changelog
 GenericSetup 1.5.0 (unreleased)
 -------------------------------
 
+- Property import/export tests: Add testing for non-ASCII properties.
+ (https://bugs.launchpad.net/zope-cmf/+bug/202356)
+ (https://bugs.launchpad.net/zope-cmf/+bug/242588)
+
 - Add 'IChunkedImportContext' interface, allowing RAM-efficient chunked
   reads of large files, and implement for 'DirectoryImportContext'.
   (https://bugs.launchpad.net/zope-cmf/+bug/259233)
