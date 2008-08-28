@@ -4,6 +4,10 @@ GenericSetup Product Changelog
 GenericSetup 1.4.2 (unreleased)
 -------------------------------
 
+- Property import/export tests: Fix and test for non-ASCII properties.
+  (https://bugs.launchpad.net/zope-cmf/+bug/202356)
+  (https://bugs.launchpad.net/zope-cmf/+bug/242588)
+
 - Provide default for dependencies when processing metadata.xml, to
   avoid a KeyError.
   (https://bugs.launchpad.net/zope-cmf/+bug/255301)
