@@ -1,6 +1,14 @@
 GenericSetup Product Changelog
 
-  GenericSetup 1.3.4 (unreleased)
+  GenericSetup 1.3.4 (2008/09/03)
+
+    - Add 'IChunkedImportContext' interface, allowing RAM-efficient chunked
+      reads of large files, and implement for 'DirectoryImportContext'.
+      (https://bugs.launchpad.net/zope-cmf/+bug/259233)
+
+    - Add 'IChunkedExportContext' interface, allowing RAM-efficient chunked
+      writes of large files, and implement for 'DirectoryExportContext'.
+      (https://bugs.launchpad.net/zope-cmf/+bug/257365)
 
     - Property import/export tests: Fix and test for non-ASCII properties.
       (https://bugs.launchpad.net/zope-cmf/+bug/202356)
