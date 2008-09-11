@@ -359,10 +359,16 @@ class upgradeSteps(object):
 def cleanUpProfiles():
     global _profile_regs
     for profile_id in _profile_regs:
-        del _profile_registry._profile_info[profile_id]
-        _profile_registry._profile_ids.remove(profile_id)
-    _profile_regs = []
+        try:
+            del _profile_registry._profile_info[profile_id]
+        except KeyError:
+            pass
+        try:
+            _profile_registry._profile_ids.remove(profile_id)
+        except ValueError:
+            pass
 
+    _profile_regs = []
     _upgrade_registry.clear()
 
 
