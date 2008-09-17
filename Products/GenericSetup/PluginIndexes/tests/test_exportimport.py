@@ -81,7 +81,6 @@ class DateIndexNodeAdapterTests(NodeAdapterTestCase, unittest.TestCase):
     def setUp(self):
         from Products.PluginIndexes.DateIndex.DateIndex import DateIndex
 
-        NodeAdapterTestCase.setUp(self)
         self._obj = DateIndex('foo_date')
         self._XML = _DATE_XML
 
@@ -103,7 +102,6 @@ class DateRangeIndexNodeAdapterTests(NodeAdapterTestCase, unittest.TestCase):
         from Products.PluginIndexes.DateRangeIndex.DateRangeIndex \
                 import DateRangeIndex
 
-        NodeAdapterTestCase.setUp(self)
         self._obj = DateRangeIndex('foo_daterange')
         self._XML = _DATERANGE_XML
 
@@ -124,7 +122,6 @@ class FieldIndexNodeAdapterTests(NodeAdapterTestCase, unittest.TestCase):
     def setUp(self):
         from Products.PluginIndexes.FieldIndex.FieldIndex import FieldIndex
 
-        NodeAdapterTestCase.setUp(self)
         self._obj = FieldIndex('foo_field')
         self._XML = _FIELD_XML
 
@@ -146,7 +143,6 @@ class KeywordIndexNodeAdapterTests(NodeAdapterTestCase, unittest.TestCase):
         from Products.PluginIndexes.KeywordIndex.KeywordIndex \
                 import KeywordIndex
 
-        NodeAdapterTestCase.setUp(self)
         self._obj = KeywordIndex('foo_keyword')
         self._XML = _KEYWORD_XML
 
@@ -164,7 +160,6 @@ class PathIndexNodeAdapterTests(NodeAdapterTestCase, unittest.TestCase):
     def setUp(self):
         from Products.PluginIndexes.PathIndex.PathIndex import PathIndex
 
-        NodeAdapterTestCase.setUp(self)
         self._obj = PathIndex('foo_path')
         self._XML = _PATH_XML
 
@@ -182,7 +177,6 @@ class VocabularyNodeAdapterTests(NodeAdapterTestCase, unittest.TestCase):
     def setUp(self):
         from Products.PluginIndexes.TextIndex.Vocabulary import Vocabulary
 
-        NodeAdapterTestCase.setUp(self)
         self._obj = Vocabulary('foo_vocabulary')
         self._XML = _VOCABULARY_XML
 
@@ -203,7 +197,6 @@ class TextIndexNodeAdapterTests(NodeAdapterTestCase, unittest.TestCase):
     def setUp(self):
         from Products.PluginIndexes.TextIndex.TextIndex import TextIndex
 
-        NodeAdapterTestCase.setUp(self)
         self._obj = TextIndex('foo_text')
         self._XML = _TEXT_XML
 
@@ -228,7 +221,6 @@ class FilteredSetNodeAdapterTests(NodeAdapterTestCase, unittest.TestCase):
         from Products.PluginIndexes.TopicIndex.FilteredSet \
                 import PythonFilteredSet
 
-        NodeAdapterTestCase.setUp(self)
         self._obj = PythonFilteredSet('bar', '')
         self._XML = _SET_XML
 
@@ -250,7 +242,6 @@ class TopicIndexNodeAdapterTests(NodeAdapterTestCase, unittest.TestCase):
     def setUp(self):
         from Products.PluginIndexes.TopicIndex.TopicIndex import TopicIndex
 
-        NodeAdapterTestCase.setUp(self)
         self._obj = TopicIndex('foo_topic')
         self._XML = _TOPIC_XML
 

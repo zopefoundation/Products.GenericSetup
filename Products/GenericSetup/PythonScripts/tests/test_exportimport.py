@@ -47,7 +47,6 @@ class PythonScriptBodyAdapterTests(BodyAdapterTestCase, unittest.TestCase):
     def setUp(self):
         from Products.PythonScripts.PythonScript import PythonScript
 
-        BodyAdapterTestCase.setUp(self)
         self._obj = PythonScript('foo_script')
         self._BODY = _PYTHONSCRIPT_BODY
 

@@ -173,7 +173,6 @@ class ZCatalogXMLAdapterTests(BodyAdapterTestCase, unittest.TestCase):
     def setUp(self):
         from Products.ZCatalog.ZCatalog import ZCatalog
 
-        BodyAdapterTestCase.setUp(self)
         self._obj = ZCatalog('foo_catalog')
         self._BODY = _CATALOG_BODY % ('', '', '')
 

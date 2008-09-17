@@ -70,7 +70,6 @@ class ZCLexiconNodeAdapterTests(NodeAdapterTestCase, unittest.TestCase):
     def setUp(self):
         from Products.ZCTextIndex.ZCTextIndex import PLexicon
 
-        NodeAdapterTestCase.setUp(self)
         self._obj = PLexicon('foo_plexicon')
         self._XML = _PLEXICON_XML
 
@@ -92,7 +91,6 @@ class ZCTextIndexNodeAdapterTests(NodeAdapterTestCase, unittest.TestCase):
         from Products.ZCTextIndex.ZCTextIndex import PLexicon
         from Products.ZCTextIndex.ZCTextIndex import ZCTextIndex
 
-        NodeAdapterTestCase.setUp(self)
         catalog = DummyCatalog()
         catalog.foo_plexicon = PLexicon('foo_plexicon')
         extra = _extra()

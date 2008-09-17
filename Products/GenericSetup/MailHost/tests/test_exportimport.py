@@ -51,7 +51,6 @@ class MailHostXMLAdapterTests(BodyAdapterTestCase, unittest.TestCase):
     def setUp(self):
         from Products.MailHost.MailHost import MailHost
 
-        BodyAdapterTestCase.setUp(self)
         self._obj = MailHost('foo_mailhost')
         self._BODY = _MAILHOST_BODY
 

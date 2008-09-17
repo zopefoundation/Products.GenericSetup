@@ -48,7 +48,6 @@ class FolderXMLAdapterTests(BodyAdapterTestCase, unittest.TestCase):
     def setUp(self):
         from OFS.Folder import Folder
 
-        BodyAdapterTestCase.setUp(self)
         self._obj = Folder('foo_folder')
         self._BODY = _FOLDER_BODY
 
