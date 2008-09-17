@@ -28,7 +28,7 @@ _MAILHOST_BODY = """\
 """
 
 
-class MailHostXMLAdapterTests(BodyAdapterTestCase):
+class MailHostXMLAdapterTests(BodyAdapterTestCase, unittest.TestCase):
 
     layer = ExportImportZCMLLayer
 

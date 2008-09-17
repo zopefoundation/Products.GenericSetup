@@ -135,7 +135,7 @@ _COMPONENTS_BODY = """\
 """
 
 
-class ComponentRegistryXMLAdapterTests(BodyAdapterTestCase):
+class ComponentRegistryXMLAdapterTests(BodyAdapterTestCase, unittest.TestCase):
 
     layer = ExportImportZCMLLayer
 

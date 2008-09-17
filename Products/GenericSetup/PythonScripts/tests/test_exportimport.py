@@ -34,7 +34,7 @@ _PYTHONSCRIPT_BODY = """\
 """
 
 
-class PythonScriptBodyAdapterTests(BodyAdapterTestCase):
+class PythonScriptBodyAdapterTests(BodyAdapterTestCase, unittest.TestCase):
 
     layer = ExportImportZCMLLayer
 

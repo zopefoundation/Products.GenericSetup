@@ -68,7 +68,7 @@ _TOPIC_XML = """\
 """
 
 
-class DateIndexNodeAdapterTests(NodeAdapterTestCase):
+class DateIndexNodeAdapterTests(NodeAdapterTestCase, unittest.TestCase):
 
     layer = ExportImportZCMLLayer
 
@@ -86,7 +86,7 @@ class DateIndexNodeAdapterTests(NodeAdapterTestCase):
         self._XML = _DATE_XML
 
 
-class DateRangeIndexNodeAdapterTests(NodeAdapterTestCase):
+class DateRangeIndexNodeAdapterTests(NodeAdapterTestCase, unittest.TestCase):
 
     layer = ExportImportZCMLLayer
 
@@ -108,7 +108,7 @@ class DateRangeIndexNodeAdapterTests(NodeAdapterTestCase):
         self._XML = _DATERANGE_XML
 
 
-class FieldIndexNodeAdapterTests(NodeAdapterTestCase):
+class FieldIndexNodeAdapterTests(NodeAdapterTestCase, unittest.TestCase):
 
     layer = ExportImportZCMLLayer
 
@@ -129,7 +129,7 @@ class FieldIndexNodeAdapterTests(NodeAdapterTestCase):
         self._XML = _FIELD_XML
 
 
-class KeywordIndexNodeAdapterTests(NodeAdapterTestCase):
+class KeywordIndexNodeAdapterTests(NodeAdapterTestCase, unittest.TestCase):
 
     layer = ExportImportZCMLLayer
 
@@ -151,7 +151,7 @@ class KeywordIndexNodeAdapterTests(NodeAdapterTestCase):
         self._XML = _KEYWORD_XML
 
 
-class PathIndexNodeAdapterTests(NodeAdapterTestCase):
+class PathIndexNodeAdapterTests(NodeAdapterTestCase, unittest.TestCase):
 
     layer = ExportImportZCMLLayer
 
@@ -169,7 +169,7 @@ class PathIndexNodeAdapterTests(NodeAdapterTestCase):
         self._XML = _PATH_XML
 
 
-class VocabularyNodeAdapterTests(NodeAdapterTestCase):
+class VocabularyNodeAdapterTests(NodeAdapterTestCase, unittest.TestCase):
 
     layer = ExportImportZCMLLayer
 
@@ -190,7 +190,7 @@ class VocabularyNodeAdapterTests(NodeAdapterTestCase):
         pass
 
 
-class TextIndexNodeAdapterTests(NodeAdapterTestCase):
+class TextIndexNodeAdapterTests(NodeAdapterTestCase, unittest.TestCase):
 
     layer = ExportImportZCMLLayer
 
@@ -211,7 +211,7 @@ class TextIndexNodeAdapterTests(NodeAdapterTestCase):
         pass
 
 
-class FilteredSetNodeAdapterTests(NodeAdapterTestCase):
+class FilteredSetNodeAdapterTests(NodeAdapterTestCase, unittest.TestCase):
 
     layer = ExportImportZCMLLayer
 
@@ -233,7 +233,7 @@ class FilteredSetNodeAdapterTests(NodeAdapterTestCase):
         self._XML = _SET_XML
 
 
-class TopicIndexNodeAdapterTests(NodeAdapterTestCase):
+class TopicIndexNodeAdapterTests(NodeAdapterTestCase, unittest.TestCase):
 
     layer = ExportImportZCMLLayer
 

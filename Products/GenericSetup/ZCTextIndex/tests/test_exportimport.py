@@ -51,7 +51,7 @@ class DummyCatalog(Implicit):
     pass
 
 
-class ZCLexiconNodeAdapterTests(NodeAdapterTestCase):
+class ZCLexiconNodeAdapterTests(NodeAdapterTestCase, unittest.TestCase):
 
     layer = ExportImportZCMLLayer
 
@@ -75,7 +75,7 @@ class ZCLexiconNodeAdapterTests(NodeAdapterTestCase):
         self._XML = _PLEXICON_XML
 
 
-class ZCTextIndexNodeAdapterTests(NodeAdapterTestCase):
+class ZCTextIndexNodeAdapterTests(NodeAdapterTestCase, unittest.TestCase):
 
     layer = ExportImportZCMLLayer
 

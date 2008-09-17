@@ -29,7 +29,7 @@ _FOLDER_BODY = """\
 """
 
 
-class FolderXMLAdapterTests(BodyAdapterTestCase):
+class FolderXMLAdapterTests(BodyAdapterTestCase, unittest.TestCase):
 
     layer = ExportImportZCMLLayer
 

@@ -28,7 +28,7 @@ _PAGETEMPLATE_BODY = """\
 """
 
 
-class ZopePageTemplateBodyAdapterTests(BodyAdapterTestCase):
+class ZopePageTemplateBodyAdapterTests(BodyAdapterTestCase, unittest.TestCase):
 
     layer = ExportImportZCMLLayer
 

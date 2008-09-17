@@ -70,7 +70,7 @@ class IDummyMarker(IItem):
     pass
 
 
-class _AdapterTestCaseBase(unittest.TestCase):
+class _AdapterTestCaseBase:
 
     def _populate(self, obj):
         pass
