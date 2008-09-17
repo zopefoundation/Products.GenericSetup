@@ -4,6 +4,9 @@ GenericSetup Product Changelog
 GenericSetup 1.4.2 (unreleased)
 -------------------------------
 
+- Update local component registry importer to prevent it from overwriting
+  existing utilities if they are already of the correct type
+
 - Property import/export tests: Fix and test for non-ASCII properties.
   (https://bugs.launchpad.net/zope-cmf/+bug/202356)
   (https://bugs.launchpad.net/zope-cmf/+bug/242588)

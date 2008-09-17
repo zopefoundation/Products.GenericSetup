@@ -26,13 +26,17 @@ from OFS.SimpleItem import SimpleItem
 from Products.Five.component import enableSite
 from Products.Five.component.interfaces import IObjectManagerSite
 from zope.app.component.hooks import setSite, clearSite, setHooks
+from zope.app.component.hooks import getSite
+from zope.component import getMultiAdapter
 from zope.component import getSiteManager
 from zope.component import queryUtility
 from zope.component.globalregistry import base
 from zope.interface import implements
 from zope.interface import Interface
 
+from Products.GenericSetup.interfaces import IBody
 from Products.GenericSetup.testing import BodyAdapterTestCase
+from Products.GenericSetup.testing import DummySetupEnviron
 from Products.GenericSetup.testing import ExportImportZCMLLayer
 
 try:
@@ -179,6 +183,30 @@ class ComponentRegistryXMLAdapterTests(BodyAdapterTestCase):
 
         self._obj = sm
         self._BODY = _COMPONENTS_BODY
+
+    def test_no_overwrite(self):
+        # make sure we don't overwrite an existing tool when it
+        # already exists and has the same factory
+        context = DummySetupEnviron()
+        context._should_purge = False
+        importer = getMultiAdapter((self._obj, context), IBody)
+        importer.body = self._BODY # <-- triggers the import :(
+
+        util = queryUtility(IDummyInterface)
+        value = 'bar'
+        util.foo = value
+
+        # re-retrieve to make sure it's the same object
+        util = queryUtility(IDummyInterface)
+        self.assertEquals(getattr(util, 'foo', None), value)
+
+        context = DummySetupEnviron()
+        context._should_purge = False
+        importer = getMultiAdapter((self._obj, context), IBody)
+        importer.body = self._BODY # <-- triggers the import :(
+
+        util = queryUtility(IDummyInterface)
+        self.assertEquals(getattr(util, 'foo', None), value)
 
     def tearDown(self):
         clearSite()

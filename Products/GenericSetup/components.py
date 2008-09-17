@@ -127,6 +127,8 @@ class ComponentRegistryXMLAdapter(XMLAdapterBase):
 
     def _initUtilities(self, node):
         site = self._getSite()
+        current_utilities = self.context.registeredUtilities()
+        
         for child in node.childNodes:
             if child.nodeName != 'utility':
                 continue
@@ -163,7 +165,16 @@ class ComponentRegistryXMLAdapter(XMLAdapterBase):
             elif component:
                 self.context.registerUtility(component, provided, name)
             elif factory is not None:
-                self.context.registerUtility(factory(), provided, name)
+                current = [ utility for utility in current_utilities
+                            if utility.provided==provided and 
+                            utility.name==name ]
+                assert len(current) <=1
+
+                new_utility = factory()
+                if current and type(current[0].component) == type(new_utility):
+                    continue
+                
+                self.context.registerUtility(new_utility, provided, name)
             else:
                 self._logger.warning("Invalid utility registration for "
                                      "interface %s" % provided)
