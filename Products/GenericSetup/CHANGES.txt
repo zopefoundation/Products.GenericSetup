@@ -1,6 +1,11 @@
 GenericSetup Product Changelog
 ==============================
 
+GenericSetup 1.4.2.1 (2008-09-22)
+---------------------------------
+
+- Packaging update:  version of 1.4.2 said '1.4.2dev'.
+
 GenericSetup 1.4.2 (2008-09-22)
 -------------------------------
 
