@@ -34,6 +34,8 @@ from common import TarballTester
 from conformance import ConformsToISetupContext
 from conformance import ConformsToIImportContext
 from conformance import ConformsToIExportContext
+from conformance import ConformsToIChunkableExportContext
+from conformance import ConformsToIChunkableImportContext
 
 
 class DummySite( Folder ):
@@ -48,6 +50,7 @@ class DummyTool( Folder ):
 class DirectoryImportContextTests( FilesystemTestBase
                                  , ConformsToISetupContext
                                  , ConformsToIImportContext
+                                 , ConformsToIChunkableImportContext
                                  ):
 
     _PROFILE_PATH = '/tmp/ICTTexts'
@@ -339,6 +342,7 @@ class DirectoryImportContextTests( FilesystemTestBase
 class DirectoryExportContextTests( FilesystemTestBase
                                  , ConformsToISetupContext
                                  , ConformsToIExportContext
+                                 , ConformsToIChunkableExportContext
                                  ):
 
     _PROFILE_PATH = '/tmp/ECTTexts'
