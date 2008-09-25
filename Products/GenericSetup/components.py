@@ -173,6 +173,11 @@ class ComponentRegistryXMLAdapter(XMLAdapterBase):
             factory = child.getAttribute('factory')
             factory = factory and _resolveDottedName(factory) or None
 
+            if ( child.hasAttribute('remove') and 
+                 self.context.queryUtility(provided, name) is not None ):
+                self.context.unregisterUtility(provided=provided, name=name)
+                continue
+
             if component and factory:
                 raise ValueError, "Can not specify both a factory and a " \
                                   "component in a utility registration."

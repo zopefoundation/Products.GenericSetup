@@ -39,6 +39,7 @@ from Products.GenericSetup.interfaces import IComponentsHandlerBlacklist
 from Products.GenericSetup.testing import BodyAdapterTestCase
 from Products.GenericSetup.testing import DummySetupEnviron
 from Products.GenericSetup.testing import ExportImportZCMLLayer
+from Products.GenericSetup.tests.common import DummyImportContext
 
 try:
     from five.localsitemanager.registry import PersistentComponents
@@ -130,6 +131,24 @@ _COMPONENTS_BODY = """\
   <utility name="foo"
      factory="Products.GenericSetup.tests.test_components.DummyUtility"
      interface="Products.GenericSetup.tests.test_components.IDummyInterface2"/>
+ </utilities>
+</componentregistry>
+"""
+
+_REMOVE_IMPORT = """\
+<?xml version="1.0"?>
+<componentregistry>
+ <utilities>
+  <utility factory="Products.GenericSetup.tests.test_components.DummyUtility"
+     interface="Products.GenericSetup.tests.test_components.IDummyInterface"
+     remove="True"/>
+  <utility name="dummy tool name"
+     interface="Products.GenericSetup.tests.test_components.IDummyInterface"
+     object="dummy_tool" remove="True"/>
+  <utility name="foo"
+     factory="Products.GenericSetup.tests.test_components.DummyUtility"
+     interface="Products.GenericSetup.tests.test_components.IDummyInterface2"
+     remove="True"/>
  </utilities>
 </componentregistry>
 """
@@ -238,6 +257,30 @@ class ComponentRegistryXMLAdapterTests(BodyAdapterTestCase, unittest.TestCase):
         self.failUnless(util.verify())
         util = queryUtility(IDummyInterface)
         self.failUnless(util is None)
+
+    def test_remove_utilities(self):
+        from Products.GenericSetup.components import importComponentRegistry
+
+        obj = self._obj
+        self._populate(obj)
+        self._verifyImport(obj)
+
+        context = DummyImportContext(obj, False)
+        context._files['componentregistry.xml'] = _REMOVE_IMPORT
+        importComponentRegistry(context)
+
+        util = queryUtility(IDummyInterface2, name=u'foo')
+        self.failUnless(util is None)
+
+        util = queryUtility(IDummyInterface)
+        self.failUnless(util is None)
+
+        util = queryUtility(IDummyInterface, name='dummy tool name')
+        self.failUnless(util is None)
+
+        # This one should still exist
+        util = queryUtility(IDummyInterface2, name='dummy tool name2')
+        self.failIf(util is None)
 
     def setUp(self):
         # Create and enable a local component registry

@@ -4,6 +4,10 @@ GenericSetup Product Changelog
 GenericSetup 1.5.0 (unreleased)
 -------------------------------
 
+- Component registry import: Add the ability to unregister a component
+  by specifying the "remove" attribute inside a utility node.
+  (https://bugs.launchpad.net/zope-cmf/+bug/161728)
+
 - Property import/export tests: Add testing for non-ASCII properties.
  (https://bugs.launchpad.net/zope-cmf/+bug/202356)
  (https://bugs.launchpad.net/zope-cmf/+bug/242588)
