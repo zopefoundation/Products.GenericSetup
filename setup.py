@@ -4,7 +4,9 @@ from setuptools import find_packages
 
 here = os.path.abspath(os.path.dirname(__file__))
 package = os.path.join(here, 'Products', 'GenericSetup')
+docs = os.path.join(here, 'docs')
 
+def _docs_doc(name):
 def _package_doc(name):
     f = open(os.path.join(package, name))
     return f.read()
@@ -12,7 +14,7 @@ def _package_doc(name):
 NAME = 'GenericSetup'
 
 _boundary = '\n' + ('-' * 60) + '\n\n'
-README = ( _package_doc('README.txt')
+README = ( _docs_doc('index.rst')
          + _boundary 
          + _package_doc('CHANGES.txt')
          + _boundary 
@@ -43,17 +45,21 @@ setup(name='Products.GenericSetup',
       include_package_data=True,
       namespace_packages=['Products'],
       zip_safe=False,
-      tests_require=[
-          "five.localsitemanager >= 0.2",
-          ],
+      setup_requires=['eggtestinfo',
+                     ],
+      install_requires=['setuptools',
+                        'five.localsitemanager >= 0.2',
+                       #'Zope2-buildout >= 2.10',
+                       ],
+      tests_require=['zope.testing >= 3.7.0dev',
+                     'five.localsitemanager >= 0.2',
+                    ],
+      test_loader="zope.testing.testrunner.eggsupport:SkipLayers",
       test_suite="Products.GenericSetup.tests",
-      install_requires=[
-          "setuptools",
-          "five.localsitemanager >= 0.2",
-#          'Zope >= 2.10',
-          ],
       entry_points="""
       [zope2.initialize]
       Products.GenericSetup = Products.GenericSetup:initialize
+      [distutils.commands]
+      ftest = zope.testing.testrunner.eggsupport:ftest
       """,
       )
