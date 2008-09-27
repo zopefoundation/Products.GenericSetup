@@ -1,1 +1,1 @@
-(See Products/GenericSetup/README.txt).
+(See docs/index.rst).
