@@ -6,9 +6,12 @@ here = os.path.abspath(os.path.dirname(__file__))
 package = os.path.join(here, 'Products', 'GenericSetup')
 docs = os.path.join(here, 'docs')
 
-def _docs_doc(name):
 def _package_doc(name):
     f = open(os.path.join(package, name))
+    return f.read()
+
+def _docs_doc(name):
+    f = open(os.path.join(docs, name))
     return f.read()
 
 NAME = 'GenericSetup'
