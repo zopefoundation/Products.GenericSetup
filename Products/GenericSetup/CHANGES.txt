@@ -4,6 +4,9 @@ GenericSetup Product Changelog
 GenericSetup 1.5.0 (unreleased)
 -------------------------------
 
+- Avoid even an explicit purge of the rolemap if no XML file is present
+  in a given context.  (https://bugs.launchpad.net/zope-cmf/+bug/279294)
+
 - Component registry import: Add the ability to unregister a component
   by specifying the "remove" attribute inside a utility node.
   (https://bugs.launchpad.net/zope-cmf/+bug/161728)
