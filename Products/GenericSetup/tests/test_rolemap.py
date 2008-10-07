@@ -469,6 +469,44 @@ class Test_importRolemap( BaseRegistryTests ):
 
     layer = ExportImportZCMLLayer
 
+    def test_existing_roles_missing_xml_doesnt_purge(self):
+        # LP # 279294
+        ACI = 'Access contents information'
+        VIEW = 'View'
+
+        self.app.site = Folder(id='site')
+        site = self.app.site # wrap
+        original_roles = list(getattr(site, '__ac_roles__', []))[:]
+        modified_roles = original_roles[:]
+        modified_roles.append('ZZZ')
+
+        site.__ac_roles__ = modified_roles
+        site.manage_permission(VIEW, ())
+        site.manage_permission(ACI, ('Manager', 'ZZZ'))
+
+        existing_allowed = [x['name'] for x in site.rolesOfPermission(ACI)
+                                if x['selected']]
+
+        self.assertEqual(existing_allowed, ['Manager', 'ZZZ'])
+
+        context = DummyImportContext(site, True)
+        #context._files[ 'rolemap.xml' ] = _EMPTY_EXPORT # no file!
+
+        from Products.GenericSetup.rolemap import importRolemap
+        importRolemap(context)
+
+        new_roles = list(getattr(site, '__ac_roles__', []))[:]
+
+        modified_roles.sort()
+        new_roles.sort()
+
+        self.assertEqual(modified_roles, new_roles)
+
+        new_allowed = [x['name'] for x in site.rolesOfPermission(ACI)
+                                if x['selected']]
+
+        self.assertEqual(new_allowed, existing_allowed)
+
     def test_empty_default_purge( self ):
 
         self.app.site = Folder(id='site')

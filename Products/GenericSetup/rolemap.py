@@ -63,21 +63,21 @@ def importRolemap( context ):
     encoding = context.getEncoding()
     logger = context.getLogger('rolemap')
 
-    if context.shouldPurge():
-
-        items = site.__dict__.items()
-
-        for k, v in items: # XXX: WAAA
-
-            if k == '__ac_roles__':
-                delattr( site, k )
-
-            if k.startswith( '_' ) and k.endswith( '_Permission' ):
-                delattr( site, k )
-
     text = context.readDataFile( _FILENAME )
 
     if text is not None:
+
+        if context.shouldPurge():
+
+            items = site.__dict__.items()
+
+            for k, v in items: # XXX: WAAA
+
+                if k == '__ac_roles__':
+                    delattr( site, k )
+
+                if k.startswith( '_' ) and k.endswith( '_Permission' ):
+                    delattr( site, k )
 
         rc = RolemapImportConfigurator(site, encoding)
         rolemap_info = rc.parseXML( text )

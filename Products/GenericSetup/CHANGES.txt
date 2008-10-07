@@ -1,6 +1,12 @@
 GenericSetup Product Changelog
 ==============================
 
+GenericSetup 1.4.3 (unreleased)
+-------------------------------
+
+- Avoid even an explicit purge of the rolemap if no XML file is present
+  in a given context.  (https://bugs.launchpad.net/zope-cmf/+bug/279294)
+
 GenericSetup 1.4.2.2 (2008-09-22)
 ---------------------------------
 
