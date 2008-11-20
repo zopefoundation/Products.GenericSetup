@@ -2,6 +2,9 @@ GenericSetup Product Changelog
 
   After GenericSetup 1.3.4
 
+    - Don't fail when a sub-item cannot be adapted after creation when
+      importing a folder.  (https://bugs.launchpad.net/zope-cmf/+bug/300315)
+
     - Avoid even an explicit purge of the rolemap if no XML file is present
       in a given context.  (https://bugs.launchpad.net/zope-cmf/+bug/279294)
 
