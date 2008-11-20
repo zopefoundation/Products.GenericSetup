@@ -549,6 +549,25 @@ class FolderishExporterImporterTests(unittest.TestCase):
         for found_id, expected_id in zip(after, ITEM_IDS):
             self.assertEqual(found_id, expected_id)
 
+    def test_import_site_with_subitems_wo_adapter(self):
+        from Products.GenericSetup.utils import _getDottedName
+        item = _makeItem('no_adapter')
+        dotted = _getDottedName(item.__class__)
+        self._setUpAdapters()
+
+        site = _makeFolder('site')
+
+        context = DummyImportContext(site)
+        # We want to add 'baz' to 'foo', without losing 'bar'
+        context._files['structure/.objects'] = '\n'.join(
+                            ['%s,%s' % (x, dotted) for x in ('no_adapter',)])
+        importer = self._getImporter()
+        importer(context)
+
+        after = site.objectIds()
+        self.assertEqual(len(after), 1)
+        self.assertEqual(after[0], 'no_adapter')
+
     def test_import_site_with_subitems_and_blanklines_dotobjects(self):
         from Products.GenericSetup.utils import _getDottedName
         from faux_objects import KNOWN_INI
