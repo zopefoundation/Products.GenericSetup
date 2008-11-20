@@ -179,7 +179,9 @@ class FolderishExporterImporter(object):
 
             wrapped = context._getOb(object_id)
 
-            IFilesystemImporter(wrapped).import_(import_context, subdir)
+            adapted = queryAdapter(wrapped, IFilesystemImporter)
+            if adapted is not None:
+                adapted.import_(import_context, subdir)
 
     def _makeInstance(self, instance_id, type_name, subdir, import_context):
 
