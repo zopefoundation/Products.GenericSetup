@@ -7,8 +7,6 @@ consist of declarative XML files, which spell out the configuration
 settings for each "tool" in the site , and supporting scripts / templates,
 in their "canonical" filesystem representations.
 
-.. contents::
-
 
 Configurations Included
 -----------------------

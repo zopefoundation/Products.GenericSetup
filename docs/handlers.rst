@@ -3,24 +3,24 @@
 How-to: Writing setup handlers for ``Products.GenericSetup``
 ============================================================
 
-If your products subclass existing tools or provide new tools (or new
-sub-object classes) they might need their own setup handlers in order to
-make use of GenericSetup.
+If your product subclasses existing tools or provides new tools (or new
+sub-object classes), it might need to supply its own setup handlers in
+order to support exporting / importing tool settings using GenericSetup.
 
 Step 1:
 -------
 
 Identify those classes in your product that need their own setup handlers.
 In theory you don't need your own handlers for classes which implement a
-CMF tool interface that already has a setup adapter. In practice the
+CMF tool interface that already has a setup adapter.  In practice the
 adapters shipped with the CMF sometimes use methods that are not part of
-the interface, so you have to verify they really work for your classes.
+the interface, so you have to verify that they really work for your classes.
 
 Step 2:
 -------
 
 Make sure those classes that need setup handlers have Zope3 style
-interfaces. Later you will write setup adapters for those interfaces.
+interfaces.  Later you will write setup adapters for those interfaces.
 
 Step 3:
 -------
@@ -49,9 +49,8 @@ node adapter
    need this kind of adapter.
 
 import and export steps
-   Top level handlers that can be registered as import step or export step
-   and call the body adapters. Maybe these will become obsolete for tools,
-   but currently they are required.
+   Top level handlers can be registered to manage import steps and / or export
+   steps and call the body adapters. 
 
 If you use the base classes from :mod:`Products.GenericSetup.utils`, XML and
 node adapters are implemented in a very similar way. Both can mix in
@@ -96,4 +95,11 @@ Step 7:
 Now you are done. To ship default settings with your product, make your
 settings through the ZMI (or set your stuff up the old way if you have old
 setup code like an ``Install.py``) and export your settings using the setup
-tool.
+tool.  Unpack the exported tarball into a ``profiles`` subdirectory of your
+product, and then add ``gs:registerProfile`` entries to its ``configure.zcml``
+file to register that directory as a :term:`base profile` or
+:term:`extension profile`.
+
+.. seealso::
+
+    See :ref:`about-profiles` for more details.
