@@ -15,8 +15,8 @@ GenericSetup 1.5.0 (unreleased)
   (https://bugs.launchpad.net/zope-cmf/+bug/161728)
 
 - Property import/export tests: Add testing for non-ASCII properties.
- (https://bugs.launchpad.net/zope-cmf/+bug/202356)
- (https://bugs.launchpad.net/zope-cmf/+bug/242588)
+  (https://bugs.launchpad.net/zope-cmf/+bug/202356)
+  (https://bugs.launchpad.net/zope-cmf/+bug/242588)
 
 - Add 'IChunkedImportContext' interface, allowing RAM-efficient chunked
   reads of large files, and implement for 'DirectoryImportContext'.
@@ -71,6 +71,53 @@ GenericSetup 1.5.0 (unreleased)
   not be handled by the standard components registry adapter. This allows
   more specialized export/import handlers to take full control over the
   components they care about.
+
+- When loading multiple profiles reload the list of steps to use after
+  each import. https://bugs.launchpad.net/zope-cmf/+bug/213905
+
+
+GenericSetup 1.4.2.2 (2008-09-22)
+---------------------------------
+
+- Packaging update:  version of 1.4.2.1 said '1.4.2'.
+
+
+GenericSetup 1.4.2.1 (2008-09-22)
+---------------------------------
+
+- Packaging update:  version of 1.4.2 said '1.4.2dev'.
+
+
+GenericSetup 1.4.2 (2008-09-22)
+-------------------------------
+
+- Add 'IChunkedImportContext' interface, allowing RAM-efficient chunked
+  reads of large files, and implement for 'DirectoryImportContext'.
+  (https://bugs.launchpad.net/zope-cmf/+bug/259233)
+
+- Add 'IChunkedExportContext' interface, allowing RAM-efficient chunked
+  writes of large files, and implement for 'DirectoryExportContext'.
+  (https://bugs.launchpad.net/zope-cmf/+bug/257365)
+
+- Update local component registry importer to prevent it from overwriting
+  existing utilities if they are already of the correct type
+
+- Property import/export tests: Fix and test for non-ASCII properties.
+  (https://bugs.launchpad.net/zope-cmf/+bug/202356)
+  (https://bugs.launchpad.net/zope-cmf/+bug/242588)
+
+- Provide default for dependencies when processing metadata.xml, to
+  avoid a KeyError.
+  (https://bugs.launchpad.net/zope-cmf/+bug/255301)
+
+- Update PropertyManagerHelpers to make it possible to remove elements from a
+  property by adding a remove="True" attribute to the element. This can
+  also be used to reorder elements since new elements are always added
+  at the end of the list.
+
+
+GenericSetup 1.4.1 (2008-05-27)
+-------------------------------
 
 - When loading multiple profiles reload the list of steps to use after
   each import. https://bugs.launchpad.net/zope-cmf/+bug/213905
