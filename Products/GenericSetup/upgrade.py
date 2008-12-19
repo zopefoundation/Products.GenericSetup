@@ -10,6 +10,10 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
+"""Upgrade steps and registry.
+
+$Id$
+"""
 
 from pkg_resources import parse_version
 from BTrees.OOBTree import OOBTree
@@ -27,7 +31,7 @@ def normalize_version(version):
 
 class UpgradeRegistry(object):
     """Registry of upgrade steps, by profile.
-    
+
     Registry keys are profile ids.
 
     Each registry value is a nested mapping:
@@ -78,6 +82,7 @@ class UpgradeRegistry(object):
 
 _upgrade_registry = UpgradeRegistry()
 
+
 class UpgradeEntity(object):
     """
     Base class for actions to be taken during an upgrade process.
@@ -125,7 +130,7 @@ class UpgradeEntity(object):
         else:
             return checker(tool)
 
-    
+
 class UpgradeStep(UpgradeEntity):
     """A step to upgrade a component.
     """
