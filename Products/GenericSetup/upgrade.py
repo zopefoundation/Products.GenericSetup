@@ -25,7 +25,7 @@ def normalize_version(version):
     if isinstance(version, tuple):
         version = '.'.join(version)
     if version in (None, 'unknown', 'all'):
-        return version
+        return None
     return parse_version(version)
 
 
@@ -108,15 +108,12 @@ class UpgradeEntity(object):
 
     def versionMatch(self, source):
         source = normalize_version(source)
-        return (
-            source is None or
-            (self.source is None and
-                (self.dest is None or source < normalize_version(self.dest))
-            ) or
-            (source <= normalize_version(self.source) and
-                (self.dest is None or source > normalize_version(self.dest))
-            )
-        )
+        if source is None:
+            return True
+        start = normalize_version(self.source)
+        stop = normalize_version(self.dest)
+        return ((start is None or start == source) and
+                (stop is None or stop > source))
 
     def isProposed(self, tool, source):
         """Check if a step can be applied.
@@ -187,11 +184,14 @@ def _extractStepInfo(tool, id, step, source):
     """Returns the info data structure for a given step.
     """
     proposed = step.isProposed(tool, source)
-    if (not proposed
-        and source is not None
-        and (step.source is None or
-             normalize_version(source) > normalize_version(step.source))):
-        return
+    if not proposed:
+        source = normalize_version(source)
+        if source is not None:
+            start = normalize_version(step.source)
+            stop = normalize_version(step.dest)
+            if ((start is not None and start < source) or
+                (stop is not None and stop <= source)):
+                    return
     info = {
         'id': id,
         'step': step,

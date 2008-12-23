@@ -49,6 +49,48 @@ UpgradeEntity
             >>> bool(_extractStepInfo(tool, 'ID', e, '2.0'))
             True
 
+    with version restriction: all -> 2.0, no checker
+    ------------------------------------------------
+
+        >>> e = UpgradeEntity('TITLE', 'PROFILE', '*', '2.0', 'DESC')
+        >>> e.source is None
+        True
+        >>> e.dest
+        ('2', '0')
+
+        all <> unknown <> 2.0
+
+            >>> e.versionMatch(None)
+            True
+            >>> e.isProposed(tool, None)
+            True
+            >>> bool(_extractStepInfo(tool, 'ID', e, None))
+            True
+            >>> e.versionMatch('unknown')
+            True
+            >>> e.isProposed(tool, 'unknown')
+            True
+            >>> bool(_extractStepInfo(tool, 'ID', e, 'unknown'))
+            True
+
+        all <> 1.0 < 2.0
+
+            >>> e.versionMatch('1.0')
+            True
+            >>> e.isProposed(tool, '1.0')
+            True
+            >>> bool(_extractStepInfo(tool, 'ID', e, '1.0'))
+            True
+
+        all <> 2.0 == 2.0
+
+            >>> e.versionMatch('2.0')
+            False
+            >>> e.isProposed(tool, '2.0')
+            False
+            >>> bool(_extractStepInfo(tool, 'ID', e, '2.0'))
+            False
+
     with version restriction: 1.0 -> 2.0, no checker
     ------------------------------------------------
 
@@ -66,19 +108,19 @@ UpgradeEntity
             True
             >>> bool(_extractStepInfo(tool, 'ID', e, None))
             True
-            >>> e.versionMatch('unknown') # XXX: True
-            False
-            >>> e.isProposed(tool, 'unknown') # XXX: True
-            False
+            >>> e.versionMatch('unknown')
+            True
+            >>> e.isProposed(tool, 'unknown')
+            True
             >>> bool(_extractStepInfo(tool, 'ID', e, 'unknown'))
             True
 
         1.0 == 1.0 < 2.0
 
-            >>> e.versionMatch('1.0') # XXX: True
-            False
-            >>> e.isProposed(tool, '1.0') # XXX: True
-            False
+            >>> e.versionMatch('1.0')
+            True
+            >>> e.isProposed(tool, '1.0')
+            True
             >>> bool(_extractStepInfo(tool, 'ID', e, '1.0'))
             True
 
@@ -108,10 +150,10 @@ UpgradeEntity
             True
             >>> bool(_extractStepInfo(tool, 'ID', e, None))
             True
-            >>> e.versionMatch('unknown') # XXX: True
-            False
-            >>> e.isProposed(tool, 'unknown') # XXX: True
-            False
+            >>> e.versionMatch('unknown')
+            True
+            >>> e.isProposed(tool, 'unknown')
+            True
             >>> bool(_extractStepInfo(tool, 'ID', e, 'unknown'))
             True
 
@@ -150,10 +192,10 @@ UpgradeEntity
             True
             >>> bool(_extractStepInfo(tool, 'ID', e, None))
             True
-            >>> e.versionMatch('unknown') # XXX: True
-            False
-            >>> e.isProposed(tool, 'unknown') # XXX: True
-            False
+            >>> e.versionMatch('unknown')
+            True
+            >>> e.isProposed(tool, 'unknown')
+            True
             >>> bool(_extractStepInfo(tool, 'ID', e, 'unknown'))
             True
 
@@ -169,10 +211,10 @@ UpgradeEntity
 
         2.0 == 2.0 < 3.0
 
-            >>> e.versionMatch('2.0') # XXX: True
-            False
-            >>> e.isProposed(tool, '2.0') # XXX: True
-            False
+            >>> e.versionMatch('2.0')
+            True
+            >>> e.isProposed(tool, '2.0')
+            True
             >>> bool(_extractStepInfo(tool, 'ID', e, '2.0'))
             True
 
@@ -228,8 +270,8 @@ UpgradeEntity
             True
             >>> e.isProposed(tool, '1.0')
             False
-            >>> bool(_extractStepInfo(tool, 'ID', e, '1.0')) # XXX: True
-            False
+            >>> bool(_extractStepInfo(tool, 'ID', e, '1.0'))
+            True
 
         all <> 2.0 <> all
 
@@ -237,8 +279,8 @@ UpgradeEntity
             True
             >>> e.isProposed(tool, '2.0')
             False
-            >>> bool(_extractStepInfo(tool, 'ID', e, '2.0')) # XXX: True
-            False
+            >>> bool(_extractStepInfo(tool, 'ID', e, '2.0'))
+            True
 
     with combined restrictions: 1.0 -> 2.0, true checker
     ----------------------------------------------------
@@ -256,8 +298,8 @@ UpgradeEntity
 
         1.0 == 1.0 < 2.0
 
-            >>> e.versionMatch('1.0') # XXX: True
-            False
+            >>> e.versionMatch('1.0')
+            True
             >>> e.isProposed(tool, '1.0')
             True
             >>> bool(_extractStepInfo(tool, 'ID', e, '1.0'))
@@ -329,8 +371,8 @@ UpgradeEntity
 
         2.0 == 2.0 < 3.0
 
-            >>> e.versionMatch('2.0') # XXX: True
-            False
+            >>> e.versionMatch('2.0')
+            True
             >>> e.isProposed(tool, '2.0')
             True
             >>> bool(_extractStepInfo(tool, 'ID', e, '2.0'))
@@ -352,8 +394,8 @@ UpgradeEntity
 
         1.0 == 1.0 < 2.0
 
-            >>> e.versionMatch('1.0') # XXX: True
-            False
+            >>> e.versionMatch('1.0')
+            True
             >>> e.isProposed(tool, '1.0')
             False
             >>> bool(_extractStepInfo(tool, 'ID', e, '1.0'))
@@ -425,8 +467,8 @@ UpgradeEntity
 
         2.0 == 2.0 < 3.0
 
-            >>> e.versionMatch('2.0') # XXX: True
-            False
+            >>> e.versionMatch('2.0')
+            True
             >>> e.isProposed(tool, '2.0')
             False
             >>> bool(_extractStepInfo(tool, 'ID', e, '2.0'))

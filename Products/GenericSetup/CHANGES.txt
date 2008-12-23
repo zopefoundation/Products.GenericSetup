@@ -4,6 +4,8 @@ GenericSetup Product Changelog
 GenericSetup 1.5.0 (unreleased)
 -------------------------------
 
+- UpgradeSteps: Improved listUpgradeSteps behavior.
+
 - Don't fail when a sub-item cannot be adapted after creation when
   importing a folder.  (https://bugs.launchpad.net/zope-cmf/+bug/300315)
 
