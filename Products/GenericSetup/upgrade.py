@@ -124,8 +124,7 @@ class UpgradeEntity(object):
         checker = self.checker
         if checker is None:
             return self.versionMatch(source)
-        else:
-            return checker(tool)
+        return self.versionMatch(source) and checker(tool)
 
 
 class UpgradeStep(UpgradeEntity):

@@ -837,6 +837,9 @@ class SetupTool(Folder):
         info['haspath'] = info['source'] and info['dest']
         info['ssource'] = '.'.join(info['source'] or ('all',))
         info['sdest'] = '.'.join(info['dest'] or ('all',))
+        info['done'] = (not info['proposed'] and
+                        info['step'].checker is not None and
+                        not info['step'].checker(self))
         return info
 
     security.declareProtected(ManagePortal, 'listUpgrades')
@@ -878,7 +881,7 @@ class SetupTool(Folder):
 
         # We update the profile version to the last one we have reached
         # with running an upgrade step.
-        if step.dest is not None:
+        if step.dest is not None and step.checker is None:
             self.setLastVersionForProfile(profile_id, step.dest)
 
         url = self.absolute_url()

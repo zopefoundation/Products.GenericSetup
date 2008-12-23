@@ -5,6 +5,8 @@ GenericSetup 1.5.0 (unreleased)
 -------------------------------
 
 - UpgradeSteps: Improved listUpgradeSteps behavior.
+  If versions and checker are specified for a step, the checker is used as an
+  additional restriction.
 
 - Don't fail when a sub-item cannot be adapted after creation when
   importing a folder.  (https://bugs.launchpad.net/zope-cmf/+bug/300315)
