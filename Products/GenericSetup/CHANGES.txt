@@ -4,6 +4,9 @@ GenericSetup Product Changelog
 GenericSetup 1.5.0 (unreleased)
 -------------------------------
 
+- events: Added 'handleProfileImportedEvent' subscriber.
+  After a full import it updates 'last version for profile'.
+
 - UpgradeSteps: Improved listUpgradeSteps behavior.
   If versions and checker are specified for a step, the checker is used as an
   additional restriction.

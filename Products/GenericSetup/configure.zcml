@@ -109,4 +109,6 @@
       handler="Products.GenericSetup.components.exportComponentRegistry"
       />
 
+  <subscriber handler=".events.handleProfileImportedEvent"/>
+
 </configure>
