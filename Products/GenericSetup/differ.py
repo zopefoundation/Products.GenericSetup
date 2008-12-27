@@ -18,10 +18,10 @@ $Id$
 from difflib import unified_diff
 import re
 
-from Globals import InitializeClass
-from AccessControl import ClassSecurityInfo
+from AccessControl.SecurityInfo import ClassSecurityInfo
+from App.class_init import default__class_init__ as InitializeClass
 
-from interfaces import SKIPPED_FILES
+from Products.GenericSetup.interfaces import SKIPPED_FILES
 
 BLANKS_REGEX = re.compile( r'^\s*$' )
 

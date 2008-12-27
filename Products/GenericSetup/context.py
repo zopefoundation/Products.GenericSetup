@@ -24,13 +24,13 @@ from StringIO import StringIO
 from tarfile import TarFile
 from tarfile import TarInfo
 
-from AccessControl import ClassSecurityInfo
+from AccessControl.SecurityInfo import ClassSecurityInfo
 from Acquisition import aq_inner
 from Acquisition import aq_parent
 from Acquisition import aq_self
 from Acquisition import Implicit
 from DateTime.DateTime import DateTime
-from Globals import InitializeClass
+from App.class_init import default__class_init__ as InitializeClass
 from OFS.DTMLDocument import DTMLDocument
 from OFS.Folder import Folder
 from OFS.Image import File
@@ -39,15 +39,15 @@ from Products.PageTemplates.ZopePageTemplate import ZopePageTemplate
 from Products.PythonScripts.PythonScript import PythonScript
 from zope.interface import implements
 
-from interfaces import IChunkableExportContext
-from interfaces import IChunkableImportContext
-from interfaces import IExportContext
-from interfaces import IImportContext
-from interfaces import ISetupEnviron
-from interfaces import IWriteLogger
-from interfaces import SKIPPED_FILES
-from interfaces import SKIPPED_SUFFIXES
-from permissions import ManagePortal
+from Products.GenericSetup.interfaces import IChunkableExportContext
+from Products.GenericSetup.interfaces import IChunkableImportContext
+from Products.GenericSetup.interfaces import IExportContext
+from Products.GenericSetup.interfaces import IImportContext
+from Products.GenericSetup.interfaces import ISetupEnviron
+from Products.GenericSetup.interfaces import IWriteLogger
+from Products.GenericSetup.interfaces import SKIPPED_FILES
+from Products.GenericSetup.interfaces import SKIPPED_SUFFIXES
+from Products.GenericSetup.permissions import ManagePortal
 
 
 class Logger:

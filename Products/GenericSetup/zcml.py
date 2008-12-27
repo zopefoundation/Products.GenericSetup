@@ -21,11 +21,11 @@ from zope.configuration.fields import Path
 from zope.configuration.fields import PythonIdentifier
 from zope.interface import Interface
 
-from interfaces import BASE
-from registry import _import_step_registry
-from registry import _export_step_registry
-from registry import _profile_registry
-from upgrade import _upgrade_registry
+from Products.GenericSetup.interfaces import BASE
+from Products.GenericSetup.registry import _import_step_registry
+from Products.GenericSetup.registry import _export_step_registry
+from Products.GenericSetup.registry import _profile_registry
+from Products.GenericSetup.upgrade import _upgrade_registry
 
 #### genericsetup:registerProfile
 

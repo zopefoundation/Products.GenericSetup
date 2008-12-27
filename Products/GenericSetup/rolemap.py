@@ -15,16 +15,16 @@
 $Id$
 """
 
-from AccessControl import ClassSecurityInfo
 from AccessControl.Permission import Permission
-from Globals import InitializeClass
+from AccessControl.SecurityInfo import ClassSecurityInfo
+from App.class_init import default__class_init__ as InitializeClass
 from Products.PageTemplates.PageTemplateFile import PageTemplateFile
 
-from permissions import ManagePortal
-from utils import _xmldir
-from utils import ExportConfiguratorBase
-from utils import ImportConfiguratorBase
-from utils import CONVERTER, DEFAULT, KEY
+from Products.GenericSetup.permissions import ManagePortal
+from Products.GenericSetup.utils import _xmldir
+from Products.GenericSetup.utils import ExportConfiguratorBase
+from Products.GenericSetup.utils import ImportConfiguratorBase
+from Products.GenericSetup.utils import CONVERTER, DEFAULT, KEY
 
 
 #

@@ -20,18 +20,16 @@ import Testing
 
 from xml.dom.minidom import parseString
 
-import Products.Five
 from OFS.interfaces import IItem
-from Products.Five import zcml
 from zope.component import getMultiAdapter
 from zope.interface import implements
 from zope.interface.verify import verifyClass
 from zope.testing import testrunner
 from zope.testing.cleanup import cleanUp
 
-from interfaces import IBody
-from interfaces import INode
-from interfaces import ISetupEnviron
+from Products.GenericSetup.interfaces import IBody
+from Products.GenericSetup.interfaces import INode
+from Products.GenericSetup.interfaces import ISetupEnviron
 
 
 class DummyLogger:
@@ -148,6 +146,7 @@ class ExportImportZCMLLayer:
     @classmethod
     def setUp(cls):
         import Products.Five
+        from Products.Five import zcml
         import Products.GenericSetup
 
         zcml.load_config('meta.zcml', Products.Five)

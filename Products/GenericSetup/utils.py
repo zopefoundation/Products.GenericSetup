@@ -26,11 +26,10 @@ from xml.dom.minidom import Node
 from xml.dom.minidom import parseString
 from xml.parsers.expat import ExpatError
 
-import Products
-from AccessControl import ClassSecurityInfo
+from AccessControl.SecurityInfo import ClassSecurityInfo
 from Acquisition import Implicit
-from Globals import InitializeClass
-from Globals import package_home
+from App.class_init import default__class_init__ as InitializeClass
+from App.Common import package_home
 from OFS.interfaces import IOrderedContainer
 from Products.Five.utilities.interfaces import IMarkerInterfaces
 from zope.component import queryMultiAdapter
@@ -40,12 +39,12 @@ from zope.interface import implementsOnly
 from zope.interface import providedBy
 from ZPublisher.HTTPRequest import default_encoding
 
-from exceptions import BadRequest
-from interfaces import IBody
-from interfaces import INode
-from interfaces import ISetupContext
-from interfaces import ISetupTool
-from permissions import ManagePortal
+from Products.GenericSetup.exceptions import BadRequest
+from Products.GenericSetup.interfaces import IBody
+from Products.GenericSetup.interfaces import INode
+from Products.GenericSetup.interfaces import ISetupContext
+from Products.GenericSetup.interfaces import ISetupTool
+from Products.GenericSetup.permissions import ManagePortal
 
 
 _pkgdir = package_home( globals() )
@@ -542,6 +541,7 @@ class ObjectManagerHelpers(object):
             self.context._delObject(obj_id)
 
     def _initObjects(self, node):
+        import Products
         for child in node.childNodes:
             if child.nodeName != 'object':
                 continue

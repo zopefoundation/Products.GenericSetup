@@ -16,9 +16,10 @@ $Id$
 """
 
 from pkg_resources import parse_version
+
 from BTrees.OOBTree import OOBTree
 
-from registry import _profile_registry
+from Products.GenericSetup.registry import _profile_registry
 
 
 def normalize_version(version):

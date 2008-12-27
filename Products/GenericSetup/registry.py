@@ -18,25 +18,24 @@ import os
 from xml.sax import parseString
 from xml.sax.handler import ContentHandler
 
-from AccessControl import ClassSecurityInfo
+from AccessControl.SecurityInfo import ClassSecurityInfo
 from Acquisition import Implicit
-from Globals import InitializeClass
-import App.Product
+from App.class_init import default__class_init__ as InitializeClass
 from Products.PageTemplates.PageTemplateFile import PageTemplateFile
 from zope.interface import implements
 
-from interfaces import BASE
-from interfaces import IImportStepRegistry
-from interfaces import IExportStepRegistry
-from interfaces import IToolsetRegistry
-from interfaces import IProfileRegistry
-from permissions import ManagePortal
-from metadata import ProfileMetadata
-from utils import _xmldir
-from utils import _getDottedName
-from utils import _resolveDottedName
-from utils import _extractDocstring
-from utils import _computeTopologicalSort
+from Products.GenericSetup.interfaces import BASE
+from Products.GenericSetup.interfaces import IImportStepRegistry
+from Products.GenericSetup.interfaces import IExportStepRegistry
+from Products.GenericSetup.interfaces import IToolsetRegistry
+from Products.GenericSetup.interfaces import IProfileRegistry
+from Products.GenericSetup.permissions import ManagePortal
+from Products.GenericSetup.metadata import ProfileMetadata
+from Products.GenericSetup.utils import _xmldir
+from Products.GenericSetup.utils import _getDottedName
+from Products.GenericSetup.utils import _resolveDottedName
+from Products.GenericSetup.utils import _extractDocstring
+from Products.GenericSetup.utils import _computeTopologicalSort
 
 #
 #   XML parser

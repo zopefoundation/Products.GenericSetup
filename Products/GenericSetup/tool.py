@@ -20,9 +20,9 @@ import os
 import time
 from cgi import escape
 
-from AccessControl import ClassSecurityInfo
+from AccessControl.SecurityInfo import ClassSecurityInfo
 from Acquisition import aq_base
-from Globals import InitializeClass
+from App.class_init import default__class_init__ as InitializeClass
 from OFS.Folder import Folder
 from OFS.Image import File
 from Products.PageTemplates.PageTemplateFile import PageTemplateFile
@@ -30,32 +30,32 @@ from ZODB.POSException import ConflictError
 from zope import event 
 from zope.interface import implements
 
-from context import DirectoryImportContext
-from context import SnapshotExportContext
-from context import SnapshotImportContext
-from context import TarballExportContext
-from context import TarballImportContext
-from differ import ConfigDiff
-from events import BeforeProfileImportEvent
-from events import ProfileImportedEvent
-from interfaces import BASE
-from interfaces import EXTENSION
-from interfaces import ISetupTool
-from interfaces import SKIPPED_FILES
-from permissions import ManagePortal
-from registry import ExportStepRegistry
-from registry import ImportStepRegistry
-from registry import ToolsetRegistry
-from registry import _export_step_registry
-from registry import _import_step_registry
-from registry import _profile_registry
-from upgrade import _upgrade_registry
-from upgrade import listProfilesWithUpgrades
-from upgrade import listUpgradeSteps
-from utils import _computeTopologicalSort
-from utils import _getProductPath
-from utils import _resolveDottedName
-from utils import _wwwdir
+from Products.GenericSetup.context import DirectoryImportContext
+from Products.GenericSetup.context import SnapshotExportContext
+from Products.GenericSetup.context import SnapshotImportContext
+from Products.GenericSetup.context import TarballExportContext
+from Products.GenericSetup.context import TarballImportContext
+from Products.GenericSetup.differ import ConfigDiff
+from Products.GenericSetup.events import BeforeProfileImportEvent
+from Products.GenericSetup.events import ProfileImportedEvent
+from Products.GenericSetup.interfaces import BASE
+from Products.GenericSetup.interfaces import EXTENSION
+from Products.GenericSetup.interfaces import ISetupTool
+from Products.GenericSetup.interfaces import SKIPPED_FILES
+from Products.GenericSetup.permissions import ManagePortal
+from Products.GenericSetup.registry import ExportStepRegistry
+from Products.GenericSetup.registry import ImportStepRegistry
+from Products.GenericSetup.registry import ToolsetRegistry
+from Products.GenericSetup.registry import _export_step_registry
+from Products.GenericSetup.registry import _import_step_registry
+from Products.GenericSetup.registry import _profile_registry
+from Products.GenericSetup.upgrade import _upgrade_registry
+from Products.GenericSetup.upgrade import listProfilesWithUpgrades
+from Products.GenericSetup.upgrade import listUpgradeSteps
+from Products.GenericSetup.utils import _computeTopologicalSort
+from Products.GenericSetup.utils import _getProductPath
+from Products.GenericSetup.utils import _resolveDottedName
+from Products.GenericSetup.utils import _wwwdir
 
 IMPORT_STEPS_XML = 'import_steps.xml'
 EXPORT_STEPS_XML = 'export_steps.xml'
