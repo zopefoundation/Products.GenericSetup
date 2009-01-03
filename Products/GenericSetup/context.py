@@ -29,8 +29,8 @@ from Acquisition import aq_inner
 from Acquisition import aq_parent
 from Acquisition import aq_self
 from Acquisition import Implicit
+from App.class_init import InitializeClass
 from DateTime.DateTime import DateTime
-from App.class_init import default__class_init__ as InitializeClass
 from OFS.DTMLDocument import DTMLDocument
 from OFS.Folder import Folder
 from OFS.Image import File

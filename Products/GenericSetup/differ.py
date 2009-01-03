@@ -19,7 +19,7 @@ from difflib import unified_diff
 import re
 
 from AccessControl.SecurityInfo import ClassSecurityInfo
-from App.class_init import default__class_init__ as InitializeClass
+from App.class_init import InitializeClass
 
 from Products.GenericSetup.interfaces import SKIPPED_FILES
 

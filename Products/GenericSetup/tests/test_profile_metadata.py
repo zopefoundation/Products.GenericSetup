@@ -14,9 +14,8 @@
 
 $Id$
 """
-import unittest
-import os
 
+import unittest
 from Testing.ZopeTestCase import ZopeTestCase
 from Testing.ZopeTestCase import installProduct
 

@@ -20,7 +20,7 @@ import Testing
 
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from Acquisition import aq_base
-from App.class_init import default__class_init__ as InitializeClass
+from App.class_init import InitializeClass
 from OFS.Folder import Folder
 from OFS.SimpleItem import SimpleItem
 from Products.Five.component import enableSite

@@ -14,13 +14,13 @@
 
 $Id$
 """
-import os
+
 from xml.sax import parseString
 from xml.sax.handler import ContentHandler
 
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from Acquisition import Implicit
-from App.class_init import default__class_init__ as InitializeClass
+from App.class_init import InitializeClass
 from Products.PageTemplates.PageTemplateFile import PageTemplateFile
 from zope.interface import implements
 
