@@ -53,7 +53,6 @@ class DOMComparator:
                         for i in range( len( zipped ) )
                         if zipped[i][0] != zipped[i][1]
                     ]
-                import pdb; pdb.set_trace()
 
             print 'Found:'
             print fxml
