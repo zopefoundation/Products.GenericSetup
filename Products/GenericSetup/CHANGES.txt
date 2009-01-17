@@ -4,6 +4,8 @@ GenericSetup Product Changelog
 GenericSetup 1.5.0 (unreleased)
 -------------------------------
 
+- Adjusted TarballImportContext to work with Python 2.6's tarfile module.
+
 - Cleaned up / normalized imports:
 
   o Don't import from Globals;  instead, use real locations.

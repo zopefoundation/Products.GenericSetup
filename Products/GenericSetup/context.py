@@ -377,11 +377,16 @@ class TarballImportContext( BaseContext ):
         pfx_len = len(path)
 
         names = []
-        for name in self._archive.getnames():
+        for info in self._archive.getmembers():
+            name = info.name
             if name == path or not name.startswith(path):
                 continue
             name = name[pfx_len:]
-            if '/' in name or name in skip:
+            if name in skip:
+                continue
+            # In earlier Python versions directories would always have a
+            # slash in their name.
+            if '/' in name or info.isdir():
                 continue
             if [s for s in skip_suffixes if name.endswith(s)]:
                 continue
