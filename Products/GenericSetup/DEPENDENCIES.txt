@@ -1,2 +1,0 @@
-Zope >= 2.10.0
-five.localsitemanager >= 0.2
