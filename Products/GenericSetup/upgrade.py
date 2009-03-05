@@ -145,16 +145,19 @@ class UpgradeDepends(UpgradeEntity):
     """A specialized upgrade step that re-runs a particular import
     step from the profile.
     """
-    def __init__(self, title, profile, source, dest, desc, import_steps=[],
-                 run_deps=False, purge=False, checker=None, sortkey=0):
+    def __init__(self, title, profile, source, dest, desc, import_profile=None,
+                 import_steps=[], run_deps=False, purge=False, checker=None,
+                 sortkey=0):
         super(UpgradeDepends, self).__init__(title, profile, source, dest,
                                           desc, checker, sortkey)
+        self.import_profile = import_profile
         self.import_steps = import_steps
         self.run_deps = run_deps
         self.purge = purge
 
     def doStep(self, tool):
-        profile_id = 'profile-%s' % self.profile
+        if self.import_profile is None:
+            profile_id = 'profile-%s' % self.profile
         if self.import_steps:
             for step in self.import_steps:
                 tool.runImportStepFromProfile(profile_id, step,
