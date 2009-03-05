@@ -20,7 +20,12 @@ from xml.sax.handler import ContentHandler
 
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from Acquisition import Implicit
-from App.class_init import InitializeClass
+try:
+    from App.class_init import InitializeClass
+except ImportError:
+    # BBB for Zope <2.11
+    from Globals import InitializeClass
+
 from Products.PageTemplates.PageTemplateFile import PageTemplateFile
 from zope.interface import implements
 

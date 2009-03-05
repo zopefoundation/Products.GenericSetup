@@ -17,7 +17,11 @@ $Id$
 
 from AccessControl.Permission import Permission
 from AccessControl.SecurityInfo import ClassSecurityInfo
-from App.class_init import InitializeClass
+try:
+    from App.class_init import InitializeClass
+except ImportError:
+    # BBB for Zope <2.11
+    from Globals import InitializeClass
 from Products.PageTemplates.PageTemplateFile import PageTemplateFile
 
 from Products.GenericSetup.permissions import ManagePortal

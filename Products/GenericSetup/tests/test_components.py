@@ -20,7 +20,11 @@ import Testing
 
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from Acquisition import aq_base
-from App.class_init import InitializeClass
+try:
+    from App.class_init import InitializeClass
+except ImportError:
+    # BBB for Zope <2.11
+    from Globals import InitializeClass
 from OFS.Folder import Folder
 from OFS.SimpleItem import SimpleItem
 from Products.Five.component import enableSite

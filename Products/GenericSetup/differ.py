@@ -19,7 +19,11 @@ from difflib import unified_diff
 import re
 
 from AccessControl.SecurityInfo import ClassSecurityInfo
-from App.class_init import InitializeClass
+try:
+    from App.class_init import InitializeClass
+except ImportError:
+    # BBB for Zope <2.11
+    from Globals import InitializeClass
 
 from Products.GenericSetup.interfaces import SKIPPED_FILES
 
