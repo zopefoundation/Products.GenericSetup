@@ -280,6 +280,7 @@ def test_registerUpgradeSteps(self):
       ...       <genericsetup:upgradeDepends
       ...           title="Bar Upgrade dependency profile import steps"
       ...           description="Re-imports steps from the profile"
+      ...           import_profile="profile-Products.CMFDefault:default"
       ...           import_steps="baz bat"
       ...           run_deps="True"
       ...           purge="True"
@@ -316,6 +317,8 @@ def test_registerUpgradeSteps(self):
       <function c_dummy_upgrade_handler at ...>
       >>> step2['title']
       u'Bar Upgrade Step 2'
+      >>> step3['step'].import_profile
+      u'profile-Products.CMFDefault:default'
       >>> step3['step'].import_steps
       [u'baz', u'bat']
       >>> step3['step'].run_deps
