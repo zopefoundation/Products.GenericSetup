@@ -19,6 +19,7 @@ import unittest
 import Testing
 
 from AccessControl import ClassSecurityInfo
+from Acquisition import Explicit
 from Acquisition import aq_base
 from Globals import InitializeClass
 from OFS.Folder import Folder
@@ -59,7 +60,7 @@ class IDummyInterface(Interface):
     def verify():
         """Returns True."""
 
-class DummyUtility(object):
+class DummyUtility(Explicit):
     """A dummy utility."""
 
     implements(IDummyInterface)
@@ -122,11 +123,31 @@ _COMPONENTS_BODY = """\
 class ComponentRegistryXMLAdapterTests(BodyAdapterTestCase):
 
     layer = ExportImportZCMLLayer
+    _BODY = _COMPONENTS_BODY
 
     def _getTargetClass(self):
         from Products.GenericSetup.components import \
             ComponentRegistryXMLAdapter
         return ComponentRegistryXMLAdapter
+
+    def setUp(self):
+        # Create and enable a local component registry
+        site = Folder()
+        createComponentRegistry(site)
+        setHooks()
+        setSite(site)
+        sm = getSiteManager()
+
+        tool = DummyTool()
+        site._setObject(tool.id, tool)
+
+        tool2 = DummyTool2()
+        site._setObject(tool2.id, tool2)
+
+        self._obj = sm
+
+    def tearDown(self):
+        clearSite()
 
     def _populate(self, obj):
         obj.registerUtility(DummyUtility(), IDummyInterface)
@@ -167,23 +188,6 @@ class ComponentRegistryXMLAdapterTests(BodyAdapterTestCase):
         self.assertEqual(tool.meta_type, 'dummy tool2')
         self.assertEquals(repr(aq_base(util)), repr(aq_base(tool)))
 
-    def setUp(self):
-        # Create and enable a local component registry
-        site = Folder()
-        createComponentRegistry(site)
-        setHooks()
-        setSite(site)
-        sm = getSiteManager()
-
-        tool = DummyTool()
-        site._setObject(tool.id, tool)
-
-        tool2 = DummyTool2()
-        site._setObject(tool2.id, tool2)
-
-        self._obj = sm
-        self._BODY = _COMPONENTS_BODY
-
     def test_no_overwrite(self):
         # make sure we don't overwrite an existing tool when it
         # already exists and has the same factory
@@ -208,9 +212,6 @@ class ComponentRegistryXMLAdapterTests(BodyAdapterTestCase):
         util = queryUtility(IDummyInterface)
         self.assertEquals(getattr(util, 'foo', None), value)
 
-    def tearDown(self):
-        clearSite()
-
 if PersistentComponents is not None:
     def test_suite():
         # reimport to make sure tests are run from Products
@@ -219,6 +220,7 @@ if PersistentComponents is not None:
 
         return unittest.TestSuite((
             unittest.makeSuite(ComponentRegistryXMLAdapterTests),
+            #unittest.makeSuite(WrappedComponentRegistryXMLAdapterTests),
             ))
 else:
     def test_suite():

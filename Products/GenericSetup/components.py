@@ -171,7 +171,8 @@ class ComponentRegistryXMLAdapter(XMLAdapterBase):
                 assert len(current) <=1
 
                 new_utility = factory()
-                if current and type(current[0].component) == type(new_utility):
+                if (current and
+                    type(aq_base(current[0].component)) == type(new_utility)):
                     continue
                 
                 self.context.registerUtility(new_utility, provided, name)

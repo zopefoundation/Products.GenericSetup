@@ -4,6 +4,10 @@ GenericSetup Product Changelog
 GenericSetup 1.4.3 (unreleased)
 -------------------------------
 
+- Recognize acquisition-wrapped components as being of the right underlying
+  type when testing for replacement during import.  Patch from Erik Rose
+  at PSU.
+
 - Don't fail when a sub-item cannot be adapted after creation when
   importing a folder.  (https://bugs.launchpad.net/zope-cmf/+bug/300315)
 
