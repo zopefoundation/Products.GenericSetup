@@ -1,8 +1,8 @@
-GenericSetup Product Changelog
-==============================
+Products.GenericSetup Changelog
+===============================
 
-GenericSetup 1.4.3 (unreleased)
--------------------------------
+1.4.3 (unreleased)
+------------------
 
 - Recognize acquisition-wrapped components as being of the right underlying
   type when testing for replacement during import.  Patch from Erik Rose
@@ -17,18 +17,18 @@ GenericSetup 1.4.3 (unreleased)
 - Changed upgrade logic to set the current version after an upgrade to the
   of the last step, instead of the current profile version.
 
-GenericSetup 1.4.2.2 (2008-09-22)
----------------------------------
+1.4.2.2 (2008-09-22)
+--------------------
 
 - Packaging update:  version of 1.4.2.1 said '1.4.2'.
 
-GenericSetup 1.4.2.1 (2008-09-22)
----------------------------------
+1.4.2.1 (2008-09-22)
+--------------------
 
 - Packaging update:  version of 1.4.2 said '1.4.2dev'.
 
-GenericSetup 1.4.2 (2008-09-22)
--------------------------------
+1.4.2 (2008-09-22)
+------------------
 
 - Add 'IChunkedImportContext' interface, allowing RAM-efficient chunked
   reads of large files, and implement for 'DirectoryImportContext'.
@@ -55,22 +55,22 @@ GenericSetup 1.4.2 (2008-09-22)
   at the end of the list.
 
 
-GenericSetup 1.4.1 (2008-05-27)
--------------------------------
+1.4.1 (2008-05-27)
+------------------
 
 - When loading multiple profiles reload the list of steps to use after
   each import. https://bugs.launchpad.net/zope-cmf/+bug/213905
 
 
-GenericSetup 1.4.0 (2008-03-23)
--------------------------------
+1.4.0 (2008-03-23)
+------------------
 
 - Make getProfileImportDate handle situations where one object's id
   is a prefix of another id.
 
 
-GenericSetup 1.4.0-beta (2008-02-07)
-------------------------------------
+1.4.0-beta (2008-02-07)
+-----------------------
 
 - During object manager imports do not throw an error when
   trying to remove an object that was already removed.
@@ -101,8 +101,8 @@ GenericSetup 1.4.0-beta (2008-02-07)
 - Use zcml to register import and export steps.
 
 
-GenericSetup 1.3.3 (2007-12-29)
--------------------------------
+1.3.3 (2007-12-29)
+------------------
 
 - Be more careful in checking context id validity.
 
@@ -110,8 +110,8 @@ GenericSetup 1.3.3 (2007-12-29)
   they already exist in the site.
 
 
-GenericSetup 1.3.2 (2007-09-11)
--------------------------------
+1.3.2 (2007-09-11)
+------------------
 
 - Ignore import and export step handlers that we can not resolve.
 
@@ -123,8 +123,8 @@ GenericSetup 1.3.2 (2007-09-11)
 - components: Fixed an undefined variable name in a log message.
 
 
-GenericSetup 1.3.1 (2007-08-08)
--------------------------------
+1.3.1 (2007-08-08)
+------------------
 
 - components: correct the object path for the site root to be the
   empty string.
@@ -141,8 +141,8 @@ GenericSetup 1.3.1 (2007-08-08)
   available under the ZMI tab 'manage_components'.
 
 
-GenericSetup 1.3 (2007-07-26)
------------------------------
+1.3 (2007-07-26)
+----------------
 
 - components: Removed non-functional support for registering objects in
   nested folders. We only support objects available in the component
@@ -150,8 +150,8 @@ GenericSetup 1.3 (2007-07-26)
   acquisition wrapped or have a __parent__ pointer to get to the parent.
 
 
-GenericSetup 1.3-beta (2007-07-12)
-----------------------------------
+1.3-beta (2007-07-12)
+---------------------
 
 - Guard against situations where encoded text may be compared by the
   differ.
@@ -207,8 +207,8 @@ GenericSetup 1.3-beta (2007-07-12)
   by folding in Hanno Schlichting's GSLocalAddons product.
 
 
-GenericSetup 1.2-beta (2006-09-20)
-----------------------------------
+1.2-beta (2006-09-20)
+---------------------
 
 - tool:  Added support for uploading a tarball on the "Import" tab
   (i.e., one produced on the export tab).
@@ -239,8 +239,8 @@ GenericSetup 1.2-beta (2006-09-20)
   dependencies, and trying again after inserting everything else.
 
 
-GenericSetup 1.1 (2006-04-16)
------------------------------
+1.1 (2006-04-16)
+----------------
 
 - ZCatalog handler: Implemented the 'remove' directive for indexes.
   This allows to write extension profiles that remove or replace indexes.
@@ -248,14 +248,14 @@ GenericSetup 1.1 (2006-04-16)
 - getExportStepRegistry had the wrong security declaration
 
 
-GenericSetup 1.1-beta2 (2006-03-26)
------------------------------------
+1.1-beta2 (2006-03-26)
+----------------------
 
 - No changes - tag created to coincide with CMF 2.0.0-beta2
 
 
-GenericSetup 1.1-beta (2006-03-08)
-----------------------------------
+1.1-beta (2006-03-08)
+---------------------
 
 - Allowed subclasses of DAVAwareFileAdapter to override the filename
   in which the file is stored.
@@ -283,8 +283,8 @@ GenericSetup 1.1-beta (2006-03-08)
 - Correctly quote XML on export.
 
 
-GenericSetup 1.0 (2005-09-23)
------------------------------
+1.0 (2005-09-23)
+----------------
 
 - CVS tag:  GenericSetup-1_0
 
@@ -296,8 +296,8 @@ GenericSetup 1.0 (2005-09-23)
 - Forward ported fix for tools with non unique IDs from CMFSetup.
 
 
-GenericSetup-0.12 (2005-08-29)
-------------------------------
+0.12 (2005-08-29)
+-----------------
 
 - CVS tag:  GenericSetup-0_12
 
@@ -305,8 +305,8 @@ GenericSetup-0.12 (2005-08-29)
   status messages generated by the profile's steps.
 
 
-GenericSetup-0.11 (2005-08-23)
-------------------------------
+0.11 (2005-08-23)
+-----------------
 
 - CVS tag:  GenericSetup-0_11
 
@@ -319,17 +319,16 @@ GenericSetup-0.11 (2005-08-23)
   to allow plugins to record information about the state of the operation.
 
 
-GenericSetup 0.10 (2005-08-11)
-------------------------------
+0.10 (2005-08-11)
+-----------------
 
 - CVS tag:  GenericSetup-0_10
 
 - Added TarballImportContext, including full test suite.
 
 
-GenericSetup 0.9 (2005-08-08)
------------------------------
-
+0.9 (2005-08-08)
+----------------
 - CVS tag:  GenericSetup-0_9
 
 - Initial version, cut down from CMFSetup-1.5.3
