@@ -10,8 +10,8 @@ Products.GenericSetup Changelog
 ------------------
 
 - Recognize acquisition-wrapped components as being of the right underlying
-  type when testing for replacement during import.  Patch from Erik Rose
-  at PSU.
+  type when testing for replacement during import.  
+  (https://bugs.launchpad.net/zope-cmf/+bug/365202)
 
 - Don't fail when a sub-item cannot be adapted after creation when
   importing a folder.  (https://bugs.launchpad.net/zope-cmf/+bug/300315)
