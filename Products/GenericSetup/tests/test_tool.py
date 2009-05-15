@@ -275,13 +275,15 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
         global _before_import_events
         self.assertEqual( len(_before_import_events), 1)
         self.assertEqual(_before_import_events[0].profile_id, 'snapshot-dummy')
-        self.assertEqual(_before_import_events[0].steps, ['dependable', 'dependent'])
+        self.assertEqual(_before_import_events[0].steps,
+                         ['dependable', 'dependent'])
         self.assertEqual(_before_import_events[0].full_import, False)
 
         global _after_import_events
         self.assertEqual( len(_after_import_events), 1)
         self.assertEqual(_after_import_events[0].profile_id, 'snapshot-dummy')
-        self.assertEqual(_after_import_events[0].steps, ['dependable', 'dependent'])
+        self.assertEqual(_after_import_events[0].steps,
+                         ['dependable', 'dependent'])
         self.assertEqual(_after_import_events[0].full_import, False)
 
     def test_runImportStepFromProfile_skip_dependencies(self):
@@ -428,7 +430,7 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
         logged = [x for x in tool.objectIds('File') if x.startswith(prefix)]
         self.assertEqual(len(logged), 1)
 
-    def test_runAllImportStepsFromProfile_unicode_profile_id_creates_reports(self):
+    def test_runAllImportStepsFromProfile_unicode_id_creates_reports(self):
 
         TITLE = 'original title'
         PROFILE_ID = u'snapshot-testing'
@@ -462,7 +464,8 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
         registry.registerStep( 'purging', '1'
                              , _purgeIfRequired )
 
-        result = tool.runAllImportStepsFromProfile( 'snapshot-dummy', purge_old=True )
+        result = tool.runAllImportStepsFromProfile('snapshot-dummy',
+                                                   purge_old=True )
 
         self.assertEqual( len(result['steps']), 6 )
 
@@ -487,7 +490,8 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
         registry.registerStep( 'purging', '1'
                              , _purgeIfRequired )
 
-        result = tool.runAllImportStepsFromProfile( 'snapshot-dummy', purge_old=False )
+        result = tool.runAllImportStepsFromProfile('snapshot-dummy',
+                                                   purge_old=False )
 
         self.assertEqual( len(result['steps']), 6 )
 
@@ -514,7 +518,8 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
             _imported.append(context._profile_path)
 
         tool.applyContext=applyContext
-        result = tool.runAllImportStepsFromProfile('profile-other:foo', ignore_dependencies=True)
+        result = tool.runAllImportStepsFromProfile('profile-other:foo',
+                                                   ignore_dependencies=True)
         self.assertEqual(_imported, [self._PROFILE_PATH])
 
     def test_runAllImportStepsFromProfile_with_depends(self):
@@ -789,8 +794,8 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
         self.assertEqual( info[ 'title' ], 'One Step' )
         self.assertEqual( info[ 'version' ], '1' )
         self.failUnless( 'One small step' in info[ 'description' ] )
-        self.assertEqual( info[ 'handler' ]
-                        , 'Products.GenericSetup.tests.test_registry.ONE_FUNC' )
+        self.assertEqual(info[ 'handler' ],
+                         'Products.GenericSetup.tests.test_registry.ONE_FUNC' )
 
         self.assertEqual( import_registry.getStep( 'one' ), ONE_FUNC )
 
@@ -801,8 +806,8 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
         self.assertEqual( info[ 'id' ], 'one' )
         self.assertEqual( info[ 'title' ], 'One Step' )
         self.failUnless( 'One small step' in info[ 'description' ] )
-        self.assertEqual( info[ 'handler' ]
-                        , 'Products.GenericSetup.tests.test_registry.ONE_FUNC' )
+        self.assertEqual(info[ 'handler' ],
+                         'Products.GenericSetup.tests.test_registry.ONE_FUNC' )
 
         self.assertEqual( export_registry.getStep( 'one' ), ONE_FUNC )
 
@@ -915,7 +920,8 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
         # register upgrade step
         from Products.GenericSetup.upgrade import _upgrade_registry
         orig_upgrade_registry = copy.copy(_upgrade_registry._registry)
-        step = UpgradeStep("Upgrade", "GenericSetup:dummy_profile", '*', '1.1', '',
+        step = UpgradeStep("Upgrade",
+                           "GenericSetup:dummy_profile", '*', '1.1', '',
                            dummy_upgrade_handler,
                            None, "1")
         _registerUpgradeStep(step)
