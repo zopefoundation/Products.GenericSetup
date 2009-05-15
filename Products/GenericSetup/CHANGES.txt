@@ -7,6 +7,8 @@ Products.GenericSetup Changelog
 - Make sure that manage_createSnapshot returns something to the browser when
   it's done. (http://dev.plone.org/plone/ticket/8452)
 
+- Fixed invalid XML for the Import tab so it doesn't break with Chameleon.
+
 1.4.3 (2009-04-22)
 ------------------
 
