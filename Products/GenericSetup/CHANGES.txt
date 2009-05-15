@@ -4,6 +4,11 @@ GenericSetup Product Changelog
 GenericSetup 1.5.0 (unreleased)
 -------------------------------
 
+- Ensure that the browser doesn't hang after creating a snapshot.
+  (https://bugs.launchpad.net/zope-cmf/+bug/161730)
+
+- Fixed invalid XML for the Import tab so it doesn't break with Chameleon.
+
 - Adjusted TarballImportContext to work with Python 2.6's tarfile module.
 
 - Cleaned up / normalized imports:
