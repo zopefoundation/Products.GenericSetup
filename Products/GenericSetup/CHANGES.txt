@@ -4,8 +4,6 @@ GenericSetup Product Changelog
 GenericSetup 1.5.0 (unreleased)
 -------------------------------
 
-- Fixed invalid XML for the Import tab so it doesn't break with Chameleon.
-
 - Adjusted TarballImportContext to work with Python 2.6's tarfile module.
 
 - Cleaned up / normalized imports:
@@ -95,6 +93,15 @@ GenericSetup 1.5.0 (unreleased)
 
 - When loading multiple profiles reload the list of steps to use after
   each import. https://bugs.launchpad.net/zope-cmf/+bug/213905
+
+
+GenericSetup 1.4.4
+------------------
+
+- Make sure that manage_createSnapshot returns something to the browser when
+  it's done. (http://dev.plone.org/plone/ticket/8452)
+
+- Fixed invalid XML for the Import tab so it doesn't break with Chameleon.
 
 
 GenericSetup 1.4.2.2 (2008-09-22)
