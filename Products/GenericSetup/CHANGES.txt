@@ -4,7 +4,8 @@ Products.GenericSetup Changelog
 1.4.4 (unreleased)
 ------------------
 
-- TBD
+- Make sure that manage_createSnapshot returns something to the browser when
+  it's done. (http://dev.plone.org/plone/ticket/8452)
 
 1.4.3 (2009-04-22)
 ------------------
