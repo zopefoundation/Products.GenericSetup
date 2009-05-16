@@ -7,7 +7,7 @@ Products.GenericSetup Changelog
 - Make sure that 'manage_createSnapshot' returns something to the browser
   when it's done, preventing an apparent hang.
   (http://dev.plone.org/plone/ticket/8452, 
-   https://bugs.launchpad.net/zope-cmf/+bug/161730)
+  https://bugs.launchpad.net/zope-cmf/+bug/161730)
 
 - Fixed invalid XML for the "Import' tab so it doesn't break when rendered
   with Chameleon.
