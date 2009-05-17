@@ -175,6 +175,9 @@ class ComponentRegistryXMLAdapter(XMLAdapterBase):
 
             if ( child.hasAttribute('remove') and 
                  self.context.queryUtility(provided, name) is not None ):
+                ofs_id = self._ofs_id(child)
+                if ofs_id in self.context.objectIds():
+                    self.context._delObject(ofs_id, suppress_events=True)
                 self.context.unregisterUtility(provided=provided, name=name)
                 continue
 
@@ -207,21 +210,36 @@ class ComponentRegistryXMLAdapter(XMLAdapterBase):
                 self.context.registerUtility(component, provided, name)
             elif factory:
                 current = [ utility for utility in current_utilities
-                                    if utility.provided==provided and 
+                                    if utility.provided==provided and
                                        utility.name==name ]
-                assert len(current) <=1
 
                 if current and getattr(current[0], "factory", None)==factory:
                     continue
 
-                try:
-                    self.context.registerUtility(None, provided, name, factory=factory)
-                except TypeError:
-                    # zope.component < 3.5.0
-                    self.context.registerUtility(factory(), provided, name)
+                obj = factory()
+                ofs_id = self._ofs_id(child)
+                if ofs_id not in self.context.objectIds():
+                    self.context._setObject(ofs_id, aq_base(obj),
+                        set_owner=False, suppress_events=True)
+                obj = self.context.get(ofs_id)
+                obj.__name__ = ofs_id
+                obj.__parent__ = aq_base(self.context)
+                self.context.registerUtility(aq_base(obj), provided, name)
             else:
                 self._logger.warning("Invalid utility registration for "
                                      "interface %s" % provided)
+
+    def _ofs_id(self, child):
+        # We build a valid OFS id by using the interface's full
+        # dotted path or using the specified id
+        name = str(child.getAttribute('name'))
+        ofs_id = str(child.getAttribute('id'))
+        if not ofs_id:
+            ofs_id = str(child.getAttribute('interface'))
+            # In case of named utilities we append the name
+            if name:
+                ofs_id += '-' + str(name)
+        return ofs_id
 
     def _extractAdapters(self):
         fragment = self._doc.createDocumentFragment()
@@ -279,8 +297,10 @@ class ComponentRegistryXMLAdapter(XMLAdapterBase):
                 child.setAttribute('name', reg_info['name'])
 
             if reg_info['factory'] is not None:
-                child.setAttribute('factory', _getDottedName(reg_info['factory']))
+                factory = _getDottedName(reg_info['factory'])
+                child.setAttribute('factory', factory)
             else:
+                factory = None
                 comp = reg_info['component']
                 # check if the component is acquisition wrapped. If it is, export
                 # an object reference instead of a factory reference
@@ -296,6 +316,11 @@ class ComponentRegistryXMLAdapter(XMLAdapterBase):
                 else:
                     factory = _getDottedName(type(comp))
                     child.setAttribute('factory', factory)
+                if factory is not None:
+                    ofs_id = self._ofs_id(child)
+                    name = getattr(comp, '__name__', '')
+                    if ofs_id != name:
+                        child.setAttribute('id', name)
 
             fragment.appendChild(child)
 

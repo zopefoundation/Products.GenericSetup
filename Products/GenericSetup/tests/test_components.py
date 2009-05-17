@@ -54,7 +54,7 @@ except ImportError:
 def createComponentRegistry(context):
     enableSite(context, iface=IObjectManagerSite)
 
-    components = PersistentComponents()
+    components = PersistentComponents('++etc++site')
     components.__bases__ = (base,)
     components.__parent__ = aq_base(context)
     context.setSiteManager(components)
@@ -125,6 +125,7 @@ _COMPONENTS_BODY = """\
  <adapters/>
  <utilities>
   <utility factory="Products.GenericSetup.tests.test_components.DummyUtility"
+     id="dummy_utility"
      interface="Products.GenericSetup.tests.test_components.IDummyInterface"/>
   <utility name="dummy tool name"
      interface="Products.GenericSetup.tests.test_components.IDummyInterface"
@@ -143,7 +144,8 @@ _REMOVE_IMPORT = """\
 <?xml version="1.0"?>
 <componentregistry>
  <utilities>
-  <utility factory="Products.GenericSetup.tests.test_components.DummyUtility"
+  <utility id="dummy_utility"
+     factory="Products.GenericSetup.tests.test_components.DummyUtility"
      interface="Products.GenericSetup.tests.test_components.IDummyInterface"
      remove="True"/>
   <utility name="dummy tool name"
@@ -168,8 +170,21 @@ class ComponentRegistryXMLAdapterTests(BodyAdapterTestCase, unittest.TestCase):
         return ComponentRegistryXMLAdapter
 
     def _populate(self, obj):
-        obj.registerUtility(DummyUtility(), IDummyInterface)
-        obj.registerUtility(DummyUtility(), IDummyInterface2, name=u'foo')
+        util = DummyUtility()
+        name = 'dummy_utility'
+        util.__name__ = name
+        util.__parent__ = aq_base(obj)
+        obj._setObject(name, aq_base(util),
+            set_owner=False, suppress_events=True)
+        obj.registerUtility(aq_base(obj[name]), IDummyInterface)
+
+        util = DummyUtility()
+        name = 'Products.GenericSetup.tests.test_components.IDummyInterface2-foo'
+        util.__name__ = name
+        util.__parent__ = aq_base(obj)
+        obj._setObject(name, aq_base(util),
+            set_owner=False, suppress_events=True)
+        obj.registerUtility(aq_base(obj[name]), IDummyInterface2, name=u'foo')
 
         tool = aq_base(obj.aq_parent['dummy_tool'])
         obj.registerUtility(tool, IDummyInterface, name=u'dummy tool name')
@@ -181,10 +196,18 @@ class ComponentRegistryXMLAdapterTests(BodyAdapterTestCase, unittest.TestCase):
         util = queryUtility(IDummyInterface2, name=u'foo')
         self.failUnless(IDummyInterface.providedBy(util))
         self.failUnless(util.verify())
+        self.failUnless(util.__parent__ == obj)
+        name = 'Products.GenericSetup.tests.test_components.IDummyInterface2-foo'
+        self.assertEquals(util.__name__, name)
+        self.failUnless(name in obj.objectIds())
 
         util = queryUtility(IDummyInterface)
         self.failUnless(IDummyInterface.providedBy(util))
         self.failUnless(util.verify())
+        self.failUnless(util.__parent__ == obj)
+        name = 'dummy_utility'
+        self.assertEquals(util.__name__, name)
+        self.failUnless(name in obj.objectIds())
 
         util = queryUtility(IDummyInterface, name='dummy tool name')
         self.failUnless(IDummyInterface.providedBy(util))
@@ -274,10 +297,13 @@ class ComponentRegistryXMLAdapterTests(BodyAdapterTestCase, unittest.TestCase):
         importComponentRegistry(context)
 
         util = queryUtility(IDummyInterface2, name=u'foo')
+        name = 'Products.GenericSetup.tests.test_components.IDummyInterface2-foo'
         self.failUnless(util is None)
+        self.failIf(name in obj.objectIds())
 
         util = queryUtility(IDummyInterface)
         self.failUnless(util is None)
+        self.failIf('dummy_utility' in obj.objectIds())
 
         util = queryUtility(IDummyInterface, name='dummy tool name')
         self.failUnless(util is None)
