@@ -1,6 +1,28 @@
-<h1 tal:replace="structure context/manage_page_header">PAGE HEADER</h1>
-<h2 tal:define="form_title view/title"
-    tal:replace="structure context/manage_form_title">FORM TITLE</h2>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+<title tal:content="view/title">FORM TITLE</title>
+<link rel="stylesheet" type="text/css" href="manage_page_style.css"
+  tal:attributes="href string:${request/BASEPATH1}/manage_page_style.css" />
+
+</head>
+<body bgcolor="#ffffff" link="#000099" alink="#000099" vlink="#000099">
+
+<table width="100%" cellpadding="2" cellspacing="0" border="0">
+<tr class="location-bar">
+
+  <td align="left" valign="top">
+  <div class="form-title" tal:content="view/title">FORM TITLE</div></td>
+  <td align="right" valign="top">
+  <div class="std-text">
+    &nbsp;
+    </div>
+
+  </td>
+</tr>
+</table>
+
+
 
 <p class="form-help" tal:content="view/description">DESCRIPTION TEXT.</p>
 
@@ -43,4 +65,6 @@
 </table>
 </form>
 
-<h1 tal:replace="structure context/manage_page_footer">PAGE FOOTER</h1>
+</body>
+</html>
+
