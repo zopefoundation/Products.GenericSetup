@@ -4,8 +4,13 @@ Products.GenericSetup Changelog
 1.4.5 (unreleased)
 ------------------
 
+- events: Added 'handleProfileImportedEvent' subscriber.
+  After a full import it updates 'last version for profile'.
+  (Backported from trunk)
+
 - Added a for_=None parameter to tool.py:listProfileInfo to have the same
   signature as registry.py:listProfileInfo, so profiles can be filtered by interfaces.
+
 
 1.4.4 (2009-05-15)
 ------------------
@@ -17,6 +22,7 @@ Products.GenericSetup Changelog
 
 - Fixed invalid XML for the "Import' tab so it doesn't break when rendered
   with Chameleon.
+
 
 1.4.3 (2009-04-22)
 ------------------
@@ -34,15 +40,18 @@ Products.GenericSetup Changelog
 - Changed upgrade logic to set the current version after an upgrade to the
   of the last step, instead of the current profile version.
 
+
 1.4.2.2 (2008-09-22)
 --------------------
 
 - Packaging update:  version of 1.4.2.1 said '1.4.2'.
 
+
 1.4.2.1 (2008-09-22)
 --------------------
 
 - Packaging update:  version of 1.4.2 said '1.4.2dev'.
+
 
 1.4.2 (2008-09-22)
 ------------------
