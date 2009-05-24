@@ -1016,6 +1016,24 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
         self.failUnless(u'toolset' in result)
         self.failUnless(list(result).index(u'componentregistry') >
                         list(result).index(u'toolset'))
+    
+    def test_listProfileInfo_for_parameter(self):
+        from Products.GenericSetup.metadata import METADATA_XML
+        from Products.GenericSetup.tests.test_registry import ISite, IDerivedSite, IAnotherSite
+
+        self._makeFile(METADATA_XML, _METADATA_XML)
+
+        site = self._makeSite()
+        tool = self._makeOne('setup_tool').__of__( site )
+
+        profile_registry.registerProfile('foo', 'Foo', '', self._PROFILE_PATH,
+                                        for_=ISite)
+        # tool.listProfileInfo should call registry.listProfileInfo
+        # with the for_ parameter
+        self.assertEqual(len(tool.listProfileInfo()), 1)
+        self.assertEqual(len(tool.listProfileInfo(for_=ISite)), 1)
+        self.assertEqual(len(tool.listProfileInfo(for_=IDerivedSite)), 1)
+        self.assertEqual(len(tool.listProfileInfo(for_=IAnotherSite)), 0)
 
 
 _DEFAULT_STEP_REGISTRIES_EXPORT_XML = """\
