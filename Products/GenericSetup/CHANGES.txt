@@ -104,8 +104,15 @@ GenericSetup 1.5.0 (unreleased)
   each import. https://bugs.launchpad.net/zope-cmf/+bug/213905
 
 
-GenericSetup 1.4.4
-------------------
+GenericSetup 1.4.5 (unreleased)
+-------------------------------
+
+- Added a for_=None parameter to tool.py:listProfileInfo to have the same
+  signature as registry.py:listProfileInfo, so profiles can be filtered by interfaces.
+
+
+GenericSetup 1.4.4 (2009-05-15)
+-------------------------------
 
 - Ensure that the browser doesn't hang after creating a snapshot.
   (https://bugs.launchpad.net/zope-cmf/+bug/161730)
