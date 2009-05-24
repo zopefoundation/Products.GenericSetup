@@ -542,6 +542,28 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
                                                    ignore_dependencies=False)
         self.assertEqual(_imported, [self._PROFILE_PATH2, self._PROFILE_PATH])
 
+    def test_runAllImportStepsFromProfile_set_last_profile_version(self):
+        from Products.GenericSetup.metadata import METADATA_XML
+
+        self._makeFile(METADATA_XML, _METADATA_XML)
+
+        site = self._makeSite()
+        tool = self._makeOne('setup_tool').__of__( site )
+
+        profile_registry.registerProfile('foo', 'Foo', '', self._PROFILE_PATH)
+
+        # test initial states
+        profile_id = "other:foo"
+        self.assertEqual(tool.getVersionForProfile(profile_id), '1.0')
+        self.assertEqual(tool.getLastVersionForProfile(profile_id),
+                         'unknown')
+
+        # run all imports steps
+        result = tool.runAllImportStepsFromProfile('profile-other:foo', ignore_dependencies=True)
+
+        # events.handleProfileImportedEvent should set last profile version
+        self.assertEqual(tool.getLastVersionForProfile(profile_id),
+                         ('1', '0'))
 
     def test_runAllImportStepsFromProfile_step_registration_with_depends(self):
         from Products.GenericSetup.metadata import METADATA_XML
