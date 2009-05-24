@@ -706,7 +706,7 @@ class SetupTool(Folder):
         return result
 
     security.declareProtected(ManagePortal, 'listProfileInfo')
-    def listProfileInfo(self):
+    def listProfileInfo(self, for_=None):
 
         """ Return a list of mappings describing registered profiles.
         Base profile is listed first, extensions are sorted.
@@ -725,7 +725,7 @@ class SetupTool(Folder):
         """
         base = []
         ext = []
-        for info in _profile_registry.listProfileInfo():
+        for info in _profile_registry.listProfileInfo(for_):
             if info.get('type', BASE) == BASE:
                 base.append(info)
             else:

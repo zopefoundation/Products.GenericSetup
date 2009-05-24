@@ -4,8 +4,8 @@ Products.GenericSetup Changelog
 1.4.5 (unreleased)
 ------------------
 
-- Nothing changed yet.
-
+- Added a for_=None parameter to tool.py:listProfileInfo to have the same
+  signature as registry.py:listProfileInfo, so profiles can be filtered by interfaces.
 
 1.4.4 (2009-05-15)
 ------------------
