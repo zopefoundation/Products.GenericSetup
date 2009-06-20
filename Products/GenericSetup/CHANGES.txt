@@ -1,15 +1,15 @@
 Products.GenericSetup Changelog
 ===============================
 
-1.4.5 (unreleased)
+1.4.5 (2009-06-20)
 ------------------
 
-- events: Added 'handleProfileImportedEvent' subscriber.
-  After a full import it updates 'last version for profile'.
-  (Backported from trunk)
+- events: Added 'handleProfileImportedEvent' subscriber.  After a full import,
+  it updates 'last version for profile'.  (Backported from trunk)
 
 - Added a for_=None parameter to tool.py:listProfileInfo to have the same
-  signature as registry.py:listProfileInfo, so profiles can be filtered by interfaces.
+  signature as registry.py:listProfileInfo, so profiles can be filtered by
+  interfaces.
 
 
 1.4.4 (2009-05-15)
