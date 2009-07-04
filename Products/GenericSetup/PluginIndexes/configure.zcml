@@ -1,5 +1,6 @@
 <configure
-    xmlns="http://namespaces.zope.org/zope">
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:zcml="http://namespaces.zope.org/zcml">
 
   <adapter factory=".exportimport.PluggableIndexNodeAdapter"/>
 
@@ -9,9 +10,14 @@
 
   <adapter factory=".exportimport.PathIndexNodeAdapter"/>
 
-  <adapter factory=".exportimport.VocabularyNodeAdapter"/>
+  <!-- BBB: for Zope < 2.12 -->
+  <configure zcml:condition="installed Products.PluginIndexes.TextIndex">
 
-  <adapter factory=".exportimport.TextIndexNodeAdapter"/>
+    <adapter factory=".exportimport.VocabularyNodeAdapter"/>
+
+    <adapter factory=".exportimport.TextIndexNodeAdapter"/>
+
+  </configure>
 
   <adapter factory=".exportimport.FilteredSetNodeAdapter"/>
 

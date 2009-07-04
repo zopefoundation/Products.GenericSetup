@@ -48,14 +48,6 @@ _PATH_XML = """\
 <index name="foo_path" meta_type="PathIndex"/>
 """
 
-_VOCABULARY_XML = """\
-<object name="foo_vocabulary" meta_type="Vocabulary" deprecated="True"/>
-"""
-
-_TEXT_XML = """\
-<index name="foo_text" meta_type="TextIndex" deprecated="True"/>
-"""
-
 _SET_XML = """\
 <filtered_set name="bar" meta_type="PythonFilteredSet" expression="True"/>
 """
@@ -164,46 +156,6 @@ class PathIndexNodeAdapterTests(NodeAdapterTestCase, unittest.TestCase):
         self._XML = _PATH_XML
 
 
-class VocabularyNodeAdapterTests(NodeAdapterTestCase, unittest.TestCase):
-
-    layer = ExportImportZCMLLayer
-
-    def _getTargetClass(self):
-        from Products.GenericSetup.PluginIndexes.exportimport \
-                import VocabularyNodeAdapter
-
-        return VocabularyNodeAdapter
-
-    def setUp(self):
-        from Products.PluginIndexes.TextIndex.Vocabulary import Vocabulary
-
-        self._obj = Vocabulary('foo_vocabulary')
-        self._XML = _VOCABULARY_XML
-
-    def test_importNode(self):
-        pass
-
-
-class TextIndexNodeAdapterTests(NodeAdapterTestCase, unittest.TestCase):
-
-    layer = ExportImportZCMLLayer
-
-    def _getTargetClass(self):
-        from Products.GenericSetup.PluginIndexes.exportimport \
-                import TextIndexNodeAdapter
-
-        return TextIndexNodeAdapter
-
-    def setUp(self):
-        from Products.PluginIndexes.TextIndex.TextIndex import TextIndex
-
-        self._obj = TextIndex('foo_text')
-        self._XML = _TEXT_XML
-
-    def test_importNode(self):
-        pass
-
-
 class FilteredSetNodeAdapterTests(NodeAdapterTestCase, unittest.TestCase):
 
     layer = ExportImportZCMLLayer
@@ -253,8 +205,6 @@ def test_suite():
         unittest.makeSuite(FieldIndexNodeAdapterTests),
         unittest.makeSuite(KeywordIndexNodeAdapterTests),
         unittest.makeSuite(PathIndexNodeAdapterTests),
-        unittest.makeSuite(VocabularyNodeAdapterTests),
-        unittest.makeSuite(TextIndexNodeAdapterTests),
         unittest.makeSuite(FilteredSetNodeAdapterTests),
         unittest.makeSuite(TopicIndexNodeAdapterTests),
         ))

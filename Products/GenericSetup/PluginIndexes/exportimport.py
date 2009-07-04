@@ -28,9 +28,14 @@ from Products.PluginIndexes.interfaces import IDateRangeIndex
 from Products.PluginIndexes.interfaces import IFilteredSet
 from Products.PluginIndexes.interfaces import IPathIndex
 from Products.PluginIndexes.interfaces import IPluggableIndex
-from Products.PluginIndexes.interfaces import ITextIndex
 from Products.PluginIndexes.interfaces import ITopicIndex
-from Products.PluginIndexes.interfaces import IVocabulary
+# BBB: for Zope < 2.12
+try:
+    from Products.PluginIndexes.interfaces import ITextIndex
+    from Products.PluginIndexes.interfaces import IVocabulary
+except ImportError:
+    ITextIndex = None
+    IVocabulary = None
 
 
 class PluggableIndexNodeAdapter(NodeAdapterBase):
@@ -130,6 +135,7 @@ class PathIndexNodeAdapter(NodeAdapterBase):
     node = property(_exportNode, lambda self, val: None)
 
 
+# BBB: for Zope < 2.12
 class VocabularyNodeAdapter(NodeAdapterBase):
 
     """Node im- and exporter for Vocabulary.
@@ -147,6 +153,7 @@ class VocabularyNodeAdapter(NodeAdapterBase):
     node = property(_exportNode, lambda self, val: None)
 
 
+# BBB: for Zope < 2.12
 class TextIndexNodeAdapter(NodeAdapterBase):
 
     """Node im- and exporter for TextIndex.

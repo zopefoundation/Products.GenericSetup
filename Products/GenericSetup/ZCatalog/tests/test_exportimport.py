@@ -70,7 +70,7 @@ _CATALOG_BODY = """\
 _CATALOG_UPDATE_BODY = """\
 <?xml version="1.0"?>
 <object name="foo_catalog">
- <object name="foo_vocabulary" remove="True"/>
+ <object name="old_plexicon" remove="True"/>
  <index name="foo_text" remove="True"/>
  <index name="foo_text" meta_type="ZCTextIndex">
   <indexed_attr value="foo_text"/>
@@ -88,12 +88,16 @@ _CATALOG_UPDATE_BODY = """\
 # The catalog starts out as the _CATALOG_BODY above with the following
 # xml snippets inserted.
 
-_VOCABULARY_XML = """\
- <object name="foo_vocabulary" meta_type="Vocabulary" deprecated="True"/>
+_LEXICON_XML = """\
+ <object name="old_plexicon" meta_type="ZCTextIndex Lexicon"/>
 """
 
 _TEXT_XML = """\
- <index name="foo_text" meta_type="TextIndex" deprecated="True"/>
+ <index name="foo_text" meta_type="ZCTextIndex">
+  <indexed_attr value="foo_text"/>
+  <extra name="index_type" value="Cosine Measure"/>
+  <extra name="lexicon_id" value="old_plexicon"/>
+ </index>
 """
 
 _COLUMN_XML = """\
@@ -163,11 +167,16 @@ class ZCatalogXMLAdapterTests(BodyAdapterTestCase, unittest.TestCase):
         obj.addColumn('eggs')
 
     def _populate_special(self, obj):
-        from Products.PluginIndexes.TextIndex.Vocabulary import Vocabulary
+        from Products.ZCTextIndex.ZCTextIndex import PLexicon
 
         self._populate(self._obj)
-        obj._setObject('foo_vocabulary', Vocabulary('foo_vocabulary'))
-        obj.addIndex('foo_text', 'TextIndex')
+        obj._setObject('old_plexicon', PLexicon('old_plexicon'))
+
+        extra = _extra()
+        extra.lexicon_id = 'old_plexicon'
+        extra.index_type = 'Cosine Measure'
+        obj.addIndex('foo_text', 'ZCTextIndex', extra)
+
         obj.addColumn('bacon')
 
     def setUp(self):
@@ -182,7 +191,7 @@ class ZCatalogXMLAdapterTests(BodyAdapterTestCase, unittest.TestCase):
         context = DummySetupEnviron()
         adapted = getMultiAdapter((self._obj, context), IBody)
         self.assertEqual(adapted.body,
-                         _CATALOG_BODY % (_VOCABULARY_XML, _TEXT_XML, _COLUMN_XML))
+                       _CATALOG_BODY % (_LEXICON_XML, _TEXT_XML, _COLUMN_XML))
 
     def test_body_set_update(self):
         # Assert that the catalog ends up the way we expect it to.
