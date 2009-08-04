@@ -148,11 +148,12 @@ class ExportImportZCMLLayer:
         import Products.Five
         from Products.Five import zcml
         import Products.GenericSetup
+        import zope.traversing
 
         zcml.load_config('meta.zcml', Products.Five)
         zcml.load_config('meta.zcml', Products.GenericSetup)
         zcml.load_config('permissions.zcml', Products.Five)
-        zcml.load_config('traversing.zcml', Products.Five)
+        zcml.load_config('configure.zcml', zope.traversing)
         zcml.load_config('configure.zcml', Products.GenericSetup)
 
     @classmethod

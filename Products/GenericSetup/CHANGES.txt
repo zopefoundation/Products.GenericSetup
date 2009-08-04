@@ -4,6 +4,9 @@ GenericSetup Product Changelog
 GenericSetup 1.5.0 (unreleased)
 -------------------------------
 
+- Changed testing.py to directly load zope.traversing's ZCML instead of going
+  via the Five traversing.zcml BBB shim.
+
 - Added new feature to the component handler. For factory based utilities you
   can now specify an additional id. All factory based utilities will now by
   default be added to the site manager (being an ObjectManager itself) as an
