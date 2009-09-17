@@ -221,7 +221,10 @@ class ComponentRegistryXMLAdapter(XMLAdapterBase):
                 if ofs_id not in self.context.objectIds():
                     self.context._setObject(ofs_id, aq_base(obj),
                         set_owner=False, suppress_events=True)
-                obj = self.context.get(ofs_id)
+                try:
+                    obj = self.context.get(ofs_id)
+                except AttributeError:
+                    obj = self.context[ofs_id] # Zope 2.10
                 obj.__name__ = ofs_id
                 obj.__parent__ = aq_base(self.context)
                 self.context.registerUtility(aq_base(obj), provided, name)
