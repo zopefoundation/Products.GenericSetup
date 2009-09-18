@@ -132,11 +132,10 @@ class ComponentRegistryXMLAdapter(XMLAdapterBase):
             provided = _resolveDottedName(provided)
             name = unicode(str(child.getAttribute('name')))
 
-            for_ = child.getAttribute('for_')
+            for_ = child.getAttribute('for') or child.getAttribute('for_') #BBB
             required = []
-            for interface in for_.split(u' '):
-                if interface:
-                    required.append(_resolveDottedName(interface))
+            for interface in for_.split():
+                required.append(_resolveDottedName(interface))
 
             self.context.registerAdapter(factory,
                                          required=required,
@@ -269,7 +268,7 @@ class ComponentRegistryXMLAdapter(XMLAdapterBase):
 
             child.setAttribute('factory', reg_info['factory'])
             child.setAttribute('provides', reg_info['provided'])
-            child.setAttribute('for_', for_.strip())
+            child.setAttribute('for', for_.strip())
             if reg_info['name']:
                 child.setAttribute('name', reg_info['name'])
 
