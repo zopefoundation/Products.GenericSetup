@@ -172,12 +172,12 @@ class ComponentRegistryXMLAdapter(XMLAdapterBase):
             factory = child.getAttribute('factory')
             factory = factory and _resolveDottedName(factory) or None
 
-            if ( child.hasAttribute('remove') and 
-                 self.context.queryUtility(provided, name) is not None ):
-                ofs_id = self._ofs_id(child)
-                if ofs_id in self.context.objectIds():
-                    self.context._delObject(ofs_id, suppress_events=True)
-                self.context.unregisterUtility(provided=provided, name=name)
+            if child.hasAttribute('remove'):
+                if self.context.queryUtility(provided, name) is not None:
+                    ofs_id = self._ofs_id(child)
+                    if ofs_id in self.context.objectIds():
+                        self.context._delObject(ofs_id, suppress_events=True)
+                    self.context.unregisterUtility(provided=provided, name=name)
                 continue
 
             if component and factory:
