@@ -137,6 +137,11 @@ class ComponentRegistryXMLAdapter(XMLAdapterBase):
             for interface in for_.split():
                 required.append(_resolveDottedName(interface))
 
+            if child.hasAttribute('remove'):
+                self.context.unregisterAdapter(factory,
+                                               required, provided, name)
+                continue
+
             self.context.registerAdapter(factory,
                                          required=required,
                                          provided=provided,

@@ -4,6 +4,8 @@ GenericSetup Product Changelog
 GenericSetup 1.5.0 (unreleased)
 -------------------------------
 
+- Adapter removal.
+
 - Fix utility removal so utility is not added when it is missing from the
   local component registry.
 

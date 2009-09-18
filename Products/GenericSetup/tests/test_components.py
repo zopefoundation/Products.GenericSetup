@@ -41,6 +41,7 @@ except ImportError:
 from zope.component import getMultiAdapter
 from zope.component import getGlobalSiteManager
 from zope.component import getSiteManager
+from zope.component import queryAdapter
 from zope.component import queryUtility
 from zope.component.globalregistry import base
 from zope.interface import implements
@@ -87,6 +88,16 @@ class DummyUtility(object):
     def verify(self):
         return True
 
+class DummyAdapter(object):
+    """A dummy adapter."""
+
+    implements(IDummyInterface)
+
+    def __init__(self, context):
+        pass
+
+    def verify(self):
+        return True
 
 class DummyTool(SimpleItem):
     """A dummy tool."""
@@ -130,7 +141,15 @@ class DummyBlacklist(object):
 _COMPONENTS_BODY = """\
 <?xml version="1.0"?>
 <componentregistry>
- <adapters/>
+ <adapters>
+  <adapter factory="Products.GenericSetup.tests.test_components.DummyAdapter"
+     for="zope.interface.Interface"
+     provides="Products.GenericSetup.tests.test_components.IDummyInterface"/>
+  <adapter name="foo"
+     factory="Products.GenericSetup.tests.test_components.DummyAdapter"
+     for="zope.interface.Interface"
+     provides="Products.GenericSetup.tests.test_components.IDummyInterface"/>
+ </adapters>
  <utilities>
   <utility factory="Products.GenericSetup.tests.test_components.DummyUtility"
      id="dummy_utility"
@@ -151,6 +170,11 @@ _COMPONENTS_BODY = """\
 _REMOVE_IMPORT = """\
 <?xml version="1.0"?>
 <componentregistry>
+ <adapters>
+  <adapter factory="Products.GenericSetup.tests.test_components.DummyAdapter"
+     provides="Products.GenericSetup.tests.test_components.IDummyInterface"
+     for="*" remove="True"/>
+ </adapters>
  <utilities>
   <utility id="dummy_utility"
      factory="Products.GenericSetup.tests.test_components.DummyUtility"
@@ -178,6 +202,9 @@ class ComponentRegistryXMLAdapterTests(BodyAdapterTestCase, unittest.TestCase):
         return ComponentRegistryXMLAdapter
 
     def _populate(self, obj):
+        obj.registerAdapter(DummyAdapter, required=(None,))
+        obj.registerAdapter(DummyAdapter, required=(None,), name=u'foo')
+        
         util = DummyUtility()
         name = 'dummy_utility'
         util.__name__ = name
@@ -201,6 +228,14 @@ class ComponentRegistryXMLAdapterTests(BodyAdapterTestCase, unittest.TestCase):
         obj.registerUtility(tool2, IDummyInterface2, name=u'dummy tool name2')
 
     def _verifyImport(self, obj):
+        adapted = queryAdapter(object(), IDummyInterface)
+        self.failUnless(IDummyInterface.providedBy(adapted))
+        self.failUnless(adapted.verify())
+
+        adapted = queryAdapter(object(), IDummyInterface, name=u'foo')
+        self.failUnless(IDummyInterface.providedBy(adapted))
+        self.failUnless(adapted.verify())
+
         util = queryUtility(IDummyInterface2, name=u'foo')
         self.failUnless(IDummyInterface.providedBy(util))
         self.failUnless(util.verify())
@@ -293,7 +328,7 @@ class ComponentRegistryXMLAdapterTests(BodyAdapterTestCase, unittest.TestCase):
         util = queryUtility(IDummyInterface)
         self.failUnless(util is None)
 
-    def test_remove_utilities(self):
+    def test_remove_components(self):
         from Products.GenericSetup.components import importComponentRegistry
 
         obj = self._obj
@@ -303,6 +338,13 @@ class ComponentRegistryXMLAdapterTests(BodyAdapterTestCase, unittest.TestCase):
         context = DummyImportContext(obj, False)
         context._files['componentregistry.xml'] = _REMOVE_IMPORT
         importComponentRegistry(context)
+
+        adapted = queryAdapter(object(), IDummyInterface)
+        self.failUnless(adapted is None)
+
+        # This one should still exist
+        adapted = queryAdapter(object(), IDummyInterface, name=u'foo')
+        self.failIf(adapted is None)
 
         util = queryUtility(IDummyInterface2, name=u'foo')
         name = 'Products.GenericSetup.tests.test_components.IDummyInterface2-foo'
