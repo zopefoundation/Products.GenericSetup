@@ -41,8 +41,10 @@ except ImportError:
 from zope.component import getMultiAdapter
 from zope.component import getGlobalSiteManager
 from zope.component import getSiteManager
+from zope.component import handle
 from zope.component import queryAdapter
 from zope.component import queryUtility
+from zope.component import subscribers
 from zope.component.globalregistry import base
 from zope.interface import implements
 from zope.interface import Interface
@@ -88,16 +90,43 @@ class DummyUtility(object):
     def verify(self):
         return True
 
+class IAnotherDummyInterface(Interface):
+    """A third dummy interface."""
+
+    def inc():
+        """Increments handle count"""
+
+class IAnotherDummyInterface2(Interface):
+    """A second dummy interface."""
+
+    def verify():
+        """Returns True."""
+
+class DummyObject(object):
+    """A dummy object to pass to the handler."""
+
+    implements(IAnotherDummyInterface)
+
+    handled = 0
+
+    def inc(self):
+        self.handled += 1
+
 class DummyAdapter(object):
     """A dummy adapter."""
 
-    implements(IDummyInterface)
+    implements(IAnotherDummyInterface2)
 
     def __init__(self, context):
         pass
 
     def verify(self):
         return True
+
+def dummy_handler(context):
+    """A dummy event handler."""
+    
+    context.inc()
 
 class DummyTool(SimpleItem):
     """A dummy tool."""
@@ -144,12 +173,21 @@ _COMPONENTS_BODY = """\
  <adapters>
   <adapter factory="Products.GenericSetup.tests.test_components.DummyAdapter"
      for="zope.interface.Interface"
-     provides="Products.GenericSetup.tests.test_components.IDummyInterface"/>
+     provides="Products.GenericSetup.tests.test_components.IAnotherDummyInterface2"/>
   <adapter name="foo"
      factory="Products.GenericSetup.tests.test_components.DummyAdapter"
      for="zope.interface.Interface"
-     provides="Products.GenericSetup.tests.test_components.IDummyInterface"/>
+     provides="Products.GenericSetup.tests.test_components.IAnotherDummyInterface2"/>
  </adapters>
+ <subscribers>
+  <subscriber
+     factory="Products.GenericSetup.tests.test_components.DummyAdapter"
+     for="Products.GenericSetup.tests.test_components.IAnotherDummyInterface"
+     provides="Products.GenericSetup.tests.test_components.IAnotherDummyInterface2"/>
+  <subscriber
+     for="Products.GenericSetup.tests.test_components.IAnotherDummyInterface"
+     handler="Products.GenericSetup.tests.test_components.dummy_handler"/>
+ </subscribers>
  <utilities>
   <utility factory="Products.GenericSetup.tests.test_components.DummyUtility"
      id="dummy_utility"
@@ -172,9 +210,20 @@ _REMOVE_IMPORT = """\
 <componentregistry>
  <adapters>
   <adapter factory="Products.GenericSetup.tests.test_components.DummyAdapter"
-     provides="Products.GenericSetup.tests.test_components.IDummyInterface"
+     provides="Products.GenericSetup.tests.test_components.IAnotherDummyInterface2"
      for="*" remove="True"/>
  </adapters>
+ <subscribers>
+  <subscriber
+     factory="Products.GenericSetup.tests.test_components.DummyAdapter"
+     for="Products.GenericSetup.tests.test_components.IAnotherDummyInterface"
+     provides="Products.GenericSetup.tests.test_components.IAnotherDummyInterface2"
+     remove="True"/>
+  <subscriber
+     for="Products.GenericSetup.tests.test_components.IAnotherDummyInterface"
+     handler="Products.GenericSetup.tests.test_components.dummy_handler"
+     remove="True"/>
+ </subscribers>
  <utilities>
   <utility id="dummy_utility"
      factory="Products.GenericSetup.tests.test_components.DummyUtility"
@@ -204,7 +253,10 @@ class ComponentRegistryXMLAdapterTests(BodyAdapterTestCase, unittest.TestCase):
     def _populate(self, obj):
         obj.registerAdapter(DummyAdapter, required=(None,))
         obj.registerAdapter(DummyAdapter, required=(None,), name=u'foo')
-        
+
+        obj.registerSubscriptionAdapter(DummyAdapter, required=(IAnotherDummyInterface,))
+        obj.registerHandler(dummy_handler, required=(IAnotherDummyInterface,))
+
         util = DummyUtility()
         name = 'dummy_utility'
         util.__name__ = name
@@ -228,13 +280,21 @@ class ComponentRegistryXMLAdapterTests(BodyAdapterTestCase, unittest.TestCase):
         obj.registerUtility(tool2, IDummyInterface2, name=u'dummy tool name2')
 
     def _verifyImport(self, obj):
-        adapted = queryAdapter(object(), IDummyInterface)
-        self.failUnless(IDummyInterface.providedBy(adapted))
+        adapted = queryAdapter(object(), IAnotherDummyInterface2)
+        self.failUnless(IAnotherDummyInterface2.providedBy(adapted))
         self.failUnless(adapted.verify())
 
-        adapted = queryAdapter(object(), IDummyInterface, name=u'foo')
-        self.failUnless(IDummyInterface.providedBy(adapted))
+        adapted = queryAdapter(object(), IAnotherDummyInterface2, name=u'foo')
+        self.failUnless(IAnotherDummyInterface2.providedBy(adapted))
         self.failUnless(adapted.verify())
+
+        dummy = DummyObject()
+        results = [adap.verify() for adap in subscribers([dummy], IAnotherDummyInterface2)]
+        self.assertEquals(results, [True])
+
+        dummy = DummyObject()
+        handle(dummy)
+        self.assertEquals(dummy.handled, 1)
 
         util = queryUtility(IDummyInterface2, name=u'foo')
         self.failUnless(IDummyInterface.providedBy(util))
@@ -339,12 +399,20 @@ class ComponentRegistryXMLAdapterTests(BodyAdapterTestCase, unittest.TestCase):
         context._files['componentregistry.xml'] = _REMOVE_IMPORT
         importComponentRegistry(context)
 
-        adapted = queryAdapter(object(), IDummyInterface)
+        adapted = queryAdapter(object(), IAnotherDummyInterface2)
         self.failUnless(adapted is None)
 
         # This one should still exist
-        adapted = queryAdapter(object(), IDummyInterface, name=u'foo')
+        adapted = queryAdapter(object(), IAnotherDummyInterface2, name=u'foo')
         self.failIf(adapted is None)
+
+        dummy = DummyObject()
+        results = [adap.verify() for adap in subscribers([dummy], IAnotherDummyInterface2)]
+        self.assertEquals(results, [])
+
+        dummy = DummyObject()
+        handle(dummy)
+        self.assertEquals(dummy.handled, 0)
 
         util = queryUtility(IDummyInterface2, name=u'foo')
         name = 'Products.GenericSetup.tests.test_components.IDummyInterface2-foo'

@@ -64,6 +64,12 @@ class ComponentRegistryXMLAdapter(XMLAdapterBase):
         self._logger.info('Adapters exported.')
         fragment.appendChild(child)
 
+        child = self._doc.createElement('subscribers')
+        child.appendChild(self._extractSubscriptionAdapters())
+        child.appendChild(self._extractHandlers())
+        self._logger.info('Subscribers exported.')
+        fragment.appendChild(child)
+
         child = self._doc.createElement('utilities')
         child.appendChild(self._extractUtilities())
         self._logger.info('Utilities exported.')
@@ -77,6 +83,9 @@ class ComponentRegistryXMLAdapter(XMLAdapterBase):
         if self.environ.shouldPurge():
             self._purgeAdapters()
             self._logger.info('Adapters purged.')
+            self._purgeSubscriptionAdapters()
+            self._purgeHandlers()
+            self._logger.info('Subscribers purged.')
             self._purgeUtilities()
             self._logger.info('Utilities purged.')
 
@@ -84,6 +93,10 @@ class ComponentRegistryXMLAdapter(XMLAdapterBase):
             if child.nodeName == 'adapters':
                 self._initAdapters(child)
                 self._logger.info('Adapters registered.')
+            if child.nodeName == 'subscribers':
+                self._initSubscriptionAdapters(child)
+                self._initHandlers(child)
+                self._logger.info('Subscribers registered.')
             if child.nodeName == 'utilities':
                 self._initUtilities(child)
                 self._logger.info('Utilities registered.')
@@ -104,6 +117,30 @@ class ComponentRegistryXMLAdapter(XMLAdapterBase):
                                            required=required,
                                            provided=provided,
                                            name=name)
+
+    def _purgeSubscriptionAdapters(self):
+        registrations = tuple(self.context.registeredSubscriptionAdapters())
+        blacklist = self._constructBlacklist()
+
+        for registration in registrations:
+            factory = registration.factory
+            required = registration.required
+            provided = registration.provided
+            if _getDottedName(provided) in blacklist:
+                continue
+
+            self.context.unregisterSubscriptionAdapter(factory=factory,
+                                                       required=required,
+                                                       provided=provided)
+
+    def _purgeHandlers(self):
+        registrations = tuple(self.context.registeredHandlers())
+
+        for registration in registrations:
+            factory = registration.factory
+            required = registration.required
+
+            self.context.unregisterHandler(factory=factory, required=required)
 
     def _purgeUtilities(self):
         registrations = tuple(self.context.registeredUtilities())
@@ -146,6 +183,83 @@ class ComponentRegistryXMLAdapter(XMLAdapterBase):
                                          required=required,
                                          provided=provided,
                                          name=name)
+
+    def _initSubscriptionAdapters(self, node):
+        blacklist = self._constructBlacklist()
+
+        for child in node.childNodes:
+            if child.nodeName != 'subscriber':
+                continue
+
+            factory = child.getAttribute('factory')
+            if not factory:
+                continue
+
+            handler = child.getAttribute('handler')
+            if handler:
+                raise ValueError, "Can not specify both a factory and a " \
+                                  "handler in a subscriber registration."
+
+            factory = _resolveDottedName(factory)
+
+            provided = child.getAttribute('provides')
+            if provided in blacklist:
+                continue
+
+            provided = _resolveDottedName(provided)
+
+            for_ = child.getAttribute('for') or child.getAttribute('for_') #BBB
+            required = []
+            for interface in for_.split():
+                required.append(_resolveDottedName(interface))
+
+            # Uninstall to prevent duplicate registrations. While this is
+            # allowed in ZCML, GS profiles can be run multiple times.
+            self.context.unregisterSubscriptionAdapter(factory,
+                                                       required=required,
+                                                       provided=provided)
+
+            if child.hasAttribute('remove'):
+                continue
+
+            self.context.registerSubscriptionAdapter(factory,
+                                                     required=required,
+                                                     provided=provided)
+
+    def _initHandlers(self, node):
+        for child in node.childNodes:
+            if child.nodeName != 'subscriber':
+                continue
+
+            handler = child.getAttribute('handler')
+            if not handler:
+                continue
+
+            factory = child.getAttribute('factory')
+            if factory:
+                raise ValueError, "Can not specify both a factory and a " \
+                                  "handler in a subscriber registration."
+            
+            if child.hasAttribute('provides'):
+                raise ValueError, "Cannot use handler with provides " \
+                                  "in a subscriber registration."
+
+            handler = _resolveDottedName(handler)
+
+            for_ = child.getAttribute('for') or child.getAttribute('for_') #BBB
+            required = []
+
+            for interface in for_.split():
+                required.append(_resolveDottedName(interface))
+
+            # Uninstall to prevent duplicate registrations. While this is
+            # allowed in ZCML, GS profiles can be run multiple times.
+            self.context.unregisterHandler(handler, required=required)
+
+            if child.hasAttribute('remove'):
+                continue
+
+            self.context.registerHandler(handler, required=required)
 
     def _getSite(self):
         # Get the site by either __parent__ or Acquisition
@@ -276,6 +390,58 @@ class ComponentRegistryXMLAdapter(XMLAdapterBase):
             child.setAttribute('for', for_.strip())
             if reg_info['name']:
                 child.setAttribute('name', reg_info['name'])
+
+            fragment.appendChild(child)
+
+        return fragment
+
+    def _extractSubscriptionAdapters(self):
+        fragment = self._doc.createDocumentFragment()
+
+        registrations = [ {'factory': _getDottedName(reg.factory),
+                           'provided': _getDottedName(reg.provided),
+                           'required': reg.required}
+                          for reg in self.context.registeredSubscriptionAdapters() ]
+        registrations.sort(key=itemgetter('factory'))
+        registrations.sort(key=itemgetter('provided'))
+        blacklist = self._constructBlacklist()
+
+        for reg_info in registrations:
+            if reg_info['provided'] in blacklist:
+                continue
+
+            child = self._doc.createElement('subscriber')
+
+            for_ = u''
+            for interface in reg_info['required']:
+                for_ = for_ + _getDottedName(interface) + u'\n           '
+
+            child.setAttribute('factory', reg_info['factory'])
+            child.setAttribute('provides', reg_info['provided'])
+            child.setAttribute('for', for_.strip())
+
+            fragment.appendChild(child)
+
+        return fragment
+
+    def _extractHandlers(self):
+        fragment = self._doc.createDocumentFragment()
+
+        registrations = [ {'factory': _getDottedName(reg.factory),
+                           'required': reg.required}
+                          for reg in self.context.registeredHandlers() ]
+        registrations.sort(key=itemgetter('factory'))
+        registrations.sort(key=itemgetter('required'))
+
+        for reg_info in registrations:
+            child = self._doc.createElement('subscriber')
+
+            for_ = u''
+            for interface in reg_info['required']:
+                for_ = for_ + _getDottedName(interface) + u'\n           '
+
+            child.setAttribute('handler', reg_info['factory'])
+            child.setAttribute('for', for_.strip())
 
             fragment.appendChild(child)
 
