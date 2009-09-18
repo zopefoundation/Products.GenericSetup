@@ -222,9 +222,10 @@ class ComponentRegistryXMLAdapter(XMLAdapterBase):
                     self.context._setObject(ofs_id, aq_base(obj),
                         set_owner=False, suppress_events=True)
                 try:
-                    obj = self.context.get(ofs_id)
+                    getter = self.context.get
                 except AttributeError:
-                    obj = self.context[ofs_id] # Zope 2.10
+                    getter = self.context._getOb # BBB: Zope <= 2.10.x
+                obj = getter(ofs_id)
                 obj.__name__ = ofs_id
                 obj.__parent__ = aq_base(self.context)
                 self.context.registerUtility(aq_base(obj), provided, name)
