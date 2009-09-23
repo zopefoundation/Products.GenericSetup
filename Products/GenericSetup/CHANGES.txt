@@ -4,6 +4,9 @@ GenericSetup Product Changelog
 GenericSetup 1.5.0 (unreleased)
 -------------------------------
 
+- Made export / import features for old-school TextIndex (removed in Zope 2.12)
+  conditional.
+
 - Added support for import / export of subscribers from component registry.
 
 - Adapter removal.

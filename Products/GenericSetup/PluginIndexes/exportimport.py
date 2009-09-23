@@ -135,40 +135,40 @@ class PathIndexNodeAdapter(NodeAdapterBase):
     node = property(_exportNode, lambda self, val: None)
 
 
-# BBB: for Zope < 2.12
-class VocabularyNodeAdapter(NodeAdapterBase):
+if IVocabulary is not None: # BBB: for Zope < 2.12
+    class VocabularyNodeAdapter(NodeAdapterBase):
 
-    """Node im- and exporter for Vocabulary.
-    """
-
-    adapts(IVocabulary, ISetupEnviron)
-
-    def _exportNode(self):
-        """Export the object as a DOM node.
+        """Node im- and exporter for Vocabulary.
         """
-        node = self._getObjectNode('object')
-        node.setAttribute('deprecated', 'True')
-        return node
 
-    node = property(_exportNode, lambda self, val: None)
+        adapts(IVocabulary, ISetupEnviron)
+
+        def _exportNode(self):
+            """Export the object as a DOM node.
+            """
+            node = self._getObjectNode('object')
+            node.setAttribute('deprecated', 'True')
+            return node
+
+        node = property(_exportNode, lambda self, val: None)
 
 
-# BBB: for Zope < 2.12
-class TextIndexNodeAdapter(NodeAdapterBase):
+if ITextIndex is not None:# BBB: for Zope < 2.12
+    class TextIndexNodeAdapter(NodeAdapterBase):
 
-    """Node im- and exporter for TextIndex.
-    """
-
-    adapts(ITextIndex, ISetupEnviron)
-
-    def _exportNode(self):
-        """Export the object as a DOM node.
+        """Node im- and exporter for TextIndex.
         """
-        node = self._getObjectNode('index')
-        node.setAttribute('deprecated', 'True')
-        return node
 
-    node = property(_exportNode, lambda self, val: None)
+        adapts(ITextIndex, ISetupEnviron)
+
+        def _exportNode(self):
+            """Export the object as a DOM node.
+            """
+            node = self._getObjectNode('index')
+            node.setAttribute('deprecated', 'True')
+            return node
+
+        node = property(_exportNode, lambda self, val: None)
 
 
 class FilteredSetNodeAdapter(NodeAdapterBase):
