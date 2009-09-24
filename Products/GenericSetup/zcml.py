@@ -21,11 +21,11 @@ from zope.configuration.fields import Path
 from zope.configuration.fields import PythonIdentifier
 from zope.interface import Interface
 
-from Products.GenericSetup.interfaces import BASE
-from Products.GenericSetup.registry import _import_step_registry
-from Products.GenericSetup.registry import _export_step_registry
-from Products.GenericSetup.registry import _profile_registry
-from Products.GenericSetup.upgrade import _upgrade_registry
+from interfaces import BASE
+from registry import _import_step_registry
+from registry import _export_step_registry
+from registry import _profile_registry
+from upgrade import _upgrade_registry
 
 #### genericsetup:registerProfile
 
@@ -196,9 +196,7 @@ class importStep:
 #### genericsetup:upgradeStep
 
 import zope.schema
-import zope.configuration
 from upgrade import UpgradeStep
-from upgrade import UpgradeDepends
 from upgrade import _registerUpgradeStep
 from upgrade import _registerNestedUpgradeStep
 
@@ -232,7 +230,7 @@ class IUpgradeStepsStepSubDirective(Interface):
 
     description = zope.schema.TextLine(
         title=u"Upgrade step description",
-        required=False)
+        required=True)
 
     handler = GlobalObject(
         title=u"Upgrade handler",
@@ -244,51 +242,9 @@ class IUpgradeStepsStepSubDirective(Interface):
 
 class IUpgradeStepDirective(IUpgradeStepsDirective, IUpgradeStepsStepSubDirective):
     """
-    Define a standalone upgrade step
+    Define multiple upgrade steps without repeating all of the parameters
     """
 
-class IUpgradeDependsSubDirective(Interface):
-    """
-    Define a profile import step dependency of an upgrade process
-    (i.e. a profile step that should be reimported when performing an
-    upgrade due to a profile change.
-    """
-    title = zope.schema.TextLine(
-        title=u"Title",
-        required=True,
-        )
-
-    description = zope.schema.TextLine(
-        title=u"Upgrade dependency description",
-        required=False,
-        )
-
-    import_profile = zope.schema.TextLine(
-        title=u"GenericSetup profile id to load, if not the same as the "
-               u"current profile.",
-        required=False)
-
-    import_steps = zope.configuration.fields.Tokens(
-        title=u"Import steps to rerun",
-        required=False,
-        value_type=zope.schema.TextLine(title=u"Import step"),
-        )
-
-    run_deps = zope.schema.Bool(
-        title=u"Run import step dependencies?",
-        required=False,
-        )
-
-    purge = zope.schema.Bool(
-        title=u"Import steps w/ purge=True?",
-        required=False,
-        )
-        
-class IUpgradeDependsDirective(IUpgradeStepsDirective,
-                               IUpgradeDependsSubDirective):
-    """
-    Define a standalone upgrade profile import step dependency
-    """
 
 def upgradeStep(_context, title, profile, handler, description=None, source='*',
                 destination='*', sortkey=0, checker=None):
@@ -299,20 +255,6 @@ def upgradeStep(_context, title, profile, handler, description=None, source='*',
         callable = _registerUpgradeStep,
         args = (step,),
         )
-
-def upgradeDepends(_context, title, profile, description, import_profile=None,
-                   import_steps=[], source='*', destination='*',
-                   run_deps=False, purge=False, checker=None, sortkey=0):
-    step = UpgradeDepends(title, profile, source, destination, description,
-                          import_profile, import_steps, run_deps, purge, checker,
-                          sortkey)
-    _context.action(
-        discriminator = ('upgradeDepends', source, destination, import_profile,
-                         str(import_steps), checker, sortkey),
-        callable = _registerUpgradeStep,
-        args = (step,),
-        )
-
 
 class upgradeSteps(object):
     """
@@ -325,11 +267,9 @@ class upgradeSteps(object):
         self.sortkey = sortkey
         self.id = None
 
-    def upgradeStep(self, _context, title, handler,
-                    description=None, checker=None):
-        """ nested upgradeStep directive """
-        step = UpgradeStep(title, self.profile, self.source, self.dest,
-                           description, handler, checker, self.sortkey)
+    def upgradeStep(self, _context, title, description, handler, checker=None):
+        step = UpgradeStep(title, self.profile, self.source, self.dest, description,
+                           handler, checker, self.sortkey)
         if self.id is None:
             self.id = str(abs(hash('%s%s%s%s' % (title, self.source, self.dest,
                                                  self.sortkey))))
@@ -338,23 +278,6 @@ class upgradeSteps(object):
                              self.sortkey),
             callable = _registerNestedUpgradeStep,
             args = (step, self.id),
-            )
-
-    def upgradeDepends(self, _context, title, description=None, import_profile=None,
-                       import_steps=[], run_deps=False, purge=False,
-                       checker=None):
-        """ nested upgradeDepends directive """
-        step = UpgradeDepends(title, self.profile, self.source, self.dest,
-                              description, import_profile, import_steps, run_deps,
-                              purge, checker, self.sortkey)
-        if self.id is None:
-            self.id = str(abs(hash('%s%s%s%s' % (title, self.source, self.dest,
-                                                 self.sortkey))))
-        _context.action(
-            discriminator = ('upgradeDepends', self.source, self.dest, import_profile,
-                             str(import_steps), self.sortkey),
-            callable = _registerNestedUpgradeStep,
-            args = (step, self.id)
             )
 
     def __call__(self):
@@ -366,16 +289,10 @@ class upgradeSteps(object):
 def cleanUpProfiles():
     global _profile_regs
     for profile_id in _profile_regs:
-        try:
-            del _profile_registry._profile_info[profile_id]
-        except KeyError:
-            pass
-        try:
-            _profile_registry._profile_ids.remove(profile_id)
-        except ValueError:
-            pass
-
+        del _profile_registry._profile_info[profile_id]
+        _profile_registry._profile_ids.remove(profile_id)
     _profile_regs = []
+
     _upgrade_registry.clear()
 
 

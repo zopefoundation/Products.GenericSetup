@@ -10,29 +10,14 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""Upgrade steps and registry.
-
-$Id$
-"""
-
-from pkg_resources import parse_version
 
 from BTrees.OOBTree import OOBTree
 
-from Products.GenericSetup.registry import _profile_registry
-
-
-def normalize_version(version):
-    if isinstance(version, tuple):
-        version = '.'.join(version)
-    if version in (None, 'unknown', 'all'):
-        return None
-    return parse_version(version)
-
+from registry import _profile_registry
 
 class UpgradeRegistry(object):
     """Registry of upgrade steps, by profile.
-
+    
     Registry keys are profile ids.
 
     Each registry value is a nested mapping:
@@ -83,13 +68,11 @@ class UpgradeRegistry(object):
 
 _upgrade_registry = UpgradeRegistry()
 
-
-class UpgradeEntity(object):
+class UpgradeStep(object):
+    """A step to upgrade a component.
     """
-    Base class for actions to be taken during an upgrade process.
-    """
-    def __init__(self, title, profile, source, dest, desc, checker=None,
-                 sortkey=0):
+    def __init__(self, title, profile, source, dest, desc, handler,
+                 checker=None, sortkey=0):
         self.id = str(abs(hash('%s%s%s%s' % (title, source, dest, sortkey))))
         self.title = title
         if source == '*':
@@ -103,18 +86,15 @@ class UpgradeEntity(object):
             dest = tuple(dest.split('.'))
         self.dest = dest
         self.description = desc
+        self.handler = handler
         self.checker = checker
         self.sortkey = sortkey
         self.profile = profile
 
     def versionMatch(self, source):
-        source = normalize_version(source)
-        if source is None:
-            return True
-        start = normalize_version(self.source)
-        stop = normalize_version(self.dest)
-        return ((start is None or start == source) and
-                (stop is None or stop > source))
+        return (source is None or
+                self.source is None or
+                source <= self.source)
 
     def isProposed(self, tool, source):
         """Check if a step can be applied.
@@ -125,51 +105,11 @@ class UpgradeEntity(object):
         checker = self.checker
         if checker is None:
             return self.versionMatch(source)
-        return self.versionMatch(source) and checker(tool)
-
-
-class UpgradeStep(UpgradeEntity):
-    """A step to upgrade a component.
-    """
-    def __init__(self, title, profile, source, dest, desc, handler,
-                 checker=None, sortkey=0):
-        super(UpgradeStep, self).__init__(title, profile, source, dest,
-                                          desc, checker, sortkey)
-        self.handler = handler
+        else:
+            return checker(tool)
 
     def doStep(self, tool):
         self.handler(tool)
-
-
-class UpgradeDepends(UpgradeEntity):
-    """A specialized upgrade step that re-runs a particular import
-    step from the profile.
-    """
-    def __init__(self, title, profile, source, dest, desc, import_profile=None,
-                 import_steps=[], run_deps=False, purge=False, checker=None,
-                 sortkey=0):
-        super(UpgradeDepends, self).__init__(title, profile, source, dest,
-                                          desc, checker, sortkey)
-        self.import_profile = import_profile
-        self.import_steps = import_steps
-        self.run_deps = run_deps
-        self.purge = purge
-
-    def doStep(self, tool):
-        if self.import_profile is None:
-            profile_id = 'profile-%s' % self.profile
-        if self.import_steps:
-            for step in self.import_steps:
-                tool.runImportStepFromProfile(profile_id, step,
-                                              run_dependencies=self.run_deps,
-                                              purge_old=self.purge)
-        else:
-            # if no steps are specified we assume we want to reimport
-            # the entire profile
-            ign_deps = not self.run_deps
-            tool.runAllImportStepsFromProfile(profile_id,
-                                              purge_old=self.purge,
-                                              ignore_dependencies=ign_deps)
 
 def _registerUpgradeStep(step):
     profile_id = step.profile
@@ -187,14 +127,10 @@ def _extractStepInfo(tool, id, step, source):
     """Returns the info data structure for a given step.
     """
     proposed = step.isProposed(tool, source)
-    if not proposed:
-        source = normalize_version(source)
-        if source is not None:
-            start = normalize_version(step.source)
-            stop = normalize_version(step.dest)
-            if ((start is not None and start < source) or
-                (stop is not None and stop <= source)):
-                    return
+    if (not proposed
+        and source is not None
+        and (step.source is None or source > step.source)):
+        return
     info = {
         'id': id,
         'step': step,
@@ -221,8 +157,7 @@ def listUpgradeSteps(tool, profile_id, source):
             info = _extractStepInfo(tool, id, step, source)
             if info is None:
                 continue
-            normsrc = normalize_version(step.source)
-            res.append(((normsrc or '', step.sortkey, info['proposed']), info))
+            res.append(((step.source or '', step.sortkey, info['proposed']), info))
         else: # nested steps
             nested = []
             outer_proposed = False
@@ -235,8 +170,7 @@ def listUpgradeSteps(tool, profile_id, source):
             if nested:
                 src = nested[0]['source']
                 sortkey = nested[0]['sortkey']
-                normsrc = normalize_version(src)
-                res.append(((normsrc or '', sortkey, outer_proposed), nested))
+                res.append(((src or '', sortkey, outer_proposed), nested))
     res.sort()
     res = [i[1] for i in res]
     return res

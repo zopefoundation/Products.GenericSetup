@@ -1,36 +1,35 @@
-GenericSetup Product Changelog
-==============================
+Products.GenericSetup Changelog
+===============================
 
-GenericSetup 1.5.0 (unreleased)
--------------------------------
+1.4.5 (2009-06-20)
+------------------
 
-- Added new feature to the component handler. For factory based utilities you
-  can now specify an additional id. All factory based utilities will now by
-  default be added to the site manager (being an ObjectManager itself) as an
-  object and this persistent object is registered as the utility. On removal
-  both the registration and the object are removed. The new id argument is
-  used to specify the id of the object as set via `__name__`. This change
-  makes these utilities introspectable in the ZMI and clearly separates the
-  persistent object and utility registration aspect.
+- events: Added 'handleProfileImportedEvent' subscriber.  After a full import,
+  it updates 'last version for profile'.  (Backported from trunk)
 
-- Adjusted TarballImportContext to work with Python 2.6's tarfile module.
+- Added a for_=None parameter to tool.py:listProfileInfo to have the same
+  signature as registry.py:listProfileInfo, so profiles can be filtered by
+  interfaces.
 
-- Cleaned up / normalized imports:
 
-  o Don't import from Globals;  instead, use real locations.
+1.4.4 (2009-05-15)
+------------------
 
-  o Make other imports use the actual source module, rather than an
-    intermediate (e.g., prefer importing 'ClassSecurityInfo' from
-    'AccessControl.SecurityInfo' rather than from 'AccessControl').
+- Make sure that 'manage_createSnapshot' returns something to the browser
+  when it's done, preventing an apparent hang.
+  (http://dev.plone.org/plone/ticket/8452, 
+  https://bugs.launchpad.net/zope-cmf/+bug/161730)
 
-  o Avoid relative imports, which will break in later versions of Python.
+- Fixed invalid XML for the "Import' tab so it doesn't break when rendered
+  with Chameleon.
 
-- events: Added 'handleProfileImportedEvent' subscriber.
-  After a full import it updates 'last version for profile'.
 
-- UpgradeSteps: Improved listUpgradeSteps behavior.
-  If versions and checker are specified for a step, the checker is used as an
-  additional restriction.
+1.4.3 (2009-04-22)
+------------------
+
+- Recognize acquisition-wrapped components as being of the right underlying
+  type when testing for replacement during import.  
+  (https://bugs.launchpad.net/zope-cmf/+bug/365202)
 
 - Don't fail when a sub-item cannot be adapted after creation when
   importing a folder.  (https://bugs.launchpad.net/zope-cmf/+bug/300315)
@@ -38,102 +37,24 @@ GenericSetup 1.5.0 (unreleased)
 - Avoid even an explicit purge of the rolemap if no XML file is present
   in a given context.  (https://bugs.launchpad.net/zope-cmf/+bug/279294)
 
-- Component registry import: Add the ability to unregister a component
-  by specifying the "remove" attribute inside a utility node.
-  (https://bugs.launchpad.net/zope-cmf/+bug/161728)
-
-- Property import/export tests: Add testing for non-ASCII properties.
-  (https://bugs.launchpad.net/zope-cmf/+bug/202356)
-  (https://bugs.launchpad.net/zope-cmf/+bug/242588)
-
-- Add 'IChunkedImportContext' interface, allowing RAM-efficient chunked
-  reads of large files, and implement for 'DirectoryImportContext'.
-  (https://bugs.launchpad.net/zope-cmf/+bug/259233)
-
-- Add <genericsetup:upgradeDepends> ZCML tag; defines a specialized upgrade
-  step that re-applies one or more import steps from a GS profile during
-  an upgrade process
-
-- Add 'IChunkedExportContext' interface, allowing RAM-efficient chunked
-  writes of large files, and implement for 'DirectoryExportContext'.
-  (https://bugs.launchpad.net/zope-cmf/+bug/257365)
-
-- Provide default for dependencies when processing metadata.xml, to
-  avoid a KeyError.
-  (https://bugs.launchpad.net/zope-cmf/+bug/255301)
-
-- Handle utility factories cleanly if zope.component >=3.5.0 is used.
- 
-- tool and utils: Removed deprecated code.
-
-- Update PropertyManagerHelpers to make it possible to remove elements from a
-  property by adding a remove="True" attribute to the element. This can
-  also be used to reorder elements since new elements are always added
-  at the end of the list.
-
-- Made PropertyManagerHelpers class work for non-PropertyManager objects
-
-  o Derived classes can supply a '_PROPERTIES' scehma, which is then used
-    to mock up a temporary propertysheet for the object.  The adapter's 
-    methods ('_extractProperties', '_purgeProperties', '_initProperties')
-    then run against that propertysheet.
-
-- Added logic to respect the destination of upgrade steps when determining
-  their applicability. 
-
-- Enhanced the readability of the upgrades tab on the tool.
-
 - Changed upgrade logic to set the current version after an upgrade to the
-  destination version of the last step run, instead of the current profile
-  version.
-
-- Use the parse_version function from pkg_resources to normalize versions
-  before comparing them inside the upgrade code. This ensures pre-release
-  versions are handled correctly. Also use the normalize code when sorting
-  versions on the tools ZMI upgrades page.
-
-- Fixed the upgrade step directive schema. Description is not required.
-
-- Introduced a new IComponentsHandlerBlacklist interface. You can register
-  named utilities for it and provide sequences of interfaces which should
-  not be handled by the standard components registry adapter. This allows
-  more specialized export/import handlers to take full control over the
-  components they care about.
-
-- When loading multiple profiles reload the list of steps to use after
-  each import. https://bugs.launchpad.net/zope-cmf/+bug/213905
+  of the last step, instead of the current profile version.
 
 
-GenericSetup 1.4.5 (unreleased)
--------------------------------
-
-- Added a for_=None parameter to tool.py:listProfileInfo to have the same
-  signature as registry.py:listProfileInfo, so profiles can be filtered by interfaces.
-
-
-GenericSetup 1.4.4 (2009-05-15)
--------------------------------
-
-- Ensure that the browser doesn't hang after creating a snapshot.
-  (https://bugs.launchpad.net/zope-cmf/+bug/161730)
-
-- Fixed invalid XML for the Import tab so it doesn't break with Chameleon.
-
-
-GenericSetup 1.4.2.2 (2008-09-22)
----------------------------------
+1.4.2.2 (2008-09-22)
+--------------------
 
 - Packaging update:  version of 1.4.2.1 said '1.4.2'.
 
 
-GenericSetup 1.4.2.1 (2008-09-22)
----------------------------------
+1.4.2.1 (2008-09-22)
+--------------------
 
 - Packaging update:  version of 1.4.2 said '1.4.2dev'.
 
 
-GenericSetup 1.4.2 (2008-09-22)
--------------------------------
+1.4.2 (2008-09-22)
+------------------
 
 - Add 'IChunkedImportContext' interface, allowing RAM-efficient chunked
   reads of large files, and implement for 'DirectoryImportContext'.
@@ -160,22 +81,22 @@ GenericSetup 1.4.2 (2008-09-22)
   at the end of the list.
 
 
-GenericSetup 1.4.1 (2008-05-27)
--------------------------------
+1.4.1 (2008-05-27)
+------------------
 
 - When loading multiple profiles reload the list of steps to use after
   each import. https://bugs.launchpad.net/zope-cmf/+bug/213905
 
 
-GenericSetup 1.4.0 (2008-03-23)
--------------------------------
+1.4.0 (2008-03-23)
+------------------
 
 - Make getProfileImportDate handle situations where one object's id
   is a prefix of another id.
 
 
-GenericSetup 1.4.0-beta (2008-02-07)
-------------------------------------
+1.4.0-beta (2008-02-07)
+-----------------------
 
 - During object manager imports do not throw an error when
   trying to remove an object that was already removed.
@@ -206,8 +127,8 @@ GenericSetup 1.4.0-beta (2008-02-07)
 - Use zcml to register import and export steps.
 
 
-GenericSetup 1.3.3 (2007-12-29)
--------------------------------
+1.3.3 (2007-12-29)
+------------------
 
 - Be more careful in checking context id validity.
 
@@ -215,8 +136,8 @@ GenericSetup 1.3.3 (2007-12-29)
   they already exist in the site.
 
 
-GenericSetup 1.3.2 (2007-09-11)
--------------------------------
+1.3.2 (2007-09-11)
+------------------
 
 - Ignore import and export step handlers that we can not resolve.
 
@@ -228,8 +149,8 @@ GenericSetup 1.3.2 (2007-09-11)
 - components: Fixed an undefined variable name in a log message.
 
 
-GenericSetup 1.3.1 (2007-08-08)
--------------------------------
+1.3.1 (2007-08-08)
+------------------
 
 - components: correct the object path for the site root to be the
   empty string.
@@ -246,8 +167,8 @@ GenericSetup 1.3.1 (2007-08-08)
   available under the ZMI tab 'manage_components'.
 
 
-GenericSetup 1.3 (2007-07-26)
------------------------------
+1.3 (2007-07-26)
+----------------
 
 - components: Removed non-functional support for registering objects in
   nested folders. We only support objects available in the component
@@ -255,8 +176,8 @@ GenericSetup 1.3 (2007-07-26)
   acquisition wrapped or have a __parent__ pointer to get to the parent.
 
 
-GenericSetup 1.3-beta (2007-07-12)
-----------------------------------
+1.3-beta (2007-07-12)
+---------------------
 
 - Guard against situations where encoded text may be compared by the
   differ.
@@ -312,8 +233,8 @@ GenericSetup 1.3-beta (2007-07-12)
   by folding in Hanno Schlichting's GSLocalAddons product.
 
 
-GenericSetup 1.2-beta (2006-09-20)
-----------------------------------
+1.2-beta (2006-09-20)
+---------------------
 
 - tool:  Added support for uploading a tarball on the "Import" tab
   (i.e., one produced on the export tab).
@@ -344,8 +265,8 @@ GenericSetup 1.2-beta (2006-09-20)
   dependencies, and trying again after inserting everything else.
 
 
-GenericSetup 1.1 (2006-04-16)
------------------------------
+1.1 (2006-04-16)
+----------------
 
 - ZCatalog handler: Implemented the 'remove' directive for indexes.
   This allows to write extension profiles that remove or replace indexes.
@@ -353,14 +274,14 @@ GenericSetup 1.1 (2006-04-16)
 - getExportStepRegistry had the wrong security declaration
 
 
-GenericSetup 1.1-beta2 (2006-03-26)
------------------------------------
+1.1-beta2 (2006-03-26)
+----------------------
 
 - No changes - tag created to coincide with CMF 2.0.0-beta2
 
 
-GenericSetup 1.1-beta (2006-03-08)
-----------------------------------
+1.1-beta (2006-03-08)
+---------------------
 
 - Allowed subclasses of DAVAwareFileAdapter to override the filename
   in which the file is stored.
@@ -388,8 +309,8 @@ GenericSetup 1.1-beta (2006-03-08)
 - Correctly quote XML on export.
 
 
-GenericSetup 1.0 (2005-09-23)
------------------------------
+1.0 (2005-09-23)
+----------------
 
 - CVS tag:  GenericSetup-1_0
 
@@ -401,8 +322,8 @@ GenericSetup 1.0 (2005-09-23)
 - Forward ported fix for tools with non unique IDs from CMFSetup.
 
 
-GenericSetup-0.12 (2005-08-29)
-------------------------------
+0.12 (2005-08-29)
+-----------------
 
 - CVS tag:  GenericSetup-0_12
 
@@ -410,8 +331,8 @@ GenericSetup-0.12 (2005-08-29)
   status messages generated by the profile's steps.
 
 
-GenericSetup-0.11 (2005-08-23)
-------------------------------
+0.11 (2005-08-23)
+-----------------
 
 - CVS tag:  GenericSetup-0_11
 
@@ -424,17 +345,16 @@ GenericSetup-0.11 (2005-08-23)
   to allow plugins to record information about the state of the operation.
 
 
-GenericSetup 0.10 (2005-08-11)
-------------------------------
+0.10 (2005-08-11)
+-----------------
 
 - CVS tag:  GenericSetup-0_10
 
 - Added TarballImportContext, including full test suite.
 
 
-GenericSetup 0.9 (2005-08-08)
------------------------------
-
+0.9 (2005-08-08)
+----------------
 - CVS tag:  GenericSetup-0_9
 
 - Initial version, cut down from CMFSetup-1.5.3

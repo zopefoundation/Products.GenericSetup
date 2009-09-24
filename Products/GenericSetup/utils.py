@@ -24,31 +24,30 @@ from xml.dom.minidom import Document
 from xml.dom.minidom import Element
 from xml.dom.minidom import Node
 from xml.dom.minidom import parseString
+from xml.sax.handler import ContentHandler
 from xml.parsers.expat import ExpatError
 
-from AccessControl.SecurityInfo import ClassSecurityInfo
+import Products
+from AccessControl import ClassSecurityInfo
 from Acquisition import Implicit
-try:
-    from App.class_init import InitializeClass
-except ImportError:
-    # BBB for Zope <2.11
-    from Globals import InitializeClass
-from App.Common import package_home
+from Globals import InitializeClass
+from Globals import package_home
 from OFS.interfaces import IOrderedContainer
 from Products.Five.utilities.interfaces import IMarkerInterfaces
 from zope.component import queryMultiAdapter
+from zope.deprecation import deprecated
 from zope.interface import directlyProvides
 from zope.interface import implements
 from zope.interface import implementsOnly
 from zope.interface import providedBy
 from ZPublisher.HTTPRequest import default_encoding
 
-from Products.GenericSetup.exceptions import BadRequest
-from Products.GenericSetup.interfaces import IBody
-from Products.GenericSetup.interfaces import INode
-from Products.GenericSetup.interfaces import ISetupContext
-from Products.GenericSetup.interfaces import ISetupTool
-from Products.GenericSetup.permissions import ManagePortal
+from exceptions import BadRequest
+from interfaces import IBody
+from interfaces import INode
+from interfaces import ISetupContext
+from interfaces import ISetupTool
+from permissions import ManagePortal
 
 
 _pkgdir = package_home( globals() )
@@ -152,6 +151,42 @@ def _extractDocstring( func, default_title, default_description ):
         description = '\n'.join( lines[ 1: ] )
 
     return title, description
+
+
+deprecated('HandlerBase',
+           'SAX based XML parsing is no longer supported by GenericSetup. '
+           'HandlerBase will be removed in GenericSetup 1.5.')
+
+class HandlerBase( ContentHandler ):
+
+    _encoding = None
+    _MARKER = object()
+
+    def _extract( self, attrs, key, default=None ):
+
+        result = attrs.get( key, self._MARKER )
+
+        if result is self._MARKER:
+            return default
+
+        return self._encode( result )
+
+    def _extractBoolean( self, attrs, key, default ):
+
+        result = attrs.get( key, self._MARKER )
+
+        if result is self._MARKER:
+            return default
+
+        result = result.lower()
+        return result in ( '1', 'yes', 'true' )
+
+    def _encode( self, content ):
+
+        if self._encoding is None:
+            return content
+
+        return content.encode( self._encoding )
 
 
 ##############################################################################
@@ -521,7 +556,7 @@ class XMLAdapterBase(BodyAdapterBase):
 
 class ObjectManagerHelpers(object):
 
-    """ObjectManager in- and export helpers.
+    """ObjectManager im- and export helpers.
     """
 
     def _extractObjects(self):
@@ -545,7 +580,6 @@ class ObjectManagerHelpers(object):
             self.context._delObject(obj_id)
 
     def _initObjects(self, node):
-        import Products
         for child in node.childNodes:
             if child.nodeName != 'object':
                 continue
@@ -601,40 +635,11 @@ class ObjectManagerHelpers(object):
 
 
 class PropertyManagerHelpers(object):
+
     """PropertyManager im- and export helpers.
-    
-      o Derived classes can supply a '_PROPERTIES' scehma, which is then used
-        to mock up a temporary propertysheet for the object.  The adapter's 
-        methods ('_extractProperties', '_purgeProperties', '_initProperties')
-        then run against that propertysheet.
     """
-    _PROPERTIES = ()
 
     _encoding = default_encoding
-
-    def __init__(self, context, environ):
-        from OFS.PropertyManager import PropertyManager
-        if not isinstance(context, PropertyManager):
-            context = self._fauxAdapt(context)
-            
-        super(PropertyManagerHelpers, self).__init__(context, environ)
-
-    def _fauxAdapt(self, context):
-        from OFS.PropertySheets import PropertySheet
-        helper_self = self
-        class Adapted(PropertySheet):
-            def __init__(self, real, properties):
-                self._real = real
-                self._properties = properties
-            def p_self(self):
-                return self
-            def v_self(self):
-                return self._real
-            def propdict(self):
-                # PropertyManager method used by _initProperties
-                return dict([(p['id'], p) for p in self._properties])
-
-        return Adapted(context, self._PROPERTIES)
 
     def _extractProperties(self):
         fragment = self._doc.createDocumentFragment()

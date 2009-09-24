@@ -18,7 +18,6 @@ $Id$
 from operator import itemgetter
 
 from zope.component import adapts
-from zope.component import getUtilitiesFor
 from zope.component import getSiteManager
 from zope.component import queryMultiAdapter
 from zope.component.interfaces import IComponentRegistry
@@ -26,14 +25,11 @@ from zope.component.interfaces import IComponentRegistry
 from Acquisition import aq_base
 from Acquisition import aq_parent
 
-from Products.GenericSetup.interfaces import IBody
-from Products.GenericSetup.interfaces import IComponentsHandlerBlacklist
-from Products.GenericSetup.interfaces import ISetupEnviron
-from Products.GenericSetup.utils import XMLAdapterBase
-from Products.GenericSetup.utils import _getDottedName
-from Products.GenericSetup.utils import _resolveDottedName
-
-BLACKLIST_SELF = _getDottedName(IComponentsHandlerBlacklist)
+from interfaces import IBody
+from interfaces import ISetupEnviron
+from utils import XMLAdapterBase
+from utils import _getDottedName
+from utils import _resolveDottedName
 
 
 class ComponentRegistryXMLAdapter(XMLAdapterBase):
@@ -46,14 +42,6 @@ class ComponentRegistryXMLAdapter(XMLAdapterBase):
     _LOGGER_ID = 'componentregistry'
 
     name = 'componentregistry'
-
-    def _constructBlacklist(self):
-        blacklist = set((BLACKLIST_SELF, ))
-        utils = getUtilitiesFor(IComponentsHandlerBlacklist)
-        for _, util in utils:
-            names = [_getDottedName(i) for i in util.getExcludedInterfaces()]
-            blacklist.update(names)
-        return blacklist
 
     def _exportNode(self):
         node = self._doc.createElement('componentregistry')
@@ -90,15 +78,12 @@ class ComponentRegistryXMLAdapter(XMLAdapterBase):
 
     def _purgeAdapters(self):
         registrations = tuple(self.context.registeredAdapters())
-        blacklist = self._constructBlacklist()
-
+        
         for registration in registrations:
             factory = registration.factory
             required = registration.required
             provided = registration.provided
             name = registration.name
-            if _getDottedName(provided) in blacklist:
-                continue
 
             self.context.unregisterAdapter(factory=factory,
                                            required=required,
@@ -107,29 +92,19 @@ class ComponentRegistryXMLAdapter(XMLAdapterBase):
 
     def _purgeUtilities(self):
         registrations = tuple(self.context.registeredUtilities())
-        blacklist = self._constructBlacklist()
-
+        
         for registration in registrations:
             provided = registration.provided
             name = registration.name
-            if _getDottedName(provided) in blacklist:
-                continue
             self.context.unregisterUtility(provided=provided, name=name)
 
     def _initAdapters(self, node):
-        blacklist = self._constructBlacklist()
-
         for child in node.childNodes:
             if child.nodeName != 'adapter':
                 continue
 
             factory = _resolveDottedName(child.getAttribute('factory'))
-
-            provided = child.getAttribute('provides')
-            if provided in blacklist:
-                continue
-
-            provided = _resolveDottedName(provided)
+            provided = _resolveDottedName(child.getAttribute('provides'))
             name = unicode(str(child.getAttribute('name')))
 
             for_ = child.getAttribute('for_')
@@ -152,19 +127,13 @@ class ComponentRegistryXMLAdapter(XMLAdapterBase):
 
     def _initUtilities(self, node):
         site = self._getSite()
-        blacklist = self._constructBlacklist()
-
         current_utilities = self.context.registeredUtilities()
-
+        
         for child in node.childNodes:
             if child.nodeName != 'utility':
                 continue
 
-            provided = child.getAttribute('interface')
-            if provided in blacklist:
-                continue
-
-            provided = _resolveDottedName(provided)
+            provided = _resolveDottedName(child.getAttribute('interface'))
             name = unicode(str(child.getAttribute('name')))
 
             component = child.getAttribute('component')
@@ -172,19 +141,6 @@ class ComponentRegistryXMLAdapter(XMLAdapterBase):
 
             factory = child.getAttribute('factory')
             factory = factory and _resolveDottedName(factory) or None
-
-            if ( child.hasAttribute('remove') and 
-                 self.context.queryUtility(provided, name) is not None ):
-                ofs_id = self._ofs_id(child)
-                if ofs_id in self.context.objectIds():
-                    self.context._delObject(ofs_id, suppress_events=True)
-                self.context.unregisterUtility(provided=provided, name=name)
-                continue
-
-            if component and factory:
-                raise ValueError, "Can not specify both a factory and a " \
-                                  "component in a utility registration."
-
 
             obj_path = child.getAttribute('object')
             if not component and not factory and obj_path is not None:
@@ -208,38 +164,21 @@ class ComponentRegistryXMLAdapter(XMLAdapterBase):
                                          % (repr(obj), obj_path, repr(site)))
             elif component:
                 self.context.registerUtility(component, provided, name)
-            elif factory:
+            elif factory is not None:
                 current = [ utility for utility in current_utilities
-                                    if utility.provided==provided and
-                                       utility.name==name ]
+                            if utility.provided==provided and 
+                            utility.name==name ]
+                assert len(current) <=1
 
-                if current and getattr(current[0], "factory", None)==factory:
+                new_utility = factory()
+                if (current and
+                    type(aq_base(current[0].component)) == type(new_utility)):
                     continue
-
-                obj = factory()
-                ofs_id = self._ofs_id(child)
-                if ofs_id not in self.context.objectIds():
-                    self.context._setObject(ofs_id, aq_base(obj),
-                        set_owner=False, suppress_events=True)
-                obj = self.context.get(ofs_id)
-                obj.__name__ = ofs_id
-                obj.__parent__ = aq_base(self.context)
-                self.context.registerUtility(aq_base(obj), provided, name)
+                
+                self.context.registerUtility(new_utility, provided, name)
             else:
                 self._logger.warning("Invalid utility registration for "
                                      "interface %s" % provided)
-
-    def _ofs_id(self, child):
-        # We build a valid OFS id by using the interface's full
-        # dotted path or using the specified id
-        name = str(child.getAttribute('name'))
-        ofs_id = str(child.getAttribute('id'))
-        if not ofs_id:
-            ofs_id = str(child.getAttribute('interface'))
-            # In case of named utilities we append the name
-            if name:
-                ofs_id += '-' + str(name)
-        return ofs_id
 
     def _extractAdapters(self):
         fragment = self._doc.createDocumentFragment()
@@ -251,12 +190,8 @@ class ComponentRegistryXMLAdapter(XMLAdapterBase):
                           for reg in self.context.registeredAdapters() ]
         registrations.sort(key=itemgetter('name'))
         registrations.sort(key=itemgetter('provided'))
-        blacklist = self._constructBlacklist()
 
         for reg_info in registrations:
-            if reg_info['provided'] in blacklist:
-                continue
-
             child = self._doc.createElement('adapter')
 
             for_ = u''
@@ -277,50 +212,36 @@ class ComponentRegistryXMLAdapter(XMLAdapterBase):
         fragment = self._doc.createDocumentFragment()
 
         registrations = [ {'component': reg.component,
-                           'factory' : getattr(reg, 'factory', None),
                            'provided': _getDottedName(reg.provided),
                            'name': reg.name}
-                           for reg in self.context.registeredUtilities() ]
+                          for reg in self.context.registeredUtilities() ]
         registrations.sort(key=itemgetter('name'))
         registrations.sort(key=itemgetter('provided'))
         site = aq_base(self._getSite())
-        blacklist = self._constructBlacklist()
 
         for reg_info in registrations:
-            if reg_info['provided'] in blacklist:
-                continue
-
             child = self._doc.createElement('utility')
+
             child.setAttribute('interface', reg_info['provided'])
 
             if reg_info['name']:
                 child.setAttribute('name', reg_info['name'])
 
-            if reg_info['factory'] is not None:
-                factory = _getDottedName(reg_info['factory'])
-                child.setAttribute('factory', factory)
-            else:
-                factory = None
-                comp = reg_info['component']
-                # check if the component is acquisition wrapped. If it is, export
-                # an object reference instead of a factory reference
-                if getattr(comp, 'aq_base', None) is not None:
-                    if aq_base(comp) is site:
-                        child.setAttribute('object', '')
-                    elif hasattr(aq_base(comp), 'getId'):
-                        child.setAttribute('object', comp.getId())
-                    else:
-                        # This is a five.localsitemanager wrapped utility
-                        factory = _getDottedName(type(aq_base(comp)))
-                        child.setAttribute('factory', factory)
+            comp = reg_info['component']
+            # check if the component is acquisition wrapped. If it is, export
+            # an object reference instead of a factory reference
+            if getattr(comp, 'aq_base', None) is not None:
+                if aq_base(comp) is site:
+                    child.setAttribute('object', '')
+                elif hasattr(aq_base(comp), 'getId'):
+                    child.setAttribute('object', comp.getId())
                 else:
-                    factory = _getDottedName(type(comp))
+                    # This is a five.localsitemanager wrapped utility
+                    factory = _getDottedName(type(aq_base(comp)))
                     child.setAttribute('factory', factory)
-                if factory is not None:
-                    ofs_id = self._ofs_id(child)
-                    name = getattr(comp, '__name__', '')
-                    if ofs_id != name:
-                        child.setAttribute('id', name)
+            else:
+                factory = _getDottedName(type(comp))
+                child.setAttribute('factory', factory)
 
             fragment.appendChild(child)
 
@@ -357,4 +278,3 @@ def exportComponentRegistry(context):
         if body is not None:
             context.writeDataFile('componentregistry.xml', body,
                                   exporter.mime_type)
-

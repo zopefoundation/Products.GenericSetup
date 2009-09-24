@@ -14,33 +14,30 @@
 
 $Id$
 """
-
+import os
 from xml.sax import parseString
 from xml.sax.handler import ContentHandler
 
-from AccessControl.SecurityInfo import ClassSecurityInfo
+from AccessControl import ClassSecurityInfo
 from Acquisition import Implicit
-try:
-    from App.class_init import InitializeClass
-except ImportError:
-    # BBB for Zope <2.11
-    from Globals import InitializeClass
-
+from Globals import InitializeClass
+import App.Product
 from Products.PageTemplates.PageTemplateFile import PageTemplateFile
 from zope.interface import implements
+from warnings import warn
 
-from Products.GenericSetup.interfaces import BASE
-from Products.GenericSetup.interfaces import IImportStepRegistry
-from Products.GenericSetup.interfaces import IExportStepRegistry
-from Products.GenericSetup.interfaces import IToolsetRegistry
-from Products.GenericSetup.interfaces import IProfileRegistry
-from Products.GenericSetup.permissions import ManagePortal
-from Products.GenericSetup.metadata import ProfileMetadata
-from Products.GenericSetup.utils import _xmldir
-from Products.GenericSetup.utils import _getDottedName
-from Products.GenericSetup.utils import _resolveDottedName
-from Products.GenericSetup.utils import _extractDocstring
-from Products.GenericSetup.utils import _computeTopologicalSort
+from interfaces import BASE
+from interfaces import IImportStepRegistry
+from interfaces import IExportStepRegistry
+from interfaces import IToolsetRegistry
+from interfaces import IProfileRegistry
+from permissions import ManagePortal
+from metadata import ProfileMetadata
+from utils import _xmldir
+from utils import _getDottedName
+from utils import _resolveDottedName
+from utils import _extractDocstring
+from utils import _computeTopologicalSort
 
 #
 #   XML parser
@@ -725,6 +722,32 @@ class ProfileRegistry( Implicit ):
                }
 
         metadata = ProfileMetadata(path, product=product)()
+
+        version = metadata.get( 'version', None )
+        if version is None and product is not None:
+            prod_name = product.split('.')[-1]
+            prod_module = getattr(App.Product.Products, prod_name, None)
+            if prod_module is not None:
+                prod_path = prod_module.__path__[0]
+
+                # Retrieve version number from any suitable version.txt
+                for fname in ('version.txt', 'VERSION.txt', 'VERSION.TXT'):
+                    try:
+                        fpath = os.path.join( prod_path, fname )
+                        fhandle = open( fpath, 'r' )
+                        version = fhandle.read().strip()
+                        fhandle.close()
+                        warn('Version for profile %s taken from version.txt. '
+                             'This is deprecated behaviour and will be '
+                             'removed in GenericSetup 1.5: please specify '
+                             'the version in metadata.xml.' % profile_id,
+                             DeprecationWarning)
+                        break
+                    except IOError:
+                        continue
+
+            if version is not None:
+                metadata[ 'version' ] = version
 
         # metadata.xml description trumps ZCML description... awkward
         info.update( metadata )

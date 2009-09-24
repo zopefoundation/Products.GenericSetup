@@ -206,7 +206,7 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
 
         self.assertEqual( export_registry.getStep( 'one' ), ONE_FUNC )
 
-    def test_runImportStepFromProfile_nonesuch(self):
+    def test_runImportStep_nonesuch( self ):
 
         site = self._makeSite()
 
@@ -215,7 +215,7 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
         self.assertRaises( KeyError, tool.runImportStepFromProfile,
                            '', 'nonesuch' )
 
-    def test_runImportStepFromProfile_simple(self):
+    def test_runImportStep_simple( self ):
 
         TITLE = 'original title'
         site = self._makeSite( TITLE )
@@ -247,7 +247,7 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
         self.assertEqual(_after_import_events[0].steps, ['simple'])
         self.assertEqual(_after_import_events[0].full_import, False)
 
-    def test_runImportStepFromProfile_dependencies(self):
+    def test_runImportStep_dependencies( self ):
 
         TITLE = 'original title'
         site = self._makeSite( TITLE )
@@ -275,18 +275,17 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
         global _before_import_events
         self.assertEqual( len(_before_import_events), 1)
         self.assertEqual(_before_import_events[0].profile_id, 'snapshot-dummy')
-        self.assertEqual(_before_import_events[0].steps,
-                         ['dependable', 'dependent'])
+        self.assertEqual(_before_import_events[0].steps, ['dependable', 'dependent'])
         self.assertEqual(_before_import_events[0].full_import, False)
 
         global _after_import_events
         self.assertEqual( len(_after_import_events), 1)
         self.assertEqual(_after_import_events[0].profile_id, 'snapshot-dummy')
-        self.assertEqual(_after_import_events[0].steps,
-                         ['dependable', 'dependent'])
+        self.assertEqual(_after_import_events[0].steps, ['dependable', 'dependent'])
         self.assertEqual(_after_import_events[0].full_import, False)
 
-    def test_runImportStepFromProfile_skip_dependencies(self):
+
+    def test_runImportStep_skip_dependencies( self ):
 
         TITLE = 'original title'
         site = self._makeSite( TITLE )
@@ -321,7 +320,7 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
         self.assertEqual(_after_import_events[0].steps, ['dependent'])
         self.assertEqual(_after_import_events[0].full_import, False)
 
-    def test_runImportStepFromProfile_default_purge(self):
+    def test_runImportStep_default_purge( self ):
 
         site = self._makeSite()
 
@@ -336,7 +335,7 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
         self.assertEqual( result[ 'messages' ][ 'purging' ], 'Purged' )
         self.failUnless( site.purged )
 
-    def test_runImportStepFromProfile_explicit_purge(self):
+    def test_runImportStep_explicit_purge( self ):
 
         site = self._makeSite()
 
@@ -352,7 +351,7 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
         self.assertEqual( result[ 'messages' ][ 'purging' ], 'Purged' )
         self.failUnless( site.purged )
 
-    def test_runImportStepFromProfile_skip_purge(self):
+    def test_runImportStep_skip_purge( self ):
 
         site = self._makeSite()
 
@@ -368,7 +367,7 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
         self.assertEqual( result[ 'messages' ][ 'purging' ], 'Unpurged' )
         self.failIf( site.purged )
 
-    def test_runImportStepFromProfile_consistent_context(self):
+    def test_runImportStep_consistent_context( self ):
 
         site = self._makeSite()
 
@@ -383,7 +382,7 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
                                                 purge_old=False )
         self.failIf( site.purged )
 
-    def test_runAllImportStepsFromProfile_empty(self):
+    def test_runAllImportSteps_empty( self ):
 
         site = self._makeSite()
         tool = self._makeOne('setup_tool').__of__( site )
@@ -392,7 +391,7 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
 
         self.assertEqual( len(result['steps']), 3 )
 
-    def test_runAllImportStepsFromProfile_sorted_default_purge(self):
+    def test_runAllImportSteps_sorted_default_purge( self ):
 
         TITLE = 'original title'
         PROFILE_ID = 'snapshot-testing'
@@ -430,7 +429,7 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
         logged = [x for x in tool.objectIds('File') if x.startswith(prefix)]
         self.assertEqual(len(logged), 1)
 
-    def test_runAllImportStepsFromProfile_unicode_id_creates_reports(self):
+    def test_runAllImportSteps_unicode_profile_id_creates_reports( self ):
 
         TITLE = 'original title'
         PROFILE_ID = u'snapshot-testing'
@@ -451,7 +450,7 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
         logged = [x for x in tool.objectIds('File') if x.startswith(prefix)]
         self.assertEqual(len(logged), 1)
 
-    def test_runAllImportStepsFromProfile_sorted_explicit_purge(self):
+    def test_runAllImportSteps_sorted_explicit_purge( self ):
 
         site = self._makeSite()
         tool = self._makeOne('setup_tool').__of__( site )
@@ -464,8 +463,7 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
         registry.registerStep( 'purging', '1'
                              , _purgeIfRequired )
 
-        result = tool.runAllImportStepsFromProfile('snapshot-dummy',
-                                                   purge_old=True )
+        result = tool.runAllImportStepsFromProfile( 'snapshot-dummy', purge_old=True )
 
         self.assertEqual( len(result['steps']), 6 )
 
@@ -477,7 +475,7 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
         self.assertEqual( result['steps'][5], 'dependent' )
         self.failUnless( site.purged )
 
-    def test_runAllImportStepsFromProfile_sorted_skip_purge(self):
+    def test_runAllImportSteps_sorted_skip_purge( self ):
 
         site = self._makeSite()
         tool = self._makeOne('setup_tool').__of__( site )
@@ -490,8 +488,7 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
         registry.registerStep( 'purging', '1'
                              , _purgeIfRequired )
 
-        result = tool.runAllImportStepsFromProfile('snapshot-dummy',
-                                                   purge_old=False )
+        result = tool.runAllImportStepsFromProfile( 'snapshot-dummy', purge_old=False )
 
         self.assertEqual( len(result['steps']), 6 )
 
@@ -503,7 +500,7 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
         self.assertEqual( result['steps'][5], 'dependent' )
         self.failIf( site.purged )
 
-    def test_runAllImportStepsFromProfile_without_depends(self):
+    def test_runAllImportStepsFromProfileWithoutDepends( self ):
         from Products.GenericSetup.metadata import METADATA_XML
 
         self._makeFile(METADATA_XML, _METADATA_XML)
@@ -518,11 +515,10 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
             _imported.append(context._profile_path)
 
         tool.applyContext=applyContext
-        result = tool.runAllImportStepsFromProfile('profile-other:foo',
-                                                   ignore_dependencies=True)
+        result = tool.runAllImportStepsFromProfile('profile-other:foo', ignore_dependencies=True)
         self.assertEqual(_imported, [self._PROFILE_PATH])
 
-    def test_runAllImportStepsFromProfile_with_depends(self):
+    def test_runAllImportStepsFromProfileWithDepends( self ):
         from Products.GenericSetup.metadata import METADATA_XML
 
         self._makeFile(METADATA_XML, _METADATA_XML)
@@ -565,7 +561,7 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
         self.assertEqual(tool.getLastVersionForProfile(profile_id),
                          ('1', '0'))
 
-    def test_runAllImportStepsFromProfile_step_registration_with_depends(self):
+    def test_runAllImportStepsFromProfileStepRegistrationWithDepends( self ):
         from Products.GenericSetup.metadata import METADATA_XML
 
         self._makeFile(METADATA_XML, _METADATA_XML)
@@ -593,6 +589,8 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
 
         # ensure the additional step on foo was imported
         self.failUnless('one' in result['steps'])
+
+
 
     def test_runExportStep_nonesuch( self ):
 
@@ -816,8 +814,8 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
         self.assertEqual( info[ 'title' ], 'One Step' )
         self.assertEqual( info[ 'version' ], '1' )
         self.failUnless( 'One small step' in info[ 'description' ] )
-        self.assertEqual(info[ 'handler' ],
-                         'Products.GenericSetup.tests.test_registry.ONE_FUNC' )
+        self.assertEqual( info[ 'handler' ]
+                        , 'Products.GenericSetup.tests.test_registry.ONE_FUNC' )
 
         self.assertEqual( import_registry.getStep( 'one' ), ONE_FUNC )
 
@@ -828,8 +826,8 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
         self.assertEqual( info[ 'id' ], 'one' )
         self.assertEqual( info[ 'title' ], 'One Step' )
         self.failUnless( 'One small step' in info[ 'description' ] )
-        self.assertEqual(info[ 'handler' ],
-                         'Products.GenericSetup.tests.test_registry.ONE_FUNC' )
+        self.assertEqual( info[ 'handler' ]
+                        , 'Products.GenericSetup.tests.test_registry.ONE_FUNC' )
 
         self.assertEqual( export_registry.getStep( 'one' ), ONE_FUNC )
 
@@ -942,8 +940,7 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
         # register upgrade step
         from Products.GenericSetup.upgrade import _upgrade_registry
         orig_upgrade_registry = copy.copy(_upgrade_registry._registry)
-        step = UpgradeStep("Upgrade",
-                           "GenericSetup:dummy_profile", '*', '1.1', '',
+        step = UpgradeStep("Upgrade", "GenericSetup:dummy_profile", '*', '1.1', '',
                            dummy_upgrade_handler,
                            None, "1")
         _registerUpgradeStep(step)

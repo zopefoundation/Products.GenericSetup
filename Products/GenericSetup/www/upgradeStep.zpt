@@ -12,10 +12,11 @@
       <div tal:replace="info/title">INFO</div>
     </td>
     <td class="form-help">
-      <div tal:content="structure string:(${info/ssource} &amp;#8594; ${info/sdest})">PATH</div>
+      <div tal:condition="info/haspath"
+           tal:content="structure string:(${info/ssource} &amp;#8594; ${info/sdest})">PATH</div>
     </td>
     <td class="form-help">
-      <div tal:condition="info/done"
+      <div tal:condition="not:info/proposed"
            tal:replace="default">(done)</div>
     </td>
   </metal:upgrade-step>

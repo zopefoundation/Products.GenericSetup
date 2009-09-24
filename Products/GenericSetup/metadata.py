@@ -16,11 +16,8 @@ $Id$
 """
 import os
 
-from Products.GenericSetup.utils import _getProductPath
-from Products.GenericSetup.utils import ImportConfiguratorBase
-from Products.GenericSetup.utils import CONVERTER
-from Products.GenericSetup.utils import DEFAULT
-from Products.GenericSetup.utils import KEY
+from utils import ImportConfiguratorBase, _getProductPath
+from utils import CONVERTER, DEFAULT, KEY
 
 METADATA_XML = 'metadata.xml'
 

@@ -20,16 +20,18 @@ import Testing
 
 from xml.dom.minidom import parseString
 
+import Products.Five
 from OFS.interfaces import IItem
+from Products.Five import zcml
 from zope.component import getMultiAdapter
 from zope.interface import implements
 from zope.interface.verify import verifyClass
 from zope.testing import testrunner
 from zope.testing.cleanup import cleanUp
 
-from Products.GenericSetup.interfaces import IBody
-from Products.GenericSetup.interfaces import INode
-from Products.GenericSetup.interfaces import ISetupEnviron
+from interfaces import IBody
+from interfaces import INode
+from interfaces import ISetupEnviron
 
 
 class DummyLogger:
@@ -68,7 +70,7 @@ class IDummyMarker(IItem):
     pass
 
 
-class _AdapterTestCaseBase:
+class _AdapterTestCaseBase(unittest.TestCase):
 
     def _populate(self, obj):
         pass
@@ -146,7 +148,6 @@ class ExportImportZCMLLayer:
     @classmethod
     def setUp(cls):
         import Products.Five
-        from Products.Five import zcml
         import Products.GenericSetup
 
         zcml.load_config('meta.zcml', Products.Five)
@@ -164,7 +165,7 @@ class ExportImportZCMLLayer:
 try:
     from Testing.ZopeTestCase.layer import ZopeLite
 except ImportError:
-    pass # BBB: Zope < 2.11
+    pass # Zope < 2.11
 else:
     ExportImportZCMLLayer.__bases__ = (ZopeLite,)
 

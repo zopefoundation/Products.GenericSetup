@@ -15,20 +15,16 @@
 $Id$
 """
 
+from AccessControl import ClassSecurityInfo
 from AccessControl.Permission import Permission
-from AccessControl.SecurityInfo import ClassSecurityInfo
-try:
-    from App.class_init import InitializeClass
-except ImportError:
-    # BBB for Zope <2.11
-    from Globals import InitializeClass
+from Globals import InitializeClass
 from Products.PageTemplates.PageTemplateFile import PageTemplateFile
 
-from Products.GenericSetup.permissions import ManagePortal
-from Products.GenericSetup.utils import _xmldir
-from Products.GenericSetup.utils import ExportConfiguratorBase
-from Products.GenericSetup.utils import ImportConfiguratorBase
-from Products.GenericSetup.utils import CONVERTER, DEFAULT, KEY
+from permissions import ManagePortal
+from utils import _xmldir
+from utils import ExportConfiguratorBase
+from utils import ImportConfiguratorBase
+from utils import CONVERTER, DEFAULT, KEY
 
 
 #

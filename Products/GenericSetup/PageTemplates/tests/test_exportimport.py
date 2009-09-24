@@ -28,7 +28,7 @@ _PAGETEMPLATE_BODY = """\
 """
 
 
-class ZopePageTemplateBodyAdapterTests(BodyAdapterTestCase, unittest.TestCase):
+class ZopePageTemplateBodyAdapterTests(BodyAdapterTestCase):
 
     layer = ExportImportZCMLLayer
 
@@ -44,6 +44,7 @@ class ZopePageTemplateBodyAdapterTests(BodyAdapterTestCase, unittest.TestCase):
     def setUp(self):
         from Products.PageTemplates.ZopePageTemplate import ZopePageTemplate
 
+        BodyAdapterTestCase.setUp(self)
         self._obj = ZopePageTemplate('foo_template')
         self._BODY = _PAGETEMPLATE_BODY
 

@@ -5,7 +5,7 @@ from Products.GenericSetup.interfaces import IBeforeProfileImportEvent
 from Products.GenericSetup.events import ProfileImportedEvent
 from Products.GenericSetup.interfaces import IProfileImportedEvent
 
-class BaseEventTests:
+class BaseEventTests(unittest.TestCase):
     def testInterface(self):
         event=self.klass("tool", "profile_id", "steps", "full_import")
         verifyObject(self.iface, event)
@@ -25,12 +25,12 @@ class BaseEventTests:
         self.assertEqual(event.full_import, "full_import")
 
 
-class BeforeProfileImportEventTests(BaseEventTests, unittest.TestCase):
+class BeforeProfileImportEventTests(BaseEventTests):
     klass = BeforeProfileImportEvent
     iface = IBeforeProfileImportEvent
 
 
-class ProfileImportedEventTests(BaseEventTests, unittest.TestCase):
+class ProfileImportedEventTests(BaseEventTests):
     klass = ProfileImportedEvent
     iface = IProfileImportedEvent
 

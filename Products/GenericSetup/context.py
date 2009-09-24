@@ -24,17 +24,13 @@ from StringIO import StringIO
 from tarfile import TarFile
 from tarfile import TarInfo
 
-from AccessControl.SecurityInfo import ClassSecurityInfo
+from AccessControl import ClassSecurityInfo
 from Acquisition import aq_inner
 from Acquisition import aq_parent
 from Acquisition import aq_self
 from Acquisition import Implicit
-try:
-    from App.class_init import InitializeClass
-except ImportError:
-    # BBB for Zope <2.11
-    from Globals import InitializeClass
 from DateTime.DateTime import DateTime
+from Globals import InitializeClass
 from OFS.DTMLDocument import DTMLDocument
 from OFS.Folder import Folder
 from OFS.Image import File
@@ -43,15 +39,15 @@ from Products.PageTemplates.ZopePageTemplate import ZopePageTemplate
 from Products.PythonScripts.PythonScript import PythonScript
 from zope.interface import implements
 
-from Products.GenericSetup.interfaces import IChunkableExportContext
-from Products.GenericSetup.interfaces import IChunkableImportContext
-from Products.GenericSetup.interfaces import IExportContext
-from Products.GenericSetup.interfaces import IImportContext
-from Products.GenericSetup.interfaces import ISetupEnviron
-from Products.GenericSetup.interfaces import IWriteLogger
-from Products.GenericSetup.interfaces import SKIPPED_FILES
-from Products.GenericSetup.interfaces import SKIPPED_SUFFIXES
-from Products.GenericSetup.permissions import ManagePortal
+from interfaces import IChunkableExportContext
+from interfaces import IChunkableImportContext
+from interfaces import IExportContext
+from interfaces import IImportContext
+from interfaces import ISetupEnviron
+from interfaces import IWriteLogger
+from interfaces import SKIPPED_FILES
+from interfaces import SKIPPED_SUFFIXES
+from permissions import ManagePortal
 
 
 class Logger:
@@ -381,16 +377,11 @@ class TarballImportContext( BaseContext ):
         pfx_len = len(path)
 
         names = []
-        for info in self._archive.getmembers():
-            name = info.name
+        for name in self._archive.getnames():
             if name == path or not name.startswith(path):
                 continue
             name = name[pfx_len:]
-            if name in skip:
-                continue
-            # In earlier Python versions directories would always have a
-            # slash in their name.
-            if '/' in name or info.isdir():
+            if '/' in name or name in skip:
                 continue
             if [s for s in skip_suffixes if name.endswith(s)]:
                 continue

@@ -3,13 +3,11 @@
 $Id$
 """
 
-from AccessControl.SecurityInfo import ModuleSecurityInfo
+from AccessControl import ModuleSecurityInfo
 
-from Products.GenericSetup.interfaces import BASE
-from Products.GenericSetup.interfaces import EXTENSION
-from Products.GenericSetup.permissions import ManagePortal
-from Products.GenericSetup.registry import _profile_registry \
-    as profile_registry
+from interfaces import BASE, EXTENSION
+from permissions import ManagePortal
+from registry import _profile_registry as profile_registry
 
 security = ModuleSecurityInfo('Products.GenericSetup')
 security.declareProtected(ManagePortal, 'profile_registry')

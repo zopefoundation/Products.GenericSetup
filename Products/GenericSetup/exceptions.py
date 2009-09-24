@@ -15,7 +15,7 @@
 $Id$
 """
 
-from AccessControl.SecurityInfo import ModuleSecurityInfo
+from AccessControl import ModuleSecurityInfo
 security = ModuleSecurityInfo('Products.GenericSetup.exceptions')
 
 security.declarePublic('BadRequest')

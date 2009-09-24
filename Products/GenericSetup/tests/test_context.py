@@ -658,8 +658,6 @@ class TarballImportContextTests(ZopeTestCase, ConformsToISetupContext,
 
         site, tool, ctx = self._makeOne( { FILENAME: printable } )
 
-        # Beware! The test setup actually does add two entries into the
-        # context. One is a folder and should be filtered out.
         self.assertEqual( len( ctx.listDirectory( None ) ), 1 )
         self.failUnless( FILENAME in ctx.listDirectory( None ) )
 
