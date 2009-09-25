@@ -1,7 +1,7 @@
 GenericSetup Product Changelog
 ==============================
 
-1.5.0b1 (unreleased)
+1.5.0b1 (2009-09-25)
 --------------------
 
 - LP #388380:  removed obsolute STX docs from the package directory.
