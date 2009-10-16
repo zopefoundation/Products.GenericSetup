@@ -665,6 +665,18 @@ class IWriteLogger(Interface):
 class INode(Interface):
 
     """Node im- and exporter.
+
+    This is no generic DOM interface. It doesn't always provide a complete
+    serialization of the object and its subobjects. If an adapter only
+    provides 'INode' (and not 'IBody') it is likely to faithfully serialize
+    the object. If, however, it also provides 'IBody', it is likely that its
+    'node' serializes only an empty hull (without content or additional
+    information such as properties) and expects that the missing parts are
+    taken care of separately by the remaining 'IBody' infrastructure in a
+    separate step. An essential example of this behavior is the default
+    'INode' adapter for 'Folder' (and friends): its 'node' just specifies the
+    folder's id and meta type, the folder's content is only serialized by
+    'body'.
     """
 
     node = Text(description=u'Im- and export the object as a DOM node.')
