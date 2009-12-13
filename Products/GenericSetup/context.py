@@ -21,6 +21,7 @@ import logging
 import os
 import time
 from StringIO import StringIO
+from tarfile import DIRTYPE
 from tarfile import TarFile
 from tarfile import TarInfo
 
@@ -328,7 +329,6 @@ class TarballImportContext( BaseContext ):
     def __init__( self, tool, archive_bits, encoding=None,
                   should_purge=False ):
         BaseContext.__init__( self, tool, encoding )
-        timestamp = time.gmtime()
         self._archive_stream = StringIO(archive_bits)
         self._archive = TarFile.open( 'foo.bar', 'r:gz'
                                     , self._archive_stream )
@@ -388,9 +388,7 @@ class TarballImportContext( BaseContext ):
             name = name[pfx_len:]
             if name in skip:
                 continue
-            # In earlier Python versions directories would always have a
-            # slash in their name.
-            if '/' in name or info.isdir():
+            if '/' in name and not info.isdir():
                 continue
             if [s for s in skip_suffixes if name.endswith(s)]:
                 continue
@@ -443,6 +441,16 @@ class TarballExportContext( BaseContext ):
         """
         if subdir is not None:
             filename = '/'.join( ( subdir, filename ) )
+
+        parents = filename.split('/')[:-1]
+        while parents:
+            path = '/'.join(parents) + '/'
+            if path not in self._archive.getnames():
+                info = TarInfo(path)
+                info.type = DIRTYPE
+                info.mtime = time.time()
+                self._archive.addfile(info)
+            parents.pop()
 
         stream = StringIO( text )
         info = TarInfo( filename )

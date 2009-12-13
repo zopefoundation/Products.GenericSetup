@@ -445,21 +445,21 @@ class TarballImportContextTests(ZopeTestCase, ConformsToISetupContext,
             stream = StringIO(v)
             info = TarInfo(k)
             info.size = len(v)
-            info.mtime = mod_time
+            info.mtime = modtime
             archive.addfile(info, stream)
 
-        def _addMember(path, data, modtime):
+        def _addMember(filename, data, modtime):
             from tarfile import DIRTYPE
-            elements = path.split('/')
-            parents = filter(None, [elements[x] for x in range(len(elements))])
-            for parent in parents:
-                info = TarInfo()
-                info.name = parent
-                info.size = 0
-                info.mtime = mod_time
-                info.type = DIRTYPE
-                archive.addfile(info, StringIO())
-            _addOneMember(path, data, modtime)
+            parents = filename.split('/')[:-1]
+            while parents:
+                path = '/'.join(parents) + '/'
+                if path not in archive.getnames():
+                    info = TarInfo(path)
+                    info.type = DIRTYPE
+                    info.mtime = modtime
+                    archive.addfile(info)
+                parents.pop()
+            _addOneMember(filename, data, modtime)
 
         file_items = file_dict.items() or [('dummy', '')] # empty archive barfs
 
@@ -658,8 +658,6 @@ class TarballImportContextTests(ZopeTestCase, ConformsToISetupContext,
 
         site, tool, ctx = self._makeOne( { FILENAME: printable } )
 
-        # Beware! The test setup actually does add two entries into the
-        # context. One is a folder and should be filtered out.
         self.assertEqual( len( ctx.listDirectory( None ) ), 1 )
         self.failUnless( FILENAME in ctx.listDirectory( None ) )
 
@@ -815,7 +813,8 @@ class TarballExportContextTests(ZopeTestCase, ConformsToISetupContext,
 
         fileish = StringIO( ctx.getArchive() )
 
-        self._verifyTarballContents( fileish, [ 'foo.txt', 'bar/baz.txt' ] )
+        self._verifyTarballContents( fileish,
+                                     ['foo.txt', 'bar', 'bar/baz.txt'] )
         self._verifyTarballEntry( fileish, 'foo.txt', printable )
         self._verifyTarballEntry( fileish, 'bar/baz.txt', digits )
 

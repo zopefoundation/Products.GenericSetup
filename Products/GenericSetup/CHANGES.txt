@@ -4,7 +4,7 @@ Products.GenericSetup Changelog
 1.5.0 (unreleased)
 ------------------
 
-- 
+- tarball contexts: Fixed export and import of directory structures.
 
 
 1.5.0b1 (2009-09-25)
