@@ -382,13 +382,14 @@ class TarballImportContext( BaseContext ):
 
         names = []
         for info in self._archive.getmembers():
-            name = info.name
+            name = info.name.rstrip('/')
             if name == path or not name.startswith(path):
                 continue
             name = name[pfx_len:]
-            if name in skip:
+            if '/' in name:
+                # filter out items in subdirs
                 continue
-            if '/' in name and not info.isdir():
+            if name in skip:
                 continue
             if [s for s in skip_suffixes if name.endswith(s)]:
                 continue
