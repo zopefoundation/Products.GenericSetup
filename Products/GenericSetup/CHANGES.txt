@@ -6,6 +6,7 @@ Products.GenericSetup Changelog
 
 - TBD
 
+
 1.4.5 (2009-06-20)
 ------------------
 
@@ -43,7 +44,8 @@ Products.GenericSetup Changelog
   in a given context.  (https://bugs.launchpad.net/zope-cmf/+bug/279294)
 
 - Changed upgrade logic to set the current version after an upgrade to the
-  of the last step, instead of the current profile version.
+  destination version of the last step run, instead of the current profile
+  version.
 
 
 1.4.2.2 (2008-09-22)
@@ -360,7 +362,7 @@ Products.GenericSetup Changelog
 
 0.9 (2005-08-08)
 ----------------
+
 - CVS tag:  GenericSetup-0_9
 
 - Initial version, cut down from CMFSetup-1.5.3
-
