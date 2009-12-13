@@ -1,5 +1,11 @@
-GenericSetup Product Changelog
-==============================
+Products.GenericSetup Changelog
+===============================
+
+1.5.0 (unreleased)
+------------------
+
+- 
+
 
 1.5.0b1 (2009-09-25)
 --------------------
@@ -50,12 +56,6 @@ GenericSetup Product Changelog
   If versions and checker are specified for a step, the checker is used as an
   additional restriction.
 
-- Don't fail when a sub-item cannot be adapted after creation when
-  importing a folder.  (https://bugs.launchpad.net/zope-cmf/+bug/300315)
-
-- Avoid even an explicit purge of the rolemap if no XML file is present
-  in a given context.  (https://bugs.launchpad.net/zope-cmf/+bug/279294)
-
 - Component registry import: Add the ability to unregister a component
   by specifying the "remove" attribute inside a utility node.
   (https://bugs.launchpad.net/zope-cmf/+bug/161728)
@@ -101,10 +101,6 @@ GenericSetup Product Changelog
 
 - Enhanced the readability of the upgrades tab on the tool.
 
-- Changed upgrade logic to set the current version after an upgrade to the
-  destination version of the last step run, instead of the current profile
-  version.
-
 - Use the parse_version function from pkg_resources to normalize versions
   before comparing them inside the upgrade code. This ensures pre-release
   versions are handled correctly. Also use the normalize code when sorting
@@ -122,13 +118,6 @@ GenericSetup Product Changelog
   each import. https://bugs.launchpad.net/zope-cmf/+bug/213905
 
 
-1.4.5 (unreleased)
-------------------
-
-- Added a for_=None parameter to tool.py:listProfileInfo to have the same
-  signature as registry.py:listProfileInfo, so profiles can be filtered by interfaces.
-
-
 1.4.5 (2009-06-20)
 ------------------
 
@@ -143,10 +132,31 @@ GenericSetup Product Changelog
 1.4.4 (2009-05-15)
 ------------------
 
-- Ensure that the browser doesn't hang after creating a snapshot.
-  (https://bugs.launchpad.net/zope-cmf/+bug/161730)
+- Make sure that 'manage_createSnapshot' returns something to the browser
+  when it's done, preventing an apparent hang.
+  (http://dev.plone.org/plone/ticket/8452, 
+  https://bugs.launchpad.net/zope-cmf/+bug/161730)
 
-- Fixed invalid XML for the Import tab so it doesn't break with Chameleon.
+- Fixed invalid XML for the "Import' tab so it doesn't break when rendered
+  with Chameleon.
+
+
+1.4.3 (2009-04-22)
+------------------
+
+- Recognize acquisition-wrapped components as being of the right underlying
+  type when testing for replacement during import.  
+  (https://bugs.launchpad.net/zope-cmf/+bug/365202)
+
+- Don't fail when a sub-item cannot be adapted after creation when
+  importing a folder.  (https://bugs.launchpad.net/zope-cmf/+bug/300315)
+
+- Avoid even an explicit purge of the rolemap if no XML file is present
+  in a given context.  (https://bugs.launchpad.net/zope-cmf/+bug/279294)
+
+- Changed upgrade logic to set the current version after an upgrade to the
+  destination version of the last step run, instead of the current profile
+  version.
 
 
 1.4.2.2 (2008-09-22)
@@ -467,4 +477,3 @@ GenericSetup Product Changelog
 - CVS tag:  GenericSetup-0_9
 
 - Initial version, cut down from CMFSetup-1.5.3
-
