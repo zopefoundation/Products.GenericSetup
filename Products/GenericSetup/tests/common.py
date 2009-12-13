@@ -121,7 +121,7 @@ class TarballTester( DOMComparator ):
 
         self.assertEqual( len( items ), len( toc_list ) )
         for i in range( len( items ) ):
-            self.assertEqual( items[ i ], toc_list[ i ] )
+            self.assertEqual( items[ i ].rstrip('/'), toc_list[ i ] )
 
         if when is not None:
             for tarinfo in tarfile:
