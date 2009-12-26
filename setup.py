@@ -2,8 +2,10 @@ import os
 from setuptools import setup
 from setuptools import find_packages
 
+NAME = 'GenericSetup'
+
 here = os.path.abspath(os.path.dirname(__file__))
-package = os.path.join(here, 'Products', 'GenericSetup')
+package = os.path.join(here, 'Products', NAME)
 docs = os.path.join(here, 'docs')
 
 def _package_doc(name):
@@ -14,17 +16,15 @@ def _docs_doc(name):
     f = open(os.path.join(docs, name))
     return f.read()
 
-NAME = 'GenericSetup'
-
 _boundary = '\n' + ('-' * 60) + '\n\n'
 README = ( _docs_doc('index.rst')
-         + _boundary 
+         + _boundary
          + _package_doc('CHANGES.txt')
-         + _boundary 
+         + _boundary
          + "\nDownload\n========"
          )
 
-setup(name='Products.GenericSetup',
+setup(name='Products.%s' % NAME,
       version=_package_doc('version.txt').strip(),
       description='Read Zope configuration state from profile dirs / tarballs',
       long_description=README,
@@ -50,13 +50,19 @@ setup(name='Products.GenericSetup',
       zip_safe=False,
       setup_requires=['eggtestinfo',
                      ],
-      install_requires=['setuptools',
-                        'five.localsitemanager >= 0.2',
-                       #'Zope2 >= 2.10',
-                       ],
-      tests_require=['zope.testing >= 3.7.0',
-                     'five.localsitemanager >= 0.2',
-                    ],
+      install_requires=[
+          'setuptools',
+          #'Zope2 >= 2.10',
+          'five.localsitemanager >= 0.2',
+          ],
+      tests_require=[
+          'zope.testing >= 3.7.0',
+          'zope.app.testing',
+          ],
+      extras_require=dict(
+        test=[
+          'zope.app.testing',
+          ]),
       test_loader="zope.testing.testrunner.eggsupport:SkipLayers",
       test_suite="Products.GenericSetup.tests",
       entry_points="""
