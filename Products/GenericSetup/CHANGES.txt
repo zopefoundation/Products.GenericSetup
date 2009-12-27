@@ -4,6 +4,8 @@ Products.GenericSetup Changelog
 1.5.0 (unreleased)
 ------------------
 
+- Removed testing dependency on zope.app.testing.ztapi.
+
 - tarball contexts: Fixed export and import of directory structures.
 
 
