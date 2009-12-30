@@ -4,6 +4,11 @@ Products.GenericSetup Changelog
 1.5.0 (unreleased)
 ------------------
 
+- Make sure the Import ZMI tab does not blow up if no base profile
+  has been selected, and make it a little more user-friendly.
+
+- Log if the components handler runs and has nothing to import.
+
 - Use five.formlib in favor of Products.Five.formlib if it is available.
 
 - Removed testing dependency on zope.app.testing.ztapi.

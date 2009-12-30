@@ -515,6 +515,9 @@ def importComponentRegistry(context):
         body = context.readDataFile('componentregistry.xml')
         if body is not None:
             importer.body = body
+        else:
+            logger = context.getLogger('componentregistry')
+            logger.debug("Nothing to import")
 
 def exportComponentRegistry(context):
     """Export local components.

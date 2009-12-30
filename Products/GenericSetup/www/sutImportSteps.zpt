@@ -1,6 +1,8 @@
 <tal:block define="base_context_id context/getBaselineContextID;
                    context_id request/context_id|base_context_id;
                    contexts context/listContextInfos;
+                   base_context_title python:[c['title'] for c in contexts if c['id']==base_context_id];
+                   base_context_title python:base_context_title and base_context_title[0] or 'NOT SET';
                    context_title python:[c['title'] for c in contexts if c['id']==context_id];
                    context_title python:context_title and context_title[0] or 'UNKNOWN';
                    extension_contexts python:[c for c in contexts if c['type'] in ['extension','snapshot']];
@@ -24,7 +26,7 @@ procedure, in order to pick up changes since the site was created.
  <option value=""
          tal:attributes="value base_context_id;
                          selected python:context_id==base_context_id">
-   Current base profile</option>
+   Current base profile (<span tal:replace="base_context_title"/>)</option>
  <option value="context-CONTEXT_ID"
     tal:repeat="context extension_contexts"
     tal:attributes="value context/id; selected python:context_id==context['id']"
@@ -37,6 +39,7 @@ procedure, in order to pick up changes since the site was created.
   </noscript>
 </form>
 
+<div tal:condition="context_id|nothing">
 
 <h3>Available Import Steps for "<span tal:replace="context_title">Base profile</span>"</h3>
 
@@ -129,6 +132,8 @@ procedure, in order to pick up changes since the site was created.
 
 </table>
 </form>
+
+</div>
 
 <h1 tal:replace="structure context/manage_page_footer">PAGE FOOTER</h1>
 </tal:block>
