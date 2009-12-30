@@ -4,6 +4,8 @@ Products.GenericSetup Changelog
 1.5.0 (unreleased)
 ------------------
 
+- Use five.formlib in favor of Products.Five.formlib if it is available.
+
 - Removed testing dependency on zope.app.testing.ztapi.
 
 - tarball contexts: Fixed export and import of directory structures.
