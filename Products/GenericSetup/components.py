@@ -21,7 +21,9 @@ from zope.component import adapts
 from zope.component import getUtilitiesFor
 from zope.component import getSiteManager
 from zope.component import queryMultiAdapter
+from zope.component.interfaces import ComponentLookupError
 from zope.component.interfaces import IComponentRegistry
+from zope.location.interfaces import IPossibleSite
 
 from Acquisition import aq_base
 from Acquisition import aq_parent
@@ -504,7 +506,16 @@ class ComponentRegistryXMLAdapter(XMLAdapterBase):
 def importComponentRegistry(context):
     """Import local components.
     """
-    sm = getSiteManager(context.getSite())
+    site = context.getSite()
+    sm = None
+    if IPossibleSite.providedBy(site):
+        # All object managers are an IPossibleSite, but this
+        # defines the getSiteManager method to be available
+        try:
+            sm = site.getSiteManager()
+        except ComponentLookupError:
+            sm = None
+
     if sm is None or not IComponentRegistry.providedBy(sm):
         logger = context.getLogger('componentregistry')
         logger.info("Can not register components, as no registry was found.")
@@ -522,7 +533,16 @@ def importComponentRegistry(context):
 def exportComponentRegistry(context):
     """Export local components.
     """
-    sm = getSiteManager(context.getSite())
+    site = context.getSite()
+    sm = None
+    if IPossibleSite.providedBy(site):
+        # All object managers are an IPossibleSite, but this
+        # defines the getSiteManager method to be available
+        try:
+            sm = site.getSiteManager()
+        except ComponentLookupError:
+            sm = None
+
     if sm is None or not IComponentRegistry.providedBy(sm):
         logger = context.getLogger('componentregistry')
         logger.debug("Nothing to export.")

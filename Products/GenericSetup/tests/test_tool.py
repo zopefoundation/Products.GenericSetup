@@ -671,8 +671,7 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
                         )
         fileish = StringIO( result[ 'tarball' ] )
 
-        self._verifyTarballContents( fileish, [ 'componentregistry.xml'
-                                              , 'import_steps.xml'
+        self._verifyTarballContents( fileish, [ 'import_steps.xml'
                                               , 'export_steps.xml'
                                               , 'rolemap.xml'
                                               , 'toolset.xml'
@@ -718,8 +717,7 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
 
         fileish = StringIO( result[ 'tarball' ] )
 
-        self._verifyTarballContents( fileish, [ 'componentregistry.xml'
-                                              , 'import_steps.xml'
+        self._verifyTarballContents( fileish, [ 'import_steps.xml'
                                               , 'export_steps.xml'
                                               , 'properties.ini'
                                               , 'rolemap.xml'
@@ -736,8 +734,7 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
         _EXPECTED = [('import_steps.xml', _DEFAULT_STEP_REGISTRIES_IMPORT_XML),
                      ('export_steps.xml', _DEFAULT_STEP_REGISTRIES_EXPORT_XML),
                      ('rolemap.xml', 'dummy'),
-                     ('toolset.xml', 'dummy'),
-                     ('componentregistry.xml', 'dummy')]
+                     ('toolset.xml', 'dummy')]
 
         site = self._makeSite()
         site.setup_tool = self._makeOne('setup_tool')

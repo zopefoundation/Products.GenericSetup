@@ -4,6 +4,9 @@ Products.GenericSetup Changelog
 1.5.0 (unreleased)
 ------------------
 
+- The components handler now ensures there is a valid component
+  registry (not the global registry) before importing or exporting.
+
 - Make sure the Import ZMI tab does not blow up if no base profile
   has been selected, and make it a little more user-friendly.
 

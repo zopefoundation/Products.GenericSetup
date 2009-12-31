@@ -68,6 +68,9 @@ def createComponentRegistry(context):
     components = PersistentComponents('++etc++site')
     components.__bases__ = (base,)
     components.__parent__ = aq_base(context)
+    # Make sure calls to getSiteManager on me return myself
+    # necessary because OFS.ObjectManager.getSiteManager expects _components
+    components._components = components
     context.setSiteManager(components)
 
 class IDummyInterface(Interface):
