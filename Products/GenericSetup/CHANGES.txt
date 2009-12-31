@@ -34,8 +34,8 @@ Products.GenericSetup Changelog
 - Fix utility removal so utility is not added when it is missing from the
   local component registry.
 
-- Fixed component handler to use 'for' not 'for_' in adapter directive. To
-  support import of existing profiles 'for_' is used as a fallback.
+- Fixed component handler to use ``for`` not ``for_`` in adapter directive. 
+  To support import of existing profiles ``for_`` is used as a fallback.
 
 - Changed testing.py to directly load zope.traversing's ZCML instead of going
   via the Five traversing.zcml BBB shim.
@@ -137,7 +137,7 @@ Products.GenericSetup Changelog
   it updates 'last version for profile'.  (Backported from trunk)
 
 - Added a for_=None parameter to tool.py:listProfileInfo to have the same
-  signature as registry.py:listProfileInfo, so profiles can be filtered by
+  signature as registry.py:listProfileInfo, so profiles can be filtered by 
   interfaces.
 
 
