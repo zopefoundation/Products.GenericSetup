@@ -1,12 +1,9 @@
-<configure
-    xmlns="http://namespaces.zope.org/zope"
-    xmlns:five="http://namespaces.zope.org/five">
+<configure xmlns="http://namespaces.zope.org/zope">
 
   <adapter factory=".exportimport.ZopePageTemplateBodyAdapter"/>
 
-  <five:implements
-      class="Products.PageTemplates.ZopePageTemplate.ZopePageTemplate"
-      interface=".interfaces.IZopePageTemplate"
-      />
+  <class class="Products.PageTemplates.ZopePageTemplate.ZopePageTemplate">
+    <implements interface=".interfaces.IZopePageTemplate" />
+  </class>
 
 </configure>

@@ -1,12 +1,9 @@
-<configure
-    xmlns="http://namespaces.zope.org/zope"
-    xmlns:five="http://namespaces.zope.org/five">
+<configure xmlns="http://namespaces.zope.org/zope">
 
   <adapter factory=".exportimport.PythonScriptBodyAdapter"/>
 
-  <five:implements
-      class="Products.PythonScripts.PythonScript.PythonScript"
-      interface=".interfaces.IPythonScript"
-      />
+  <class class="Products.PythonScripts.PythonScript.PythonScript">
+    <implements interface=".interfaces.IPythonScript" />
+  </class>
 
 </configure>

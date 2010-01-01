@@ -4,6 +4,7 @@ Products.GenericSetup Changelog
 1.6.0 (unreleased)
 ------------------
 
+- Prefer the class over the five:implements ZCML directive.
 
 1.5.0 (2010-01-01)
 ------------------
