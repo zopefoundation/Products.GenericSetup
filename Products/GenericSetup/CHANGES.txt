@@ -1,7 +1,7 @@
 Products.GenericSetup Changelog
 ===============================
 
-1.5.0 (unreleased)
+1.5.0 (2010-01-01)
 ------------------
 
 - The components handler now ensures there is a valid component
