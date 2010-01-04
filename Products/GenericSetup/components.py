@@ -19,7 +19,6 @@ from operator import itemgetter
 
 from zope.component import adapts
 from zope.component import getUtilitiesFor
-from zope.component import getSiteManager
 from zope.component import queryMultiAdapter
 from zope.component.interfaces import ComponentLookupError
 from zope.component.interfaces import IComponentRegistry
@@ -494,9 +493,12 @@ class ComponentRegistryXMLAdapter(XMLAdapterBase):
                     child.setAttribute('factory', factory)
                 if factory is not None:
                     ofs_id = self._ofs_id(child)
-                    name = getattr(comp, '__name__', '')
+                    name = getattr(comp, '__name__', None)
                     if ofs_id != name:
-                        child.setAttribute('id', name)
+                        if name is not None:
+                            child.setAttribute('id', name)
+                        else:
+                            child.setAttribute('id', ofs_id)
 
             fragment.appendChild(child)
 
