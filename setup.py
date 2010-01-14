@@ -52,7 +52,8 @@ setup(name='Products.%s' % NAME,
                      ],
       install_requires=[
           'setuptools',
-          #'Zope2 >= 2.10',
+          'Zope2 >= 2.12.3',
+          'five.formlib >= 1.0.2',
           'five.localsitemanager >= 0.2',
           ],
       tests_require=[

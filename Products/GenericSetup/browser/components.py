@@ -17,12 +17,8 @@ $Id$
 
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from Products.Five.component.interfaces import IObjectManagerSite
-# BBB Zope 2.12
-try:
-    from five.formlib.formbase import PageEditForm
-except ImportError:
-    from Products.Five.formlib.formbase import PageEditForm
 
+from five.formlib.formbase import PageEditForm
 from zope.component import adapts
 from zope.component import getMultiAdapter
 from zope.formlib import form

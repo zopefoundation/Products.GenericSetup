@@ -4,6 +4,8 @@ Products.GenericSetup Changelog
 1.6.0 (unreleased)
 ------------------
 
+- Require at least Zope 2.12.3 and use the optional five.formlib extension.
+
 - Fixed bug in the export code of persistent utilities with explicit OFS ids.
 
 - Prefer the class over the five:implements ZCML directive.
@@ -29,7 +31,7 @@ Products.GenericSetup Changelog
 1.5.0b1 (2009-09-25)
 --------------------
 
-- LP #388380:  removed obsolute STX docs from the package directory.
+- LP #388380:  removed obsolete STX docs from the package directory.
 
 - Made export / import features for old-school TextIndex (removed in Zope 2.12)
   conditional.
