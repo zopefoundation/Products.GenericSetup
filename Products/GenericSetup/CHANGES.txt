@@ -1,14 +1,15 @@
 Products.GenericSetup Changelog
 ===============================
 
-1.6.0 (unreleased)
-------------------
+1.6.0b1 (2010-01-31)
+--------------------
 
 - Require at least Zope 2.12.3 and use the optional five.formlib extension.
 
 - Fixed bug in the export code of persistent utilities with explicit OFS ids.
 
 - Prefer the class over the five:implements ZCML directive.
+
 
 1.5.0 (2010-01-01)
 ------------------
