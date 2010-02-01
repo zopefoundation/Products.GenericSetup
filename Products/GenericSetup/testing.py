@@ -17,6 +17,7 @@ $Id$
 
 import unittest
 import Testing
+from Testing.ZopeTestCase.layer import ZopeLite
 
 from xml.dom.minidom import parseString
 
@@ -141,7 +142,7 @@ class NodeAdapterTestCase(_AdapterTestCaseBase):
         self.assertEqual(adapted.node.toprettyxml(' '), self._XML)
 
 
-class ExportImportZCMLLayer:
+class ExportImportZCMLLayer(ZopeLite):
 
     @classmethod
     def setUp(cls):
@@ -159,15 +160,6 @@ class ExportImportZCMLLayer:
     @classmethod
     def tearDown(cls):
         cleanUp()
-
-
-# Derive from ZopeLite layer if available
-try:
-    from Testing.ZopeTestCase.layer import ZopeLite
-except ImportError:
-    pass # BBB: Zope < 2.11
-else:
-    ExportImportZCMLLayer.__bases__ = (ZopeLite,)
 
 
 def run(test_suite):

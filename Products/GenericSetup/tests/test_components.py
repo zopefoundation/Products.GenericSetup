@@ -20,24 +20,14 @@ import Testing
 
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from Acquisition import aq_base
-try:
-    from App.class_init import InitializeClass
-except ImportError:
-    # BBB: for Zope < 2.11
-    from Globals import InitializeClass
+from App.class_init import InitializeClass
 from OFS.Folder import Folder
 from OFS.SimpleItem import SimpleItem
 from Products.Five.component import enableSite
 from Products.Five.component.interfaces import IObjectManagerSite
-try:
-    from zope.site.hooks import clearSite
-    from zope.site.hooks import setHooks
-    from zope.site.hooks import setSite
-except ImportError:
-    # BBB: for Zope < 2.12
-    from zope.app.component.hooks import clearSite
-    from zope.app.component.hooks import setHooks
-    from zope.app.component.hooks import setSite
+from zope.site.hooks import clearSite
+from zope.site.hooks import setHooks
+from zope.site.hooks import setSite
 from zope.component import getMultiAdapter
 from zope.component import getGlobalSiteManager
 from zope.component import getSiteManager

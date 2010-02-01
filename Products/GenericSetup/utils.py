@@ -28,11 +28,7 @@ from xml.parsers.expat import ExpatError
 
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from Acquisition import Implicit
-try:
-    from App.class_init import InitializeClass
-except ImportError:
-    # BBB for Zope <2.11
-    from Globals import InitializeClass
+from App.class_init import InitializeClass
 from App.Common import package_home
 from OFS.interfaces import IOrderedContainer
 from Products.Five.utilities.interfaces import IMarkerInterfaces
@@ -40,13 +36,11 @@ from zope.component import queryMultiAdapter
 from zope.interface import directlyProvides
 from zope.interface import implements
 from zope.interface import implementsOnly
-from zope.interface import providedBy
 from ZPublisher.HTTPRequest import default_encoding
 
 from Products.GenericSetup.exceptions import BadRequest
 from Products.GenericSetup.interfaces import IBody
 from Products.GenericSetup.interfaces import INode
-from Products.GenericSetup.interfaces import ISetupContext
 from Products.GenericSetup.interfaces import ISetupTool
 from Products.GenericSetup.permissions import ManagePortal
 
@@ -621,7 +615,7 @@ class PropertyManagerHelpers(object):
 
     def _fauxAdapt(self, context):
         from OFS.PropertySheets import PropertySheet
-        helper_self = self
+
         class Adapted(PropertySheet):
             def __init__(self, real, properties):
                 self._real = real

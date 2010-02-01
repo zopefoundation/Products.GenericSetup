@@ -17,15 +17,14 @@ $Id$
 
 from operator import itemgetter
 
+from Acquisition import aq_base
+from Acquisition import aq_parent
 from zope.component import adapts
 from zope.component import getUtilitiesFor
 from zope.component import queryMultiAdapter
 from zope.component.interfaces import ComponentLookupError
 from zope.component.interfaces import IComponentRegistry
 from zope.location.interfaces import IPossibleSite
-
-from Acquisition import aq_base
-from Acquisition import aq_parent
 
 from Products.GenericSetup.interfaces import IBody
 from Products.GenericSetup.interfaces import IComponentsHandlerBlacklist
@@ -340,11 +339,7 @@ class ComponentRegistryXMLAdapter(XMLAdapterBase):
                 if ofs_id not in self.context.objectIds():
                     self.context._setObject(ofs_id, aq_base(obj),
                         set_owner=False, suppress_events=True)
-                try:
-                    getter = self.context.get
-                except AttributeError:
-                    getter = self.context._getOb # BBB: Zope <= 2.10.x
-                obj = getter(ofs_id)
+                obj = self.context.get(ofs_id)
                 obj.__name__ = ofs_id
                 obj.__parent__ = aq_base(self.context)
                 self.context.registerUtility(aq_base(obj), provided, name)

@@ -4,6 +4,8 @@ Products.GenericSetup Changelog
 1.6.0 (unreleased)
 ------------------
 
+- Removed backwards compatibility code for no longer supported Zope versions.
+
 
 1.6.0b1 (2010-01-31)
 --------------------

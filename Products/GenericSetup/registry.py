@@ -20,12 +20,7 @@ from xml.sax.handler import ContentHandler
 
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from Acquisition import Implicit
-try:
-    from App.class_init import InitializeClass
-except ImportError:
-    # BBB for Zope <2.11
-    from Globals import InitializeClass
-
+from App.class_init import InitializeClass
 from Products.PageTemplates.PageTemplateFile import PageTemplateFile
 from zope.interface import implements
 
@@ -253,8 +248,6 @@ class BaseStepRegistry( Implicit ):
 
         o The 'handler' metadata is available via 'getStep'.
         """
-        result = {}
-
         info = self._registered.get( key )
 
         if info is None:
@@ -740,5 +733,3 @@ class ProfileRegistry( Implicit ):
 InitializeClass( ProfileRegistry )
 
 _profile_registry = ProfileRegistry()
-
-

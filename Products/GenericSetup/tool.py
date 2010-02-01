@@ -22,11 +22,7 @@ from cgi import escape
 
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from Acquisition import aq_base
-try:
-    from App.class_init import InitializeClass
-except ImportError:
-    # BBB for Zope <2.11
-    from Globals import InitializeClass
+from App.class_init import InitializeClass
 from OFS.Folder import Folder
 from OFS.Image import File
 from Products.PageTemplates.PageTemplateFile import PageTemplateFile
@@ -107,7 +103,6 @@ def importToolset(context):
     toolset.parseXML(xml, encoding)
 
     existing_ids = site.objectIds()
-    existing_values = site.objectValues()
 
     for tool_id in toolset.listForbiddenTools():
 

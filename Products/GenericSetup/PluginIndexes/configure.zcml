@@ -10,15 +10,6 @@
 
   <adapter factory=".exportimport.PathIndexNodeAdapter"/>
 
-  <!-- BBB: for Zope < 2.12 -->
-  <configure zcml:condition="installed Products.PluginIndexes.TextIndex">
-
-    <adapter factory=".exportimport.VocabularyNodeAdapter"/>
-
-    <adapter factory=".exportimport.TextIndexNodeAdapter"/>
-
-  </configure>
-
   <adapter factory=".exportimport.FilteredSetNodeAdapter"/>
 
   <adapter factory=".exportimport.TopicIndexNodeAdapter"/>
