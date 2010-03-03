@@ -4,6 +4,9 @@ Products.GenericSetup Changelog
 1.6.0 (unreleased)
 ------------------
 
+- Don't try to reinitialize a tool if an instance of the tool exists but the
+  desired tool class was not resolvable. Show a warning instead of failing.
+
 - Removed backwards compatibility code for no longer supported Zope versions.
 
 

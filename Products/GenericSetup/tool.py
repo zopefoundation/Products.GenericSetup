@@ -113,6 +113,8 @@ def importToolset(context):
 
         tool_id = str(info['id'])
         tool_class = _resolveDottedName(info['class'])
+        if tool_class is None:
+            logger.info('Class %(class)s not found for tool %(id)s' % info)
 
         existing = getattr(aq_base(site), tool_id, None)
         # Don't even initialize the tool again, if it already exists.
@@ -132,6 +134,8 @@ def importToolset(context):
 
             site._setObject(tool_id, new_tool)
         else:
+            if tool_class is None:
+                continue
             unwrapped = aq_base(existing)
             if not isinstance(unwrapped, tool_class):
                 site._delObject(tool_id)

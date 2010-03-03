@@ -1400,6 +1400,26 @@ class Test_importToolset(_ToolsetSetup):
         self.failUnless( isinstance( aq_base( site._getOb( 'obligatory' ) )
                                    , DummyTool ) )
 
+    def test_required_tools_missing_class_with_replacement( self ):
+        
+        from Products.GenericSetup.tool import TOOLSET_XML
+        from Products.GenericSetup.tool import importToolset
+
+        site = self._initSite()
+        
+        obligatory = AnotherDummyTool()
+        obligatory._setId( 'obligatory' )
+        site._setObject( 'obligatory', obligatory )
+        
+        self.assertEqual( len( site.objectIds() ), 2 )
+
+        context = DummyImportContext( site, tool=site.setup_tool )
+        context._files[ TOOLSET_XML ] = _BAD_CLASS_TOOLSET_XML
+
+        importToolset( context )
+
+        self.assertEqual( len( site.objectIds() ), 2 )
+
 
 class DummyTool( Folder ):
 
@@ -1463,6 +1483,15 @@ _WITH_ID_TOOLSET_XML = """\
     class="Products.GenericSetup.tests.test_tool.DummyToolRequiresId" />
 </tool-setup>
 """
+
+_BAD_CLASS_TOOLSET_XML = """\
+<?xml version="1.0"?>
+<tool-setup>
+ <required
+    tool_id="obligatory"
+    class="foobar" />
+</tool-setup>
+""" 
 
 def test_suite():
     # reimport to make sure tests are run from Products
