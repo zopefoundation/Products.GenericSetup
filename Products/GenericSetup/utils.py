@@ -351,10 +351,7 @@ class _Element(Element):
 
         for a_name in a_names:
             wrapper.write()
-            a_value = attrs[a_name].value
-            if a_value is None:
-                a_value = ''
-            a_value = escape(a_value.encode('utf-8'), quote=True)
+            a_value = escape(attrs[a_name].value.encode('utf-8'), quote=True)
             wrapper.queue(' %s="%s"' % (a_name, a_value))
 
         if self.childNodes:

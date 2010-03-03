@@ -40,9 +40,15 @@ class MailHostXMLAdapter(XMLAdapterBase):
         node = self._getObjectNode('object')
         node.setAttribute('smtp_host', str(self.context.smtp_host))
         node.setAttribute('smtp_port', str(self.context.smtp_port))
-        node.setAttribute('smtp_uid', self.context.smtp_uid)
-        node.setAttribute('smtp_pwd', self.context.smtp_pwd)
-
+        smtp_uid = self.context.smtp_uid
+        if smtp_uid is None:
+            # None would give an AttributeError during export.
+            smtp_uid = ''
+        node.setAttribute('smtp_uid', smtp_uid)
+        smtp_pwd = self.context.smtp_pwd
+        if smtp_pwd is None:
+            smtp_pwd = ''
+        node.setAttribute('smtp_pwd', smtp_pwd)
         self._logger.info('Mailhost exported.')
         return node
 
