@@ -4,6 +4,10 @@ Products.GenericSetup Changelog
 1.6.0 (unreleased)
 ------------------
 
+- Don't bomb out with an AttributeError when encoding an attribute
+  with value None that is being exported; just use an empty string
+  then.
+
 - Don't try to reinitialize a tool if an instance of the tool exists but the
   desired tool class was not resolvable. Show a warning instead of failing.
 

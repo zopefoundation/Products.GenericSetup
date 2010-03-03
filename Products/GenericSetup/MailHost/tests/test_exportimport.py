@@ -55,9 +55,30 @@ class MailHostXMLAdapterTests(BodyAdapterTestCase, unittest.TestCase):
         self._BODY = _MAILHOST_BODY
 
 
+class MailHostXMLAdapterTestsWithNoneValue(MailHostXMLAdapterTests):
+    def _verifyImport(self, obj):
+        self.assertEqual(type(obj.smtp_host), str)
+        self.assertEqual(obj.smtp_host, 'localhost')
+        self.assertEqual(type(obj.smtp_port), int)
+        self.assertEqual(obj.smtp_port, 25)
+        self.assertEqual(type(obj.smtp_pwd), str)
+        self.assertEqual(obj.smtp_pwd, '')
+        self.assertEqual(type(obj.smtp_uid), str)
+        self.assertEqual(obj.smtp_uid, '')
+
+    def setUp(self):
+        from Products.MailHost.MailHost import MailHost
+
+        self._obj = MailHost('foo_mailhost')
+        self._obj.smtp_uid = None
+        self._BODY = _MAILHOST_BODY
+
+
+
 def test_suite():
     return unittest.TestSuite((
         unittest.makeSuite(MailHostXMLAdapterTests),
+        unittest.makeSuite(MailHostXMLAdapterTestsWithNoneValue),
         ))
 
 if __name__ == '__main__':
