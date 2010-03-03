@@ -4,6 +4,8 @@ Products.GenericSetup Changelog
 1.6.0 (unreleased)
 ------------------
 
+- When exporting a tarball, make the directory entries executable.
+
 - When the MailHost smtp_uid or smtp_pwd settings are None, export
   them as empty string, to avoid an AttributeError during export.
 
