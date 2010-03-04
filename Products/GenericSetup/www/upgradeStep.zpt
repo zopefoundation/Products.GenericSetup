@@ -9,7 +9,8 @@
                              "/>
     </td>
     <td>
-      <div tal:replace="info/title">INFO</div>
+      <div tal:replace="info/title">INFO</div><br/>
+      <div tal:replace="info/description">DESCRIPTION</div>
     </td>
     <td class="form-help">
       <div tal:content="structure string:(${info/ssource} &amp;#8594; ${info/sdest})">PATH</div>
