@@ -445,8 +445,8 @@ class TarballExportContext( BaseContext ):
             if path not in self._archive.getnames():
                 info = TarInfo(path)
                 info.type = DIRTYPE
-                # tarfile.filemode(493) == '-rwxr-xr-x'
-                info.mode = 493
+                # tarfile.filemode(0755) == '-rwxr-xr-x'
+                info.mode = 0755
                 info.mtime = time.time()
                 self._archive.addfile(info)
             parents.pop()
