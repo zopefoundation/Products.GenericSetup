@@ -17,14 +17,12 @@ def _docs_doc(name):
     return f.read()
 
 _boundary = '\n' + ('-' * 60) + '\n\n'
-README = ( _docs_doc('index.rst')
+README = ( open('README.txt').read()
          + _boundary
          + _docs_doc('CHANGES.rst')
-         + _boundary
-         + "\nDownload\n========"
          )
 
-setup(name='Products.%s' % NAME,
+setup(name='Products.GenericSetup',
       version=_package_doc('version.txt').strip(),
       description='Read Zope configuration state from profile dirs / tarballs',
       long_description=README,
