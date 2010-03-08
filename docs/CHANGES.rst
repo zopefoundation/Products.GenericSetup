@@ -1,7 +1,7 @@
 Products.GenericSetup Changelog
 ===============================
 
-1.6.0 (unreleased)
+1.6.0 (2010-03-08)
 ------------------
 
 - When exporting a tarball, make the directory entries executable.
