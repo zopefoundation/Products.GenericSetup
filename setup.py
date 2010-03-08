@@ -19,7 +19,7 @@ def _docs_doc(name):
 _boundary = '\n' + ('-' * 60) + '\n\n'
 README = ( _docs_doc('index.rst')
          + _boundary
-         + _package_doc('CHANGES.txt')
+         + _docs_doc('CHANGES.rst')
          + _boundary
          + "\nDownload\n========"
          )

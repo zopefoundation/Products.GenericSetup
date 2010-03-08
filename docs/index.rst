@@ -55,6 +55,8 @@ Other Documentation
    install
    handlers
    profiles
+   CHANGES
+   CREDITS
    glossary
 
 Indices and tables
