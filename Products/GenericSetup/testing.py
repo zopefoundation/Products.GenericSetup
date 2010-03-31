@@ -11,12 +11,7 @@
 #
 ##############################################################################
 """Node adapter testing utils.
-
-$Id$
 """
-
-import unittest
-import Testing
 from Testing.ZopeTestCase.layer import ZopeLite
 
 from xml.dom.minidom import parseString
@@ -146,15 +141,30 @@ class ExportImportZCMLLayer(ZopeLite):
 
     @classmethod
     def setUp(cls):
+        import Zope2.App
+        import AccessControl
         import Products.Five
         from Products.Five import zcml
         import Products.GenericSetup
         import zope.traversing
 
+        try:
+            zcml.load_config('meta.zcml', Zope2.App)
+        except IOError:  # Zope <= 2.12.x
+            pass
+
+        try:
+            zcml.load_config('permissions.zcml', AccessControl)
+        except IOError:  # Zope <= 2.12.x
+            pass
+
+        zcml.load_config('configure.zcml', zope.traversing)
+
         zcml.load_config('meta.zcml', Products.Five)
         zcml.load_config('meta.zcml', Products.GenericSetup)
+
         zcml.load_config('permissions.zcml', Products.Five)
-        zcml.load_config('configure.zcml', zope.traversing)
+
         zcml.load_config('configure.zcml', Products.GenericSetup)
 
     @classmethod
