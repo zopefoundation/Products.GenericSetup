@@ -153,15 +153,15 @@ class ExportImportZCMLLayer(ZopeLite):
         except IOError:  # Zope <= 2.12.x
             pass
 
+        zcml.load_config('meta.zcml', Products.Five)
+        zcml.load_config('meta.zcml', Products.GenericSetup)
+
         try:
             zcml.load_config('permissions.zcml', AccessControl)
         except IOError:  # Zope <= 2.12.x
             pass
 
         zcml.load_config('configure.zcml', zope.traversing)
-
-        zcml.load_config('meta.zcml', Products.Five)
-        zcml.load_config('meta.zcml', Products.GenericSetup)
 
         zcml.load_config('permissions.zcml', Products.Five)
 
