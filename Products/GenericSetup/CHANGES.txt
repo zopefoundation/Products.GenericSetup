@@ -4,7 +4,9 @@ Products.GenericSetup Changelog
 1.4.6 (Unreleased)
 ------------------
 
-- TBD
+- Fixed bug which broke the took upgrade tab after running an upgrade step
+  which used ``None`` as its destintaion version. 
+  https://bugs.launchpad.net/bugs/553338
 
 
 1.4.5 (2009-06-20)

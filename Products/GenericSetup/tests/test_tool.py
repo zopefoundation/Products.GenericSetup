@@ -968,6 +968,35 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
         (profile_registry._profile_info,
          profile_registry._profile_ids) = orig_profile_reg
 
+    def test_manage_doUpgrades_no_profile_id_or_updates(self):
+        site = self._makeSite()
+        site.setup_tool = self._makeOne('setup_tool')
+        tool = site.setup_tool
+        request = site.REQUEST
+        tool.manage_doUpgrades()
+        self.assertEqual(tool._profile_upgrade_versions, {})
+
+    def test_manage_doUpgrades_upgrade_w_no_target_version(self):
+        from Products.GenericSetup.upgrade import UpgradeStep
+        from Products.GenericSetup.upgrade import _registerUpgradeStep
+        from Products.GenericSetup.upgrade import _upgrade_registry
+        old = dict(_upgrade_registry._registry)
+        try:
+            step = UpgradeStep('TITLE', 'foo', '*', '*', 'DESC',
+                                lambda tool: None)
+            _registerUpgradeStep(step)
+            site = self._makeSite()
+            site.setup_tool = self._makeOne('setup_tool')
+            tool = site.setup_tool
+            request = site.REQUEST
+            request['profile_id'] = ['foo']
+            request['upgrade'] = [step.id]
+            tool.manage_doUpgrades()
+            self.assertEqual(tool._profile_upgrade_versions, {})
+        finally:
+            _upgrade_registry._registry.clear()
+            _upgrade_registry._registry.update(old)
+
     def test_listExportSteps(self):
         site = self._makeSite()
         site.setup_tool = self._makeOne('setup_tool')

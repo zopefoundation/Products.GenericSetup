@@ -968,7 +968,8 @@ class SetupTool(Folder):
 
         # We update the profile version to the last one we have reached
         # with runnning an upgrade step.
-        self.setLastVersionForProfile(profile_id, step.dest)
+        if step and step.dest is not None:
+            self.setLastVersionForProfile(profile_id, step.dest)
 
         url = self.absolute_url()
         request.RESPONSE.redirect("%s/manage_upgrades?saved=%s" % (url, profile_id))
