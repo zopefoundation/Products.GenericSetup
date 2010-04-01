@@ -873,6 +873,7 @@ class SetupTool(Folder):
         logger = logging.getLogger('GenericSetup')
         steps_to_run = request.form.get('upgrades', [])
         profile_id = request.get('profile_id', '')
+        step = None
         for step_id in steps_to_run:
             step = _upgrade_registry.getUpgradeStep(profile_id, step_id)
             if step is not None:
@@ -883,7 +884,7 @@ class SetupTool(Folder):
 
         # We update the profile version to the last one we have reached
         # with running an upgrade step.
-        if step.dest is not None and step.checker is None:
+        if step and step.dest is not None and step.checker is None:
             self.setLastVersionForProfile(profile_id, step.dest)
 
         url = self.absolute_url()
