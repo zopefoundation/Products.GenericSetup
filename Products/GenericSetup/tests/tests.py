@@ -15,13 +15,10 @@
 $Id$
 """
 
+import doctest
 import unittest
-from zope.testing import doctest
 
 def test_suite():
     suite = unittest.TestSuite()
     suite.addTest(doctest.DocFileSuite('upgrade.txt'))
     return suite
-
-if __name__ == '__main__':
-    unittest.main(defaultTest='test_suite')

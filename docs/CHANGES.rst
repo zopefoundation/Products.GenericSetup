@@ -4,6 +4,8 @@ Products.GenericSetup Changelog
 1.6.1 (unreleased)
 ------------------
 
+- Use the standard libraries doctest module.
+
 - Deal with deprecation warnings for Zope 2.13.
 
 - Fixed bug which broke the took upgrade tab after running an upgrade step

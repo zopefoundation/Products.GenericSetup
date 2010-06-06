@@ -15,9 +15,9 @@
 $Id$
 """
 
+import doctest
 import unittest
-from zope.testing import doctest
-from zope.testing.doctest import ELLIPSIS
+from doctest import ELLIPSIS
 from zope.testing.cleanup import cleanUp
 
 from Products.GenericSetup.registry import _import_step_registry
@@ -441,6 +441,3 @@ def test_suite():
     suite.addTest(unittest.makeSuite(ImportStepTests))
     suite.addTest(unittest.makeSuite(ExportStepTests))
     return suite
-
-if __name__ == '__main__':
-    unittest.main(defaultTest='test_suite')
