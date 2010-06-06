@@ -144,9 +144,14 @@ class ExportImportZCMLLayer(ZopeLite):
         import Zope2.App
         import AccessControl
         import Products.Five
-        from Products.Five import zcml
         import Products.GenericSetup
         import zope.traversing
+
+        # BBB for Zope 2.12
+        try:
+            from Zope2.App import zcml
+        except ImportError:
+            from Products.Five import zcml
 
         try:
             zcml.load_config('meta.zcml', Zope2.App)

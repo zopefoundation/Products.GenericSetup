@@ -16,14 +16,19 @@ $Id$
 """
 
 import unittest
-import Testing
 from zope.testing import doctest
 from zope.testing.doctest import ELLIPSIS
 from zope.testing.cleanup import cleanUp
 
 from Products.GenericSetup.registry import _import_step_registry
 from Products.GenericSetup.registry import _export_step_registry
-from Products.Five import zcml
+
+# BBB for Zope 2.12
+try:
+    from Zope2.App import zcml
+except ImportError:
+    from Products.Five import zcml
+
 
 def dummy_importstep_handler(context):
     pass
@@ -45,7 +50,6 @@ def test_simpleRegisterProfile():
     Use the genericsetup:registerProfile directive::
 
       >>> import Products.GenericSetup
-      >>> from Products.Five import zcml
       >>> configure_zcml = '''
       ... <configure
       ...     xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
@@ -95,7 +99,6 @@ def test_registerProfile():
     Use the genericsetup:registerProfile directive::
 
       >>> import Products.GenericSetup
-      >>> from Products.Five import zcml
       >>> configure_zcml = '''
       ... <configure
       ...     xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
@@ -148,7 +151,6 @@ def test_registerUpgradeStep(self):
     Use the standalone genericsetup:upgradeStep directive::
 
       >>> import Products.GenericSetup
-      >>> from Products.Five import zcml
       >>> configure_zcml = '''
       ... <configure
       ...     xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
@@ -192,7 +194,6 @@ def test_registerUpgradeDepends(self):
     Use the standalone genericsetup:upgradeDepends directive::
 
       >>> import Products.GenericSetup
-      >>> from Products.Five import zcml
       >>> configure_zcml = '''
       ... <configure
       ...     xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
@@ -239,7 +240,6 @@ def test_registerUpgradeSteps(self):
     Use the nested genericsetup:upgradeSteps directive::
 
       >>> import Products.GenericSetup
-      >>> from Products.Five import zcml
       >>> configure_zcml = '''
       ... <configure
       ...     xmlns:genericsetup="http://namespaces.zope.org/genericsetup"

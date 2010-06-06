@@ -20,7 +20,13 @@ from zope.testing.cleanup import cleanUp
 
 import Products.GenericSetup
 from Products.GenericSetup.registry import _import_step_registry
-from Products.Five import zcml
+
+# BBB for Zope 2.12
+try:
+    from Zope2.App import zcml
+except ImportError:
+    from Products.Five import zcml
+
 
 EMPTY_ZCML = '''<configure xmlns:genericsetup="http://namespaces.zope.org/genericsetup">
 </configure>'''

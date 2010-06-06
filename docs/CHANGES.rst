@@ -4,8 +4,10 @@ Products.GenericSetup Changelog
 1.6.1 (unreleased)
 ------------------
 
+- Deal with deprecation warnings for Zope 2.13.
+
 - Fixed bug which broke the took upgrade tab after running an upgrade step
-  which used ``None`` as its destintaion version. 
+  which used ``None`` as its destination version. 
   https://bugs.launchpad.net/bugs/553338
 
 
