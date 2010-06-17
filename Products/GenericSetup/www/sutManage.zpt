@@ -17,7 +17,7 @@ registries. Steps registered via ZCML are not shown here.
 
 <h2>Import steps</h2>
 
-<tal:block define="view context/@@manage_importsteps;
+<tal:block define="view nocall:context/@@manage_importsteps;
                    invalid_steps view/invalidSteps;
                    double_steps view/doubleSteps;">
 
@@ -121,7 +121,7 @@ registries. Steps registered via ZCML are not shown here.
 
 <h2>Export steps</h2>
 
-<tal:block define="view context/@@manage_exportsteps;
+<tal:block define="view nocall:context/@@manage_exportsteps;
                    invalid_steps view/invalidSteps;
                    double_steps view/doubleSteps;">
 
