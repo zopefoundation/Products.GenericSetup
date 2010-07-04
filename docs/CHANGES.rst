@@ -1,7 +1,7 @@
 Products.GenericSetup Changelog
 ===============================
 
-1.6.1 (unreleased)
+1.6.1 (2010-07-04)
 ------------------
 
 - Use the standard libraries doctest module.
