@@ -11,8 +11,6 @@
 #
 ##############################################################################
 """ Classes:  SetupTool
-
-$Id$
 """
 
 import logging
@@ -129,6 +127,7 @@ def importToolset(context):
                 except (ConflictError, KeyboardInterrupt):
                     raise
                 except:
+                    # BBB: for Products.CMFCore < 2.2.3
                     # XXX: ImmutableId raises result of calling MessageDialog
                     pass
 
