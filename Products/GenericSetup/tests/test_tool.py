@@ -1281,14 +1281,14 @@ class Test_importToolset(_ToolsetSetup):
         from Products.GenericSetup.tool import importToolset
 
         site = self._initSite()
-        context = DummyImportContext( site, tool=site.setup_tool )
-        context._files[ TOOLSET_XML ] = _WITH_ID_TOOLSET_XML
+        context = DummyImportContext(site, tool=site.setup_tool)
+        context._files[TOOLSET_XML] = _WITH_ID_TOOLSET_XML
 
-        importToolset( context )
+        importToolset(context)
 
-        for tool_id in ( 'mandatory', 'requires_id' ):
-            tool = getattr( site, tool_id )
-            self.assertEqual( tool.getId(), tool_id )
+        for tool_id in ('mandatory', 'requires_id', 'immutable_id'):
+            tool = getattr(site, tool_id)
+            self.assertEqual(tool.getId(), tool_id)
 
     def test_forbidden_tools( self ):
 
@@ -1450,19 +1450,30 @@ class Test_importToolset(_ToolsetSetup):
         self.assertEqual( len( site.objectIds() ), 2 )
 
 
-class DummyTool( Folder ):
+class DummyTool(Folder):
 
     pass
 
-class AnotherDummyTool( Folder ):
+
+class AnotherDummyTool(Folder):
 
     pass
 
-class DummyToolRequiresId( Folder ):
+
+class DummyToolRequiresId(Folder):
 
     def __init__(self, id):
         Folder.__init__(self)
         self._setId(id)
+
+
+class DummyToolImmutableId(Folder):
+
+    id = 'immutable_id'
+
+    def _setId(self, id):
+        if id != self.getId():
+            raise ValueError()
 
 
 _EMPTY_TOOLSET_XML = """\
@@ -1510,6 +1521,9 @@ _WITH_ID_TOOLSET_XML = """\
   <required
     tool_id="requires_id"
     class="Products.GenericSetup.tests.test_tool.DummyToolRequiresId" />
+  <required
+    tool_id="immutable_id"
+    class="Products.GenericSetup.tests.test_tool.DummyToolImmutableId" />
 </tool-setup>
 """
 

@@ -24,7 +24,6 @@ from App.class_init import InitializeClass
 from OFS.Folder import Folder
 from OFS.Image import File
 from Products.PageTemplates.PageTemplateFile import PageTemplateFile
-from ZODB.POSException import ConflictError
 from zope import event 
 from zope.interface import implements
 
@@ -122,14 +121,7 @@ def importToolset(context):
             except TypeError:
                 new_tool = tool_class(tool_id)
             else:
-                try:
-                    new_tool._setId(tool_id)
-                except (ConflictError, KeyboardInterrupt):
-                    raise
-                except:
-                    # BBB: for Products.CMFCore < 2.2.3
-                    # XXX: ImmutableId raises result of calling MessageDialog
-                    pass
+                new_tool._setId(tool_id)
 
             site._setObject(tool_id, new_tool)
         else:

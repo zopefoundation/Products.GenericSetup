@@ -4,6 +4,8 @@ Products.GenericSetup Changelog
 1.6.2 (unreleased)
 ------------------
 
+- Toolset import: Don't ignore errors in ImmutableId._setId().
+
 
 1.6.1 (2010-07-04)
 ------------------
