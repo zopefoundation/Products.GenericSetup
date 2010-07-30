@@ -27,7 +27,7 @@ _EMPTY_PROPERTY_EXPORT = """\
 <?xml version="1.0"?>
 <dummy>
  <property name="foo_boolean" type="boolean">False</property>
- <property name="foo_date" type="date">1970/01/01</property>
+ <property name="foo_date" type="date">1970/01/01 00:00:00 UTC</property>
  <property name="foo_float" type="float">0.0</property>
  <property name="foo_int" type="int">0</property>
  <property name="foo_lines" type="lines"/>
@@ -50,7 +50,7 @@ _NORMAL_PROPERTY_EXPORT = u"""\
 <?xml version="1.0"?>
 <dummy>
  <property name="foo_boolean" type="boolean">True</property>
- <property name="foo_date" type="date">2000/01/01</property>
+ <property name="foo_date" type="date">2000/01/01 00:00:00 UTC</property>
  <property name="foo_float" type="float">1.1</property>
  <property name="foo_int" type="int">1</property>
  <property name="foo_lines" type="lines">
@@ -84,7 +84,7 @@ _FIXED_PROPERTY_EXPORT = u"""\
 <?xml version="1.0"?>
 <dummy>
  <property name="foo_boolean">True</property>
- <property name="foo_date">2000/01/01</property>
+ <property name="foo_date">2000/01/01 00:00:00 UTC</property>
  <property name="foo_float">1.1</property>
  <property name="foo_int">1</property>
  <property name="foo_lines">
@@ -273,7 +273,7 @@ class PropertyManagerHelpersTests(unittest.TestCase):
         obj.foobarbaz = ('Foo', 'Bar', 'Baz')
         obj._properties = ()
         obj.manage_addProperty('foo_boolean', '', 'boolean')
-        obj.manage_addProperty('foo_date', '1970/01/01', 'date')
+        obj.manage_addProperty('foo_date', '1970/01/01 00:00:00 UTC', 'date')
         obj.manage_addProperty('foo_float', '0', 'float')
         obj.manage_addProperty('foo_int', '0', 'int')
         obj.manage_addProperty('foo_lines', '', 'lines')
@@ -300,7 +300,7 @@ class PropertyManagerHelpersTests(unittest.TestCase):
 
     def _populate(self, obj):
         obj._updateProperty('foo_boolean', 'True')
-        obj._updateProperty('foo_date', '2000/01/01')
+        obj._updateProperty('foo_date', '2000/01/01 00:00:00 UTC')
         obj._updateProperty('foo_float', '1.1')
         obj._updateProperty('foo_int', '1')
         obj._updateProperty('foo_lines', 
@@ -502,7 +502,7 @@ class PropertyManagerHelpersNonPMContextTests(PropertyManagerHelpersTests):
         obj = NonPropertyManager()
         obj.foobarbaz = ('Foo', 'Bar', 'Baz')
         obj.foo_boolean = False
-        obj.foo_date = DateTime('1970/01/01')
+        obj.foo_date = DateTime('1970/01/01 00:00:00 UTC')
         obj.foo_float = 0.0
         obj.foo_int = 0
         obj.foo_lines = []
@@ -525,7 +525,7 @@ class PropertyManagerHelpersNonPMContextTests(PropertyManagerHelpersTests):
     def _populate(self, obj):
         from DateTime.DateTime import DateTime
         obj.foo_boolean = True
-        obj.foo_date = DateTime('2000/01/01')
+        obj.foo_date = DateTime('2000/01/01 00:00:00 UTC')
         obj.foo_float = 1.1
         obj.foo_int = 1
         obj.foo_lines = ['Foo', 'Lines', u'\xfcbrigens'.encode('utf-8')]

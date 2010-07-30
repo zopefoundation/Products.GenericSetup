@@ -4,6 +4,14 @@ Products.GenericSetup Changelog
 1.6.2 (unreleased)
 ------------------
 
+- DateTime 2.12.5 does away with a special case representing 
+  DateTime values for midnight (00:00:00) without their time and 
+  time zone values. So DateTimes formerly rendered as 
+  ``2010/01/01`` in the UTC timezone now render as 
+  ``2010/01/01 00:00:00 UTC``. The XML used for testing has been 
+  changed to reflect this change. Since the change is only cosmetic, 
+  nothing changes with respect to importing Time-less date values.
+
 - Toolset import: Don't ignore errors in ImmutableId._setId().
 
 
