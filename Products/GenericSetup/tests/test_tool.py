@@ -1465,21 +1465,6 @@ class DummyToolImmutableId(Folder):
             raise ValueError()
 
 
-_EMPTY_TOOLSET_XML = """\
-<?xml version="1.0"?>
-<tool-setup>
-</tool-setup>
-"""
-
-_NORMAL_TOOLSET_XML = """\
-<?xml version="1.0" ?>
-<tool-setup>
-<forbidden tool_id="doomed"/>
-<required class="path.to.one" tool_id="mandatory"/>
-<required class="path.to.another" tool_id="obligatory"/>
-</tool-setup>
-"""
-
 _FORBIDDEN_TOOLSET_XML = """\
 <?xml version="1.0"?>
 <tool-setup>
