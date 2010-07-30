@@ -11,8 +11,6 @@
 #
 ##############################################################################
 """ Unit tests for differ module.
-
-$Id$
 """
 
 import unittest
@@ -397,6 +395,3 @@ def test_suite():
         unittest.makeSuite(Test_unidiff),
         unittest.makeSuite(ConfigDiffTests),
         ))
-
-if __name__ == '__main__':
-    unittest.main(defaultTest='test_suite')

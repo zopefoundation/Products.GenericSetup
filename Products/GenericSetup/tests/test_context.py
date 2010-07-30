@@ -11,8 +11,6 @@
 #
 ##############################################################################
 """ Unit tests for import / export contexts.
-
-$Id$
 """
 
 import unittest
@@ -1431,6 +1429,3 @@ def test_suite():
         unittest.makeSuite( SnapshotExportContextTests ),
         unittest.makeSuite( SnapshotImportContextTests ),
         ))
-
-if __name__ == '__main__':
-    unittest.main(defaultTest='test_suite')

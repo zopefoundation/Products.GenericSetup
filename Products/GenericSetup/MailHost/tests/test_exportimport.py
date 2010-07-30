@@ -11,8 +11,6 @@
 #
 ##############################################################################
 """MailHost export / import support unit tests.
-
-$Id$
 """
 
 import unittest
@@ -74,13 +72,8 @@ class MailHostXMLAdapterTestsWithNoneValue(MailHostXMLAdapterTests):
         self._BODY = _MAILHOST_BODY
 
 
-
 def test_suite():
     return unittest.TestSuite((
         unittest.makeSuite(MailHostXMLAdapterTests),
         unittest.makeSuite(MailHostXMLAdapterTestsWithNoneValue),
         ))
-
-if __name__ == '__main__':
-    from Products.GenericSetup.testing import run
-    run(test_suite())

@@ -11,8 +11,6 @@
 #
 ##############################################################################
 """ GenericSetup.utils unit tests
-
-$Id$
 """
 
 import unittest
@@ -717,6 +715,3 @@ def test_suite():
         unittest.makeSuite(ObjectManagerHelpersTests),
         unittest.makeSuite(PrettyDocumentTests),
         ))
-
-if __name__ == '__main__':
-    unittest.main(defaultTest='test_suite')

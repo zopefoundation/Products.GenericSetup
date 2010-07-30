@@ -4,6 +4,9 @@ Products.GenericSetup Changelog
 1.6.2 (unreleased)
 ------------------
 
+- testing: Removed broken run function.
+  Unit test modules are no longer directly executable.
+
 - DateTime 2.12.5 does away with a special case representing 
   DateTime values for midnight (00:00:00) without their time and 
   time zone values. So DateTimes formerly rendered as 

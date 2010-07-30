@@ -11,8 +11,6 @@
 #
 ##############################################################################
 """Component registry export / import support unit tests.
-
-$Id$
 """
 
 import unittest
@@ -460,7 +458,3 @@ if PersistentComponents is not None:
 else:
     def test_suite():
         return unittest.TestSuite()
-
-if __name__ == '__main__':
-    from Products.GenericSetup.testing import run
-    run(test_suite())

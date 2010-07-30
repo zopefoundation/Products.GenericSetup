@@ -12,6 +12,7 @@
 ##############################################################################
 """Node adapter testing utils.
 """
+
 from Testing.ZopeTestCase.layer import ZopeLite
 
 from xml.dom.minidom import parseString
@@ -20,7 +21,6 @@ from OFS.interfaces import IItem
 from zope.component import getMultiAdapter
 from zope.interface import implements
 from zope.interface.verify import verifyClass
-from zope.testing import testrunner
 from zope.testing.cleanup import cleanUp
 
 from Products.GenericSetup.interfaces import IBody
@@ -175,10 +175,3 @@ class ExportImportZCMLLayer(ZopeLite):
     @classmethod
     def tearDown(cls):
         cleanUp()
-
-
-def run(test_suite):
-    options = testrunner.get_options()
-    options.resume_layer = None
-    options.resume_number = 0
-    testrunner.run_with_options(options, test_suite)

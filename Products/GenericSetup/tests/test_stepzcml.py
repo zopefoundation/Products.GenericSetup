@@ -11,8 +11,6 @@
 #
 ##############################################################################
 """Unit tests for import/export step zcml module.
-
-$Id$
 """
 
 import unittest
@@ -71,7 +69,3 @@ def test_suite():
     return unittest.TestSuite((
         unittest.makeSuite(ImportStepTests),
         ))
-
-if __name__ == '__main__':
-    from Products.GenericSetup.testing import run
-    run(test_suite())

@@ -11,8 +11,6 @@
 #
 ##############################################################################
 """Filesystem exporter / importer adapter unit tests.
-
-$Id$
 """
 
 import unittest
@@ -959,6 +957,3 @@ def test_suite():
     suite.addTest(unittest.makeSuite(INIAwareFileAdapterTests))
     suite.addTest(unittest.makeSuite(DAVAwareFileAdapterTests))
     return suite
-
-if __name__ == '__main__':
-    unittest.main(defaultTest='test_suite')

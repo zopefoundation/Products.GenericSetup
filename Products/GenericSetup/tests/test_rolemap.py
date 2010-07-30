@@ -11,8 +11,6 @@
 #
 ##############################################################################
 """ GenericSetup rolemap export / import unit tests
-
-$Id$
 """
 
 import unittest
@@ -827,7 +825,3 @@ def test_suite():
         unittest.makeSuite(Test_exportRolemap),
         unittest.makeSuite(Test_importRolemap),
         ))
-
-if __name__ == '__main__':
-    from Products.GenericSetup.testing import run
-    run(test_suite())

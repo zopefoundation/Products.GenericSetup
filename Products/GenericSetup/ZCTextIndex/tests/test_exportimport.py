@@ -11,8 +11,6 @@
 #
 ##############################################################################
 """ZCTextIndex export / import support unit tests.
-
-$Id$
 """
 
 import unittest
@@ -106,7 +104,3 @@ def test_suite():
         unittest.makeSuite(ZCLexiconNodeAdapterTests),
         unittest.makeSuite(ZCTextIndexNodeAdapterTests),
         ))
-
-if __name__ == '__main__':
-    from Products.GenericSetup.testing import run
-    run(test_suite())

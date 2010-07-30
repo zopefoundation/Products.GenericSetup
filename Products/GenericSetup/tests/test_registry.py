@@ -11,8 +11,6 @@
 #
 ##############################################################################
 """ Registry unit tests.
-
-$Id$
 """
 
 import unittest
@@ -1146,7 +1144,3 @@ def test_suite():
         unittest.makeSuite( ToolsetRegistryTests ),
         unittest.makeSuite( ProfileRegistryTests ),
         ))
-
-if __name__ == '__main__':
-    from Products.GenericSetup.testing import run
-    run(test_suite())
