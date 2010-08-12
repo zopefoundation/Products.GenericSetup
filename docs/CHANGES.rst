@@ -25,7 +25,7 @@ Products.GenericSetup Changelog
 
 - Deal with deprecation warnings for Zope 2.13.
 
-- Fixed bug which broke the took upgrade tab after running an upgrade step
+- Fixed bug which broke the tool upgrade tab after running an upgrade step
   which used ``None`` as its destination version. 
   https://bugs.launchpad.net/bugs/553338
 
