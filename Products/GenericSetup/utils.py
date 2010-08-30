@@ -19,6 +19,7 @@ import os
 import sys
 from cgi import escape
 from inspect import getdoc
+from logging import getLogger
 from xml.dom.minidom import _nssplit
 from xml.dom.minidom import Document
 from xml.dom.minidom import Element
@@ -852,6 +853,20 @@ def _computeTopologicalSort( steps ):
             # Nothing was resolved in this loop. There must be circular or
             # missing dependencies. Just add them to the end. We can't
             # raise an error, because checkComplete relies on this method.
+            logger = getLogger('GenericSetup')
+            log_msg = 'There are unresolved or circular dependencies. '\
+                      'Graphiz diagram:: digraph dependencies {'
+            for step in steps:
+                step_id = step['id']
+                for dependency in step['dependencies']:
+                    log_msg += '"%s" -> "%s"; ' % (step_id, dependency)
+                if not step['dependencies']:
+                    log_msg += '"%s";' % step_id
+            for unresolved_key, ignore in unresolved:
+                log_msg += '"%s" [color=red,style=filled]; ' % unresolved_key
+            log_msg += '}'
+            logger.warning(log_msg)
+
             for node, edges in unresolved:
                 result.append(node)
             break
