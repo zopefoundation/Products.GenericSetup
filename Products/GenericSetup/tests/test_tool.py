@@ -1364,7 +1364,7 @@ class Test_importToolset(_ToolsetSetup):
         mandatory._setId( 'mandatory' )
         site._setObject( 'mandatory', mandatory )
 
-        obligatory = AnotherDummyTool()
+        obligatory = SubclassedDummyTool()
         obligatory._setId( 'obligatory' )
         site._setObject( 'obligatory', obligatory )
 
@@ -1445,6 +1445,11 @@ class DummyTool(Folder):
 
 
 class AnotherDummyTool(Folder):
+
+    pass
+
+
+class SubclassedDummyTool(DummyTool):
 
     pass
 

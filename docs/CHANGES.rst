@@ -1,6 +1,11 @@
 Products.GenericSetup Changelog
 ===============================
 
+1.6.3 (unreleased)
+------------------
+
+- Toolset import: Support replacement of subclassed tools.
+
 1.6.2 (2010-08-12)
 ------------------
 

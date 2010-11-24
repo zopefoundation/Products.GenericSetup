@@ -128,7 +128,8 @@ def importToolset(context):
             if tool_class is None:
                 continue
             unwrapped = aq_base(existing)
-            if not isinstance(unwrapped, tool_class):
+            # don't use isinstance here as a subclass may need removing
+            if type(unwrapped) != tool_class:
                 site._delObject(tool_id)
                 site._setObject(tool_id, tool_class())
 
