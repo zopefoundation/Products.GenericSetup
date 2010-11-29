@@ -150,6 +150,9 @@ _REMOVE_ELEMENT_IMPORT = """\
    <element value="Foo" remove="True" />
    <element value="Bar" />
   </property>
+ <property name="lines2" purge="False">
+   <element value="Foo" remove="True" />
+  </property>
 </dummy>
 """
 
@@ -453,9 +456,11 @@ class PropertyManagerHelpersTests(unittest.TestCase):
         obj = helpers.context
         obj._properties = ()
         obj.manage_addProperty('lines1', ('Foo', 'Gee'), 'lines')
+        obj.manage_addProperty('lines2', ('Foo', 'Gee'), 'lines')
         helpers._initProperties(node)
 
         self.assertEquals(obj.getProperty('lines1'), ('Gee', 'Bar'))
+        self.assertEquals(obj.getProperty('lines2'), ('Gee',))
 
 class PropertyManagerHelpersNonPMContextTests(PropertyManagerHelpersTests):
 

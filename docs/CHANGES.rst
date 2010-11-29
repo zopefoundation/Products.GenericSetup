@@ -4,6 +4,9 @@ Products.GenericSetup Changelog
 1.6.3 (unreleased)
 ------------------
 
+- Property import: Fixed 'lines' and 'tokens' import.
+  Modifying sequences without adding new elements was broken.
+
 - Toolset import: Support replacement of subclassed tools.
 
 1.6.2 (2010-08-12)

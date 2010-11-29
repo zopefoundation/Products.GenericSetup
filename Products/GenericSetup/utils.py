@@ -11,8 +11,6 @@
 #
 ##############################################################################
 """ GenericSetup product utilities
-
-$Id$
 """
 
 import os
@@ -734,7 +732,8 @@ class PropertyManagerHelpers(object):
                         if value in remove_elements:
                             remove_elements.remove(value)
 
-            if new_elements or prop_map.get('type') == 'multiple selection':
+            if prop_map.get('type') in ('lines', 'tokens',
+                                        'multiple selection'):
                 prop_value = tuple(new_elements) or ()
             elif prop_map.get('type') == 'boolean':
                 prop_value = self._convertToBoolean(self._getNodeText(child))
