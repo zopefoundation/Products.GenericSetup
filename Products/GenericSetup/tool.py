@@ -1006,7 +1006,7 @@ class SetupTool(Folder):
                 raise ValueError('Invalid export step: %s' % step_id)
 
             if handler is None:
-                msg = 'Step %s has an invalid import handler' % step_id
+                msg = 'Step %s has an invalid export handler' % step_id
                 logger = logging.getLogger('GenericSetup')
                 logger.error(msg)
                 messages[step_id] = msg
