@@ -1,4 +1,4 @@
-
+##############################################################################
 #
 # Copyright (c) 2006-2007 Zope Foundation and Contributors.
 #
@@ -11,8 +11,6 @@
 #
 ##############################################################################
 """GenericSetup ZCML directives.
-
-$Id$
 """
 
 from zope.configuration.fields import GlobalObject
@@ -88,9 +86,9 @@ def registerProfile(_context, name=u'default', title=None, description=None,
     _profile_regs.append('%s:%s' % (product, name))
 
     _context.action(
-        discriminator = ('registerProfile', product, name),
-        callable = _profile_registry.registerProfile,
-        args = (name, title, description, directory, product, provides, for_)
+        discriminator=('registerProfile', product, name),
+        callable=_profile_registry.registerProfile,
+        args=(name, title, description, directory, product, provides, for_)
         )
 
 
@@ -125,10 +123,12 @@ def exportStep(context, name, handler, title=None, description=None):
     _export_step_regs.append(name)
 
     context.action(
-        discriminator = ('exportStep', name),
-        callable = _export_step_registry.registerStep,
-        args = (name, handler, title, description),
+        discriminator=('exportStep', name),
+        callable=_export_step_registry.registerStep,
+        args=(name, handler, title, description),
         )
+
+
 #### genericsetup:importStep
 
 class IImportStepDirective(Interface):
@@ -158,40 +158,42 @@ class IImportStepDirective(Interface):
 
 
 class IImportStepDependsDirective(Interface):
+
     name = PythonIdentifier(
         title=u'Name',
         description=u'Name of another import step that has to be run first',
         required=True)
 
+
 _import_step_regs = []
 
 class importStep:
+
     def __init__(self, context, name, title, description, handler):
         """ Add a new import step to the registry.
         """
-        self.context=context
+        self.context = context
         self.discriminator = ('importStep', name),
-        self.name=name
-        self.handler=handler
-        self.title=title
-        self.description=description
-        self.dependencies=()
-
+        self.name = name
+        self.handler = handler
+        self.title = title
+        self.description = description
+        self.dependencies = ()
 
     def depends(self, context, name):
-        self.dependencies+=(name,)
-
+        self.dependencies += (name,)
 
     def __call__(self):
         global _import_step_regs
         _import_step_regs.append(self.name)
 
         self.context.action(
-            discriminator = self.discriminator,
-            callable = _import_step_registry.registerStep,
-            args = (self.name, None, self.handler, self.dependencies,
-                        self.title, self.description),
+            discriminator=self.discriminator,
+            callable=_import_step_registry.registerStep,
+            args=(self.name, None, self.handler, self.dependencies, self.title,
+                  self.description),
             )
+
 
 #### genericsetup:upgradeStep
 
@@ -203,9 +205,11 @@ from upgrade import _registerUpgradeStep
 from upgrade import _registerNestedUpgradeStep
 
 class IUpgradeStepsDirective(Interface):
+
     """
     Define multiple upgrade steps without repeating all of the parameters
     """
+
     source = zope.schema.ASCII(
         title=u"Source version",
         required=False)
@@ -222,10 +226,13 @@ class IUpgradeStepsDirective(Interface):
         title=u"GenericSetup profile id",
         required=True)
 
+
 class IUpgradeStepsStepSubDirective(Interface):
+
     """
     Subdirective to IUpgradeStepsDirective
     """
+
     title = zope.schema.TextLine(
         title=u"Title",
         required=True)
@@ -242,17 +249,22 @@ class IUpgradeStepsStepSubDirective(Interface):
         title=u"Upgrade checker",
         required=False)
 
+
 class IUpgradeStepDirective(IUpgradeStepsDirective, IUpgradeStepsStepSubDirective):
+
     """
     Define a standalone upgrade step
     """
 
+
 class IUpgradeDependsSubDirective(Interface):
+
     """
     Define a profile import step dependency of an upgrade process
     (i.e. a profile step that should be reimported when performing an
     upgrade due to a profile change.
     """
+
     title = zope.schema.TextLine(
         title=u"Title",
         required=True,
@@ -283,21 +295,24 @@ class IUpgradeDependsSubDirective(Interface):
         title=u"Import steps w/ purge=True?",
         required=False,
         )
-        
+
+
 class IUpgradeDependsDirective(IUpgradeStepsDirective,
                                IUpgradeDependsSubDirective):
+
     """
     Define a standalone upgrade profile import step dependency
     """
+
 
 def upgradeStep(_context, title, profile, handler, description=None, source='*',
                 destination='*', sortkey=0, checker=None):
     step = UpgradeStep(title, profile, source, destination, description, handler,
                        checker, sortkey)
     _context.action(
-        discriminator = ('upgradeStep', source, destination, handler, sortkey),
-        callable = _registerUpgradeStep,
-        args = (step,),
+        discriminator=('upgradeStep', source, destination, handler, sortkey),
+        callable=_registerUpgradeStep,
+        args=(step,),
         )
 
 def upgradeDepends(_context, title, profile, description, import_profile=None,
@@ -307,17 +322,19 @@ def upgradeDepends(_context, title, profile, description, import_profile=None,
                           import_profile, import_steps, run_deps, purge, checker,
                           sortkey)
     _context.action(
-        discriminator = ('upgradeDepends', source, destination, import_profile,
-                         str(import_steps), checker, sortkey),
-        callable = _registerUpgradeStep,
-        args = (step,),
+        discriminator=('upgradeDepends', source, destination, import_profile,
+                       str(import_steps), checker, sortkey),
+        callable=_registerUpgradeStep,
+        args=(step,),
         )
 
 
 class upgradeSteps(object):
+
     """
     Allows nested upgrade steps.
     """
+
     def __init__(self, _context, profile, source='*', destination='*', sortkey=0):
         self.profile = profile
         self.source = source
@@ -334,10 +351,10 @@ class upgradeSteps(object):
             self.id = str(abs(hash('%s%s%s%s' % (title, self.source, self.dest,
                                                  self.sortkey))))
         _context.action(
-            discriminator = ('upgradeStep', self.source, self.dest, handler,
-                             self.sortkey),
-            callable = _registerNestedUpgradeStep,
-            args = (step, self.id),
+            discriminator=('upgradeStep', self.source, self.dest, handler,
+                           self.sortkey),
+            callable=_registerNestedUpgradeStep,
+            args=(step, self.id),
             )
 
     def upgradeDepends(self, _context, title, description=None, import_profile=None,
@@ -351,10 +368,10 @@ class upgradeSteps(object):
             self.id = str(abs(hash('%s%s%s%s' % (title, self.source, self.dest,
                                                  self.sortkey))))
         _context.action(
-            discriminator = ('upgradeDepends', self.source, self.dest, import_profile,
-                             str(import_steps), self.sortkey),
-            callable = _registerNestedUpgradeStep,
-            args = (step, self.id)
+            discriminator=('upgradeDepends', self.source, self.dest, import_profile,
+                           str(import_steps), self.sortkey),
+            callable=_registerNestedUpgradeStep,
+            args=(step, self.id)
             )
 
     def __call__(self):
@@ -381,23 +398,23 @@ def cleanUpProfiles():
 
 def cleanUpImportSteps():
     global _import_step_regs
-    for name in  _import_step_regs:
+    for name in _import_step_regs:
         try:
-             _import_step_registry.unregisterStep( name )
+            _import_step_registry.unregisterStep(name)
         except KeyError:
             pass
 
-    _import_step_regs=[]
+    _import_step_regs = []
 
 def cleanUpExportSteps():
     global _export_step_regs
-    for name in  _export_step_regs:
+    for name in _export_step_regs:
         try:
-             _export_step_registry.unregisterStep( name )
+            _export_step_registry.unregisterStep(name)
         except KeyError:
             pass
 
-    _export_step_regs=[]
+    _export_step_regs = []
 
 from zope.testing.cleanup import addCleanUp
 addCleanUp(cleanUpProfiles)
