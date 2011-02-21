@@ -57,9 +57,9 @@ setup(name='Products.GenericSetup',
 #          'Products.PythonScripts', # BBB: disabled for Zope 2.12
           ],
       tests_require=[
-          'zope.testing >= 3.7.0',
+          'zope.testrunner',
           ],
-      test_loader="zope.testing.testrunner.eggsupport:SkipLayers",
+      test_loader="zope.testrunner.eggsupport:SkipLayers",
       test_suite="Products.GenericSetup.tests",
       entry_points="""
       [zope2.initialize]
