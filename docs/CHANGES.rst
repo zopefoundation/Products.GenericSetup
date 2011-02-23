@@ -4,6 +4,9 @@ Products.GenericSetup Changelog
 1.6.3 (unreleased)
 ------------------
 
+- Export content objects whose 'manage_FTPget' returns a custom iterator
+  with 'file' and 'size' properties.  https://bugs.launchpad.net/bugs/722726
+
 - Property import: Fixed 'lines' and 'tokens' import.
   Modifying sequences without adding new elements was broken.
 

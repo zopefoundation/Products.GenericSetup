@@ -18,6 +18,7 @@ from Testing.ZopeTestCase import ZopeTestCase
 
 import logging
 import os
+import tempfile
 import time
 from StringIO import StringIO
 from tarfile import TarFile
@@ -42,6 +43,10 @@ class DummySite( Folder ):
 
 class DummyTool( Folder ):
 
+    pass
+
+class DummyPdataStreamIterator:
+    
     pass
 
 
@@ -797,6 +802,26 @@ class TarballExportContextTests(ZopeTestCase, ConformsToISetupContext,
         self._verifyTarballContents( fileish, [ 'foo.txt', 'bar.txt' ] )
         self._verifyTarballEntry( fileish, 'foo.txt', printable )
         self._verifyTarballEntry( fileish, 'bar.txt', digits )
+
+    def test_writeDataFile_PdataStreamIterator( self ):
+
+        from string import printable
+
+        site = DummySite('site').__of__(self.app)
+        ctx = self._getTargetClass()( site )
+
+        fp = tempfile.TemporaryFile()
+        fp.write(printable)
+        fp.seek(0)
+        pData = DummyPdataStreamIterator()
+        pData.file = fp
+        pData.size = len(printable)
+        ctx.writeDataFile( 'foo.txt', pData, 'text/plain' )
+
+        fileish = StringIO( ctx.getArchive() )
+
+        self._verifyTarballContents( fileish, [ 'foo.txt' ] )
+        self._verifyTarballEntry( fileish, 'foo.txt', printable)
 
     def test_writeDataFile_subdir( self ):
 

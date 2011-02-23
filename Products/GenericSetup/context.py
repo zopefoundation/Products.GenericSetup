@@ -451,9 +451,16 @@ class TarballExportContext( BaseContext ):
                 self._archive.addfile(info)
             parents.pop()
 
-        stream = StringIO( text )
-        info = TarInfo( filename )
-        info.size = len( text )
+        info = TarInfo(filename)
+        if isinstance(text, basestring):
+            stream = StringIO(text)
+            info.size = len(text)
+        else:
+            # Assume text is a an instance of a class like
+            # Products.Archetypes.WebDAVSupport.PdataStreamIterator, 
+            # as in the case of ATFile
+            stream = text.file
+            info.size = text.size
         info.mtime = time.time()
         self._archive.addfile( info, stream )
 
