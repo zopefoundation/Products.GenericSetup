@@ -16,10 +16,34 @@
 import unittest
 import Testing
 
-from Testing.ZopeTestCase import ZopeTestCase
+from DateTime.DateTime import DateTime
 from Testing.ZopeTestCase import installProduct
+from Testing.ZopeTestCase import ZopeTestCase
 
 installProduct('GenericSetup')
+
+_TESTED_PROPERTIES = (
+    {'id': 'foo_boolean', 'type': 'boolean', 'mode': 'wd'},
+    {'id': 'foo_date', 'type': 'date', 'mode': 'wd'},
+    {'id': 'foo_float', 'type': 'float', 'mode': 'wd'},
+    {'id': 'foo_int', 'type': 'int', 'mode': 'wd'},
+    {'id': 'foo_lines', 'type': 'lines', 'mode': 'wd'},
+    {'id': 'foo_long', 'type': 'long', 'mode': 'wd'},
+    {'id': 'foo_string', 'type': 'string', 'mode': 'wd'},
+    {'id': 'foo_text', 'type': 'text', 'mode': 'wd'},
+    {'id': 'foo_tokens', 'type': 'tokens', 'mode': 'wd'},
+    {'id': 'foo_selection', 'type': 'selection',
+           'select_variable': 'foobarbaz', 'mode': 'wd'},
+    {'id': 'foo_mselection', 'type': 'multiple selection',
+           'select_variable': 'foobarbaz', 'mode': 'wd'},
+    {'id': 'foo_boolean0', 'type': 'boolean', 'mode': 'wd'},
+    {'id': 'foo_date_naive', 'type': 'date', 'mode': 'wd'},
+    {'id': 'foo_ro', 'type': 'string', 'mode': ''},
+    {'id': 'foo_boolean_nodel', 'type': 'boolean', 'mode': 'w'},
+    {'id': 'foo_date_nodel', 'type': 'date', 'mode': 'w'},
+    {'id': 'foo_float_nodel', 'type': 'float', 'mode': 'w'},
+    {'id': 'foo_int_nodel', 'type': 'int', 'mode': 'w'},
+)
 
 _EMPTY_PROPERTY_EXPORT = """\
 <?xml version="1.0"?>
@@ -38,9 +62,11 @@ _EMPTY_PROPERTY_EXPORT = """\
  <property name="foo_mselection" select_variable="foobarbaz"
     type="multiple selection"/>
  <property name="foo_boolean0" type="boolean">False</property>
- <property name="foo_int_nodel">0</property>
- <property name="foo_float_nodel">0.0</property>
+ <property name="foo_date_naive" type="date">1970/01/01 00:00:00</property>
  <property name="foo_boolean_nodel">False</property>
+ <property name="foo_date_nodel">1970/01/01 00:00:00 UTC</property>
+ <property name="foo_float_nodel">0.0</property>
+ <property name="foo_int_nodel">0</property>
 </dummy>
 """
 
@@ -72,9 +98,11 @@ _NORMAL_PROPERTY_EXPORT = u"""\
   <element value="Baz"/>
  </property>
  <property name="foo_boolean0" type="boolean">False</property>
- <property name="foo_int_nodel">1789</property>
- <property name="foo_float_nodel">3.1415</property>
+ <property name="foo_date_naive" type="date">2000/01/01 00:00:00</property>
  <property name="foo_boolean_nodel">True</property>
+ <property name="foo_date_nodel">2000/01/01 00:00:00 UTC</property>
+ <property name="foo_float_nodel">3.1415</property>
+ <property name="foo_int_nodel">1789</property>
 </dummy>
 """.encode('utf-8')
 
@@ -104,9 +132,11 @@ _FIXED_PROPERTY_EXPORT = u"""\
   <element value="Baz"/>
  </property>
  <property name="foo_boolean0">False</property>
- <property name="foo_int_nodel">1789</property>
- <property name="foo_float_nodel">3.1415</property>
+ <property name="foo_date_naive">2000/01/01 00:00:00</property>
  <property name="foo_boolean_nodel">True</property>
+ <property name="foo_date_nodel">2000/01/01 00:00:00 UTC</property>
+ <property name="foo_float_nodel">3.1415</property>
+ <property name="foo_int_nodel">1789</property>
 </dummy>
 """.encode('utf-8')
 
@@ -268,32 +298,34 @@ class PropertyManagerHelpersTests(unittest.TestCase):
 
         return Foo(context, environ)
 
-    def _makeContext(self):
+    def _getContextClass(self):
         from OFS.PropertyManager import PropertyManager
-        obj = PropertyManager('obj')
+
+        class DummyContext(PropertyManager):
+            _properties = _TESTED_PROPERTIES
+        return DummyContext
+
+    def _makeContext(self):
+        obj = self._getContextClass()()
         obj.foobarbaz = ('Foo', 'Bar', 'Baz')
-        obj._properties = ()
-        obj.manage_addProperty('foo_boolean', '', 'boolean')
-        obj.manage_addProperty('foo_date', '1970/01/01 00:00:00 UTC', 'date')
-        obj.manage_addProperty('foo_float', '0', 'float')
-        obj.manage_addProperty('foo_int', '0', 'int')
-        obj.manage_addProperty('foo_lines', '', 'lines')
-        obj.manage_addProperty('foo_long', '0', 'long')
-        obj.manage_addProperty('foo_string', '', 'string')
-        obj.manage_addProperty('foo_text', '', 'text')
-        obj.manage_addProperty('foo_tokens', '', 'tokens')
-        obj.manage_addProperty('foo_selection', 'foobarbaz', 'selection')
-        obj.manage_addProperty('foo_mselection', 'foobarbaz',
-                               'multiple selection')
-        obj.manage_addProperty('foo_boolean0', '', 'boolean')
-        obj.manage_addProperty('foo_ro', '', 'string')
-        obj._properties[-1]['mode'] = '' # Read-only, not exported or purged
-        obj.manage_addProperty('foo_int_nodel', 0, 'int')
-        obj._properties[-1]['mode'] = 'w' # Not deletable
-        obj.manage_addProperty('foo_float_nodel', 0, 'float')
-        obj._properties[-1]['mode'] = 'w' # Not deletable
-        obj.manage_addProperty('foo_boolean_nodel', '', 'boolean')
-        obj._properties[-1]['mode'] = 'w' # Not deletable
+        obj.foo_boolean = False
+        obj.foo_date = DateTime('1970/01/01 00:00:00 UTC')
+        obj.foo_float = 0.0
+        obj.foo_int = 0
+        obj.foo_lines = []
+        obj.foo_long = 0
+        obj.foo_string = ''
+        obj.foo_text = ''
+        obj.foo_tokens = ()
+        obj.foo_selection = ''
+        obj.foo_mselection = ()
+        obj.foo_boolean0 = 0
+        obj.foo_date_naive = DateTime('1970/01/01 00:00:00')
+        obj.foo_ro = ''
+        obj.foo_boolean_nodel = False
+        obj.foo_date_nodel = DateTime('1970/01/01 00:00:00 UTC')
+        obj.foo_float_nodel = 0.0
+        obj.foo_int_nodel = 0
         return obj
 
     def _getReal(self, obj):
@@ -313,10 +345,12 @@ class PropertyManagerHelpersTests(unittest.TestCase):
         obj._updateProperty('foo_selection', 'Foo')
         obj._updateProperty( 'foo_mselection', ('Foo', 'Baz') )
         obj.foo_boolean0 = 0
+        obj._updateProperty('foo_date_naive', '2000/01/01 00:00:00')
         obj._updateProperty('foo_ro', 'RO')
-        obj._updateProperty('foo_int_nodel', '1789')
-        obj._updateProperty('foo_float_nodel', '3.1415')
         obj._updateProperty('foo_boolean_nodel', 'True')
+        obj._updateProperty('foo_date_nodel', '2000/01/01 00:00:00 UTC')
+        obj._updateProperty('foo_float_nodel', '3.1415')
+        obj._updateProperty('foo_int_nodel', '1789')
 
     def test__extractProperties_empty(self):
         from Products.GenericSetup.utils import PrettyDocument
@@ -364,7 +398,13 @@ class PropertyManagerHelpersTests(unittest.TestCase):
         self.assertEqual(getattr(obj, 'foo_selection', None), None)
         self.assertEqual(getattr(obj, 'foo_mselection', None), None)
         self.assertEqual(getattr(obj, 'foo_boolean0', None), None)
-        self.assertEqual(getattr(obj, 'foo_ro', None), 'RO')
+        self.assertEqual(getattr(obj, 'foo_date_naive', None), None)
+        self.assertEqual(obj.foo_ro, 'RO')
+        self.assertEqual(obj.foo_boolean_nodel, False)
+        self.assertEqual(obj.foo_date_nodel,
+                         DateTime('1970/01/01 00:00:00 UTC'))
+        self.assertEqual(obj.foo_float_nodel, 0.0)
+        self.assertEqual(obj.foo_int_nodel, 0)
 
     def test__initProperties_normal(self):
         from Products.GenericSetup.utils import PrettyDocument
@@ -469,26 +509,7 @@ class PropertyManagerHelpersNonPMContextTests(PropertyManagerHelpersTests):
         from Products.GenericSetup.testing import DummySetupEnviron
 
         class Foo(self._getTargetClass(), NodeAdapterBase):
-            _PROPERTIES = (
-                {'id': 'foo_boolean', 'type': 'boolean', 'mode': 'wd'},
-                {'id': 'foo_date', 'type': 'date', 'mode': 'wd'},
-                {'id': 'foo_float', 'type': 'float', 'mode': 'wd'},
-                {'id': 'foo_int', 'type': 'int', 'mode': 'wd'},
-                {'id': 'foo_lines', 'type': 'lines', 'mode': 'wd'},
-                {'id': 'foo_long', 'type': 'long', 'mode': 'wd'},
-                {'id': 'foo_string', 'type': 'string', 'mode': 'wd'},
-                {'id': 'foo_text', 'type': 'text', 'mode': 'wd'},
-                {'id': 'foo_tokens', 'type': 'tokens', 'mode': 'wd'},
-                {'id': 'foo_selection', 'type': 'selection',
-                       'select_variable': 'foobarbaz', 'mode': 'wd'},
-                {'id': 'foo_mselection', 'type': 'multiple selection',
-                       'select_variable': 'foobarbaz', 'mode': 'wd'},
-                {'id': 'foo_boolean0', 'type': 'boolean', 'mode': 'wd'},
-                {'id': 'foo_ro', 'type': 'string', 'mode': ''},
-                {'id': 'foo_int_nodel', 'type': 'int', 'mode': 'w'},
-                {'id': 'foo_float_nodel', 'type': 'float', 'mode': 'w'},
-                {'id': 'foo_boolean_nodel', 'type': 'boolean', 'mode': 'w'},
-            )
+            _PROPERTIES = _TESTED_PROPERTIES
 
         if context is None:
             context = self._makeContext()
@@ -498,35 +519,15 @@ class PropertyManagerHelpersNonPMContextTests(PropertyManagerHelpersTests):
 
         return Foo(context, environ)
 
-    def _makeContext(self):
-        from DateTime.DateTime import DateTime
+    def _getContextClass(self):
         class NonPropertyManager:
             pass
-        obj = NonPropertyManager()
-        obj.foobarbaz = ('Foo', 'Bar', 'Baz')
-        obj.foo_boolean = False
-        obj.foo_date = DateTime('1970/01/01 00:00:00 UTC')
-        obj.foo_float = 0.0
-        obj.foo_int = 0
-        obj.foo_lines = []
-        obj.foo_long = 0
-        obj.foo_string = ''
-        obj.foo_text = ''
-        obj.foo_tokens = ()
-        obj.foo_selection = ''
-        obj.foo_mselection = ()
-        obj.foo_boolean0 = 0
-        obj.foo_ro = ''
-        obj.foo_int_nodel = 0
-        obj.foo_float_nodel = 0.0
-        obj.foo_boolean_nodel = False
-        return obj
+        return NonPropertyManager
 
     def _getReal(self, obj):
         return obj._real
 
     def _populate(self, obj):
-        from DateTime.DateTime import DateTime
         obj.foo_boolean = True
         obj.foo_date = DateTime('2000/01/01 00:00:00 UTC')
         obj.foo_float = 1.1
@@ -539,10 +540,12 @@ class PropertyManagerHelpersNonPMContextTests(PropertyManagerHelpersTests):
         obj.foo_selection = 'Foo'
         obj.foo_mselection = ('Foo', 'Baz')
         obj.foo_boolean0 = 0
+        obj.foo_date_naive = DateTime('2000/01/01 00:00:00')
         obj.foo_ro = 'RO'
-        obj.foo_int_nodel = 1789
-        obj.foo_float_nodel = 3.1415
         obj.foo_boolean_nodel = True
+        obj.foo_date_nodel = DateTime('2000/01/01 00:00:00 UTC')
+        obj.foo_float_nodel = 3.1415
+        obj.foo_int_nodel = 1789
 
 
 class MarkerInterfaceHelpersTests(unittest.TestCase):

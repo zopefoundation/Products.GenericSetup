@@ -4,6 +4,10 @@ Products.GenericSetup Changelog
 1.6.3 (unreleased)
 ------------------
 
+- Property import/export: Fixed two 'date' property issues.
+  Naive 'date' values are now exported without time zone. And purging
+  non-deletable 'date' properties is fixed.
+
 - Export content objects whose 'manage_FTPget' returns a custom iterator
   with 'file' and 'size' properties.  https://bugs.launchpad.net/bugs/722726
 

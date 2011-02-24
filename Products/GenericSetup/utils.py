@@ -655,6 +655,11 @@ class PropertyManagerHelpers(object):
             else:
                 if prop_map.get('type') == 'boolean':
                     prop = unicode(bool(prop))
+                elif prop_map.get('type') == 'date':
+                    if prop.timezoneNaive():
+                        prop = unicode(prop).rsplit(' ', 1)[0]
+                    else:
+                        prop = unicode(prop)
                 elif isinstance(prop, str):
                     prop = prop.decode(self._encoding)
                 elif not isinstance(prop, basestring):
@@ -690,6 +695,8 @@ class PropertyManagerHelpers(object):
                     prop_value = ()
                 elif prop_type in ('int', 'float'):
                     prop_value = 0
+                elif prop_type == 'date':
+                    prop_value = '1970/01/01 00:00:00 UTC' # DateTime(0) as UTC
                 else:
                     prop_value = ''
                 self.context._updateProperty(prop_id, prop_value)
