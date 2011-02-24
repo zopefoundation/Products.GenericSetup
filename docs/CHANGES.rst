@@ -4,6 +4,8 @@ Products.GenericSetup Changelog
 1.6.3 (unreleased)
 ------------------
 
+- Import form: Sort the list of extension profiles alphabetically by title.
+
 - Property import/export: Fixed two 'date' property issues.
   Naive 'date' values are now exported without time zone. And purging
   non-deletable 'date' properties is fixed.
