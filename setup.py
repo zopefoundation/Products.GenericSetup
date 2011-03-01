@@ -51,10 +51,10 @@ setup(name='Products.GenericSetup',
       install_requires=[
           'setuptools',
           'Zope2 >= 2.12.3',
-          'five.formlib >= 1.0.2',
           'five.localsitemanager',
 #          'Products.MailHost', # BBB: disabled for Zope 2.12
 #          'Products.PythonScripts', # BBB: disabled for Zope 2.12
+          'zope.formlib',
           ],
       tests_require=[
           'zope.testrunner',

@@ -4,6 +4,8 @@ Products.GenericSetup Changelog
 1.6.3 (unreleased)
 ------------------
 
+- Removed ``five.formlib`` dependency. ``zope.formlib`` is now used directly.
+
 - Import form: Sort the list of extension profiles alphabetically by title.
 
 - Property import/export: Fixed two 'date' property issues.

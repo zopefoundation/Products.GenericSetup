@@ -3,7 +3,7 @@
     xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
     i18n_domain="genericsetup">
 
-  <include package="five.formlib" />
+  <include package="zope.formlib" />
 
   <include package=".browser"/>
 
