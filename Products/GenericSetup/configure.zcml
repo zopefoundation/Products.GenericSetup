@@ -1,9 +1,13 @@
 <configure
     xmlns="http://namespaces.zope.org/zope"
     xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
+    xmlns:zcml="http://namespaces.zope.org/zcml"
     i18n_domain="genericsetup">
 
-  <include package="zope.formlib" />
+  <include
+      zcml:condition="not-installed five.formlib"
+      package="zope.formlib"
+      />
 
   <include package=".browser"/>
 
