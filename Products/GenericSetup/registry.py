@@ -285,10 +285,9 @@ class BaseStepRegistry( Implicit ):
 
         o Return 'default' if no such step is registered.
         """
-        marker = object()
-        info = self._registered.get( key, marker )
+        info = self._registered.get( key )
 
-        if info is marker:
+        if info is None:
             return default
 
         return _resolveDottedName( info[ 'handler' ] )
