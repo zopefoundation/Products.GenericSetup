@@ -158,6 +158,8 @@ class UpgradeDepends(UpgradeEntity):
     def doStep(self, tool):
         if self.import_profile is None:
             profile_id = 'profile-%s' % self.profile
+        else:
+            profile_id = self.import_profile
         if self.import_steps:
             for step in self.import_steps:
                 tool.runImportStepFromProfile(profile_id, step,
@@ -217,7 +219,7 @@ def listUpgradeSteps(tool, profile_id, source):
     res = []
     profile_steps = _upgrade_registry.getUpgradeStepsForProfile(profile_id)
     for id, step in profile_steps.items():
-        if type(step) == UpgradeStep:
+        if isinstance(step, UpgradeEntity):
             info = _extractStepInfo(tool, id, step, source)
             if info is None:
                 continue

@@ -4,6 +4,9 @@ Products.GenericSetup Changelog
 1.6.3 (unreleased)
 ------------------
 
+- Fixed the profile_id UnboundLocalError in the upgradeDepends directive when
+  import_profile is not None.
+
 - Removed ``five.formlib`` dependency. ``zope.formlib`` is now used directly.
 
 - Import form: Sort the list of extension profiles alphabetically by title.
