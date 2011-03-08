@@ -17,7 +17,6 @@ import os.path
 
 import zope.formlib
 from Products.Five.browser.decode import processInputs
-from Products.Five.browser.decode import setPageEncoding
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from Products.Five.component.interfaces import IObjectManagerSite
 from zope.component import adapts
@@ -26,6 +25,7 @@ from zope.formlib import form
 from zope.interface import implements
 from zope.interface import Interface
 from zope.schema import Text
+from ZPublisher import HTTPRequest
 
 from Products.GenericSetup.context import SetupEnviron
 from Products.GenericSetup.interfaces import IBody
@@ -74,8 +74,9 @@ class ComponentsSetupView(form.PageEditForm):
     form_fields = form.FormFields(IComponentsSetupSchema)
 
     def update(self):
-        processInputs(self.request)
-        setPageEncoding(self.request)
+        # BBB: for Zope < 2.14
+        if not getattr(self.request, 'postProcessInputs', False):
+            processInputs(self.request, [HTTPRequest.default_encoding])
         super(ComponentsSetupView, self).update()
 
     def setUpWidgets(self, ignore_request=False):
