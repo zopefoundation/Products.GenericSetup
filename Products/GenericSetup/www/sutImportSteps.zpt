@@ -6,13 +6,11 @@
                    context_title python:[c['title'] for c in contexts if c['id']==context_id];
                    context_title python:context_title and context_title[0] or 'UNKNOWN';
                    extension_contexts python:[c for c in contexts if c['type'] in ['extension','snapshot']];
-                   dummy python:extension_contexts.sort(key=lambda x: x['title'])
                    ">
 <h1 tal:replace="structure context/manage_page_header">PAGE HEADER</h1>
-<h2 tal:define="manage_tabs_message options/manage_tabs_message | nothing"
-    tal:replace="structure context/manage_tabs">TABS</h2>
+<h2 tal:replace="structure context/manage_tabs">TABS</h2>
 
-<h2> Site Configuration Import Steps </h2>
+<h3>Site Configuration Import Steps</h3>
 
 <p class="form-help">
 This tool allows one to re-run individual steps of the site setup
@@ -21,7 +19,7 @@ procedure, in order to pick up changes since the site was created.
 
 <h3>Select Profile or Snapshot</h3>
 
-<form action="." method="POST" id="profileform" tal:attributes="action string:${context/absolute_url}/manage_importSteps">
+<form action="." method="post" id="profileform" tal:attributes="action string:${context/absolute_url}/manage_importSteps">
 <select name="context_id"
         onchange="document.getElementById('profileform').submit();">
  <option value=""
@@ -44,7 +42,7 @@ procedure, in order to pick up changes since the site was created.
 
 <h3>Available Import Steps for "<span tal:replace="context_title">Base profile</span>"</h3>
 
-<form action="." method="POST" enctype="multipart/form-data"
+<form action="." method="post" enctype="multipart/form-data"
       tal:attributes="action context/absolute_url" >
 <tal:dummy define="dummy python:context.applyContextById(context_id)"/>
 <input type="hidden" name="ids:default:tokens" value="" />
@@ -101,11 +99,11 @@ procedure, in order to pick up changes since the site was created.
     <input class="form-element" type="submit"
            name="manage_importSelectedSteps:method"
            value=" Import selected steps " />
-      
+
     <input class="form-element" type="submit"
            name="manage_importAllSteps:method"
            value=" Import all steps " />
-      
+
     <input class="form-element" type="file"
            name="tarball" />
     <input class="form-element" type="submit"
@@ -138,4 +136,3 @@ procedure, in order to pick up changes since the site was created.
 
 <h1 tal:replace="structure context/manage_page_footer">PAGE FOOTER</h1>
 </tal:block>
-

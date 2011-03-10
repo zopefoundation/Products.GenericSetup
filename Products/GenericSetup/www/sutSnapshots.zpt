@@ -1,5 +1,5 @@
-<h1 tal:replace="structure here/manage_page_header"> PAGE HEADER </h1>
-<h2 tal:replace="structure here/manage_tabs"> PAGE HEADER </h2>
+<h1 tal:replace="structure context/manage_page_header">PAGE HEADER</h1>
+<h2 tal:replace="structure context/manage_tabs">TABS</h2>
 
 <h3> Site Configuration Snapshots </h3>
 
@@ -10,12 +10,11 @@ Snapshots capture site configuration at a particular point in time.
 
 <h3>Available Snapshots</h3>
 
-<form action="." method="POST"
-      tal:attributes="action here/absolute_url" >
+<form action="." method="post" tal:attributes="action context/absolute_url">
 <input type="hidden" name="ids:default:tokens" value="" />
 
 <table cellspacing="0" cellpadding="4"
-       tal:define="snapshot_info here/listSnapshotInfo;"
+       tal:define="snapshot_info context/listSnapshotInfo;"
 >
 
  <thead tal:condition="not: snapshot_info">
@@ -60,5 +59,4 @@ Snapshots capture site configuration at a particular point in time.
 </table>
 </form>
 
-
-<h1 tal:replace="structure here/manage_page_footer"> PAGE FOOTER </h1>
+<h1 tal:replace="structure context/manage_page_footer">PAGE FOOTER</h1>

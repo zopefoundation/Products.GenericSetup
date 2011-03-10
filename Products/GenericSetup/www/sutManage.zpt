@@ -1,12 +1,5 @@
-<html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
-      xmlns:tal="http://xml.zope.org/namespaces/tal"
-      xmlns:metal="http://xml.zope.org/namespaces/metal"
-      xml:lang="en" lang="en">
-
 <h1 tal:replace="structure context/manage_page_header">PAGE HEADER</h1>
-<h2 tal:define="manage_tabs_message options/manage_tabs_message | nothing"
-    tal:replace="structure context/manage_tabs">TABS</h2>
+<h2 tal:replace="structure context/manage_tabs">TABS</h2>
 
 <h2>Manage steps registry</h2>
 
@@ -30,7 +23,7 @@ registries. Steps registered via ZCML are not shown here.
   <tal:block condition="invalid_steps">
     <h3>Steps with invalid step handlers</h3>
 
-    <form action="." method="POST"
+    <form action="." method="post"
       tal:attributes="action string:${context/absolute_url}/manage_stepRegistry">
       <input type="hidden" name="registry" value="import"/>
       <table cellspacing="0" cellpadding="4">
@@ -81,7 +74,7 @@ registries. Steps registered via ZCML are not shown here.
       persistent step registry.
     </p>
 
-    <form action="." method="POST"
+    <form action="." method="post"
       tal:attributes="action string:${context/absolute_url}/manage_stepRegistry">
       <input type="hidden" name="registry" value="import"/>
       <table cellspacing="0" cellpadding="4">
@@ -134,7 +127,7 @@ registries. Steps registered via ZCML are not shown here.
   <tal:block condition="invalid_steps">
     <h3>Steps with invalid step handlers</h3>
 
-    <form action="." method="POST"
+    <form action="." method="post"
       tal:attributes="action string:${context/absolute_url}/manage_stepRegistry">
       <input type="hidden" name="registry" value="export"/>
       <table cellspacing="0" cellpadding="4">
@@ -185,7 +178,7 @@ registries. Steps registered via ZCML are not shown here.
       persistent step registry.
     </p>
 
-    <form action="." method="POST"
+    <form action="." method="post"
       tal:attributes="action string:${context/absolute_url}/manage_stepRegistry">
       <input type="hidden" name="registry" value="export"/>
       <table cellspacing="0" cellpadding="4">
@@ -222,5 +215,5 @@ registries. Steps registered via ZCML are not shown here.
     </form>
   </tal:block>
 </tal:block>
+
 <h1 tal:replace="structure context/manage_page_footer">PAGE FOOTER</h1>
-</html>

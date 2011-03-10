@@ -17,6 +17,7 @@ import logging
 import os
 import time
 from cgi import escape
+from operator import itemgetter
 
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from Acquisition import aq_base
@@ -657,11 +658,13 @@ class SetupTool(Folder):
                      'type': 'snapshot',
                    }
                     for info in self.listSnapshotInfo()]
+        s_infos.sort(key=itemgetter('title'))
         p_infos = [{'id': 'profile-%s' % info['id'],
                     'title': info['title'],
                     'type': readableType(info['type']),
                    }
                    for info in self.listProfileInfo()]
+        p_infos.sort(key=itemgetter('title'))
 
         return tuple(s_infos + p_infos)
 

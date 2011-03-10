@@ -9,7 +9,8 @@ Products.GenericSetup Changelog
 
 - Removed ``five.formlib`` dependency. ``zope.formlib`` is now used directly.
 
-- Import form: Sort the list of extension profiles alphabetically by title.
+- tool: 'listContextInfos' now returns profile infos sorted by type and title.
+  This makes it easier to select profiles on the "Import" and "Comparison" tab. 
 
 - Property import/export: Fixed two 'date' property issues.
   Naive 'date' values are now exported without time zone. And purging

@@ -1,5 +1,5 @@
-<h1 tal:replace="structure here/manage_page_header"> PAGE HEADER </h1>
-<h2 tal:replace="structure here/manage_tabs"> PAGE HEADER </h2>
+<h1 tal:replace="structure context/manage_page_header">PAGE HEADER</h1>
+<h2 tal:replace="structure context/manage_tabs">TABS</h2>
 
 <h3> Site Configuration Export Steps </h3>
 
@@ -10,8 +10,7 @@ Download selected export steps as tarball.
 
 <h3>Available Export Steps</h3>
 
-<form action="." method="POST"
-      tal:attributes="action here/absolute_url" >
+<form action="." method="post" tal:attributes="action context/absolute_url">
 <input type="hidden" name="ids:default:tokens" value="" />
 
 <table cellspacing="0" cellpadding="4">
@@ -25,11 +24,11 @@ Download selected export steps as tarball.
   </tr>
  </thead>
 
- <tbody tal:define="step_ids here/listExportSteps;
+ <tbody tal:define="step_ids context/listExportSteps;
                    ">
   <tal:loop tal:repeat="step_id step_ids">
   <tr valign="top"
-      tal:define="info python: here.getExportStepMetadata( step_id );"
+      tal:define="info python: context.getExportStepMetadata(step_id);"
       tal:attributes="class python:
                      repeat[ 'step_id' ].odd and 'row-normal' or 'row-hilite'" >
    <td class="list-item" width="16">
@@ -58,11 +57,11 @@ Download selected export steps as tarball.
     <input class="form-element" type="submit"
            name="manage_exportSelectedSteps:method"
            value=" Export selected steps " />
-      
+
     <input class="form-element" type="submit"
            name="manage_exportAllSteps:method"
            value=" Export all steps " />
-      
+
    </td>
   </tr>
  </tbody>
@@ -70,5 +69,4 @@ Download selected export steps as tarball.
 </table>
 </form>
 
-
-<h1 tal:replace="structure here/manage_page_footer"> PAGE FOOTER </h1>
+<h1 tal:replace="structure context/manage_page_footer">PAGE FOOTER</h1>
