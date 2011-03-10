@@ -233,24 +233,28 @@ class GlobalRegistryStorage(object):
 
     def __init__(self, interfaceClass):
         self.interfaceClass = interfaceClass
-        self.sm = getGlobalSiteManager()
 
     def keys(self):
-        keys = [name for name, info in self.sm.getUtilitiesFor(self.interfaceClass)]
+        sm = getGlobalSiteManager()
+        keys = [name for name, info in sm.getUtilitiesFor(self.interfaceClass)]
         return keys
 
     def values(self):
-        values = [info for name, info in self.sm.getUtilitiesFor(self.interfaceClass)]
+        sm = getGlobalSiteManager()
+        values = [info for name, info in sm.getUtilitiesFor(self.interfaceClass)]
         return values
 
     def get(self, key):
-        return self.sm.queryUtility(provided=self.interfaceClass, name=key)
+        sm = getGlobalSiteManager()
+        return sm.queryUtility(provided=self.interfaceClass, name=key)
 
     def __setitem__(self, id, info):
-        return self.sm.registerUtility(info, provided=self.interfaceClass, name=id)
+        sm = getGlobalSiteManager()
+        return sm.registerUtility(info, provided=self.interfaceClass, name=id)
 
     def __delitem__(self, id):
-        return self.sm.unregisterUtility(provided=self.interfaceClass, name=id)
+        sm = getGlobalSiteManager()
+        return sm.unregisterUtility(provided=self.interfaceClass, name=id)
 
     def clear(self):
         for key in self.keys():
