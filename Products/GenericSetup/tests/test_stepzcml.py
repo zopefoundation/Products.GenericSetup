@@ -48,13 +48,14 @@ class ImportStepTests(unittest.TestCase):
 
     def testEmptyImport(self):
         zcml.load_string(EMPTY_ZCML)
-        self.assertEqual(_import_step_registry._registered, {})
+        self.assertEqual(len(_import_step_registry.listSteps()), 0)
 
     def testOneStepImport(self):
         zcml.load_string(ONE_STEP_ZCML)
-        self.assertEqual(_import_step_registry._registered.keys(),
+        self.assertEqual(_import_step_registry.listSteps(),
             [ u'Products.GenericSetup.teststep'  ])
-        info = _import_step_registry._registered[ u'Products.GenericSetup.teststep' ]
+        info = _import_step_registry.getStepMetadata(
+            u'Products.GenericSetup.teststep')
         self.assertEqual( info['description'],
                 u'step description' )
         self.assertEqual( info['title'],

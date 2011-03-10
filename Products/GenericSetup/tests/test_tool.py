@@ -79,8 +79,6 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
     _PROFILE_PATH2 = '/tmp/STT_test2'
 
     def afterSetUp(self):
-        self._profile_registry_info = profile_registry._profile_info
-        self._profile_registry_ids = profile_registry._profile_ids
         profile_registry.clear()
         global _before_import_events
         global _after_import_events
@@ -90,8 +88,6 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
         provideHandler(handleProfileImportedEvent)
 
     def beforeTearDown(self):
-        profile_registry._profile_info = self._profile_registry_info
-        profile_registry._profile_ids = self._profile_registry_ids
         base_registry.unregisterHandler(handleBeforeProfileImportEvent)
         base_registry.unregisterHandler(handleProfileImportedEvent)
         FilesystemTestBase.beforeTearDown(self)
@@ -929,8 +925,6 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
         path = os.path.join(directory, 'versioned_profile')
 
         # register profile
-        orig_profile_reg = (profile_registry._profile_info.copy(),
-                            profile_registry._profile_ids[:])
         profile_registry.registerProfile(profile_id,
                                          'Dummy Profile',
                                          'This is a dummy profile',
@@ -965,8 +959,7 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
         _upgrade_registry._registry = orig_upgrade_registry
 
         # reset profile registry
-        (profile_registry._profile_info,
-         profile_registry._profile_ids) = orig_profile_reg
+        profile_registry.unregisterProfile(profile_id, product_name)
 
     def test_manage_doUpgrades_no_profile_id_or_updates(self):
         site = self._makeSite()
@@ -1059,16 +1052,16 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
         self.assertEqual(len(tool.listProfileInfo(for_=IAnotherSite)), 0)
 
 
-_DEFAULT_STEP_REGISTRIES_EXPORT_XML = """\
+_DEFAULT_STEP_REGISTRIES_EXPORT_XML = ("""\
 <?xml version="1.0"?>
 <export-steps>
  <export-step id="step_registries"
               handler="Products.GenericSetup.tool.exportStepRegistries"
               title="Export import / export steps.">
-  
+""" + "  " + """
  </export-step>
 </export-steps>
-"""
+""")
 
 _EXTRAS_STEP_REGISTRIES_EXPORT_XML = """\
 <?xml version="1.0"?>
@@ -1088,14 +1081,14 @@ _EXTRAS_STEP_REGISTRIES_EXPORT_XML = """\
 </export-steps>
 """
 
-_DEFAULT_STEP_REGISTRIES_IMPORT_XML = """\
+_DEFAULT_STEP_REGISTRIES_IMPORT_XML = ("""\
 <?xml version="1.0"?>
 <import-steps>
  <import-step id="foo" handler="foo.bar" title="foo">
-  
+""" + "  " + """
  </import-step>
 </import-steps>
-"""
+""")
 
 _EXTRAS_STEP_REGISTRIES_IMPORT_XML = """\
 <?xml version="1.0"?>

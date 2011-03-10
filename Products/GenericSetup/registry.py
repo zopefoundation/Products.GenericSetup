@@ -23,12 +23,16 @@ from Acquisition import Implicit
 from App.class_init import InitializeClass
 from Products.PageTemplates.PageTemplateFile import PageTemplateFile
 from zope.interface import implements
+from zope.component import getGlobalSiteManager
 
 from Products.GenericSetup.interfaces import BASE
 from Products.GenericSetup.interfaces import IImportStepRegistry
 from Products.GenericSetup.interfaces import IExportStepRegistry
 from Products.GenericSetup.interfaces import IToolsetRegistry
 from Products.GenericSetup.interfaces import IProfileRegistry
+from Products.GenericSetup.interfaces import IProfile
+from Products.GenericSetup.interfaces import IImportStep
+from Products.GenericSetup.interfaces import IExportStep
 from Products.GenericSetup.permissions import ManagePortal
 from Products.GenericSetup.metadata import ProfileMetadata
 from Products.GenericSetup.utils import _xmldir
@@ -40,6 +44,7 @@ from Products.GenericSetup.utils import _computeTopologicalSort
 #
 #   XML parser
 #
+
 
 class _HandlerBase(ContentHandler):
 
@@ -224,12 +229,41 @@ class _ExportStepRegistryParser(_HandlerBase):
 InitializeClass( _ExportStepRegistryParser )
 
 
+class GlobalRegistryStorage(object):
+
+    def __init__(self, interfaceClass):
+        self.interfaceClass = interfaceClass
+        self.sm = getGlobalSiteManager()
+
+    def keys(self):
+        keys = [name for name, info in self.sm.getUtilitiesFor(self.interfaceClass)]
+        return keys
+
+    def values(self):
+        values = [info for name, info in self.sm.getUtilitiesFor(self.interfaceClass)]
+        return values
+
+    def get(self, key):
+        return self.sm.queryUtility(provided=self.interfaceClass, name=key)
+
+    def __setitem__(self, id, info):
+        return self.sm.registerUtility(info, provided=self.interfaceClass, name=id)
+
+    def __delitem__(self, id):
+        return self.sm.unregisterUtility(provided=self.interfaceClass, name=id)
+
+    def clear(self):
+        for key in self.keys():
+            self.unregister(key)
+
 class BaseStepRegistry( Implicit ):
 
     security = ClassSecurityInfo()
 
-    def __init__( self ):
-
+    def __init__( self, store=None ):
+        if store is None:
+            store = {}
+        self._registered = store
         self.clear()
 
     security.declareProtected( ManagePortal, 'listSteps' )
@@ -294,12 +328,12 @@ class BaseStepRegistry( Implicit ):
 
     security.declarePrivate( 'unregisterStep' )
     def unregisterStep( self, id ):
-        del self._registered[id]
+        del self._registered[ id ]
 
     security.declarePrivate( 'clear' )
     def clear( self ):
 
-        self._registered = {}
+        self._registered.clear()
 
     security.declarePrivate( 'parseXML' )
     def parseXML( self, text, encoding=None ):
@@ -448,7 +482,7 @@ class ImportStepRegistry( BaseStepRegistry ):
 
 InitializeClass( ImportStepRegistry )
 
-_import_step_registry = ImportStepRegistry()
+_import_step_registry = ImportStepRegistry(GlobalRegistryStorage(IImportStep))
 
 class ExportStepRegistry( BaseStepRegistry ):
 
@@ -522,7 +556,7 @@ class ExportStepRegistry( BaseStepRegistry ):
 
 InitializeClass( ExportStepRegistry )
 
-_export_step_registry = ExportStepRegistry()
+_export_step_registry = ExportStepRegistry(GlobalRegistryStorage(IExportStep))
 
 
 class ToolsetRegistry( Implicit ):
@@ -661,7 +695,10 @@ class ProfileRegistry( Implicit ):
 
         """ See IProfileRegistry.
         """
-        result = self._profile_info[ profile_id ]
+        sm = getGlobalSiteManager()
+        result = sm.queryUtility(IProfile, name=profile_id)
+        if result is None:
+            raise KeyError, profile_id
         if for_ is not None:
             if not issubclass( for_, result['for'] ):
                 raise KeyError, profile_id
@@ -673,7 +710,8 @@ class ProfileRegistry( Implicit ):
         """ See IProfileRegistry.
         """
         result = []
-        for profile_id in self._profile_ids:
+        sm = getGlobalSiteManager()
+        for profile_id, profile_info in sm.getUtilitiesFor(IProfile):
             info = self.getProfileInfo( profile_id )
             if for_ is None or issubclass( for_, info['for'] ):
                 result.append( profile_id )
@@ -701,11 +739,10 @@ class ProfileRegistry( Implicit ):
                        ):
         """ See IProfileRegistry.
         """
-        profile_id = '%s:%s' % (product or 'other', name)
-        if self._profile_info.get( profile_id ) is not None:
+        profile_id = self._computeProfileId(name, product)
+        sm = getGlobalSiteManager()
+        if sm.queryUtility(provided=IProfile, name=profile_id) is not None:
             raise KeyError, 'Duplicate profile ID: %s' % profile_id
-
-        self._profile_ids.append( profile_id )
 
         info = { 'id' : profile_id
                , 'title' : title
@@ -721,13 +758,26 @@ class ProfileRegistry( Implicit ):
         # metadata.xml description trumps ZCML description... awkward
         info.update( metadata )
 
-        self._profile_info[ profile_id ] = info
+        sm.registerUtility(info, provided=IProfile, name=profile_id)
+
+    def _computeProfileId(self, name, product):
+        profile_id = '%s:%s' % (product or 'other', name)
+        return profile_id
+
+    security.declareProtected( ManagePortal, 'unregisterProfile' )
+    def unregisterProfile( self, name, product=None):
+        profile_id = self._computeProfileId(name, product)
+        sm = getGlobalSiteManager()
+        sm.unregisterUtility(provided=IProfile, name=profile_id)
 
     security.declarePrivate( 'clear' )
     def clear( self ):
+        sm = getGlobalSiteManager()
+        profile_ids = [profile_id for profile_id, profile_info
+            in sm.getUtilitiesFor(IProfile)]
+        for profile_id in profile_ids:
+            sm.unregisterUtility(provided=IProfile, name=profile_id)
 
-        self._profile_info = {}
-        self._profile_ids = []
 
 InitializeClass( ProfileRegistry )
 

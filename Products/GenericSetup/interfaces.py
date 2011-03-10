@@ -11,8 +11,6 @@
 #
 ##############################################################################
 """ GenericSetup product interfaces
-
-$Id$
 """
 
 from zope.interface import Attribute
@@ -20,7 +18,7 @@ from zope.interface import Interface
 from zope.schema import Text
 from zope.schema import TextLine
 
-# Please note that these values may change. Always import 
+# Please note that these values may change. Always import
 # the values from here instead of using the values directly.
 BASE, EXTENSION = 1, 2
 SKIPPED_FILES = ('CVS', '.svn', '_svn', '_darcs')
@@ -70,7 +68,7 @@ class ISetupContext(ISetupEnviron):
 
     def listNotes():
         """ Return notes recorded by this context.
-        
+
         o Result a sequence of (component, message) tuples
         """
 
@@ -417,7 +415,7 @@ class IProfileRegistry( Interface ):
              relative (None for absolute paths).
 
           'type' -- either BASE or EXTENSION
-        
+
         o 'for_', if passed, should be the interface specifying the "site
             type" for which the profile is relevant, e.g.
             Products.CMFCore.interfaces.ISiteRoot or
@@ -428,7 +426,7 @@ class IProfileRegistry( Interface ):
     def listProfiles( for_=None ):
 
         """ Return a list of IDs for registered profiles.
-        
+
         o 'for_', if passed, should be the interface specifying the "site
             type" for which the profile is relevant, e.g.
             Products.CMFCore.interfaces.ISiteRoot or
@@ -441,7 +439,7 @@ class IProfileRegistry( Interface ):
         """ Return a list of mappings describing registered profiles.
 
         o See 'getProfileInfo' for a description of the mappings' keys.
-        
+
         o 'for_', if passed, should be the interface specifying the "site
             type" for which the profile is relevant, e.g.
             Products.CMFCore.interfaces.ISiteRoot or
@@ -464,7 +462,7 @@ class IProfileRegistry( Interface ):
 
         o If 'product' is passed, then 'path' should be interpreted as
           relative to the corresponding product directory.
-        
+
         o 'for_', if passed, should be the interface specifying the "site
           type" for which the profile is relevant, e.g.
           Products.CMFCore.interfaces.ISiteRoot or
@@ -750,7 +748,7 @@ class IContentFactoryName(Interface):
     """
     def __call__():
         """ Return a string, suitable for looking up an IContentFactory.
-        
+
         o The string should allow finding a factory for our context's
           container which would create an "empty" instance of the same
           type as our context.
@@ -806,7 +804,7 @@ class IDAVAware(Interface):
     def PUT(REQUEST, RESPONSE):
         """ Parse file content and update the object.
 
-        o 'REQUEST' will have a 'get' method, which will have the 
+        o 'REQUEST' will have a 'get' method, which will have the
           content object in its "BODY" key.  It will also have 'get_header'
           method, whose headers (e.g., "Content-Type") may affect the
           processing of the body.
@@ -847,3 +845,15 @@ class IComponentsHandlerBlacklist(Interface):
         Objects providing any of the returned interfaces should be ignored by
         the export and import handlers.
         """
+
+class IProfile(Interface):
+    """ Named profile.
+    """
+
+class IImportStep(Interface):
+    """ Named import step.
+    """
+
+class IExportStep(Interface):
+    """ Named export step.
+    """

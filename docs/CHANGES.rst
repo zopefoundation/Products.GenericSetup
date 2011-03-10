@@ -4,6 +4,8 @@ Products.GenericSetup Changelog
 1.6.3 (unreleased)
 ------------------
 
+- Refactored global registries to use global named utilities.
+
 - Fixed the profile_id UnboundLocalError in the upgradeDepends directive when
   import_profile is not None.
 
