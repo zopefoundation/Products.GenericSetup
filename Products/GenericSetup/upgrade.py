@@ -19,7 +19,8 @@ from pkg_resources import parse_version
 
 from BTrees.OOBTree import OOBTree
 
-from Products.GenericSetup.registry import _profile_registry
+from Products.GenericSetup.interfaces import IUpgradeSteps
+from Products.GenericSetup.registry import GlobalRegistryStorage
 
 
 def normalize_version(version):
@@ -40,7 +41,7 @@ class UpgradeRegistry(object):
       - id -> [ (id1, step1), (id2, step2) ] for nested steps
     """
     def __init__(self):
-        self._registry = OOBTree()
+        self._registry = GlobalRegistryStorage(IUpgradeSteps)
 
     def __getitem__(self, key):
         return self._registry.get(key)
@@ -56,7 +57,7 @@ class UpgradeRegistry(object):
         None if there are no steps registered for a profile matching
         that id.
         """
-        profile_steps = self._registry.get(profile_id, None)
+        profile_steps = self._registry.get(profile_id)
         if profile_steps is None:
             self._registry[profile_id] = OOBTree()
             profile_steps = self._registry.get(profile_id)
@@ -66,7 +67,7 @@ class UpgradeRegistry(object):
         """Returns the specified upgrade step for the specified
         profile, or None if it doesn't exist.
         """
-        profile_steps = self._registry.get(profile_id, None)
+        profile_steps = self._registry.get(profile_id)
         if profile_steps is not None:
             step = profile_steps.get(step_id, None)
             if step is None:

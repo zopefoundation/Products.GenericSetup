@@ -857,3 +857,7 @@ class IImportStep(Interface):
 class IExportStep(Interface):
     """ Named export step.
     """
+
+class IUpgradeSteps(Interface):
+    """ Named upgrade steps.
+    """

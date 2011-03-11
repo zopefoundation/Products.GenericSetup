@@ -23,7 +23,6 @@ from Products.GenericSetup.interfaces import BASE
 from Products.GenericSetup.registry import _import_step_registry
 from Products.GenericSetup.registry import _export_step_registry
 from Products.GenericSetup.registry import _profile_registry
-from Products.GenericSetup.upgrade import _upgrade_registry
 
 #### genericsetup:registerProfile
 
@@ -366,22 +365,3 @@ class upgradeSteps(object):
 
     def __call__(self):
         return ()
-
-
-#### cleanup
-
-def cleanUpProfiles():
-    _upgrade_registry.clear()
-
-
-def cleanUpImportSteps():
-    pass
-
-def cleanUpExportSteps():
-    pass
-
-from zope.testing.cleanup import addCleanUp
-addCleanUp(cleanUpProfiles)
-addCleanUp(cleanUpImportSteps)
-addCleanUp(cleanUpExportSteps)
-del addCleanUp

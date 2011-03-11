@@ -258,7 +258,7 @@ class GlobalRegistryStorage(object):
 
     def clear(self):
         for key in self.keys():
-            self.unregister(key)
+            del self[key]
 
 class BaseStepRegistry( Implicit ):
 
@@ -691,7 +691,7 @@ class ProfileRegistry( Implicit ):
     security.setDefaultAccess( 'allow' )
 
     def __init__( self ):
-
+        self._registered = GlobalRegistryStorage(IProfile)
         self.clear()
 
     security.declareProtected( ManagePortal, 'getProfileInfo' )
@@ -699,8 +699,7 @@ class ProfileRegistry( Implicit ):
 
         """ See IProfileRegistry.
         """
-        sm = getGlobalSiteManager()
-        result = sm.queryUtility(IProfile, name=profile_id)
+        result = self._registered.get(profile_id)
         if result is None:
             raise KeyError, profile_id
         if for_ is not None:
@@ -714,8 +713,7 @@ class ProfileRegistry( Implicit ):
         """ See IProfileRegistry.
         """
         result = []
-        sm = getGlobalSiteManager()
-        for profile_id, profile_info in sm.getUtilitiesFor(IProfile):
+        for profile_id in self._registered.keys():
             info = self.getProfileInfo( profile_id )
             if for_ is None or issubclass( for_, info['for'] ):
                 result.append( profile_id )
@@ -744,8 +742,7 @@ class ProfileRegistry( Implicit ):
         """ See IProfileRegistry.
         """
         profile_id = self._computeProfileId(name, product)
-        sm = getGlobalSiteManager()
-        if sm.queryUtility(provided=IProfile, name=profile_id) is not None:
+        if self._registered.get(profile_id) is not None:
             raise KeyError, 'Duplicate profile ID: %s' % profile_id
 
         info = { 'id' : profile_id
@@ -762,7 +759,7 @@ class ProfileRegistry( Implicit ):
         # metadata.xml description trumps ZCML description... awkward
         info.update( metadata )
 
-        sm.registerUtility(info, provided=IProfile, name=profile_id)
+        self._registered[profile_id] = info
 
     def _computeProfileId(self, name, product):
         profile_id = '%s:%s' % (product or 'other', name)
@@ -771,16 +768,11 @@ class ProfileRegistry( Implicit ):
     security.declareProtected( ManagePortal, 'unregisterProfile' )
     def unregisterProfile( self, name, product=None):
         profile_id = self._computeProfileId(name, product)
-        sm = getGlobalSiteManager()
-        sm.unregisterUtility(provided=IProfile, name=profile_id)
+        del self._registered[profile_id]
 
     security.declarePrivate( 'clear' )
     def clear( self ):
-        sm = getGlobalSiteManager()
-        profile_ids = [profile_id for profile_id, profile_info
-            in sm.getUtilitiesFor(IProfile)]
-        for profile_id in profile_ids:
-            sm.unregisterUtility(provided=IProfile, name=profile_id)
+        self._registered.clear()
 
 
 InitializeClass( ProfileRegistry )

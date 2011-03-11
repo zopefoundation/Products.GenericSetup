@@ -985,8 +985,9 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
             tool.manage_doUpgrades()
             self.assertEqual(tool._profile_upgrade_versions, {})
         finally:
-            _upgrade_registry._registry.clear()
-            _upgrade_registry._registry.update(old)
+            _upgrade_registry.clear()
+            for key in old:
+                _upgrade_registry._registry[key] = old[key]
 
     def test_listExportSteps(self):
         site = self._makeSite()
