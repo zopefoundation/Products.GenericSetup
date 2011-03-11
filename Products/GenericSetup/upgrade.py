@@ -155,11 +155,13 @@ class UpgradeDepends(UpgradeEntity):
         self.run_deps = run_deps
         self.purge = purge
 
+    PROFILE_PREFIX = 'profile-%s'
+
     def doStep(self, tool):
         if self.import_profile is None:
-            profile_id = 'profile-%s' % self.profile
+            profile_id = self.PROFILE_PREFIX % self.profile
         else:
-            profile_id = self.import_profile
+            profile_id = self.PROFILE_PREFIX % self.import_profile
         if self.import_steps:
             for step in self.import_steps:
                 tool.runImportStepFromProfile(profile_id, step,
@@ -196,7 +198,7 @@ def _extractStepInfo(tool, id, step, source):
             stop = normalize_version(step.dest)
             if ((start is not None and start < source) or
                 (stop is not None and stop <= source)):
-                    return
+                return
     info = {
         'id': id,
         'step': step,
