@@ -354,7 +354,7 @@ class _Element(Element):
             if a_value is None:
                 a_value = ""
             else:
-                a_value = escape(a_value.encode('utf-8'), quote=True))
+                a_value = escape(a_value.encode('utf-8'), quote=True)
 
             wrapper.queue(' %s="%s"' % (a_name, a_value))
 
