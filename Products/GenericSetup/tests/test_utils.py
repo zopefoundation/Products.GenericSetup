@@ -683,11 +683,12 @@ class PrettyDocumentTests(unittest.TestCase):
         from Products.GenericSetup.utils import PrettyDocument
         original = 'baz &nbsp;<bar>&"\''
         expected = ('<?xml version="1.0"?>\n'
-                    '<doc foo="baz &amp;nbsp;&lt;bar&gt;&amp;&quot;\'"/>\n')
+                    '<doc bar="" foo="baz &amp;nbsp;&lt;bar&gt;&amp;&quot;\'"/>\n')
 
         doc = PrettyDocument()
         node = doc.createElement('doc')
         node.setAttribute('foo', original)
+        node.setAttribute('bar', None)
         doc.appendChild(node)
         self.assertEqual(doc.toprettyxml(' '), expected)
         # Reparse

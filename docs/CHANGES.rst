@@ -4,6 +4,8 @@ Products.GenericSetup Changelog
 1.6.3 (unreleased)
 ------------------
 
+- Fixed crash at export when a node had None value.
+
 - Refactored global registries to use global named utilities.
 
 - Fixed the profile_id UnboundLocalError in the upgradeDepends directive when
