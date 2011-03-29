@@ -1016,6 +1016,8 @@ class ProfileRegistryTests( BaseRegistryTests
                           , ConformsToIProfileRegistry
                           ):
 
+
+
     def _getTargetClass( self ):
 
         from Products.GenericSetup.registry import ProfileRegistry
@@ -1047,7 +1049,7 @@ class ProfileRegistryTests( BaseRegistryTests
                                 , PRODUCT
                                 , PROFILE_TYPE
                                 )
-
+        
         self.assertEqual( len( registry.listProfiles() ), 1 )
         self.assertEqual( len( registry.listProfileInfo() ), 1 )
 

@@ -61,9 +61,7 @@ def test_simpleRegisterProfile():
 
       >>> from Products.GenericSetup.registry import _profile_registry
       >>> profile_id = 'Products.GenericSetup:default'
-      >>> profile_id in _profile_registry._profile_ids
-      True
-      >>> info = _profile_registry._profile_info[profile_id]
+      >>> info = _profile_registry.getProfileInfo(profile_id)
       >>> info['id']
       u'Products.GenericSetup:default'
       >>> info['title']
@@ -84,10 +82,6 @@ def test_simpleRegisterProfile():
 
       >>> from zope.testing.cleanup import cleanUp
       >>> cleanUp()
-      >>> profile_id in _profile_registry._profile_ids
-      False
-      >>> profile_id in _profile_registry._profile_info
-      False
     """
 
 def test_registerProfile():
@@ -114,9 +108,7 @@ def test_registerProfile():
 
       >>> from Products.GenericSetup.registry import _profile_registry
       >>> profile_id = 'Products.GenericSetup:default'
-      >>> profile_id in _profile_registry._profile_ids
-      True
-      >>> info = _profile_registry._profile_info[profile_id]
+      >>> info = _profile_registry.getProfileInfo(profile_id)
       >>> info['id']
       u'Products.GenericSetup:default'
       >>> info['title']
@@ -137,10 +129,6 @@ def test_registerProfile():
 
       >>> from zope.testing.cleanup import cleanUp
       >>> cleanUp()
-      >>> profile_id in _profile_registry._profile_ids
-      False
-      >>> profile_id in _profile_registry._profile_info
-      False
     """
 
 def test_registerUpgradeStep(self):
@@ -263,7 +251,7 @@ def test_registerUpgradeSteps(self):
       <function c_dummy_upgrade_handler at ...>
       >>> step2['title']
       u'Bar Upgrade Step 2'
-      
+
     First one listed should be second in the registry due to sortkey:
 
       >>> steps = profile_steps[1]
@@ -312,8 +300,6 @@ class ImportStepTests(unittest.TestCase):
                                  handler="Products.GenericSetup.tests.test_zcml.dummy_importstep_handler">
                              </genericsetup:importStep>
                             </configure>""")
-        from Products.GenericSetup.zcml import _import_step_regs
-        self.assertEqual(_import_step_regs, [u'name'])
         self.assertEqual( _import_step_registry.listSteps(), [u'name'])
         data=_import_step_registry.getStepMetadata(u'name')
         self.assertEqual(data["handler"],
@@ -362,8 +348,6 @@ class ExportStepTests(unittest.TestCase):
                                  />
                               </configure>
                               """)
-        from Products.GenericSetup.zcml import _export_step_regs
-        self.assertEqual(_export_step_regs, [u'name'])
         self.assertEqual( _export_step_registry.listSteps(), [u'name'])
         data=_export_step_registry.getStepMetadata(u'name')
         self.assertEqual(data["handler"],

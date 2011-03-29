@@ -70,7 +70,6 @@ class IRegisterProfileDirective(Interface):
         required=False)
 
 
-_profile_regs = []
 def registerProfile(_context, name=u'default', title=None, description=None,
                     directory=None, provides=BASE, for_=None):
     """ Add a new profile to the registry.
@@ -84,8 +83,6 @@ def registerProfile(_context, name=u'default', title=None, description=None,
 
     if description is None:
         description = u''
-
-    _profile_regs.append('%s:%s' % (product, name))
 
     _context.action(
         discriminator = ('registerProfile', product, name),
@@ -118,11 +115,8 @@ class IExportStepDirective(Interface):
         required=True)
 
 
-_export_step_regs = []
 
 def exportStep(context, name, handler, title=None, description=None):
-    global _export_step_regs
-    _export_step_regs.append(name)
 
     context.action(
         discriminator = ('exportStep', name),
@@ -163,8 +157,6 @@ class IImportStepDependsDirective(Interface):
         description=u'Name of another import step that has to be run first',
         required=True)
 
-_import_step_regs = []
-
 class importStep:
     def __init__(self, context, name, title, description, handler):
         """ Add a new import step to the registry.
@@ -183,8 +175,6 @@ class importStep:
 
 
     def __call__(self):
-        global _import_step_regs
-        _import_step_regs.append(self.name)
 
         self.context.action(
             discriminator = self.discriminator,
@@ -282,42 +272,3 @@ class upgradeSteps(object):
 
     def __call__(self):
         return ()
-
-
-#### cleanup
-
-def cleanUpProfiles():
-    global _profile_regs
-    for profile_id in _profile_regs:
-        del _profile_registry._profile_info[profile_id]
-        _profile_registry._profile_ids.remove(profile_id)
-    _profile_regs = []
-
-    _upgrade_registry.clear()
-
-
-def cleanUpImportSteps():
-    global _import_step_regs
-    for name in  _import_step_regs:
-        try:
-             _import_step_registry.unregisterStep( name )
-        except KeyError:
-            pass
-
-    _import_step_regs=[]
-
-def cleanUpExportSteps():
-    global _export_step_regs
-    for name in  _export_step_regs:
-        try:
-             _export_step_registry.unregisterStep( name )
-        except KeyError:
-            pass
-
-    _export_step_regs=[]
-
-from zope.testing.cleanup import addCleanUp
-addCleanUp(cleanUpProfiles)
-addCleanUp(cleanUpImportSteps)
-addCleanUp(cleanUpExportSteps)
-del addCleanUp
