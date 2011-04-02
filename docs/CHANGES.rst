@@ -1,7 +1,7 @@
 Products.GenericSetup Changelog
 ===============================
 
-1.6.3 (unreleased)
+1.6.3 (2011-04-02)
 ------------------
 
 - Fixed crash at export when a node had None value.
