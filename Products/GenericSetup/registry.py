@@ -24,6 +24,7 @@ from Globals import InitializeClass
 import App.Product
 from Products.PageTemplates.PageTemplateFile import PageTemplateFile
 from zope.interface import implements
+from zope.component import getGlobalSiteManager
 from warnings import warn
 
 from interfaces import BASE
@@ -31,6 +32,9 @@ from interfaces import IImportStepRegistry
 from interfaces import IExportStepRegistry
 from interfaces import IToolsetRegistry
 from interfaces import IProfileRegistry
+from interfaces import IImportStep
+from interfaces import IExportStep
+from interfaces import IProfile
 from permissions import ManagePortal
 from metadata import ProfileMetadata
 from utils import _xmldir
@@ -323,10 +327,9 @@ class BaseStepRegistry( Implicit ):
 
         o Return 'default' if no such step is registered.
         """
-        marker = object()
-        info = self._registered.get( key, marker )
+        info = self._registered.get( key )
 
-        if info is marker:
+        if info is None:
             return default
 
         return _resolveDottedName( info[ 'handler' ] )
@@ -805,5 +808,3 @@ class ProfileRegistry( Implicit ):
 InitializeClass( ProfileRegistry )
 
 _profile_registry = ProfileRegistry()
-
-
