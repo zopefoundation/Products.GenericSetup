@@ -385,6 +385,23 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
 
         self.assertEqual( len(result['steps']), 3 )
 
+    def test_runAllImportStepsFromProfile_inquicksuccession(self):
+        """
+        This test provokes an issue that only appears in testing.
+        There it can happen that profiles get run multiple times within
+        a second. As of 1.6.3, genericsetup does not handle this.
+        """
+
+        site = self._makeSite()
+        tool = self._makeOne('setup_tool').__of__( site )
+
+        tool.runAllImportStepsFromProfile('snapshot-dummy')
+        tool.runAllImportStepsFromProfile('snapshot-dummy')
+        # For good measurement
+        tool.runAllImportStepsFromProfile('snapshot-dummy')
+
+        self.assertTrue("No exception thrown")
+
     def test_runAllImportStepsFromProfile_sorted_default_purge(self):
 
         TITLE = 'original title'

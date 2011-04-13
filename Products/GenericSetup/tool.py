@@ -1119,7 +1119,7 @@ class SetupTool(Folder):
         return fmt % items
 
     security.declarePrivate('_createReport')
-    def _createReport(self, name, steps, messages):
+    def _createReport(self, basename, steps, messages):
         """ Record the results of a run.
         """
         lines = []
@@ -1137,14 +1137,21 @@ class SetupTool(Folder):
             report = report.encode('latin-1')
 
         # BBB: ObjectManager won't allow unicode IDS
-        if isinstance(name, unicode):
-            name = name.encode('UTF-8')
+        if isinstance(basename, unicode):
+            basename = basename.encode('UTF-8')
+
+        name = basename
+        index = 0
+        while name in self:
+            index += 1
+            name = basename + '_%i' % index
 
         file = File(id=name,
                     title='',
                     file=report,
                     content_type='text/plain'
                    )
+
         self._setObject(name, file)
 
 InitializeClass(SetupTool)

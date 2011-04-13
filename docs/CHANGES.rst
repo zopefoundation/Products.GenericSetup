@@ -4,6 +4,10 @@ Products.GenericSetup Changelog
 1.6.4 (unreleased)
 ------------------
 
+- If profiles get imported multiple times within a second, generate new
+  ids for each profile. This removes spurious failures in fast tests
+  of packages that use GenericSetup.
+
 
 1.6.3 (2011-04-02)
 ------------------
