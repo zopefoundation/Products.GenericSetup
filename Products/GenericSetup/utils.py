@@ -866,7 +866,7 @@ def _computeTopologicalSort( steps ):
             # raise an error, because checkComplete relies on this method.
             logger = getLogger('GenericSetup')
             log_msg = 'There are unresolved or circular dependencies. '\
-                      'Graphiz diagram:: digraph dependencies {'
+                      'Graphviz diagram:: digraph dependencies {'
             for step in steps:
                 step_id = step['id']
                 for dependency in step['dependencies']:
