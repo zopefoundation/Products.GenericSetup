@@ -4,6 +4,8 @@ Products.GenericSetup Changelog
 1.6.4 (unreleased)
 ------------------
 
+- Avoid using DateTime values for file system time stamps in tests.
+
 - If profiles get imported multiple times within a second, generate new
   ids for each profile. This removes spurious failures in fast tests
   of packages that use GenericSetup.
@@ -35,6 +37,7 @@ Products.GenericSetup Changelog
   Modifying sequences without adding new elements was broken.
 
 - Toolset import: Support replacement of subclassed tools.
+
 
 1.6.2 (2010-08-12)
 ------------------

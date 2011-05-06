@@ -136,7 +136,7 @@ class DirectoryImportContextTests( FilesystemTestBase
 
         lm = ctx.getLastModified( FILENAME )
         self.failUnless( isinstance( lm, DateTime ) )
-        self.assertEqual( lm, timestamp )
+        self.assertEqual( lm.timeTime(), timestamp )
 
     def test_getLastModified_subdir( self ):
 
@@ -152,7 +152,7 @@ class DirectoryImportContextTests( FilesystemTestBase
 
         lm = ctx.getLastModified( FILENAME )
         self.failUnless( isinstance( lm, DateTime ) )
-        self.assertEqual( lm, timestamp )
+        self.assertEqual( lm.timeTime(), timestamp )
 
     def test_getLastModified_directory( self ):
 
@@ -169,7 +169,7 @@ class DirectoryImportContextTests( FilesystemTestBase
 
         lm = ctx.getLastModified( SUBDIR )
         self.failUnless( isinstance( lm, DateTime ) )
-        self.assertEqual( lm, timestamp )
+        self.assertEqual( lm.timeTime(), timestamp )
 
     def test_isDirectory_nonesuch( self ):
 
@@ -567,7 +567,7 @@ class TarballImportContextTests(ZopeTestCase, ConformsToISetupContext,
         from string import printable
 
         FILENAME = 'simple.txt'
-        WHEN = DateTime( '2004-01-01T00:00:00Z' )
+        WHEN = DateTime( '2004-01-01T00:00:00Z' ).timeTime()
 
         site, tool, ctx = self._makeOne( { FILENAME : printable }
                                        , mod_time=WHEN )
@@ -581,7 +581,7 @@ class TarballImportContextTests(ZopeTestCase, ConformsToISetupContext,
         FILENAME = 'subdir.txt'
         SUBDIR = 'subdir'
         PATH = '%s/%s' % ( SUBDIR, FILENAME )
-        WHEN = DateTime( '2004-01-01T00:00:00Z' )
+        WHEN = DateTime( '2004-01-01T00:00:00Z' ).timeTime()
 
         site, tool, ctx = self._makeOne( { PATH: printable }
                                        , mod_time=WHEN )
@@ -595,7 +595,7 @@ class TarballImportContextTests(ZopeTestCase, ConformsToISetupContext,
         FILENAME = 'subdir.txt'
         SUBDIR = 'subdir'
         PATH = '%s/%s' % ( SUBDIR, FILENAME )
-        WHEN = DateTime( '2004-01-01T00:00:00Z' )
+        WHEN = DateTime( '2004-01-01T00:00:00Z' ).timeTime()
 
         site, tool, ctx = self._makeOne( { PATH: printable }
                                        , mod_time=WHEN
