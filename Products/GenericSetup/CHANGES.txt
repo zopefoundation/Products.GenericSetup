@@ -1,8 +1,10 @@
 Products.GenericSetup Changelog
 ===============================
 
-1.4.7 (Unreleased)
-------------------
+1.4.6devCA1 (2011-05-31)
+------------------------
+
+- Refactored global registries to use global named utilities.
 
 - Toolset import: Support replacement of subclassed tools. (Backport)
 
