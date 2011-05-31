@@ -1,6 +1,12 @@
 Products.GenericSetup Changelog
 ===============================
 
+1.4.6devCA2 (unreleased)
+------------------------
+
+- Nothing changed yet.
+
+
 1.4.6devCA1 (2011-05-31)
 ------------------------
 
