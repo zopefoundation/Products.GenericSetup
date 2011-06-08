@@ -747,6 +747,8 @@ class SetupTool(Folder):
 
     security.declareProtected(ManagePortal, 'manage_deleteImportSteps')
     def manage_deleteImportSteps(self, ids, request=None):
+        """ Delete selected import steps.
+        """
         if request is None:
             request = self.REQUEST
         for id in ids:
@@ -757,6 +759,8 @@ class SetupTool(Folder):
 
     security.declareProtected(ManagePortal, 'manage_deleteExportSteps')
     def manage_deleteExportSteps(self, ids, request=None):
+        """ Delete selected export steps.
+        """
         if request is None:
             request = self.REQUEST
         for id in ids:

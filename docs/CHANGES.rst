@@ -4,6 +4,10 @@ Products.GenericSetup Changelog
 1.6.4 (unreleased)
 ------------------
 
+- LP #388380:  added docstrings to
+  ``Products.GenericSetup.tool.manage_deleteImportSteps``
+  and ``manage_deleteExportSteps``, fixing broken TTW deletion.
+
 - Avoid using DateTime values for file system time stamps in tests.
 
 - If profiles get imported multiple times within a second, generate new
