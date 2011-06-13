@@ -114,62 +114,56 @@ class DirectoryImportContextTests( FilesystemTestBase
 
         self.assertEqual( ctx.readDataFile( FILENAME ), printable )
 
-    def test_getLastModified_nonesuch( self ):
-
+    def test_getLastModified_nonesuch(self):
         FILENAME = 'nonesuch.txt'
-
         site = DummySite('site').__of__(self.app)
-        ctx = self._makeOne( site, self._PROFILE_PATH )
+        ctx = self._makeOne(site, self._PROFILE_PATH)
 
-        self.assertEqual( ctx.getLastModified( FILENAME ), None )
+        self.assertEqual(ctx.getLastModified(FILENAME), None)
 
-    def test_getLastModified_simple( self ):
-
+    def test_getLastModified_simple(self):
         from string import printable
 
         FILENAME = 'simple.txt'
-        fqpath = self._makeFile( FILENAME, printable )
-        timestamp = os.path.getmtime( fqpath )
-
+        fqpath = self._makeFile(FILENAME, printable)
+        WHEN = os.path.getmtime(fqpath)
         site = DummySite('site').__of__(self.app)
-        ctx = self._makeOne( site, self._PROFILE_PATH )
+        ctx = self._makeOne(site, self._PROFILE_PATH)
 
-        lm = ctx.getLastModified( FILENAME )
-        self.failUnless( isinstance( lm, DateTime ) )
-        self.assertEqual( lm.timeTime(), timestamp )
+        lm = ctx.getLastModified(FILENAME)
+        self.assertTrue(isinstance(lm, DateTime))
+        self.assertEqual(lm, DateTime(WHEN))
 
-    def test_getLastModified_subdir( self ):
-
+    def test_getLastModified_subdir(self):
         from string import printable
 
+        FILENAME = 'subdir.txt'
         SUBDIR = 'subdir'
-        FILENAME = os.path.join( SUBDIR, 'nested.txt' )
-        fqpath = self._makeFile( FILENAME, printable )
-        timestamp = os.path.getmtime( fqpath )
-
+        PATH = os.path.join(SUBDIR, FILENAME)
+        fqpath = self._makeFile(PATH, printable)
+        WHEN = os.path.getmtime(fqpath)
         site = DummySite('site').__of__(self.app)
-        ctx = self._makeOne( site, self._PROFILE_PATH )
+        ctx = self._makeOne(site, self._PROFILE_PATH)
 
-        lm = ctx.getLastModified( FILENAME )
-        self.failUnless( isinstance( lm, DateTime ) )
-        self.assertEqual( lm.timeTime(), timestamp )
+        lm = ctx.getLastModified(PATH)
+        self.assertTrue(isinstance(lm, DateTime))
+        self.assertEqual(lm, DateTime(WHEN))
 
-    def test_getLastModified_directory( self ):
-
+    def test_getLastModified_directory(self):
         from string import printable
 
+        FILENAME = 'subdir.txt'
         SUBDIR = 'subdir'
-        FILENAME = os.path.join( SUBDIR, 'nested.txt' )
-        fqpath = self._makeFile( FILENAME, printable )
-        path, file = os.path.split( fqpath )
-        timestamp = os.path.getmtime( path )
-
+        PATH = os.path.join(SUBDIR, FILENAME)
+        fqpath = self._makeFile(PATH, printable)
+        path, file = os.path.split(fqpath)
+        WHEN = os.path.getmtime(path)
         site = DummySite('site').__of__(self.app)
-        ctx = self._makeOne( site, self._PROFILE_PATH )
+        ctx = self._makeOne(site, self._PROFILE_PATH)
 
-        lm = ctx.getLastModified( SUBDIR )
-        self.failUnless( isinstance( lm, DateTime ) )
-        self.assertEqual( lm.timeTime(), timestamp )
+        lm = ctx.getLastModified(SUBDIR)
+        self.assertTrue(isinstance(lm, DateTime))
+        self.assertEqual(lm, DateTime(WHEN))
 
     def test_isDirectory_nonesuch( self ):
 
@@ -387,8 +381,8 @@ class DirectoryExportContextTests( FilesystemTestBase
         self.assertEqual( open( fqname, 'rb' ).read(), digits )
 
     def test_writeDataFile_new_subdir( self ):
+        from string import digits
 
-        from string import printable, digits
         SUBDIR = 'subdir'
         FILENAME = 'nested.txt'
         fqname = os.path.join( self._PROFILE_PATH, SUBDIR, FILENAME )
@@ -554,54 +548,48 @@ class TarballImportContextTests(ZopeTestCase, ConformsToISetupContext,
 
         self.assertEqual( ctx.readDataFile( FILENAME, SUBDIR ), printable )
 
-    def test_getLastModified_nonesuch( self ):
-
+    def test_getLastModified_nonesuch(self):
         FILENAME = 'nonesuch.txt'
+        ctx = self._makeOne()[2]
 
-        site, tool, ctx = self._makeOne()
+        self.assertEqual(ctx.getLastModified(FILENAME), None)
 
-        self.assertEqual( ctx.getLastModified( FILENAME ), None )
-
-    def test_getLastModified_simple( self ):
-
+    def test_getLastModified_simple(self):
         from string import printable
 
         FILENAME = 'simple.txt'
-        WHEN = DateTime( '2004-01-01T00:00:00Z' ).timeTime()
+        WHEN = 999999999.0
+        ctx = self._makeOne({FILENAME: printable}, mod_time=WHEN)[2]
 
-        site, tool, ctx = self._makeOne( { FILENAME : printable }
-                                       , mod_time=WHEN )
+        lm = ctx.getLastModified(FILENAME)
+        self.assertTrue(isinstance(lm, DateTime))
+        self.assertEqual(lm, DateTime(WHEN))
 
-        self.assertEqual( ctx.getLastModified( FILENAME ), WHEN )
-
-    def test_getLastModified_subdir( self ):
-
+    def test_getLastModified_subdir(self):
         from string import printable
 
         FILENAME = 'subdir.txt'
         SUBDIR = 'subdir'
-        PATH = '%s/%s' % ( SUBDIR, FILENAME )
-        WHEN = DateTime( '2004-01-01T00:00:00Z' ).timeTime()
+        PATH = '%s/%s' % (SUBDIR, FILENAME)
+        WHEN = 999999999.0
+        ctx = self._makeOne({PATH: printable}, mod_time=WHEN)[2]
 
-        site, tool, ctx = self._makeOne( { PATH: printable }
-                                       , mod_time=WHEN )
+        lm = ctx.getLastModified(PATH)
+        self.assertTrue(isinstance(lm, DateTime))
+        self.assertEqual(lm, DateTime(WHEN))
 
-        self.assertEqual( ctx.getLastModified( PATH ), WHEN )
-
-    def test_getLastModified_directory( self ):
-
+    def test_getLastModified_directory(self):
         from string import printable
 
         FILENAME = 'subdir.txt'
         SUBDIR = 'subdir'
-        PATH = '%s/%s' % ( SUBDIR, FILENAME )
-        WHEN = DateTime( '2004-01-01T00:00:00Z' ).timeTime()
+        PATH = '%s/%s' % (SUBDIR, FILENAME)
+        WHEN = 999999999.0
+        ctx = self._makeOne({PATH: printable}, mod_time=WHEN)[2]
 
-        site, tool, ctx = self._makeOne( { PATH: printable }
-                                       , mod_time=WHEN
-                                       )
-
-        self.assertEqual( ctx.getLastModified( SUBDIR ), WHEN )
+        lm = ctx.getLastModified(SUBDIR)
+        self.assertTrue(isinstance(lm, DateTime))
+        self.assertEqual(lm, DateTime(WHEN))
 
     def test_isDirectory_nonesuch( self ):
 
@@ -908,7 +896,6 @@ class SnapshotExportContextTests(ZopeTestCase, ConformsToISetupContext,
     def test_writeDataFile_simple_plain_text( self ):
 
         from string import digits
-        from OFS.Image import File
         FILENAME = 'simple.txt'
         CONTENT_TYPE = 'text/plain'
 
@@ -932,9 +919,6 @@ class SnapshotExportContextTests(ZopeTestCase, ConformsToISetupContext,
         self.assertEqual( str( fileobj ), digits )
 
     def test_writeDataFile_simple_plain_text_unicode( self ):
-
-        from string import digits
-        from OFS.Image import File
         FILENAME = 'simple.txt'
         CONTENT_TYPE = 'text/plain'
         CONTENT = u'Unicode, with non-ASCII: %s.' % unichr(150)
@@ -1139,7 +1123,7 @@ class SnapshotImportContextTests(ZopeTestCase, ConformsToISetupContext,
         if mod_time is not None:
 
             def __faux_mod_time():
-                return mod_time
+                return DateTime(mod_time)
 
             folder.bobobase_modification_time = \
             file.bobobase_modification_time = __faux_mod_time
@@ -1229,59 +1213,56 @@ class SnapshotImportContextTests(ZopeTestCase, ConformsToISetupContext,
         self.assertEqual( ctx.readDataFile( '%s/%s' % (SUBDIR, FILENAME) ),
                                             printable )
 
-    def test_getLastModified_nonesuch( self ):
-
-        SNAPSHOT_ID = 'getLastModified_nonesuch'
+    def test_getLastModified_nonesuch(self):
         FILENAME = 'nonesuch.txt'
+        SNAPSHOT_ID = 'getLastModified_nonesuch'
+        ctx = self._makeOne(SNAPSHOT_ID)[2]
 
-        site, tool, ctx = self._makeOne( SNAPSHOT_ID )
+        self.assertEqual(ctx.getLastModified(FILENAME), None)
 
-        self.assertEqual( ctx.getLastModified( FILENAME ), None )
-
-    def test_getLastModified_simple( self ):
-
+    def test_getLastModified_simple(self):
         from string import printable
 
-        SNAPSHOT_ID = 'getLastModified_simple'
         FILENAME = 'simple.txt'
-        WHEN = DateTime( '2004-01-01T00:00:00Z' )
+        WHEN = 999999999.0
+        SNAPSHOT_ID = 'getLastModified_simple'
+        tool, ctx = self._makeOne(SNAPSHOT_ID)[1:]
+        self._makeFile(tool, SNAPSHOT_ID, FILENAME, printable, mod_time=WHEN)
 
-        site, tool, ctx = self._makeOne( SNAPSHOT_ID )
-        file = self._makeFile( tool, SNAPSHOT_ID, FILENAME, printable
-                             , mod_time=WHEN )
+        lm = ctx.getLastModified(FILENAME)
+        self.assertTrue(isinstance(lm, DateTime))
+        self.assertEqual(lm, DateTime(WHEN))
 
-        self.assertEqual( ctx.getLastModified( FILENAME ), WHEN )
-
-    def test_getLastModified_subdir( self ):
-
+    def test_getLastModified_subdir(self):
         from string import printable
 
+        FILENAME = 'subdir.txt'
+        SUBDIR = 'subdir'
+        PATH = '%s/%s' % (SUBDIR, FILENAME)
+        WHEN = 999999999.0
         SNAPSHOT_ID = 'getLastModified_subdir'
-        FILENAME = 'subdir.txt'
-        SUBDIR = 'subdir'
-        PATH = '%s/%s' % ( SUBDIR, FILENAME )
-        WHEN = DateTime( '2004-01-01T00:00:00Z' )
+        tool, ctx = self._makeOne(SNAPSHOT_ID)[1:]
+        self._makeFile(tool, SNAPSHOT_ID, FILENAME, printable, mod_time=WHEN,
+                       subdir=SUBDIR)
 
-        site, tool, ctx = self._makeOne( SNAPSHOT_ID )
-        file = self._makeFile( tool, SNAPSHOT_ID, FILENAME, printable
-                             , mod_time=WHEN, subdir=SUBDIR )
+        lm = ctx.getLastModified(PATH)
+        self.assertTrue(isinstance(lm, DateTime))
+        self.assertEqual(lm, DateTime(WHEN))
 
-        self.assertEqual( ctx.getLastModified( PATH ), WHEN )
-
-    def test_getLastModified_directory( self ):
-
+    def test_getLastModified_directory(self):
         from string import printable
 
-        SNAPSHOT_ID = 'readDataFile_subdir'
         FILENAME = 'subdir.txt'
         SUBDIR = 'subdir'
-        WHEN = DateTime( '2004-01-01T00:00:00Z' )
+        WHEN = 999999999.0
+        SNAPSHOT_ID = 'getLastModified_directory'
+        tool, ctx = self._makeOne(SNAPSHOT_ID)[1:]
+        self._makeFile(tool, SNAPSHOT_ID, FILENAME, printable, mod_time=WHEN,
+                       subdir=SUBDIR)
 
-        site, tool, ctx = self._makeOne( SNAPSHOT_ID )
-        file = self._makeFile( tool, SNAPSHOT_ID, FILENAME, printable
-                             , mod_time=WHEN, subdir=SUBDIR )
-
-        self.assertEqual( ctx.getLastModified( SUBDIR ), WHEN )
+        lm = ctx.getLastModified(SUBDIR)
+        self.assertTrue(isinstance(lm, DateTime))
+        self.assertEqual(lm, DateTime(WHEN))
 
     def test_isDirectory_nonesuch( self ):
 

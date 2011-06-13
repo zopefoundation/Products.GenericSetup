@@ -4,6 +4,8 @@ Products.GenericSetup Changelog
 1.6.4 (unreleased)
 ------------------
 
+- TarballImportContext: Fixed type of 'getLastModified' return value.
+
 - LP #388380:  added docstrings to
   ``Products.GenericSetup.tool.manage_deleteImportSteps``
   and ``manage_deleteExportSteps``, fixing broken TTW deletion.

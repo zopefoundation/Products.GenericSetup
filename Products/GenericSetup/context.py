@@ -13,8 +13,6 @@
 """ Various context implementations for export / import of configurations.
 
 Wrappers representing the state of an import / export operation.
-
-$Id$
 """
 
 import logging
@@ -349,7 +347,7 @@ class TarballImportContext( BaseContext ):
         """ See IImportContext.
         """
         info = self._getTarInfo( path )
-        return info and info.mtime or None
+        return info and DateTime(info.mtime) or None
 
     def isDirectory( self, path ):
 
