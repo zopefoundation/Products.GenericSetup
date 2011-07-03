@@ -166,12 +166,7 @@ class ConfigDiffTests(ZopeTestCase):
         folder._setObject( filename, file )
 
         if mod_time is not None:
-
-            def __faux_mod_time():
-                return mod_time
-
-            folder.bobobase_modification_time = \
-            file.bobobase_modification_time = __faux_mod_time
+            folder._faux_mod_time = file._faux_mod_time = mod_time
 
         return folder._getOb( filename )
 

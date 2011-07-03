@@ -640,7 +640,13 @@ class SnapshotImportContext( BaseContext ):
         except ( AttributeError, KeyError ):
             return None
         else:
-            return object.bobobase_modification_time()
+            mtime = getattr(object, '_p_mtime', None)
+            if mtime is None:
+                # test hook
+                mtime = getattr(object, '_faux_mod_time', None)
+                if mtime is None:
+                    return DateTime()
+            return DateTime(mtime)
 
     security.declareProtected( ManagePortal, 'isDirectory' )
     def isDirectory( self, path ):

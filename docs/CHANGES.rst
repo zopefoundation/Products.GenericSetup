@@ -4,6 +4,8 @@ Products.GenericSetup Changelog
 1.6.4 (unreleased)
 ------------------
 
+- No longer rely on `bobobase_modification_time`.
+
 - TarballImportContext: Fixed type of 'getLastModified' return value.
 
 - LP #388380:  added docstrings to
