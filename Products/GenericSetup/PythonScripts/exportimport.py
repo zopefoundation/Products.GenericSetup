@@ -11,8 +11,6 @@
 #
 ##############################################################################
 """PythonScript export / import support.
-
-$Id$
 """
 
 from zope.component import adapts
@@ -38,6 +36,7 @@ class PythonScriptBodyAdapter(BodyAdapterBase):
     def _importBody(self, body):
         """Import the object from the file body.
         """
+        body = body.replace('\r\n', '\n').replace('\r', '\n')
         self.context.write(body)
 
     body = property(_exportBody, _importBody)
