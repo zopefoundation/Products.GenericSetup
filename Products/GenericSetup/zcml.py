@@ -304,7 +304,7 @@ def upgradeStep(_context, title, profile, handler, description=None, source='*',
         args=(step,),
         )
 
-def upgradeDepends(_context, title, profile, description, import_profile=None,
+def upgradeDepends(_context, title, profile, description=None, import_profile=None,
                    import_steps=[], source='*', destination='*',
                    run_deps=False, purge=False, checker=None, sortkey=0):
     step = UpgradeDepends(title, profile, source, destination, description,

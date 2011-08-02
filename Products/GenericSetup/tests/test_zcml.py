@@ -188,7 +188,6 @@ def test_registerUpgradeDepends(self):
       ...     i18n_domain="foo">
       ...   <genericsetup:upgradeDepends
       ...       title="Upgrade Foo Product"
-      ...       description="Upgrades Foo from 1.0 to 1.1."
       ...       source="1.0"
       ...       destination="1.1"
       ...       sortkey="1"

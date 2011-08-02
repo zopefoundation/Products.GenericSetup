@@ -4,6 +4,8 @@ Products.GenericSetup Changelog
 1.6.4 (unreleased)
 ------------------
 
+- ZCML: Don't require description for the `upgradeDepends` directive.
+
 - PythonScript handler: Newlines are now normalized during import.
 
 - No longer rely on `bobobase_modification_time`.
