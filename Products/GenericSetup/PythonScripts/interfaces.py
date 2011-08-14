@@ -11,8 +11,6 @@
 #
 ##############################################################################
 """PythonScripts interfaces.
-
-$Id$
 """
 
 from zope.interface import Interface

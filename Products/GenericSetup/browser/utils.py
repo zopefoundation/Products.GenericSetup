@@ -11,8 +11,6 @@
 #
 ##############################################################################
 """GenericSetup browser view utils.
-
-$Id$
 """
 
 class AddWithPresettingsViewBase:

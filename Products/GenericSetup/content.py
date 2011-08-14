@@ -11,20 +11,16 @@
 #
 ##############################################################################
 """Filesystem exporter / importer adapters.
-
-$Id$
 """
 
-from csv import reader
-from csv import register_dialect
-from csv import writer
 from ConfigParser import ConfigParser
-import re
+from csv import reader
+from csv import writer
 from StringIO import StringIO
 
 from zope.component import queryAdapter
-from zope.interface import implements
 from zope.interface import directlyProvides
+from zope.interface import implements
 
 from Products.GenericSetup.interfaces import IContentFactory
 from Products.GenericSetup.interfaces import IContentFactoryName

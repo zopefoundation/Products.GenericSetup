@@ -11,8 +11,6 @@
 #
 ##############################################################################
 """ Diff utilities for comparing configurations.
-
-$Id$
 """
 
 from difflib import unified_diff
@@ -87,6 +85,7 @@ def unidiff( a
                        , timestamp_b
                        , lineterm=""
                        )
+
 
 class ConfigDiff:
 

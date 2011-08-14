@@ -14,8 +14,6 @@
 
 Derived testcase classes should define '_getTargetClass()', which must
 return the class being tested for conformance.
-
-$Id$
 """
 
 class ConformsToISetupContext:

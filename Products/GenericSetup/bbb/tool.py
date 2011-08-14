@@ -11,8 +11,6 @@
 #
 ##############################################################################
 """ Classes:  SetupTool
-
-$Id$
 """
 
 from Products.GenericSetup.tool import exportStepRegistries

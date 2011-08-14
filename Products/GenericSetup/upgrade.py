@@ -11,8 +11,6 @@
 #
 ##############################################################################
 """Upgrade steps and registry.
-
-$Id$
 """
 
 from pkg_resources import parse_version

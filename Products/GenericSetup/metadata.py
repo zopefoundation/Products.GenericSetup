@@ -11,20 +11,21 @@
 #
 ##############################################################################
 """ GenericSetup profile metadata
-
-$Id$
 """
+
 import os
 
 from Products.GenericSetup.utils import _getProductPath
-from Products.GenericSetup.utils import ImportConfiguratorBase
 from Products.GenericSetup.utils import CONVERTER
 from Products.GenericSetup.utils import DEFAULT
+from Products.GenericSetup.utils import ImportConfiguratorBase
 from Products.GenericSetup.utils import KEY
 
 METADATA_XML = 'metadata.xml'
 
+
 class ProfileMetadata( ImportConfiguratorBase ):
+
     """ Extracts profile metadata from metadata.xml file.
     """
 

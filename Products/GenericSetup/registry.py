@@ -11,8 +11,6 @@
 #
 ##############################################################################
 """ Classes:  ImportStepRegistry, ExportStepRegistry
-
-$Id$
 """
 
 from xml.sax import parseString

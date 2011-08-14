@@ -11,8 +11,6 @@
 #
 ##############################################################################
 """OFSP export / import support.
-
-$Id$
 """
 
 from zope.component import adapts

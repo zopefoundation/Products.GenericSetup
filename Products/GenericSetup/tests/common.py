@@ -11,8 +11,6 @@
 #
 ##############################################################################
 """ GenericSetup product:  unit test utilities.
-
-$Id$
 """
 
 import os

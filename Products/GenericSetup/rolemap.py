@@ -11,8 +11,6 @@
 #
 ##############################################################################
 """ GenericSetup:  Role-permission export / import
-
-$Id$
 """
 
 from AccessControl.Permission import Permission

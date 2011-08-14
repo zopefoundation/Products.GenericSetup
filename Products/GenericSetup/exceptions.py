@@ -11,8 +11,6 @@
 #
 ##############################################################################
 """ GenericSetup product exceptions.
-
-$Id$
 """
 
 from AccessControl.SecurityInfo import ModuleSecurityInfo

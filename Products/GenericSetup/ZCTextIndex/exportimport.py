@@ -11,8 +11,6 @@
 #
 ##############################################################################
 """ZCTextIndex export / import support.
-
-$Id$
 """
 
 from BTrees.IOBTree import IOBTree

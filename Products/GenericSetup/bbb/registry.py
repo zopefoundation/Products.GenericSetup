@@ -11,8 +11,6 @@
 #
 ##############################################################################
 """ Classes:  ImportStepRegistry, ExportStepRegistry
-
-$Id$
 """
 
 # BBB: for setup tools created with CMF 1.5

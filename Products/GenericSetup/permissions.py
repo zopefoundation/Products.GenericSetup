@@ -11,8 +11,6 @@
 #
 ##############################################################################
 """ GenericSetup product permissions.
-
-$Id$
 """
 
 ManagePortal = 'Manage Site'

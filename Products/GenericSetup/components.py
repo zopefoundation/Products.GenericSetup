@@ -11,8 +11,6 @@
 #
 ##############################################################################
 """Local component registry export / import handler.
-
-$Id$
 """
 
 from operator import itemgetter
@@ -551,4 +549,3 @@ def exportComponentRegistry(context):
         if body is not None:
             context.writeDataFile('componentregistry.xml', body,
                                   exporter.mime_type)
-

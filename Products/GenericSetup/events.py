@@ -11,8 +11,6 @@
 #
 ##############################################################################
 """GenericSetup events and subscribers.
-
-$Id$
 """
 
 from zope.component import adapter
