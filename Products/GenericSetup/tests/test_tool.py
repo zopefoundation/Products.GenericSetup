@@ -775,16 +775,17 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
         def normalize_xml(xml):
             # using this might mask a real problem on windows, but so far the
             # different newlines just caused problems in this test
-            lines = [ line for line in xml.splitlines() if line ]
-            return '\n'.join(lines) + '\n'
+            lines = filter(None,
+                           [line.strip() for line in xml.splitlines() if line])
+            return ' '.join(lines)
 
         fileobj = snapshot._getOb( 'import_steps.xml' )
         self.assertEqual( normalize_xml( fileobj.read() ),
-                          _DEFAULT_STEP_REGISTRIES_IMPORT_XML )
+                          normalize_xml(_DEFAULT_STEP_REGISTRIES_IMPORT_XML))
 
         fileobj = snapshot._getOb( 'export_steps.xml' )
         self.assertEqual( normalize_xml( fileobj.read() ),
-                          _DEFAULT_STEP_REGISTRIES_EXPORT_XML )
+                          normalize_xml(_DEFAULT_STEP_REGISTRIES_EXPORT_XML ))
 
         self.assertEqual( len( tool.listSnapshotInfo() ), 1 )
 
