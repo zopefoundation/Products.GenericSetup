@@ -26,12 +26,6 @@ _MAILHOST_BODY = """\
    smtp_uid=""/>
 """
 
-_MAILHOST_BODY_older_mh = """\
-<?xml version="1.0"?>
-<object name="foo_mailhost" meta_type="Mail Host" smtp_host="localhost"
-   smtp_port="25" smtp_pwd="" smtp_uid=""/>
-"""
-
 _MAILHOST_BODY_v2 = """\
 <?xml version="1.0"?>
 <object name="foo_mailhost" meta_type="Mail Host" smtp_host="localhost"
@@ -83,7 +77,7 @@ class MailHostXMLAdapterTestsWithoutQueue(MailHostXMLAdapterTests):
         mh = self._obj = MailHost('foo_mailhost')
         del mh.smtp_queue
         del mh.smtp_queue_directory
-        self._BODY = _MAILHOST_BODY_older_mh
+        self._BODY = _MAILHOST_BODY
 
 
 class MailHostXMLAdapterTestsWithQueue(BodyAdapterTestCase, unittest.TestCase):

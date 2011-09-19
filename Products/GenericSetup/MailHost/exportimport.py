@@ -49,15 +49,13 @@ class MailHostXMLAdapter(XMLAdapterBase):
         node.setAttribute('smtp_pwd', smtp_pwd)
 
         #Older MH instances won't have 'smtp_queue' in instance dict
-        if 'smtp_queue' in self.context.__dict__: 
-            smtp_queue = bool(self.context.smtp_queue)
-            node.setAttribute('smtp_queue', str(smtp_queue))
+        smtp_queue = bool(getattr(self.context, 'smtp_queue', False))
+        node.setAttribute('smtp_queue', str(smtp_queue))
             
-            smtp_queue_directory = self.context.smtp_queue_directory
-            if smtp_queue_directory is None:
-                smtp_queue_directory = ''
-            node.setAttribute('smtp_queue_directory',
-                              str(smtp_queue_directory))
+        qdir = getattr(self.context, 'smtp_queue_directory', '/tmp')
+        if qdir is None:
+            qdir = ''
+        node.setAttribute('smtp_queue_directory', str(qdir))
 
         self._logger.info('Mailhost exported.')
         return node
