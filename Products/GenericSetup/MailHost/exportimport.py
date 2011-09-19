@@ -47,6 +47,18 @@ class MailHostXMLAdapter(XMLAdapterBase):
         if smtp_pwd is None:
             smtp_pwd = ''
         node.setAttribute('smtp_pwd', smtp_pwd)
+
+        #Older MH instances won't have 'smtp_queue' in instance dict
+        if 'smtp_queue' in self.context.__dict__: 
+            smtp_queue = bool(self.context.smtp_queue)
+            node.setAttribute('smtp_queue', str(smtp_queue))
+            
+            smtp_queue_directory = self.context.smtp_queue_directory
+            if smtp_queue_directory is None:
+                smtp_queue_directory = ''
+            node.setAttribute('smtp_queue_directory',
+                              str(smtp_queue_directory))
+
         self._logger.info('Mailhost exported.')
         return node
 
@@ -57,5 +69,12 @@ class MailHostXMLAdapter(XMLAdapterBase):
         self.context.smtp_port = int(node.getAttribute('smtp_port'))
         self.context.smtp_uid = node.getAttribute('smtp_uid').encode('utf-8')
         self.context.smtp_pwd = node.getAttribute('smtp_pwd').encode('utf-8')
+        
+        #Older MH instances won't have 'smtp_queue' in instance dict
+        queue = node.getAttribute('smtp_queue')
+        if 'smtp_queue' in self.context.__dict__: 
+            self.context.smtp_queue = (str(queue) == 'True')
+            qd = node.getAttribute('smtp_queue_directory')
+            self.context.smtp_queue_directory = str(qd)
 
         self._logger.info('Mailhost imported.')

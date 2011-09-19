@@ -4,6 +4,9 @@ Products.GenericSetup Changelog
 1.6.4 (unreleased)
 ------------------
 
+- LP #602989:  export / import new MailHost properties, `smtp_queue` and
+  `smtp_queue_directory`.
+
 - ZCML: Don't require description for the `upgradeDepends` directive.
 
 - PythonScript handler: Newlines are now normalized during import.

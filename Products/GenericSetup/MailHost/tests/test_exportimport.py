@@ -22,7 +22,21 @@ from Products.GenericSetup.testing import ExportImportZCMLLayer
 _MAILHOST_BODY = """\
 <?xml version="1.0"?>
 <object name="foo_mailhost" meta_type="Mail Host" smtp_host="localhost"
+   smtp_port="25" smtp_pwd="" smtp_queue="False" smtp_queue_directory="/tmp"
+   smtp_uid=""/>
+"""
+
+_MAILHOST_BODY_older_mh = """\
+<?xml version="1.0"?>
+<object name="foo_mailhost" meta_type="Mail Host" smtp_host="localhost"
    smtp_port="25" smtp_pwd="" smtp_uid=""/>
+"""
+
+_MAILHOST_BODY_v2 = """\
+<?xml version="1.0"?>
+<object name="foo_mailhost" meta_type="Mail Host" smtp_host="localhost"
+   smtp_port="25" smtp_pwd="" smtp_queue="True"
+   smtp_queue_directory="/tmp/mailqueue" smtp_uid=""/>
 """
 
 
@@ -45,6 +59,10 @@ class MailHostXMLAdapterTests(BodyAdapterTestCase, unittest.TestCase):
         self.assertEqual(obj.smtp_pwd, '')
         self.assertEqual(type(obj.smtp_uid), str)
         self.assertEqual(obj.smtp_uid, '')
+        self.assertEqual(type(obj.smtp_queue), bool)
+        self.assertEqual(obj.smtp_queue, False)
+        self.assertEqual(type(obj.smtp_queue_directory), str)
+        self.assertEqual(obj.smtp_queue_directory, '/tmp')
 
     def setUp(self):
         from Products.MailHost.MailHost import MailHost
@@ -53,7 +71,50 @@ class MailHostXMLAdapterTests(BodyAdapterTestCase, unittest.TestCase):
         self._BODY = _MAILHOST_BODY
 
 
+class MailHostXMLAdapterTestsWithoutQueue(MailHostXMLAdapterTests):
+
+    def _verifyImport(self, obj):
+        self.failIf('smtp_queue' in obj.__dict__)
+        self.failIf('smtp_queue_directory' in obj.__dict__)
+
+    def setUp(self):
+        from Products.MailHost.MailHost import MailHost
+
+        mh = self._obj = MailHost('foo_mailhost')
+        del mh.smtp_queue
+        del mh.smtp_queue_directory
+        self._BODY = _MAILHOST_BODY_older_mh
+
+
+class MailHostXMLAdapterTestsWithQueue(BodyAdapterTestCase, unittest.TestCase):
+
+    layer = ExportImportZCMLLayer
+
+    def _getTargetClass(self):
+        from Products.GenericSetup.MailHost.exportimport \
+                import MailHostXMLAdapter
+
+        return MailHostXMLAdapter
+
+    def _verifyImport(self, obj):
+        self.assertEqual(type(obj.smtp_queue), bool)
+        self.assertEqual(obj.smtp_queue, True)
+        self.assertEqual(type(obj.smtp_queue_directory), str)
+        self.assertEqual(obj.smtp_queue_directory, '/tmp/mailqueue')
+        
+    def test_body_get(self):
+        #Default Correctly Handled in MailHostXMLAdapterTests
+        pass
+
+    def setUp(self):
+        from Products.MailHost.MailHost import MailHost
+
+        self._obj = MailHost('foo_mailhost')
+        self._BODY = _MAILHOST_BODY_v2
+
+
 class MailHostXMLAdapterTestsWithNoneValue(MailHostXMLAdapterTests):
+
     def _verifyImport(self, obj):
         self.assertEqual(type(obj.smtp_host), str)
         self.assertEqual(obj.smtp_host, 'localhost')
@@ -75,5 +136,7 @@ class MailHostXMLAdapterTestsWithNoneValue(MailHostXMLAdapterTests):
 def test_suite():
     return unittest.TestSuite((
         unittest.makeSuite(MailHostXMLAdapterTests),
+        unittest.makeSuite(MailHostXMLAdapterTestsWithoutQueue),
+        unittest.makeSuite(MailHostXMLAdapterTestsWithQueue),
         unittest.makeSuite(MailHostXMLAdapterTestsWithNoneValue),
         ))
