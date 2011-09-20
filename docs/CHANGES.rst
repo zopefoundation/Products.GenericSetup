@@ -4,6 +4,8 @@ Products.GenericSetup Changelog
 1.6.4 (unreleased)
 ------------------
 
+- LP #850665:  match permission binding to method name.
+
 - LP #602989:  export / import new MailHost properties, `smtp_queue` and
   `smtp_queue_directory`.
 

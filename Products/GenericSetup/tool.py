@@ -505,7 +505,7 @@ class SetupTool(Folder):
         return self.manage_importSteps(manage_tabs_message=summary,
                                        messages=messages)
 
-    security.declareProtected(ManagePortal, 'manage_importSelectedSteps')
+    security.declareProtected(ManagePortal, 'manage_importAllSteps')
     def manage_importAllSteps(self, context_id=None):
         """ Import all steps.
         """
