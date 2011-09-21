@@ -4,6 +4,9 @@ Products.GenericSetup Changelog
 1.6.4 (unreleased)
 ------------------
 
+- Adjust test assertions in `test_differ` to cope with changes to the diff
+  library done in Python 2.7.
+
 - LP #850665:  match permission binding to method name.
 
 - LP #602989:  export / import new MailHost properties, `smtp_queue` and

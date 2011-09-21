@@ -13,12 +13,15 @@
 """ Unit tests for differ module.
 """
 
+import sys
 import unittest
 from Testing.ZopeTestCase import ZopeTestCase
 
 from DateTime.DateTime import DateTime
 from OFS.Folder import Folder
 from OFS.Image import File
+
+PYTHON27 = sys.version_info[:2] >= (2, 7)
 
 
 class DummySite( Folder ):
@@ -34,7 +37,10 @@ class Test_unidiff( unittest.TestCase ):
 
         diff_lines = unidiff( ONE_FOUR, ZERO_FOUR )
         diff_text = '\n'.join( diff_lines )
-        self.assertEqual( diff_text, DIFF_TEXT )
+        if PYTHON27:
+            self.assertEqual( diff_text, DIFF_TEXT_27 )
+        else:
+            self.assertEqual( diff_text, DIFF_TEXT )
 
     def test_unidiff_both_lines( self ):
 
@@ -42,7 +48,10 @@ class Test_unidiff( unittest.TestCase ):
 
         diff_lines = unidiff( ONE_FOUR.splitlines(), ZERO_FOUR.splitlines() )
         diff_text = '\n'.join( diff_lines )
-        self.assertEqual( diff_text, DIFF_TEXT )
+        if PYTHON27:
+            self.assertEqual( diff_text, DIFF_TEXT_27 )
+        else:
+            self.assertEqual( diff_text, DIFF_TEXT )
 
     def test_unidiff_mixed( self ):
 
@@ -50,7 +59,10 @@ class Test_unidiff( unittest.TestCase ):
 
         diff_lines = unidiff( ONE_FOUR, ZERO_FOUR.splitlines() )
         diff_text = '\n'.join( diff_lines )
-        self.assertEqual( diff_text, DIFF_TEXT )
+        if PYTHON27:
+            self.assertEqual( diff_text, DIFF_TEXT_27 )
+        else:
+            self.assertEqual( diff_text, DIFF_TEXT )
 
     def test_unidiff_ignore_blanks( self ):
 
@@ -63,7 +75,10 @@ class Test_unidiff( unittest.TestCase ):
                             )
 
         diff_text = '\n'.join( diff_lines )
-        self.assertEqual( diff_text, DIFF_TEXT )
+        if PYTHON27:
+            self.assertEqual( diff_text, DIFF_TEXT_27 )
+        else:
+            self.assertEqual( diff_text, DIFF_TEXT )
 
 ZERO_FOUR = """\
 zero
@@ -90,6 +105,19 @@ DIFF_TEXT = """\
 +tree
  four\
 """
+
+DIFF_TEXT_27 = """\
+--- original
++++ modified
+@@ -1,4 +1,4 @@
++zero
+ one
+-two
+-three
++tree
+ four\
+"""
+
 
 class ConfigDiffTests(ZopeTestCase):
 
@@ -214,7 +242,10 @@ class ConfigDiffTests(ZopeTestCase):
 
         diffs = cd.compare()
 
-        self.assertEqual( diffs, TEST_TXT_DIFFS % ( BEFORE, AFTER ) )
+        if PYTHON27:
+            self.assertEqual( diffs, TEST_TXT_DIFFS_27 % ( BEFORE, AFTER ) )
+        else:
+            self.assertEqual( diffs, TEST_TXT_DIFFS % ( BEFORE, AFTER ) )
 
     def test_compare_changed_file_ignore_blanks( self ):
 
@@ -310,7 +341,10 @@ class ConfigDiffTests(ZopeTestCase):
 
         diffs = cd.compare()
 
-        self.assertEqual( diffs, ADDED_FILE_DIFFS_MAE % AFTER )
+        if PYTHON27:
+            self.assertEqual( diffs, ADDED_FILE_DIFFS_MAE_27 % AFTER )
+        else:
+            self.assertEqual( diffs, ADDED_FILE_DIFFS_MAE % AFTER )
 
     def test_compare_removed_file_no_missing_as_empty( self ):
 
@@ -344,7 +378,10 @@ class ConfigDiffTests(ZopeTestCase):
 
         diffs = cd.compare()
 
-        self.assertEqual( diffs, REMOVED_FILE_DIFFS_MAE % BEFORE )
+        if PYTHON27:
+            self.assertEqual( diffs, REMOVED_FILE_DIFFS_MAE_27 % BEFORE )
+        else:
+            self.assertEqual( diffs, REMOVED_FILE_DIFFS_MAE % BEFORE )
 
 
 TEST_TXT_DIFFS = """\
@@ -352,6 +389,17 @@ Index: test.txt
 ===================================================================
 --- test.txt %s
 +++ test.txt %s
+@@ -1,2 +1,2 @@
+ ABCDEF
+-WXYZ
++QRST\
+"""
+
+TEST_TXT_DIFFS_27 = """\
+Index: test.txt
+===================================================================
+--- test.txt\t%s
++++ test.txt\t%s
 @@ -1,2 +1,2 @@
  ABCDEF
 -WXYZ
@@ -371,6 +419,15 @@ Index: sub/again.txt
 +GHIJKL\
 """
 
+ADDED_FILE_DIFFS_MAE_27 = """\
+Index: sub/again.txt
+===================================================================
+--- sub/again.txt
++++ sub/again.txt\t%s
+@@ -0,0 +1 @@
++GHIJKL\
+"""
+
 REMOVED_FILE_DIFFS_NO_MAE = """\
 ** File sub/again.txt removed
 """
@@ -381,6 +438,15 @@ Index: sub/again.txt
 --- sub/again.txt %s
 +++ sub/again.txt 0
 @@ -1,1 +1,0 @@
+-GHIJKL\
+"""
+
+REMOVED_FILE_DIFFS_MAE_27 = """\
+Index: sub/again.txt
+===================================================================
+--- sub/again.txt\t%s
++++ sub/again.txt
+@@ -1 +0,0 @@
 -GHIJKL\
 """
 
