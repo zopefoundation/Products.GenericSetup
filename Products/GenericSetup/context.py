@@ -121,6 +121,8 @@ class SetupEnviron(Implicit):
         """
         return self._should_purge
 
+InitializeClass(SetupEnviron)
+
 
 class BaseContext(SetupEnviron):
 
@@ -175,6 +177,8 @@ class BaseContext(SetupEnviron):
         """ See ISetupContext.
         """
         self._messages[:] = []
+
+InitializeClass(BaseContext)
 
 
 class DirectoryImportContext( BaseContext ):
@@ -269,7 +273,7 @@ class DirectoryImportContext( BaseContext ):
 
         return names
 
-InitializeClass( DirectoryImportContext )
+InitializeClass(DirectoryImportContext)
 
 
 class DirectoryExportContext( BaseContext ):
@@ -311,7 +315,7 @@ class DirectoryExportContext( BaseContext ):
         file.write( text )
         file.close()
 
-InitializeClass( DirectoryExportContext )
+InitializeClass(DirectoryExportContext)
 
 
 class TarballImportContext( BaseContext ):
@@ -409,6 +413,8 @@ class TarballImportContext( BaseContext ):
         except KeyError:
             return None
 
+InitializeClass(TarballImportContext)
+
 
 class TarballExportContext( BaseContext ):
 
@@ -477,7 +483,7 @@ class TarballExportContext( BaseContext ):
         """
         return self._archive_filename
 
-InitializeClass( TarballExportContext )
+InitializeClass(TarballExportContext)
 
 
 class SnapshotExportContext( BaseContext ):
@@ -582,7 +588,7 @@ class SnapshotExportContext( BaseContext ):
 
         return current
 
-InitializeClass( SnapshotExportContext )
+InitializeClass(SnapshotExportContext)
 
 
 class SnapshotImportContext( BaseContext ):
@@ -708,4 +714,4 @@ class SnapshotImportContext( BaseContext ):
 
         return self._tool.restrictedTraverse( path )
 
-InitializeClass( SnapshotImportContext )
+InitializeClass(SnapshotImportContext)

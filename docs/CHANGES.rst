@@ -4,6 +4,8 @@ Products.GenericSetup Changelog
 1.6.4 (unreleased)
 ------------------
 
+- Added three missing explicit InitializeClass calls.
+
 - Adjust test assertions in `test_differ` to cope with changes to the diff
   library done in Python 2.7.
 
