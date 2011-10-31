@@ -1,7 +1,7 @@
 Products.GenericSetup Changelog
 ===============================
 
-1.6.4 (unreleased)
+1.6.4 (2011-10-31)
 ------------------
 
 - Added three missing explicit InitializeClass calls.
