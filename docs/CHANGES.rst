@@ -1,10 +1,12 @@
 Products.GenericSetup Changelog
 ===============================
 
-1.6.5 (unreleased)
+1.7.0 (unreleased)
 ------------------
 
-- TBD
+- Exporters now explicitly only understand strings. The provided
+  registry handlers encode and decode data automatically to and from
+  utf-8. Their default encoding changed from None to utf-8.
 
 
 1.6.4 (2011-10-31)

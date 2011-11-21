@@ -158,7 +158,7 @@ class ImportConfiguratorBase(Implicit):
     security = ClassSecurityInfo()
     security.setDefaultAccess('allow')
 
-    def __init__(self, site, encoding=None):
+    def __init__(self, site, encoding='utf-8'):
 
         self._site = site
         self._encoding = encoding
@@ -271,7 +271,7 @@ class ExportConfiguratorBase(Implicit):
     security = ClassSecurityInfo()
     security.setDefaultAccess('allow')
 
-    def __init__(self, site, encoding=None):
+    def __init__(self, site, encoding='utf-8'):
 
         self._site = site
         self._encoding = encoding
@@ -281,7 +281,10 @@ class ExportConfiguratorBase(Implicit):
     def generateXML(self, **kw):
         """ Pseudo API.
         """
-        return self._template(**kw)
+        if self._encoding:
+            return self._template(**kw).encode(self._encoding)
+        else:
+            return self._template(**kw)
 
 InitializeClass(ExportConfiguratorBase)
 
@@ -395,7 +398,7 @@ class PrettyDocument(Document):
         return e
 
     def writexml(self, writer, indent="", addindent="", newl="",
-                 encoding = None):
+                 encoding = 'utf-8'):
         if encoding is None:
             writer.write('<?xml version="1.0"?>\n')
         else:

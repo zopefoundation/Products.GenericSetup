@@ -306,13 +306,13 @@ class BaseStepRegistry( Implicit ):
         return [ self.getStepMetadata( x ) for x in step_ids ]
 
     security.declareProtected( ManagePortal, 'generateXML' )
-    def generateXML( self ):
+    def generateXML( self, encoding='utf-8' ):
 
         """ Return a round-trippable XML representation of the registry.
 
         o 'handler' values are serialized using their dotted names.
         """
-        return self._exportTemplate()
+        return self._exportTemplate().encode('utf-8')
 
     security.declarePrivate( 'getStep' )
     def getStep( self, key, default=None ):
@@ -338,7 +338,7 @@ class BaseStepRegistry( Implicit ):
         self._registered.clear()
 
     security.declarePrivate( 'parseXML' )
-    def parseXML( self, text, encoding=None ):
+    def parseXML( self, text, encoding='utf-8' ):
 
         """ Parse 'text'.
         """
@@ -636,14 +636,14 @@ class ToolsetRegistry( Implicit ):
                                     }
 
     security.declareProtected( ManagePortal, 'generateXML' )
-    def generateXML( self ):
+    def generateXML( self, encoding='utf-8' ):
 
         """ Pseudo API.
         """
-        return self._toolsetConfig()
+        return self._toolsetConfig().encode('utf-8')
 
     security.declareProtected( ManagePortal, 'parseXML' )
-    def parseXML( self, text, encoding=None ):
+    def parseXML( self, text, encoding='utf-8' ):
 
         """ Pseudo-API
         """

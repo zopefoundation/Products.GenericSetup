@@ -1,3 +1,4 @@
+#encoding: utf-8
 ##############################################################################
 #
 # Copyright (c) 2004 Zope Foundation and Contributors.
@@ -379,6 +380,22 @@ class DirectoryExportContextTests( FilesystemTestBase
         ctx.writeDataFile( FILENAME, digits, 'text/plain' )
 
         self.assertEqual( open( fqname, 'rb' ).read(), digits )
+
+    def test_writeDataFile_unicode( self ):
+
+        from string import printable
+        text = u'Kein Weltraum links vom Gerät'
+        FILENAME = 'unicode.txt'
+        fqname = self._makeFile( FILENAME, printable )
+
+        site = DummySite('site').__of__(self.app)
+        ctx = self._makeOne( site, self._PROFILE_PATH )
+
+        self.assertRaises(ValueError, ctx.writeDataFile,
+                          FILENAME, text, 'text/plain' )
+        text = u'No umlauts'
+        self.assertRaises(ValueError, ctx.writeDataFile,
+                          FILENAME, text, 'text/plain' )
 
     def test_writeDataFile_new_subdir( self ):
         from string import digits
@@ -774,6 +791,19 @@ class TarballExportContextTests(ZopeTestCase, ConformsToISetupContext,
         self._verifyTarballContents( fileish, [ 'foo.txt' ], now )
         self._verifyTarballEntry( fileish, 'foo.txt', printable )
 
+    def test_writeDataFile_umluats( self ):
+
+        text = u'Kein Weltraum links vom Gerät'
+
+        site = DummySite('site').__of__(self.app)
+        ctx = self._getTargetClass()( site )
+
+        self.assertRaises(ValueError, ctx.writeDataFile,
+                          'foo.txt', text, 'text/plain' )
+        text = u'No umlauts'
+        self.assertRaises(ValueError, ctx.writeDataFile,
+                          'foo.txt', text, 'text/plain' )
+
     def test_writeDataFile_multiple( self ):
 
         from string import printable
@@ -928,20 +958,11 @@ class SnapshotExportContextTests(ZopeTestCase, ConformsToISetupContext,
         tool = site.setup_tool
         ctx = self._makeOne( tool, 'simple', 'latin_1' )
 
-        ctx.writeDataFile( FILENAME, CONTENT, CONTENT_TYPE )
-
-        snapshot = tool.snapshots._getOb( 'simple' )
-
-        self.assertEqual( len( snapshot.objectIds() ), 1 )
-        self.failUnless( FILENAME in snapshot.objectIds() )
-
-        fileobj = snapshot._getOb( FILENAME )
-
-        self.assertEqual( fileobj.getId(), FILENAME )
-        self.assertEqual( fileobj.meta_type, File.meta_type )
-        self.assertEqual( fileobj.getContentType(), CONTENT_TYPE )
-        saved = fileobj.manage_FTPget().decode('latin_1')
-        self.assertEqual( saved, CONTENT )
+        self.assertRaises(ValueError, ctx.writeDataFile,
+                          FILENAME, CONTENT, CONTENT_TYPE )
+        CONTENT = u'No unicode chars'
+        self.assertRaises(ValueError, ctx.writeDataFile,
+                          FILENAME, CONTENT, CONTENT_TYPE )
 
     def test_writeDataFile_simple_xml( self ):
 
@@ -949,32 +970,6 @@ class SnapshotExportContextTests(ZopeTestCase, ConformsToISetupContext,
         FILENAME = 'simple.xml'
         CONTENT_TYPE = 'text/xml'
         _XML = """<?xml version="1.0"?><simple />"""
-
-        site = DummySite('site').__of__(self.app)
-        site.setup_tool = DummyTool( 'setup_tool' )
-        tool = site.setup_tool
-        ctx = self._makeOne( tool, 'simple' )
-
-        ctx.writeDataFile( FILENAME, _XML, CONTENT_TYPE )
-
-        snapshot = tool.snapshots._getOb( 'simple' )
-
-        self.assertEqual( len( snapshot.objectIds() ), 1 )
-        self.failUnless( FILENAME in snapshot.objectIds() )
-
-        template = snapshot._getOb( FILENAME )
-
-        self.assertEqual( template.getId(), FILENAME )
-        self.assertEqual( template.meta_type, ZopePageTemplate.meta_type )
-        self.assertEqual( template.read(), _XML )
-        self.failIf( template.html() )
-
-    def test_writeDataFile_unicode_xml( self ):
-
-        from Products.PageTemplates.ZopePageTemplate import ZopePageTemplate
-        FILENAME = 'simple.xml'
-        CONTENT_TYPE = 'text/xml'
-        _XML = u"""<?xml version="1.0"?><simple />"""
 
         site = DummySite('site').__of__(self.app)
         site.setup_tool = DummyTool( 'setup_tool' )
