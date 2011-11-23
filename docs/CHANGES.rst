@@ -7,6 +7,11 @@ Products.GenericSetup Changelog
 - Exporters now explicitly only understand strings. The provided
   registry handlers encode and decode data automatically to and from
   utf-8. Their default encoding changed from None to utf-8.
+  If you have custom registry handlers, ensure that you encode your unicode.
+  Check especially if you use a page template to generate xml. They return
+  unicode and their output must also encoded.
+  If you choose to encode your strings with utf-8, you can be sure that
+  your code will also work with GenericSetup < 1.7
 
 
 1.6.4 (2011-10-31)

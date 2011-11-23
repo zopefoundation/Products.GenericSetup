@@ -313,7 +313,8 @@ class DirectoryExportContext( BaseContext ):
         """
         if isinstance(text, unicode):
             raise ValueError("Unicode text is not supported, even if it only "
-                             "contains ascii. Please encode your data")
+                             "contains ascii. Please encode your data. See "
+                             "GS 1.7.0 changes for more")
         file = self.openDataFile( filename, content_type, subdir )
         file.write( text )
         file.close()
@@ -464,7 +465,8 @@ class TarballExportContext( BaseContext ):
             info.size = len(text)
         elif isinstance(text, unicode):
             raise ValueError("Unicode text is not supported, even if it only "
-                             "contains ascii. Please encode your data")
+                             "contains ascii. Please encode your data. See "
+                             "GS 1.7.0 changes for more")
         else:
             # Assume text is a an instance of a class like
             # Products.Archetypes.WebDAVSupport.PdataStreamIterator, 
@@ -518,7 +520,8 @@ class SnapshotExportContext( BaseContext ):
 
         if isinstance(text, unicode):
             raise ValueError("Unicode text is not supported, even if it only "
-                             "contains ascii. Please encode your data")
+                             "contains ascii. Please encode your data. See "
+                             "GS 1.7.0 changes for more")
 
         folder = self._ensureSnapshotsFolder( subdir )
 
