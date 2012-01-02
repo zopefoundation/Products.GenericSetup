@@ -4,6 +4,12 @@ Products.GenericSetup Changelog
 1.7.0 (unreleased)
 ------------------
 
+- While importing toolset.xml, print a warning when the class of a
+  required tool is not found and continue with the next tool.  The
+  previous behaviour could break the install or uninstall of any
+  add-on, as the missing class may easily be from a different
+  unrelated add-on that is no longer available in the zope instance.
+
 - Exporters now explicitly only understand strings. The provided
   registry handlers encode and decode data automatically to and from
   utf-8. Their default encoding changed from None to utf-8.
