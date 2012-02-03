@@ -5,7 +5,7 @@ Products.GenericSetup Changelog
 ------------------
 
 
-1.7.0 (2012-02-27)
+1.7.0 (2012-01-27)
 ------------------
 
 - While importing toolset.xml, print a warning when the class of a
