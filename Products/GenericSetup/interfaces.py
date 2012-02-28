@@ -544,7 +544,8 @@ class ISetupTool( Interface ):
             step
         """
 
-    def runAllImportStepsFromProfile(profile_id, purge_old=None, ignore_dependencies=False):
+    def runAllImportStepsFromProfile(profile_id, purge_old=None,
+                                     ignore_dependencies=False):
 
         """ Run all setup steps for the given profile in dependency order.
 
@@ -813,7 +814,8 @@ class IDAVAware(Interface):
 class IBeforeProfileImportEvent(Interface):
     """ An event which is fired before (part of) a profile is imported.
     """
-    profile_id = Attribute("id of the profile to be imported or None for non-profile imports.")
+    profile_id = Attribute("id of the profile to be imported "
+                           "or None for non-profile imports.")
 
     steps = Attribute("list of steps that will be imported")
 

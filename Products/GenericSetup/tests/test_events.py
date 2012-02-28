@@ -18,7 +18,8 @@ class BaseEventTests:
         self.assertEqual(event.full_import, "full_import")
 
     def testKeywordConstruction(self):
-        event=self.klass(tool="tool", profile_id="profile_id", steps="steps", full_import="full_import")
+        event = self.klass(tool="tool", profile_id="profile_id", steps="steps",
+                           full_import="full_import")
         self.assertEqual(event.tool, "tool")
         self.assertEqual(event.profile_id, "profile_id")
         self.assertEqual(event.steps, "steps")

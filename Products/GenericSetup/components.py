@@ -294,7 +294,8 @@ class ComponentRegistryXMLAdapter(XMLAdapterBase):
                     ofs_id = self._ofs_id(child)
                     if ofs_id in self.context.objectIds():
                         self.context._delObject(ofs_id, suppress_events=True)
-                    self.context.unregisterUtility(provided=provided, name=name)
+                    self.context.unregisterUtility(provided=provided,
+                                                   name=name)
                 continue
 
             if component and factory:
@@ -394,8 +395,8 @@ class ComponentRegistryXMLAdapter(XMLAdapterBase):
 
         registrations = [ {'factory': _getDottedName(reg.factory),
                            'provided': _getDottedName(reg.provided),
-                           'required': reg.required}
-                          for reg in self.context.registeredSubscriptionAdapters() ]
+                           'required': reg.required} for reg
+                            in self.context.registeredSubscriptionAdapters() ]
         registrations.sort(key=itemgetter('factory'))
         registrations.sort(key=itemgetter('provided'))
         blacklist = self._constructBlacklist()
@@ -470,8 +471,8 @@ class ComponentRegistryXMLAdapter(XMLAdapterBase):
             else:
                 factory = None
                 comp = reg_info['component']
-                # check if the component is acquisition wrapped. If it is, export
-                # an object reference instead of a factory reference
+                # check if the component is acquisition wrapped. If it is,
+                # export an object reference instead of a factory reference
                 if getattr(comp, 'aq_base', None) is not None:
                     if aq_base(comp) is site:
                         child.setAttribute('object', '')

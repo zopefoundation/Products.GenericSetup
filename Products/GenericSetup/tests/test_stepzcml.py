@@ -26,10 +26,13 @@ except ImportError:
     from Products.Five import zcml
 
 
-EMPTY_ZCML = '''<configure xmlns:genericsetup="http://namespaces.zope.org/genericsetup">
+EMPTY_ZCML = '''\
+<configure xmlns:genericsetup="http://namespaces.zope.org/genericsetup">
 </configure>'''
 
-ONE_STEP_ZCML = '''<configure xmlns:genericsetup="http://namespaces.zope.org/genericsetup" i18n_domain="genericsetup">
+ONE_STEP_ZCML = '''\
+<configure xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
+           i18n_domain="genericsetup">
 <genericsetup:importStep
     name="Products.GenericSetup.teststep"
     title="step title"

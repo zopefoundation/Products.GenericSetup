@@ -28,19 +28,19 @@ except ImportError:
     from Products.Five import zcml
 
 
-def dummy_importstep_handler(context):
+def dummy_importstep(context):
     pass
 
-def dummy_exportstep_handler(context):
+def dummy_exportstep(context):
     pass
 
-def dummy_upgrade_handler(context):
+def dummy_upgrade(context):
     pass
 
-def b_dummy_upgrade_handler(context):
+def b_dummy_upgrade(context):
     pass
 
-def c_dummy_upgrade_handler(context):
+def c_dummy_upgrade(context):
     pass
 
 def test_simpleRegisterProfile():
@@ -146,7 +146,7 @@ def test_registerUpgradeStep(self):
       ...       description="Upgrades Foo from 1.0 to 1.1."
       ...       source="1.0"
       ...       destination="1.1"
-      ...       handler="Products.GenericSetup.tests.test_zcml.dummy_upgrade_handler"
+      ...       handler="Products.GenericSetup.tests.test_zcml.dummy_upgrade"
       ...       sortkey="1"
       ...       profile="default"
       ...       />
@@ -156,8 +156,8 @@ def test_registerUpgradeStep(self):
 
     Make sure the upgrade step is registered correctly::
 
-      >>> from Products.GenericSetup.upgrade import _upgrade_registry
-      >>> profile_steps = _upgrade_registry.getUpgradeStepsForProfile('default')
+      >>> from Products.GenericSetup.upgrade import _upgrade_registry as _ur
+      >>> profile_steps = _ur.getUpgradeStepsForProfile('default')
       >>> keys = profile_steps.keys()
       >>> len(keys)
       1
@@ -167,7 +167,7 @@ def test_registerUpgradeStep(self):
       >>> step.dest
       ('1', '1')
       >>> step.handler
-      <function dummy_upgrade_handler at ...>
+      <function dummy_upgrade at ...>
 
     Clean up and make sure the cleanup works::
 
@@ -197,8 +197,8 @@ def test_registerUpgradeDepends(self):
 
     Make sure the upgrade step is registered correctly::
 
-      >>> from Products.GenericSetup.upgrade import _upgrade_registry
-      >>> profile_steps = _upgrade_registry.getUpgradeStepsForProfile('default')
+      >>> from Products.GenericSetup.upgrade import _upgrade_registry as _ur
+      >>> profile_steps = _ur.getUpgradeStepsForProfile('default')
       >>> keys = profile_steps.keys()
       >>> len(keys)
       1
@@ -229,55 +229,54 @@ def test_registerUpgradeSteps(self):
       ... <configure
       ...     xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
       ...     i18n_domain="foo">
-      ...   <genericsetup:upgradeSteps
+      ...  <genericsetup:upgradeSteps
       ...       profile="default"
       ...       source="1.0"
       ...       destination="1.1"
       ...       sortkey="2"
       ...       >
-      ...       <genericsetup:upgradeStep
-      ...           title="Foo Upgrade Step 1"
-      ...           description="Does some Foo upgrade thing."
-      ...           handler="Products.GenericSetup.tests.test_zcml.b_dummy_upgrade_handler"
-      ...           />
-      ...       <genericsetup:upgradeStep
-      ...           title="Foo Upgrade Step 2"
-      ...           description="Does another Foo upgrade thing."
-      ...           handler="Products.GenericSetup.tests.test_zcml.c_dummy_upgrade_handler"
-      ...           />
-      ...   </genericsetup:upgradeSteps>
-      ...   <genericsetup:upgradeSteps
+      ...   <genericsetup:upgradeStep
+      ...       title="Foo Upgrade Step 1"
+      ...       description="Does some Foo upgrade thing."
+      ...       handler="Products.GenericSetup.tests.test_zcml.b_dummy_upgrade"
+      ...       />
+      ...   <genericsetup:upgradeStep
+      ...       title="Foo Upgrade Step 2"
+      ...       description="Does another Foo upgrade thing."
+      ...       handler="Products.GenericSetup.tests.test_zcml.c_dummy_upgrade"
+      ...       />
+      ...  </genericsetup:upgradeSteps>
+      ...  <genericsetup:upgradeSteps
       ...       profile="default"
       ...       source="1.0"
       ...       destination="1.1"
       ...       sortkey="1"
       ...       >
-      ...       <genericsetup:upgradeStep
-      ...           title="Bar Upgrade Step 1"
-      ...           description="Does some Bar upgrade thing."
-      ...           handler="Products.GenericSetup.tests.test_zcml.b_dummy_upgrade_handler"
-      ...           />
-      ...       <genericsetup:upgradeStep
-      ...           title="Bar Upgrade Step 2"
-      ...           description="Does another Bar upgrade thing."
-      ...           handler="Products.GenericSetup.tests.test_zcml.c_dummy_upgrade_handler"
-      ...           />
-      ...       <genericsetup:upgradeDepends
-      ...           title="Bar Upgrade dependency profile import steps"
-      ...           description="Re-imports steps from the profile"
-      ...           import_profile="profile-Products.CMFDefault:default"
-      ...           import_steps="baz bat"
-      ...           run_deps="True"
-      ...           purge="True"
-      ...           />
-      ...   </genericsetup:upgradeSteps>
+      ...   <genericsetup:upgradeStep
+      ...       title="Bar Upgrade Step 1"
+      ...       description="Does some Bar upgrade thing."
+      ...       handler="Products.GenericSetup.tests.test_zcml.b_dummy_upgrade"
+      ...       />
+      ...   <genericsetup:upgradeStep
+      ...       title="Bar Upgrade Step 2"
+      ...       description="Does another Bar upgrade thing."
+      ...       handler="Products.GenericSetup.tests.test_zcml.c_dummy_upgrade"
+      ...       />
+      ...   <genericsetup:upgradeDepends
+      ...       title="Bar Upgrade dependency profile import steps"
+      ...       description="Re-imports steps from the profile"
+      ...       import_profile="profile-Products.CMFDefault:default"
+      ...       import_steps="baz bat"
+      ...       run_deps="True"
+      ...       purge="True"
+      ...       />
+      ...  </genericsetup:upgradeSteps>
       ... </configure>'''
       >>> zcml.load_config('meta.zcml', Products.GenericSetup)
       >>> zcml.load_string(configure_zcml)
 
     Make sure the upgrade steps are registered correctly::
 
-      >>> from Products.GenericSetup.upgrade import _upgrade_registry
       >>> from Products.GenericSetup.upgrade import listUpgradeSteps
       >>> from Products.GenericSetup.tool import SetupTool
       >>> tool = SetupTool('setup_tool')
@@ -295,11 +294,11 @@ def test_registerUpgradeSteps(self):
       >>> step1['dest'] == step2['dest'] == step3['dest'] == ('1', '1')
       True
       >>> step1['step'].handler
-      <function b_dummy_upgrade_handler at ...>
+      <function b_dummy_upgrade at ...>
       >>> step1['title']
       u'Bar Upgrade Step 1'
       >>> step2['step'].handler
-      <function c_dummy_upgrade_handler at ...>
+      <function c_dummy_upgrade at ...>
       >>> step2['title']
       u'Bar Upgrade Step 2'
       >>> step3['step'].import_profile
@@ -324,11 +323,11 @@ def test_registerUpgradeSteps(self):
       >>> step1['dest'] == step2['dest'] == ('1', '1')
       True
       >>> step1['step'].handler
-      <function b_dummy_upgrade_handler at ...>
+      <function b_dummy_upgrade at ...>
       >>> step1['title']
       u'Foo Upgrade Step 1'
       >>> step2['step'].handler
-      <function c_dummy_upgrade_handler at ...>
+      <function c_dummy_upgrade at ...>
       >>> step2['title']
       u'Foo Upgrade Step 2'
 
@@ -349,20 +348,20 @@ class ImportStepTests(unittest.TestCase):
         cleanUp()
 
     def testNoDependencies(self):
-        zcml.load_string("""<configure
-                              xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
-                              i18n_domain="genericsetup">
-                             <genericsetup:importStep
-                                 name="name"
-                                 title="title"
-                                 description="description"
-                                 handler="Products.GenericSetup.tests.test_zcml.dummy_importstep_handler">
-                             </genericsetup:importStep>
-                            </configure>""")
+        zcml.load_string("""\
+        <configure xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
+                   i18n_domain="genericsetup">
+         <genericsetup:importStep
+             name="name"
+             title="title"
+             description="description"
+             handler="Products.GenericSetup.tests.test_zcml.dummy_importstep">
+         </genericsetup:importStep>
+        </configure>""")
         self.assertEqual( _import_step_registry.listSteps(), [u'name'])
         data=_import_step_registry.getStepMetadata(u'name')
         self.assertEqual(data["handler"],
-                'Products.GenericSetup.tests.test_zcml.dummy_importstep_handler')
+                'Products.GenericSetup.tests.test_zcml.dummy_importstep')
         self.assertEqual(data["description"], u"description")
         self.assertEqual(data["title"], u"title")
         self.assertEqual(data["dependencies"], ())
@@ -370,17 +369,17 @@ class ImportStepTests(unittest.TestCase):
 
 
     def testWithDependency(self):
-        zcml.load_string("""<configure
-                              xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
-                              i18n_domain="genericsetup">
-                             <genericsetup:importStep
-                                 name="name"
-                                 title="title"
-                                 description="description"
-                                 handler="Products.GenericSetup.tests.test_zcml.dummy_importstep_handler">
-                                <depends name="something.else"/>
-                             </genericsetup:importStep>
-                            </configure>""")
+        zcml.load_string("""
+        <configure xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
+                   i18n_domain="genericsetup">
+         <genericsetup:importStep
+             name="name"
+             title="title"
+             description="description"
+             handler="Products.GenericSetup.tests.test_zcml.dummy_importstep">
+          <depends name="something.else"/>
+         </genericsetup:importStep>
+        </configure>""")
         data=_import_step_registry.getStepMetadata(u'name')
         self.assertEqual(data["dependencies"], (u"something.else",))
 
@@ -396,21 +395,20 @@ class ExportStepTests(unittest.TestCase):
         cleanUp()
 
     def testRegistration(self):
-        zcml.load_string("""<configure
-                              xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
-                              i18n_domain="genericsetup">
-                             <genericsetup:exportStep
-                                 name="name"
-                                 title="title"
-                                 description="description"
-                                 handler="Products.GenericSetup.tests.test_zcml.dummy_exportstep_handler"
-                                 />
-                              </configure>
-                              """)
+        zcml.load_string("""\
+        <configure xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
+                   i18n_domain="genericsetup">
+        <genericsetup:exportStep
+            name="name"
+            title="title"
+            description="description"
+            handler="Products.GenericSetup.tests.test_zcml.dummy_exportstep"
+            />
+        </configure>""")
         self.assertEqual( _export_step_registry.listSteps(), [u'name'])
         data=_export_step_registry.getStepMetadata(u'name')
         self.assertEqual(data["handler"],
-                'Products.GenericSetup.tests.test_zcml.dummy_exportstep_handler')
+                'Products.GenericSetup.tests.test_zcml.dummy_exportstep')
         self.assertEqual(data["description"], u"description")
         self.assertEqual(data["title"], u"title")
         self.assertEqual(data["id"], u"name")

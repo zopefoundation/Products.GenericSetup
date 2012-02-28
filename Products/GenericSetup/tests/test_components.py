@@ -81,13 +81,13 @@ class DummyUtility(object):
     def verify(self):
         return True
 
-class IAnotherDummyInterface(Interface):
+class IAnotherDummy(Interface):
     """A third dummy interface."""
 
     def inc():
         """Increments handle count"""
 
-class IAnotherDummyInterface2(Interface):
+class IAnotherDummy2(Interface):
     """A second dummy interface."""
 
     def verify():
@@ -96,7 +96,7 @@ class IAnotherDummyInterface2(Interface):
 class DummyObject(object):
     """A dummy object to pass to the handler."""
 
-    implements(IAnotherDummyInterface)
+    implements(IAnotherDummy)
 
     handled = 0
 
@@ -106,7 +106,7 @@ class DummyObject(object):
 class DummyAdapter(object):
     """A dummy adapter."""
 
-    implements(IAnotherDummyInterface2)
+    implements(IAnotherDummy2)
 
     def __init__(self, context):
         pass
@@ -164,19 +164,18 @@ _COMPONENTS_BODY = """\
  <adapters>
   <adapter factory="Products.GenericSetup.tests.test_components.DummyAdapter"
      for="zope.interface.Interface"
-     provides="Products.GenericSetup.tests.test_components.IAnotherDummyInterface2"/>
+     provides="Products.GenericSetup.tests.test_components.IAnotherDummy2"/>
   <adapter name="foo"
      factory="Products.GenericSetup.tests.test_components.DummyAdapter"
      for="zope.interface.Interface"
-     provides="Products.GenericSetup.tests.test_components.IAnotherDummyInterface2"/>
+     provides="Products.GenericSetup.tests.test_components.IAnotherDummy2"/>
  </adapters>
  <subscribers>
   <subscriber
      factory="Products.GenericSetup.tests.test_components.DummyAdapter"
-     for="Products.GenericSetup.tests.test_components.IAnotherDummyInterface"
-     provides="Products.GenericSetup.tests.test_components.IAnotherDummyInterface2"/>
-  <subscriber
-     for="Products.GenericSetup.tests.test_components.IAnotherDummyInterface"
+     for="Products.GenericSetup.tests.test_components.IAnotherDummy"
+     provides="Products.GenericSetup.tests.test_components.IAnotherDummy2"/>
+  <subscriber for="Products.GenericSetup.tests.test_components.IAnotherDummy"
      handler="Products.GenericSetup.tests.test_components.dummy_handler"/>
  </subscribers>
  <utilities>
@@ -201,17 +200,17 @@ _REMOVE_IMPORT = """\
 <componentregistry>
  <adapters>
   <adapter factory="Products.GenericSetup.tests.test_components.DummyAdapter"
-     provides="Products.GenericSetup.tests.test_components.IAnotherDummyInterface2"
+     provides="Products.GenericSetup.tests.test_components.IAnotherDummy2"
      for="*" remove="True"/>
  </adapters>
  <subscribers>
   <subscriber
      factory="Products.GenericSetup.tests.test_components.DummyAdapter"
-     for="Products.GenericSetup.tests.test_components.IAnotherDummyInterface"
-     provides="Products.GenericSetup.tests.test_components.IAnotherDummyInterface2"
+     for="Products.GenericSetup.tests.test_components.IAnotherDummy"
+     provides="Products.GenericSetup.tests.test_components.IAnotherDummy2"
      remove="True"/>
   <subscriber
-     for="Products.GenericSetup.tests.test_components.IAnotherDummyInterface"
+     for="Products.GenericSetup.tests.test_components.IAnotherDummy"
      handler="Products.GenericSetup.tests.test_components.dummy_handler"
      remove="True"/>
  </subscribers>
@@ -245,8 +244,9 @@ class ComponentRegistryXMLAdapterTests(BodyAdapterTestCase, unittest.TestCase):
         obj.registerAdapter(DummyAdapter, required=(None,))
         obj.registerAdapter(DummyAdapter, required=(None,), name=u'foo')
 
-        obj.registerSubscriptionAdapter(DummyAdapter, required=(IAnotherDummyInterface,))
-        obj.registerHandler(dummy_handler, required=(IAnotherDummyInterface,))
+        obj.registerSubscriptionAdapter(DummyAdapter,
+                                        required=(IAnotherDummy,))
+        obj.registerHandler(dummy_handler, required=(IAnotherDummy,))
 
         util = DummyUtility()
         name = 'dummy_utility'
@@ -257,7 +257,8 @@ class ComponentRegistryXMLAdapterTests(BodyAdapterTestCase, unittest.TestCase):
         obj.registerUtility(aq_base(obj[name]), IDummyInterface)
 
         util = DummyUtility()
-        name = 'Products.GenericSetup.tests.test_components.IDummyInterface2-foo'
+        name = ('Products.GenericSetup.tests.test_components.'
+                    'IDummyInterface2-foo')
         util.__name__ = name
         util.__parent__ = aq_base(obj)
         obj._setObject(name, aq_base(util),
@@ -271,16 +272,17 @@ class ComponentRegistryXMLAdapterTests(BodyAdapterTestCase, unittest.TestCase):
         obj.registerUtility(tool2, IDummyInterface2, name=u'dummy tool name2')
 
     def _verifyImport(self, obj):
-        adapted = queryAdapter(object(), IAnotherDummyInterface2)
-        self.failUnless(IAnotherDummyInterface2.providedBy(adapted))
+        adapted = queryAdapter(object(), IAnotherDummy2)
+        self.failUnless(IAnotherDummy2.providedBy(adapted))
         self.failUnless(adapted.verify())
 
-        adapted = queryAdapter(object(), IAnotherDummyInterface2, name=u'foo')
-        self.failUnless(IAnotherDummyInterface2.providedBy(adapted))
+        adapted = queryAdapter(object(), IAnotherDummy2, name=u'foo')
+        self.failUnless(IAnotherDummy2.providedBy(adapted))
         self.failUnless(adapted.verify())
 
         dummy = DummyObject()
-        results = [adap.verify() for adap in subscribers([dummy], IAnotherDummyInterface2)]
+        results = [adap.verify() for adap in
+                        subscribers([dummy], IAnotherDummy2)]
         self.assertEquals(results, [True])
 
         dummy = DummyObject()
@@ -291,7 +293,8 @@ class ComponentRegistryXMLAdapterTests(BodyAdapterTestCase, unittest.TestCase):
         self.failUnless(IDummyInterface.providedBy(util))
         self.failUnless(util.verify())
         self.failUnless(util.__parent__ == obj)
-        name = 'Products.GenericSetup.tests.test_components.IDummyInterface2-foo'
+        name = ('Products.GenericSetup.tests.test_components.'
+                    'IDummyInterface2-foo')
         self.assertEquals(util.__name__, name)
         self.failUnless(name in obj.objectIds())
 
@@ -390,15 +393,16 @@ class ComponentRegistryXMLAdapterTests(BodyAdapterTestCase, unittest.TestCase):
         context._files['componentregistry.xml'] = _REMOVE_IMPORT
         importComponentRegistry(context)
 
-        adapted = queryAdapter(object(), IAnotherDummyInterface2)
+        adapted = queryAdapter(object(), IAnotherDummy2)
         self.failUnless(adapted is None)
 
         # This one should still exist
-        adapted = queryAdapter(object(), IAnotherDummyInterface2, name=u'foo')
+        adapted = queryAdapter(object(), IAnotherDummy2, name=u'foo')
         self.failIf(adapted is None)
 
         dummy = DummyObject()
-        results = [adap.verify() for adap in subscribers([dummy], IAnotherDummyInterface2)]
+        results = [adap.verify() for adap in
+                        subscribers([dummy], IAnotherDummy2)]
         self.assertEquals(results, [])
 
         dummy = DummyObject()
@@ -406,7 +410,8 @@ class ComponentRegistryXMLAdapterTests(BodyAdapterTestCase, unittest.TestCase):
         self.assertEquals(dummy.handled, 0)
 
         util = queryUtility(IDummyInterface2, name=u'foo')
-        name = 'Products.GenericSetup.tests.test_components.IDummyInterface2-foo'
+        name = ('Products.GenericSetup.tests.test_components.'
+                    'IDummyInterface2-foo')
         self.failUnless(util is None)
         self.failIf(name in obj.objectIds())
 

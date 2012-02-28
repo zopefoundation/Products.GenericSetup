@@ -239,7 +239,8 @@ class GlobalRegistryStorage(object):
 
     def values(self):
         sm = getGlobalSiteManager()
-        values = [info for name, info in sm.getUtilitiesFor(self.interfaceClass)]
+        values = [info for name, info
+                        in sm.getUtilitiesFor(self.interfaceClass)]
         return values
 
     def get(self, key):

@@ -295,7 +295,8 @@ class SetupTool(Folder):
         steps.append (step_id)
 
         full_import=(set(steps)==set(self.getSortedImportSteps()))
-        event.notify(BeforeProfileImportEvent(self, profile_id, steps, full_import))
+        event.notify(
+            BeforeProfileImportEvent(self, profile_id, steps, full_import))
 
         for step in steps:
             message = self._doRunImportStep(step, context)
@@ -305,7 +306,8 @@ class SetupTool(Folder):
         message_list.extend( ['%s: %s' % x[1:] for x in context.listNotes()] )
         messages[step_id] = '\n'.join(message_list)
 
-        event.notify(ProfileImportedEvent(self, profile_id, steps, full_import))
+        event.notify(
+            ProfileImportedEvent(self, profile_id, steps, full_import))
 
         return { 'steps' : steps, 'messages' : messages }
 
@@ -319,10 +321,11 @@ class SetupTool(Folder):
         """
         __traceback_info__ = profile_id
 
-        result = self._runImportStepsFromContext(purge_old=purge_old,
-                                                 profile_id=profile_id,
-                                                 archive=archive,
-                                                 ignore_dependencies=ignore_dependencies)
+        result = self._runImportStepsFromContext(
+                            purge_old=purge_old,
+                            profile_id=profile_id,
+                            archive=archive,
+                            ignore_dependencies=ignore_dependencies)
         if profile_id is None:
             prefix = 'import-all-from-tar'
         else:
@@ -481,7 +484,8 @@ class SetupTool(Folder):
     manage_importSteps = PageTemplateFile('sutImportSteps', _wwwdir)
 
     security.declareProtected(ManagePortal, 'manage_importSelectedSteps')
-    def manage_importSelectedSteps(self, ids, run_dependencies, context_id=None):
+    def manage_importSelectedSteps(self, ids, run_dependencies,
+                                   context_id=None):
         """ Import the steps selected by the user.
         """
         messages = {}
@@ -889,7 +893,8 @@ class SetupTool(Folder):
             self.setLastVersionForProfile(profile_id, step.dest)
 
         url = self.absolute_url()
-        request.RESPONSE.redirect("%s/manage_upgrades?saved=%s" % (url, profile_id))
+        request.RESPONSE.redirect("%s/manage_upgrades?saved=%s"
+                                    % (url, profile_id))
 
     #
     #   Helper methods
@@ -912,13 +917,15 @@ class SetupTool(Folder):
                     path = info['path']
                 if should_purge is None:
                     should_purge = (info.get('type') != EXTENSION)
-                return DirectoryImportContext(self, path, should_purge, encoding)
+                return DirectoryImportContext(self, path, should_purge,
+                                              encoding)
 
             elif context_id.startswith('snapshot-'):
                 context_id = context_id[len('snapshot-'):]
                 if should_purge is None:
                     should_purge = True
-                return SnapshotImportContext(self, context_id, should_purge, encoding)
+                return SnapshotImportContext(self, context_id, should_purge,
+                                             encoding)
 
         if archive is not None:
             return TarballImportContext(tool=self,
@@ -1081,7 +1088,8 @@ class SetupTool(Folder):
 
             messages = {}
 
-            event.notify(BeforeProfileImportEvent(self, profile_id, steps, True))
+            event.notify(
+                BeforeProfileImportEvent(self, profile_id, steps, True))
             for step in steps:
                 message = self._doRunImportStep(step, context)
                 message_list = filter(None, [message])
