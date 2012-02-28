@@ -239,7 +239,8 @@ class IUpgradeStepsStepSubDirective(Interface):
         required=False)
 
 
-class IUpgradeStepDirective(IUpgradeStepsDirective, IUpgradeStepsStepSubDirective):
+class IUpgradeStepDirective(IUpgradeStepsDirective,
+                            IUpgradeStepsStepSubDirective):
 
     """
     Define a standalone upgrade step
@@ -294,22 +295,23 @@ class IUpgradeDependsDirective(IUpgradeStepsDirective,
     """
 
 
-def upgradeStep(_context, title, profile, handler, description=None, source='*',
-                destination='*', sortkey=0, checker=None):
-    step = UpgradeStep(title, profile, source, destination, description, handler,
-                       checker, sortkey)
+def upgradeStep(_context, title, profile, handler, description=None,
+                source='*', destination='*', sortkey=0, checker=None):
+    step = UpgradeStep(title, profile, source, destination, description,
+                       handler, checker, sortkey)
     _context.action(
         discriminator=('upgradeStep', source, destination, handler, sortkey),
         callable=_registerUpgradeStep,
         args=(step,),
         )
 
-def upgradeDepends(_context, title, profile, description=None, import_profile=None,
-                   import_steps=[], source='*', destination='*',
-                   run_deps=False, purge=False, checker=None, sortkey=0):
+def upgradeDepends(_context, title, profile, description=None,
+                   import_profile=None, import_steps=[], source='*',
+                   destination='*', run_deps=False, purge=False, checker=None,
+                   sortkey=0):
     step = UpgradeDepends(title, profile, source, destination, description,
-                          import_profile, import_steps, run_deps, purge, checker,
-                          sortkey)
+                          import_profile, import_steps, run_deps, purge,
+                          checker, sortkey)
     _context.action(
         discriminator=('upgradeDepends', source, destination, import_profile,
                        str(import_steps), checker, sortkey),
@@ -324,7 +326,8 @@ class upgradeSteps(object):
     Allows nested upgrade steps.
     """
 
-    def __init__(self, _context, profile, source='*', destination='*', sortkey=0):
+    def __init__(self, _context, profile, source='*', destination='*',
+                 sortkey=0):
         self.profile = profile
         self.source = source
         self.dest = destination
@@ -346,19 +349,19 @@ class upgradeSteps(object):
             args=(step, self.id),
             )
 
-    def upgradeDepends(self, _context, title, description=None, import_profile=None,
-                       import_steps=[], run_deps=False, purge=False,
-                       checker=None):
+    def upgradeDepends(self, _context, title, description=None,
+                       import_profile=None, import_steps=[], run_deps=False,
+                       purge=False, checker=None):
         """ nested upgradeDepends directive """
         step = UpgradeDepends(title, self.profile, self.source, self.dest,
-                              description, import_profile, import_steps, run_deps,
-                              purge, checker, self.sortkey)
+                              description, import_profile, import_steps,
+                              run_deps, purge, checker, self.sortkey)
         if self.id is None:
             self.id = str(abs(hash('%s%s%s%s' % (title, self.source, self.dest,
                                                  self.sortkey))))
         _context.action(
-            discriminator=('upgradeDepends', self.source, self.dest, import_profile,
-                           str(import_steps), self.sortkey),
+            discriminator=('upgradeDepends', self.source, self.dest,
+                           import_profile, str(import_steps), self.sortkey),
             callable=_registerNestedUpgradeStep,
             args=(step, self.id)
             )

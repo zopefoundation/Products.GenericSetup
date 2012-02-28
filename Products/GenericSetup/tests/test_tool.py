@@ -46,7 +46,7 @@ from Products.GenericSetup.tests.test_registry import IAnotherSite
 from Products.GenericSetup.tests.test_registry import IDerivedSite
 from Products.GenericSetup.tests.test_registry import ISite
 from Products.GenericSetup.tests.test_registry import ONE_FUNC
-from Products.GenericSetup.tests.test_zcml import dummy_upgrade_handler
+from Products.GenericSetup.tests.test_zcml import dummy_upgrade
 from Products.GenericSetup.upgrade import _registerUpgradeStep
 from Products.GenericSetup.upgrade import listUpgradeSteps
 from Products.GenericSetup.upgrade import UpgradeStep
@@ -953,7 +953,7 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
         orig_upgrade_registry = copy.copy(_upgrade_registry._registry)
         step = UpgradeStep("Upgrade",
                            "GenericSetup:dummy_profile", '*', '1.1', '',
-                           dummy_upgrade_handler,
+                           dummy_upgrade,
                            None, "1")
         _registerUpgradeStep(step)
 
