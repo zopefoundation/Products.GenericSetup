@@ -52,14 +52,25 @@
 
   <div id="overwrite"
        tal:attributes="style overwrite_style">
-   <select name="context_id">
-    <option value="context-CONTEXT_ID"
-       tal:repeat="context_info bases"
-       tal:attributes="selected python:context_id == context_info['id'];
+   <fieldset id="context_id_fs">
+    <label>Context ID</label>
+    <select name="context_id">
+     <option value="context-CONTEXT_ID"
+        tal:repeat="context_info bases"
+        tal:attributes="selected python:context_id == context_info['id'];
                        value context_info/id"
-       tal:content="context_info/title"
-    >CONTEXT_TITLE</option>
-   </select>
+        tal:content="context_info/title"
+     >CONTEXT_TITLE</option>
+    </select>
+   </fieldset>
+   <fieldset id="exclude_global_steps_fs">
+    <label>Exclude global steps?</label>
+    <input type="checkbox" name="exclude_global_steps"
+           tal:attributes="checked context/getExcludeGlobalSteps"
+           />
+    <p><em>If checked, only steps explicitly registered by the profile will
+       be available.</em></p>
+   </fieldset>
    <input class="form-element" type="submit"
           name="manage_updateToolProperties:method"
           value="Update Base Profile" />

@@ -4,6 +4,12 @@ Products.GenericSetup Changelog
 1.7.1 (unreleased)
 ------------------
 
+- Restored the ability to make the setup tool use only import / export
+  steps explicitly called out by the current profile, ignoring any which
+  might be globally registered.  This is particularly useful for configuring
+  sites with baseline profiles, where arbitrary add-on steps are not only
+  useless, but potentially damaging.
+
 
 1.7.0 (2012-01-27)
 ------------------

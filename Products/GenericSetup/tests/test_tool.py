@@ -408,6 +408,7 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
         PROFILE_ID = 'snapshot-testing'
         site = self._makeSite( TITLE )
         tool = self._makeOne('setup_tool').__of__( site )
+        tool._exclude_global_steps = True
 
         registry = tool.getImportStepRegistry()
         registry.registerStep( 'dependable', '1'
@@ -419,17 +420,17 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
 
         result = tool.runAllImportStepsFromProfile(PROFILE_ID)
 
-        self.assertEqual( len(result['steps']), 6 )
+        self.assertEqual( len(result['steps']), 3 )
 
-        self.assertEqual( result['steps'][3], 'purging' )
+        self.assertEqual( result['steps'][0], 'purging' )
         self.assertEqual( result[ 'messages' ][ 'purging' ]
                         , 'Purged' )
 
-        self.assertEqual( result['steps'][4], 'dependable' )
+        self.assertEqual( result['steps'][1], 'dependable' )
         self.assertEqual( result[ 'messages' ][ 'dependable' ]
                         , 'Underscored title' )
 
-        self.assertEqual( result['steps'][5], 'dependent' )
+        self.assertEqual( result['steps'][2], 'dependent' )
         self.assertEqual( result[ 'messages' ][ 'dependent' ]
                         , 'Uppercased title' )
 
@@ -465,6 +466,7 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
 
         site = self._makeSite()
         tool = self._makeOne('setup_tool').__of__( site )
+        tool._exclude_global_steps = True
 
         registry = tool.getImportStepRegistry()
         registry.registerStep( 'dependable', '1'
@@ -477,20 +479,21 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
         result = tool.runAllImportStepsFromProfile('snapshot-dummy',
                                                    purge_old=True )
 
-        self.assertEqual( len(result['steps']), 6 )
+        self.assertEqual( len(result['steps']), 3 )
 
-        self.assertEqual( result['steps'][3], 'purging' )
+        self.assertEqual( result['steps'][0], 'purging' )
         self.assertEqual( result[ 'messages' ][ 'purging' ]
                         , 'Purged' )
 
-        self.assertEqual( result['steps'][4], 'dependable' )
-        self.assertEqual( result['steps'][5], 'dependent' )
+        self.assertEqual( result['steps'][1], 'dependable' )
+        self.assertEqual( result['steps'][2], 'dependent' )
         self.failUnless( site.purged )
 
     def test_runAllImportStepsFromProfile_sorted_skip_purge(self):
 
         site = self._makeSite()
         tool = self._makeOne('setup_tool').__of__( site )
+        tool._exclude_global_steps = True
 
         registry = tool.getImportStepRegistry()
         registry.registerStep( 'dependable', '1'
@@ -503,14 +506,14 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
         result = tool.runAllImportStepsFromProfile('snapshot-dummy',
                                                    purge_old=False )
 
-        self.assertEqual( len(result['steps']), 6 )
+        self.assertEqual( len(result['steps']), 3 )
 
-        self.assertEqual( result['steps'][3], 'purging' )
+        self.assertEqual( result['steps'][0], 'purging' )
         self.assertEqual( result[ 'messages' ][ 'purging' ]
                         , 'Unpurged' )
 
-        self.assertEqual( result['steps'][4], 'dependable' )
-        self.assertEqual( result['steps'][5], 'dependent' )
+        self.assertEqual( result['steps'][1], 'dependable' )
+        self.assertEqual( result['steps'][2], 'dependent' )
         self.failIf( site.purged )
 
     def test_runAllImportStepsFromProfile_without_depends(self):
