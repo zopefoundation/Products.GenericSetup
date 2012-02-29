@@ -165,6 +165,8 @@ class SetupTool(Folder):
 
     _profile_upgrade_versions = {}
 
+    _exclude_global_steps = False
+
     security = ClassSecurityInfo()
 
     def __init__(self, id):
@@ -195,6 +197,18 @@ class SetupTool(Folder):
         self._baseline_context_id = context_id
         self.applyContextById(context_id, encoding)
 
+    security.declareProtected(ManagePortal, 'getExcludeGlobalSteps')
+    def getExcludeGlobalSteps(self):
+        """ See ISetupTool.
+        """
+        return self._exclude_global_steps
+
+    security.declareProtected(ManagePortal, 'setExcludeGlobalSteps')
+    def setExcludeGlobalSteps(self, value):
+        """ See ISetupTool.
+        """
+        self._exclude_global_steps = value
+
     security.declareProtected(ManagePortal, 'applyContextById')
     def applyContextById(self, context_id, encoding=None):
         context = self._getImportContext(context_id)
@@ -217,51 +231,62 @@ class SetupTool(Folder):
         """
         return self._export_registry
 
-    security.declareProtected(ManagePortal, 'getExportStep')
-    def getExportStep(self, step, default=None):
-        """Simple wrapper to query both the global and local step registry."""
-        res=_export_step_registry.getStep(step, default)
-        if res is not default:
-            return res
-        return self._export_registry.getStep(step, default)
-
-    security.declareProtected(ManagePortal, 'listExportSteps')
-    def listExportSteps(self):
-        steps = _export_step_registry.listSteps() + \
-                self._export_registry.listSteps()
-        return tuple(set(steps))
-
     security.declareProtected(ManagePortal, 'getImportStep')
     def getImportStep(self, step, default=None):
         """Simple wrapper to query both the global and local step registry."""
-        res=_import_step_registry.getStep(step, default)
-        if res is not default:
+        res = self._import_registry.getStep(step, self)
+        if res is self and not self._exclude_global_steps:
+            res = _import_step_registry.getStep(step, self)
+        if res is not self:
             return res
-        return self._import_registry.getStep(step, default)
+        return default
 
     security.declareProtected(ManagePortal, 'getSortedImportSteps')
     def getSortedImportSteps(self):
-        steps = _import_step_registry.listSteps() + \
-                self._import_registry.listSteps()
-        step_infos = [ self.getImportStepMetadata(step)
-                       for step in set(steps) ]
+        if self._exclude_global_steps:
+            steps = set()
+        else:
+            steps = set(_import_step_registry.listSteps())
+        steps.update(set(self._import_registry.listSteps()))
+        step_infos = [self.getImportStepMetadata(step) for step in steps]
         return tuple(_computeTopologicalSort(step_infos))
 
     security.declareProtected(ManagePortal, 'getImportStepMetadata')
     def getImportStepMetadata(self, step, default=None):
         """Simple wrapper to query both the global and local step registry."""
-        res=self._import_registry.getStepMetadata(step, default)
-        if res is not default:
+        res = self._import_registry.getStepMetadata(step, self)
+        if res is self and not self._exclude_global_steps:
+            res = _import_step_registry.getStepMetadata(step, default)
+        if res is not self:
             return res
-        return _import_step_registry.getStepMetadata(step, default)
+        return default
+
+    security.declareProtected(ManagePortal, 'getExportStep')
+    def getExportStep(self, step, default=None):
+        """Simple wrapper to query both the global and local step registry."""
+        res = self._export_registry.getStep(step, self)
+        if res is self and not self._exclude_global_steps:
+            res = _export_step_registry.getStep(step, self)
+        if res is not self:
+            return res
+        return default
+
+    security.declareProtected(ManagePortal, 'listExportSteps')
+    def listExportSteps(self):
+        steps = set(self._export_registry.listSteps())
+        if not self._exclude_global_steps:
+            steps.update(set(_export_step_registry.listSteps()))
+        return tuple(steps)
 
     security.declareProtected(ManagePortal, 'getExportStepMetadata')
     def getExportStepMetadata(self, step, default=None):
         """Simple wrapper to query both the global and local step registry."""
-        res=self._export_registry.getStepMetadata(step, default)
-        if res is not default:
+        res = self._export_registry.getStepMetadata(step, self)
+        if res is self and not self._exclude_global_steps:
+            res = _export_step_registry.getStepMetadata(step, default)
+        if res is not self:
             return res
-        return _export_step_registry.getStepMetadata(step, default)
+        return default
 
     security.declareProtected(ManagePortal, 'getToolsetRegistry')
     def getToolsetRegistry(self):
@@ -472,13 +497,17 @@ class SetupTool(Folder):
     manage_tool = PageTemplateFile('sutProperties', _wwwdir)
 
     security.declareProtected(ManagePortal, 'manage_updateToolProperties')
-    def manage_updateToolProperties(self, context_id, RESPONSE):
+    def manage_updateToolProperties(self, context_id,
+                                          exclude_global_steps=False,
+                                          RESPONSE=None):
         """ Update the tool's settings.
         """
+        self.setExcludeGlobalSteps(exclude_global_steps)
         self.setBaselineContext(context_id)
 
-        RESPONSE.redirect('%s/manage_tool?manage_tabs_message=%s'
-                         % (self.absolute_url(), 'Properties+updated.'))
+        if RESPONSE is not None:
+            RESPONSE.redirect('%s/manage_tool?manage_tabs_message=%s'
+                            % (self.absolute_url(), 'Properties+updated.'))
 
     security.declareProtected(ManagePortal, 'manage_importSteps')
     manage_importSteps = PageTemplateFile('sutImportSteps', _wwwdir)
@@ -949,7 +978,7 @@ class SetupTool(Folder):
         for step_info in info_list:
 
             id = step_info['id']
-            version = step_info['version']
+            version = step_info.get('version')
             handler = step_info['handler']
             dependencies = tuple(step_info.get('dependencies', ()))
             title = step_info.get('title', id)

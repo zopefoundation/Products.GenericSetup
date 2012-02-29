@@ -490,6 +490,16 @@ class ISetupTool( Interface ):
         """ Specify the base profile for this configuration.
         """
 
+    def getExcludeGlobalSteps():
+        """ Does this instance of the tool ignore globally-registered steps?
+        """
+
+    def setExcludeGlobalSteps(value):
+        """ Specify whether to ignore globally-registered steps.
+
+        'value' must be a boolean.
+        """
+
     def applyContext( context, encoding=None ):
 
         """ Update the tool from the supplied context, without modifying its
