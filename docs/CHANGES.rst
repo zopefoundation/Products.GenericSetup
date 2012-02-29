@@ -1,7 +1,7 @@
 Products.GenericSetup Changelog
 ===============================
 
-1.6.6 (unreleased)
+1.6.6 (2012-02-28)
 ------------------
 
 - Restored the ability to make the setup tool use only import / export
