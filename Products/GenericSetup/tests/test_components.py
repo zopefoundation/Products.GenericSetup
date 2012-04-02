@@ -23,17 +23,23 @@ from OFS.Folder import Folder
 from OFS.SimpleItem import SimpleItem
 from Products.Five.component import enableSite
 from Products.Five.component.interfaces import IObjectManagerSite
-from zope.site.hooks import clearSite
-from zope.site.hooks import setHooks
-from zope.site.hooks import setSite
-from zope.component import getMultiAdapter
 from zope.component import getGlobalSiteManager
+from zope.component import getMultiAdapter
 from zope.component import getSiteManager
 from zope.component import handle
 from zope.component import queryAdapter
 from zope.component import queryUtility
 from zope.component import subscribers
 from zope.component.globalregistry import base
+try:
+    from zope.component.hooks import clearSite
+    from zope.component.hooks import setHooks
+    from zope.component.hooks import setSite
+except ImportError:
+    # BBB: for Zope < 2.13 (zope.component < 3.8)
+    from zope.site.hooks import clearSite
+    from zope.site.hooks import setHooks
+    from zope.site.hooks import setSite
 from zope.interface import implements
 from zope.interface import Interface
 
