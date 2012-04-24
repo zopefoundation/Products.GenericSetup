@@ -25,7 +25,7 @@ from App.class_init import InitializeClass
 from OFS.Folder import Folder
 from OFS.Image import File
 from Products.PageTemplates.PageTemplateFile import PageTemplateFile
-from zope import event 
+from zope import event
 from zope.interface import implements
 
 from Products.GenericSetup.context import DirectoryImportContext
@@ -60,7 +60,6 @@ EXPORT_STEPS_XML = 'export_steps.xml'
 TOOLSET_XML = 'toolset.xml'
 
 def exportStepRegistries(context):
-
     """ Built-in handler for exporting import / export step registries.
     """
     setup_tool = context.getSetupTool()
@@ -83,7 +82,6 @@ def exportStepRegistries(context):
         logger.debug('No local export steps.')
 
 def importToolset(context):
-
     """ Import required / forbidden tools from XML file.
     """
     site = context.getSite()
@@ -139,7 +137,6 @@ def importToolset(context):
     logger.info('Toolset imported.')
 
 def exportToolset(context):
-
     """ Export required / forbidden tools to XML file.
     """
     setup_tool = context.getSetupTool()
@@ -306,7 +303,7 @@ class SetupTool(Folder):
         info = self.getImportStepMetadata(step_id)
 
         if info is None:
-            raise ValueError, 'No such import step: %s' % step_id
+            raise ValueError('No such import step: %s' % step_id)
 
         dependencies = info.get('dependencies', ())
 
@@ -317,9 +314,9 @@ class SetupTool(Folder):
             for dependency in dependencies:
                 if dependency not in steps:
                     steps.append(dependency)
-        steps.append (step_id)
+        steps.append(step_id)
 
-        full_import=(set(steps)==set(self.getSortedImportSteps()))
+        full_import = (set(steps) == set(self.getSortedImportSteps()))
         event.notify(
             BeforeProfileImportEvent(self, profile_id, steps, full_import))
 
@@ -328,13 +325,13 @@ class SetupTool(Folder):
             messages[step] = message or ''
 
         message_list = filter(None, [message])
-        message_list.extend( ['%s: %s' % x[1:] for x in context.listNotes()] )
+        message_list.extend([ '%s: %s' % x[1:] for x in context.listNotes() ])
         messages[step_id] = '\n'.join(message_list)
 
         event.notify(
             ProfileImportedEvent(self, profile_id, steps, full_import))
 
-        return { 'steps' : steps, 'messages' : messages }
+        return {'steps': steps, 'messages': messages}
 
     security.declareProtected(ManagePortal, 'runAllImportStepsFromProfile')
     def runAllImportStepsFromProfile(self,
@@ -391,12 +388,10 @@ class SetupTool(Folder):
 
             messages[step_id] = handler(context)
 
-
-        return { 'steps' : steps
-               , 'messages' : messages
-               , 'url' : context.getSnapshotURL()
-               , 'snapshot' : context.getSnapshotFolder()
-               }
+        return {'steps': steps,
+                'messages': messages,
+                'url': context.getSnapshotURL(),
+                'snapshot': context.getSnapshotFolder()}
 
     security.declareProtected(ManagePortal, 'compareConfigurations')
     def compareConfigurations(self,
@@ -467,31 +462,16 @@ class SetupTool(Folder):
     #
     #   ZMI
     #
-    manage_options = (Folder.manage_options[:1]
-                    + ({'label' : 'Profiles',
-                        'action' : 'manage_tool'
-                       },
-                       {'label' : 'Import',
-                        'action' : 'manage_importSteps'
-                       },
-                       {'label' : 'Export',
-                        'action' : 'manage_exportSteps'
-                       },
-                       {'label' : 'Upgrades',
-                        'action' : 'manage_upgrades'
-                        },
-                       {'label' : 'Snapshots',
-                        'action' : 'manage_snapshots'
-                       },
-                       {'label' : 'Comparison',
-                        'action' : 'manage_showDiff'
-                       },
-                       {'label' : 'Manage',
-                        'action' : 'manage_stepRegistry'
-                       },
-                      )
-                    + Folder.manage_options[3:] # skip "View", "Properties"
-                     )
+    manage_options = (
+        Folder.manage_options[:1] +
+        ({'label': 'Profiles', 'action': 'manage_tool'},
+         {'label': 'Import', 'action': 'manage_importSteps'},
+         {'label': 'Export', 'action': 'manage_exportSteps'},
+         {'label': 'Upgrades', 'action': 'manage_upgrades'},
+         {'label': 'Snapshots', 'action': 'manage_snapshots'},
+         {'label': 'Comparison', 'action': 'manage_showDiff'},
+         {'label': 'Manage', 'action': 'manage_stepRegistry'}) +
+        Folder.manage_options[3:]) # skip "View", "Properties"
 
     security.declareProtected(ManagePortal, 'manage_tool')
     manage_tool = PageTemplateFile('sutProperties', _wwwdir)
@@ -564,7 +544,7 @@ class SetupTool(Folder):
                                   % (self.absolute_url(), message))
         else:
             message = 'Imported profiles: %s' % ', '.join(profile_ids)
-        
+
             for profile_id in profile_ids:
 
                 result = self.runAllImportStepsFromProfile(profile_id)
@@ -641,13 +621,10 @@ class SetupTool(Folder):
         snapshots = self._getOb('snapshots', None)
 
         if snapshots:
-
             for id, folder in snapshots.objectItems('Folder'):
-
-                result.append({ 'id' : id
-                               , 'title' : folder.title_or_id()
-                               , 'url' : folder.absolute_url()
-                               })
+                result.append({'id': id,
+                               'title': folder.title_or_id(),
+                               'url': folder.absolute_url()})
         return result
 
     security.declareProtected(ManagePortal, 'listProfileInfo')
@@ -709,7 +686,7 @@ class SetupTool(Folder):
         """
         prefix = ('import-all-%s-' % profile_id).replace(':', '_')
         candidates = [x for x in self.objectIds('File')
-                        if x[:-18]==prefix and x.endswith('.log')]
+                        if x[:-18] == prefix and x.endswith('.log')]
         if len(candidates) == 0:
             return None
         candidates.sort()
@@ -788,7 +765,7 @@ class SetupTool(Folder):
             request = self.REQUEST
         for id in ids:
             self._import_registry.unregisterStep(id)
-        self._p_changed=True
+        self._p_changed = True
         url = self.absolute_url()
         request.RESPONSE.redirect("%s/manage_stepRegistry" % url)
 
@@ -800,7 +777,7 @@ class SetupTool(Folder):
             request = self.REQUEST
         for id in ids:
             self._export_registry.unregisterStep(id)
-        self._p_changed=True
+        self._p_changed = True
         url = self.absolute_url()
         request.RESPONSE.redirect("%s/manage_stepRegistry" % url)
 
@@ -829,13 +806,13 @@ class SetupTool(Folder):
         """Return the registered filesystem version for the specified
         profile.
         """
-        return self.getProfileInfo( profile_id ).get('version', 'unknown')
+        return self.getProfileInfo(profile_id).get('version', 'unknown')
 
     security.declareProtected(ManagePortal, 'profileExists')
     def profileExists(self, profile_id):
         """Check if a profile exists."""
         try:
-            self.getProfileInfo( profile_id )
+            self.getProfileInfo(profile_id)
         except KeyError:
             return False
         else:
@@ -854,10 +831,10 @@ class SetupTool(Folder):
         if profile_id.startswith("snapshot-"):
             return ()
 
-        if not self.profileExists( profile_id ):
-            raise KeyError, profile_id
+        if not self.profileExists(profile_id):
+            raise KeyError(profile_id)
         try:
-            return self.getProfileInfo( profile_id ).get('dependencies', ())
+            return self.getProfileInfo(profile_id).get('dependencies', ())
         except KeyError:
             return ()
 
@@ -940,8 +917,8 @@ class SetupTool(Folder):
                 info = _profile_registry.getProfileInfo(context_id)
 
                 if info.get('product'):
-                    path = os.path.join(_getProductPath(info['product'])
-                                       , info['path'])
+                    path = os.path.join(_getProductPath(info['product']),
+                                        info['path'])
                 else:
                     path = info['path']
                 if should_purge is None:
@@ -963,7 +940,7 @@ class SetupTool(Folder):
                                        should_purge=should_purge,
                                       )
 
-        raise KeyError, 'Unknown context "%s"' % context_id
+        raise KeyError('Unknown context "%s"' % context_id)
 
     security.declarePrivate('_updateImportStepsRegistry')
     def _updateImportStepsRegistry(self, context, encoding):
@@ -1058,11 +1035,10 @@ class SetupTool(Folder):
             else:
                 messages[step_id] = handler(context)
 
-        return { 'steps' : steps
-               , 'messages' : messages
-               , 'tarball' : context.getArchive()
-               , 'filename' : context.getArchiveFilename()
-               }
+        return {'steps': steps,
+                'messages': messages,
+                'tarball': context.getArchive(),
+                'filename': context.getArchiveFilename()}
 
     security.declareProtected(ManagePortal, 'getProfileDependencyChain')
     def getProfileDependencyChain(self, profile_id, seen=None):
@@ -1070,12 +1046,12 @@ class SetupTool(Folder):
             seen = set()
         elif profile_id in seen:
             return [] # cycle break
-        seen.add( profile_id )
+        seen.add(profile_id)
         chain = []
 
-        dependencies = self.getDependenciesForProfile( profile_id )
+        dependencies = self.getDependenciesForProfile(profile_id)
         for dependency in dependencies:
-            chain.extend(self.getProfileDependencyChain( dependency, seen ))
+            chain.extend(self.getProfileDependencyChain(dependency, seen))
 
         chain.append(profile_id)
 
@@ -1091,19 +1067,18 @@ class SetupTool(Folder):
                                    seen=None):
 
         if profile_id is not None and not ignore_dependencies:
-            try: 
-                chain = self.getProfileDependencyChain( profile_id )
+            try:
+                chain = self.getProfileDependencyChain(profile_id)
             except KeyError, e:
                 logger = logging.getLogger('GenericSetup')
                 logger.error('Unknown step in dependency chain: %s' % str(e))
                 raise
         else:
-            chain = [ profile_id ]
+            chain = [profile_id]
             if seen is None:
-                seen=set()
-            seen.add( profile_id )
+                seen = set()
+            seen.add(profile_id)
 
-        
         results = []
 
         detect_steps = steps is None
@@ -1122,16 +1097,16 @@ class SetupTool(Folder):
             for step in steps:
                 message = self._doRunImportStep(step, context)
                 message_list = filter(None, [message])
-                message_list.extend( ['%s: %s' % x[1:]
-                                      for x in context.listNotes()] )
+                message_list.extend([ '%s: %s' % x[1:]
+                                      for x in context.listNotes() ])
                 messages[step] = '\n'.join(message_list)
                 context.clearNotes()
 
             event.notify(ProfileImportedEvent(self, profile_id, steps, True))
 
-            results.append({'steps' : steps, 'messages' : messages })
+            results.append({'steps': steps, 'messages': messages})
 
-        data = { 'steps' : [], 'messages' : {}}
+        data = {'steps': [], 'messages': {}}
         for result in results:
             for step in result['steps']:
                 if step not in data['steps']:
@@ -1139,9 +1114,9 @@ class SetupTool(Folder):
 
             for (step, msg) in result['messages'].items():
                 if step in data['messages']:
-                    data['messages'][step]+="\n"+msg
+                    data['messages'][step] += "\n" + msg
                 else:
-                    data['messages'][step]=msg
+                    data['messages'][step] = msg
         data['steps'] = list(data['steps'])
 
         return data
@@ -1200,7 +1175,7 @@ class SetupTool(Folder):
 InitializeClass(SetupTool)
 
 
-_PLAINTEXT_DIFF_HEADER ="""\
+_PLAINTEXT_DIFF_HEADER = """\
 Comparing configurations: '%s' and '%s'
 
 %s"""

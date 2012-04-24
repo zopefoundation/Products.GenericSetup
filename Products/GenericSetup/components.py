@@ -46,7 +46,7 @@ class ComponentRegistryXMLAdapter(XMLAdapterBase):
     name = 'componentregistry'
 
     def _constructBlacklist(self):
-        blacklist = set((BLACKLIST_SELF, ))
+        blacklist = set((BLACKLIST_SELF,))
         utils = getUtilitiesFor(IComponentsHandlerBlacklist)
         for _, util in utils:
             names = [_getDottedName(i) for i in util.getExcludedInterfaces()]
@@ -195,8 +195,8 @@ class ComponentRegistryXMLAdapter(XMLAdapterBase):
 
             handler = child.getAttribute('handler')
             if handler:
-                raise ValueError, "Can not specify both a factory and a " \
-                                  "handler in a subscriber registration."
+                raise ValueError("Can not specify both a factory and a "
+                                 "handler in a subscriber registration.")
 
             factory = _resolveDottedName(factory)
 
@@ -235,12 +235,12 @@ class ComponentRegistryXMLAdapter(XMLAdapterBase):
 
             factory = child.getAttribute('factory')
             if factory:
-                raise ValueError, "Can not specify both a factory and a " \
-                                  "handler in a subscriber registration."
-            
+                raise ValueError("Can not specify both a factory and a "
+                                 "handler in a subscriber registration.")
+
             if child.hasAttribute('provides'):
-                raise ValueError, "Cannot use handler with provides " \
-                                  "in a subscriber registration."
+                raise ValueError("Cannot use handler with provides in a "
+                                 "subscriber registration.")
 
             handler = _resolveDottedName(handler)
 
@@ -299,9 +299,8 @@ class ComponentRegistryXMLAdapter(XMLAdapterBase):
                 continue
 
             if component and factory:
-                raise ValueError, "Can not specify both a factory and a " \
-                                  "component in a utility registration."
-
+                raise ValueError("Can not specify both a factory and a "
+                                 "component in a utility registration.")
 
             obj_path = child.getAttribute('object')
             if not component and not factory and obj_path is not None:
@@ -327,10 +326,10 @@ class ComponentRegistryXMLAdapter(XMLAdapterBase):
                 self.context.registerUtility(component, provided, name)
             elif factory:
                 current = [ utility for utility in current_utilities
-                                    if utility.provided==provided and
-                                       utility.name==name ]
+                            if utility.provided == provided and
+                               utility.name == name ]
 
-                if current and getattr(current[0], "factory", None)==factory:
+                if current and getattr(current[0], "factory", None) == factory:
                     continue
 
                 obj = factory()

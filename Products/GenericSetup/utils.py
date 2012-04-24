@@ -44,20 +44,20 @@ from Products.GenericSetup.interfaces import ISetupTool
 from Products.GenericSetup.permissions import ManagePortal
 
 
-_pkgdir = package_home( globals() )
-_wwwdir = os.path.join( _pkgdir, 'www' )
-_xmldir = os.path.join( _pkgdir, 'xml' )
+_pkgdir = package_home(globals())
+_wwwdir = os.path.join(_pkgdir, 'www')
+_xmldir = os.path.join(_pkgdir, 'xml')
 
-# Please note that these values may change. Always import 
+# Please note that these values may change. Always import
 # the values from here instead of using the values directly.
 CONVERTER, DEFAULT, KEY = 1, 2, 3
 I18NURI = 'http://xml.zope.org/namespaces/i18n'
 
 
-def _getDottedName( named ):
+def _getDottedName(named):
 
-    if isinstance( named, basestring ):
-        return str( named )
+    if isinstance(named, basestring):
+        return str(named)
 
     try:
         dotted = '%s.%s' % (named.__module__, named.__name__)
@@ -88,48 +88,47 @@ def _getDottedName( named ):
 
     return short_dotted
 
-def _resolveDottedName( dotted ):
-
+def _resolveDottedName(dotted):
     __traceback_info__ = dotted
 
-    parts = dotted.split( '.' )
+    parts = dotted.split('.')
 
     if not parts:
-        raise ValueError, "incomplete dotted name: %s" % dotted
+        raise ValueError("incomplete dotted name: %s" % dotted)
 
     parts_copy = parts[:]
 
     while parts_copy:
         try:
-            module = __import__( '.'.join( parts_copy ) )
+            module = __import__('.'.join(parts_copy))
             break
 
         except ImportError:
             # Reraise if the import error was caused inside the imported file
-            if sys.exc_info()[2].tb_next is not None: raise
+            if sys.exc_info()[2].tb_next is not None:
+                raise
 
-            del parts_copy[ -1 ]
+            del parts_copy[-1]
 
             if not parts_copy:
                 return None
 
-    parts = parts[ 1: ] # Funky semantics of __import__'s return value
+    parts = parts[1:] # Funky semantics of __import__'s return value
 
     obj = module
 
     for part in parts:
         try:
-            obj = getattr( obj, part )
+            obj = getattr(obj, part)
         except AttributeError:
             return None
 
     return obj
 
-def _extractDocstring( func, default_title, default_description ):
-
+def _extractDocstring(func, default_title, default_description):
     try:
-        doc = getdoc( func )
-        lines = doc.split( '\n' )
+        doc = getdoc(func)
+        lines = doc.split('\n')
 
     except AttributeError:
 
@@ -137,12 +136,12 @@ def _extractDocstring( func, default_title, default_description ):
         description = default_description
 
     else:
-        title = lines[ 0 ]
+        title = lines[0]
 
-        if len( lines ) > 1 and lines[ 1 ].strip() == '':
-            del lines[ 1 ]
+        if len(lines) > 1 and lines[1].strip() == '':
+            del lines[1]
 
-        description = '\n'.join( lines[ 1: ] )
+        description = '\n'.join(lines[1:])
 
     return title, description
 
@@ -190,7 +189,7 @@ class ImportConfiguratorBase(Implicit):
         info = {}
 
         for name, val in node.attributes.items():
-            key = node_map[name].get( KEY, str(name) )
+            key = node_map[name].get(KEY, str(name))
             val = self._encoding and val.encode(self._encoding) or val
             info[key] = val
 
@@ -201,8 +200,8 @@ class ImportConfiguratorBase(Implicit):
                 continue
 
             if not name == '#text':
-                key = node_map[name].get(KEY, str(name) )
-                info[key] = info.setdefault( key, () ) + (
+                key = node_map[name].get(KEY, str(name))
+                info[key] = info.setdefault(key, ()) + (
                                                     self._extractNode(child),)
 
             elif '#text' in node_map:
@@ -215,13 +214,13 @@ class ImportConfiguratorBase(Implicit):
             key = v.get(KEY, k)
 
             if DEFAULT in v and not key in info:
-                if isinstance( v[DEFAULT], basestring ):
+                if isinstance(v[DEFAULT], basestring):
                     info[key] = v[DEFAULT] % info
                 else:
                     info[key] = v[DEFAULT]
 
             elif CONVERTER in v and key in info:
-                info[key] = v[CONVERTER]( info[key] )
+                info[key] = v[CONVERTER](info[key])
 
             if key is None:
                 info = info[key]
@@ -337,7 +336,7 @@ class _Element(Element):
         wrapper = _LineWrapper(writer, indent, addindent, newl, 78)
         wrapper.write('<%s' % self.tagName)
 
-        # move 'name', 'meta_type' and 'title' to the top, sort the rest 
+        # move 'name', 'meta_type' and 'title' to the top, sort the rest
         attrs = self._get_attributes()
         a_names = attrs.keys()
         a_names.sort()
@@ -375,7 +374,7 @@ class _Element(Element):
                             wrapper.queue('%s%s' % (addindent, textline))
                 else:
                     wrapper.write('', True)
-                    node.writexml(writer, indent+addindent, addindent, newl)
+                    node.writexml(writer, indent + addindent, addindent, newl)
             wrapper.write('</%s>' % self.tagName, True)
         else:
             wrapper.write('/>', True)
@@ -392,13 +391,13 @@ class PrettyDocument(Document):
         return e
 
     def createElementNS(self, namespaceURI, qualifiedName):
-        prefix, localName = _nssplit(qualifiedName)
+        prefix, _localName = _nssplit(qualifiedName)
         e = _Element(qualifiedName, namespaceURI, prefix)
         e.ownerDocument = self
         return e
 
     def writexml(self, writer, indent="", addindent="", newl="",
-                 encoding = 'utf-8'):
+                 encoding='utf-8'):
         if encoding is None:
             writer.write('<?xml version="1.0"?>\n')
         else:
@@ -530,7 +529,7 @@ class ObjectManagerHelpers(object):
         objects = self.context.objectValues()
         if not IOrderedContainer.providedBy(self.context):
             objects = list(objects)
-            objects.sort(lambda x,y: cmp(x.getId(), y.getId()))
+            objects.sort(lambda x, y: cmp(x.getId(), y.getId()))
         for obj in objects:
             exporter = queryMultiAdapter((obj, self.environ), INode)
             if exporter:
@@ -591,7 +590,7 @@ class ObjectManagerHelpers(object):
                         position = parent.getObjectPosition(insert_after)
                         if parent.getObjectPosition(obj_id) < position:
                             position -= 1
-                        parent.moveObjectToPosition(obj_id, position+1)
+                        parent.moveObjectToPosition(obj_id, position + 1)
                     except ValueError:
                         pass
 
@@ -602,10 +601,11 @@ class ObjectManagerHelpers(object):
 
 
 class PropertyManagerHelpers(object):
+
     """PropertyManager im- and export helpers.
-    
+
       o Derived classes can supply a '_PROPERTIES' scehma, which is then used
-        to mock up a temporary propertysheet for the object.  The adapter's 
+        to mock up a temporary propertysheet for the object.  The adapter's
         methods ('_extractProperties', '_purgeProperties', '_initProperties')
         then run against that propertysheet.
     """
@@ -617,7 +617,7 @@ class PropertyManagerHelpers(object):
         from OFS.PropertyManager import PropertyManager
         if not isinstance(context, PropertyManager):
             context = self._fauxAdapt(context)
-            
+
         super(PropertyManagerHelpers, self).__init__(context, environ)
 
     def _fauxAdapt(self, context):
@@ -763,7 +763,7 @@ class PropertyManagerHelpers(object):
                 prop = obj.getProperty(prop_id)
                 if isinstance(prop, (tuple, list)):
                     prop_value = (tuple([p for p in prop
-                                         if p not in prop_value and 
+                                         if p not in prop_value and
                                             p not in remove_elements]) +
                                   tuple(prop_value))
 
@@ -816,7 +816,7 @@ def exportObjects(obj, parent_path, context):
 
     if getattr(obj, 'objectValues', False):
         for sub in obj.objectValues():
-            exportObjects(sub, path+'/', context)
+            exportObjects(sub, path + '/', context)
 
 def importObjects(obj, parent_path, context):
     """ Import subobjects recursively.
@@ -835,12 +835,12 @@ def importObjects(obj, parent_path, context):
 
     if getattr(obj, 'objectValues', False):
         for sub in obj.objectValues():
-            importObjects(sub, path+'/', context)
+            importObjects(sub, path + '/', context)
 
 
-def _computeTopologicalSort( steps ):
+def _computeTopologicalSort(steps):
     result = []
-    graph = [ ( x[ 'id' ], x[ 'dependencies' ] ) for x in steps ]
+    graph = [ (x['id'], x['dependencies']) for x in steps ]
 
     unresolved = []
 
@@ -854,12 +854,12 @@ def _computeTopologicalSort( steps ):
 
                 if edge in result:
                     resolved += 1
-                    after = max( after, result.index( edge ) )
-            
+                    after = max(after, result.index(edge))
+
             if len(edges) > resolved:
                 unresolved.append((node, edges))
             else:
-                result.insert( after + 1, node )
+                result.insert(after + 1, node)
 
         if not unresolved:
             break
@@ -876,7 +876,7 @@ def _computeTopologicalSort( steps ):
                     log_msg += '"%s" -> "%s"; ' % (step_id, dependency)
                 if not step['dependencies']:
                     log_msg += '"%s";' % step_id
-            for unresolved_key, ignore in unresolved:
+            for unresolved_key, _ignore in unresolved:
                 log_msg += '"%s" [color=red,style=filled]; ' % unresolved_key
             log_msg += '}'
             logger.warning(log_msg)
@@ -886,24 +886,21 @@ def _computeTopologicalSort( steps ):
             break
         graph = unresolved
         unresolved = []
-    
+
     return result
 
 def _getProductPath(product_name):
-
     """ Return the absolute path of the product's directory.
     """
     try:
         # BBB: for GenericSetup 1.1 style product names
-        product = __import__('Products.%s' % product_name
-                            , globals(), {}, ['initialize'])
+        product = __import__('Products.%s' % product_name, globals(), {},
+                             ['initialize'])
     except ImportError:
         try:
-            product = __import__(product_name
-                                , globals(), {}, ['initialize'])
+            product = __import__(product_name, globals(), {}, ['initialize'])
         except ImportError:
             raise ValueError('Not a valid product name: %s'
                              % product_name)
 
     return product.__path__[0]
-
