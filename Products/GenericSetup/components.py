@@ -22,14 +22,18 @@ from zope.component import getUtilitiesFor
 from zope.component import queryMultiAdapter
 from zope.component.interfaces import ComponentLookupError
 from zope.component.interfaces import IComponentRegistry
-from zope.location.interfaces import IPossibleSite
+try:
+    from zope.component.interfaces import IPossibleSite
+except ImportError:
+    # BBB: for Zope < 2.13 (zope.component < 3.8)
+    from zope.location.interfaces import IPossibleSite
 
 from Products.GenericSetup.interfaces import IBody
 from Products.GenericSetup.interfaces import IComponentsHandlerBlacklist
 from Products.GenericSetup.interfaces import ISetupEnviron
-from Products.GenericSetup.utils import XMLAdapterBase
 from Products.GenericSetup.utils import _getDottedName
 from Products.GenericSetup.utils import _resolveDottedName
+from Products.GenericSetup.utils import XMLAdapterBase
 
 BLACKLIST_SELF = _getDottedName(IComponentsHandlerBlacklist)
 
