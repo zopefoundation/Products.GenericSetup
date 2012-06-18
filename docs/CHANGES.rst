@@ -4,7 +4,7 @@ Products.GenericSetup Changelog
 1.7.2 (unreleased)
 ------------------
 
-- TBD
+- ZopePageTemplate handler: Fixed export encoding.
 
 
 1.7.1 (2012-02-28)

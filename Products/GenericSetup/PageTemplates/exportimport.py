@@ -31,7 +31,10 @@ class ZopePageTemplateBodyAdapter(BodyAdapterBase):
     def _exportBody(self):
         """Export the object as a file body.
         """
-        return self.context.read()
+        text = self.context.read()
+        if isinstance(text, unicode):
+            return text.encode('utf-8')
+        return text
 
     def _importBody(self, body):
         """Import the object from the file body.
