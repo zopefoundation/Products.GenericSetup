@@ -34,6 +34,7 @@ from OFS.DTMLDocument import DTMLDocument
 from OFS.Folder import Folder
 from OFS.Image import File
 from OFS.Image import Image
+from OFS.Image import Pdata
 from Products.PageTemplates.ZopePageTemplate import ZopePageTemplate
 from Products.PythonScripts.PythonScript import PythonScript
 from zope.interface import implements
@@ -641,13 +642,16 @@ class SnapshotImportContext( BaseContext ):
         except ( AttributeError, KeyError ):
             return None
 
-        try:
+        if isinstance(object, File):
+            # OFS File Object have only one way to access the raw
+            # data directly, __str__. The code explicitly forbids
+            # to store unicode, so str() is safe here
+            data = str(object)
+        else:
             data = object.read()
-            if isinstance(data, unicode):
-                data = data.encode('utf-8')
-            return data
-        except AttributeError:
-            return object.manage_FTPget()
+        if isinstance(data, unicode):
+            data = data.encode('utf-8')
+        return data
 
     security.declareProtected( ManagePortal, 'getLastModified' )
     def getLastModified( self, path ):

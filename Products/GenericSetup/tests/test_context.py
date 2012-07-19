@@ -1188,6 +1188,19 @@ class SnapshotImportContextTests(ZopeTestCase, ConformsToISetupContext,
 
         self.assertEqual( ctx.readDataFile( FILENAME ), printable )
 
+    def test_readDataFile_Pdata( self ):
+
+        from string import printable
+        from OFS.Image import Pdata
+
+        SNAPSHOT_ID = 'readDataFile_Pdata'
+        FILENAME = 'pdata.txt'
+
+        site, tool, ctx = self._makeOne( SNAPSHOT_ID )
+        self._makeFile( tool, SNAPSHOT_ID, FILENAME, Pdata(printable) )
+
+        self.assertEqual( ctx.readDataFile( FILENAME ), printable )
+
     def test_readDataFile_subdir( self ):
 
         from string import printable

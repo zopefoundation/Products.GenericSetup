@@ -5,6 +5,8 @@ Products.GenericSetup Changelog
 ------------------
 
 - ZopePageTemplate handler: Fixed export encoding.
+- Avoid using manage_FTPGet on Snapshot exports. This messes
+  up the response.
 
 
 1.7.1 (2012-02-28)
