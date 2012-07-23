@@ -1,7 +1,7 @@
 Products.GenericSetup Changelog
 ===============================
 
-1.7.2 (unreleased)
+1.7.2 (2012-07-23)
 ------------------
 
 - Avoid using `emanage_FTPGet`` on snapshot exports: that method messes
