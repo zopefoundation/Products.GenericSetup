@@ -4,6 +4,8 @@ Products.GenericSetup Changelog
 1.7.3 (unreleased)
 ------------------
 
+- Profiles are sorted on Upgrade form.
+
 - Use clickable labels with checkboxes on import, export and upgrade forms
   to improve usability.
 

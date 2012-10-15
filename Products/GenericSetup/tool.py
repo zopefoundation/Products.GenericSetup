@@ -840,7 +840,9 @@ class SetupTool(Folder):
 
     security.declareProtected(ManagePortal, 'listProfilesWithUpgrades')
     def listProfilesWithUpgrades(self):
-        return listProfilesWithUpgrades()
+        profiles = listProfilesWithUpgrades()
+        profiles.sort()
+        return profiles
 
     security.declarePrivate('_massageUpgradeInfo')
     def _massageUpgradeInfo(self, info):
