@@ -4,20 +4,26 @@
     <td>
       <input type="checkbox" name="upgrades:list"
              value="VALUE" checked="CHECKED"
-             tal:attributes="value info/id;
+
+             tal:attributes="id info/id;
+                             value info/id;
                              checked python:info['proposed'] and not show_old;
                              "/>
     </td>
     <td>
-      <div tal:replace="info/title">INFO</div><br/>
-      <div tal:replace="info/description">DESCRIPTION</div>
+      <label tal:attributes="for info/id"
+             tal:content="info/title">INFO</label><br/>
+      <label tal:attributes="for info/id"
+             tal:content="info/description">DESCRIPTION</label>
     </td>
     <td class="form-help">
-      <div tal:content="structure string:(${info/ssource} &amp;#8594; ${info/sdest})">PATH</div>
+      <label tal:attributes="for info/id"
+             tal:content="structure string:(${info/ssource} &amp;#8594; ${info/sdest})">PATH</label>
     </td>
     <td class="form-help">
-      <div tal:condition="info/done"
-           tal:replace="default">(done)</div>
+      <label tal:attributes="for info/id"
+             tal:condition="info/done"
+             tal:content="default">(done)</label>
     </td>
   </metal:upgrade-step>
 

@@ -33,12 +33,15 @@ Download selected export steps as tarball.
                      repeat[ 'step_id' ].odd and 'row-normal' or 'row-hilite'" >
    <td class="list-item" width="16">
     <input type="checkbox" name="ids:list" value="STEP_ID"
-           tal:attributes="value step_id" />
+           id="STEP_ID"
+           tal:attributes="id step_id;
+                           value step_id" />
    </td>
    <td align="right" class="list-item"
        tal:content="repeat/step_id/number">1</td>
    <td class="list-item">
-    <span tal:content="info/title">STEP TITLE</span><br />
+    <label tal:attributes="for step_id"
+           tal:content="info/title">STEP TITLE</label><br />
     <em tal:content="info/description">STEP DESCRIPTION</em>
    </td>
    <td class="list-item"

@@ -68,12 +68,14 @@ procedure, in order to pick up changes since the site was created.
                      style python:info['invalid'] and 'background: red' or None" >
    <td class="list-item" width="16">
     <input type="checkbox" name="ids:list" value="STEP_ID"
-           tal:attributes="value step_id" />
+           tal:attributes="id step_id;
+                           value step_id" />
    </td>
    <td align="right" class="list-item"
        tal:content="repeat/step_id/number">1</td>
    <td class="list-item">
-    <span tal:content="info/title">STEP TITLE</span><br />
+    <label tal:content="info/title"
+           tal:attributes="for step_id">STEP TITLE</label><br />
     <em tal:content="info/description">STEP DESCRIPTION</em>
    </td>
    <td class="list-item"

@@ -4,6 +4,9 @@ Products.GenericSetup Changelog
 1.7.3 (unreleased)
 ------------------
 
+- Use clickable labels with checkboxes on import, export and upgrade forms
+  to improve usability.
+
 - TBD
 
 
