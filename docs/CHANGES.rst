@@ -91,7 +91,7 @@ Products.GenericSetup Changelog
 - Removed ``five.formlib`` dependency. ``zope.formlib`` is now used directly.
 
 - tool: 'listContextInfos' now returns profile infos sorted by type and title.
-  This makes it easier to select profiles on the "Import" and "Comparison" tab. 
+  This makes it easier to select profiles on the "Import" and "Comparison" tab.
 
 - Property import/export: Fixed two 'date' property issues.
   Naive 'date' values are now exported without time zone. And purging
@@ -112,12 +112,12 @@ Products.GenericSetup Changelog
 - testing: Removed broken run function.
   Unit test modules are no longer directly executable.
 
-- DateTime 2.12.5 does away with a special case representing 
-  DateTime values for midnight (00:00:00) without their time and 
-  time zone values. So DateTimes formerly rendered as 
-  ``2010/01/01`` in the UTC timezone now render as 
-  ``2010/01/01 00:00:00 UTC``. The XML used for testing has been 
-  changed to reflect this change. Since the change is only cosmetic, 
+- DateTime 2.12.5 does away with a special case representing
+  DateTime values for midnight (00:00:00) without their time and
+  time zone values. So DateTimes formerly rendered as
+  ``2010/01/01`` in the UTC timezone now render as
+  ``2010/01/01 00:00:00 UTC``. The XML used for testing has been
+  changed to reflect this change. Since the change is only cosmetic,
   nothing changes with respect to importing Time-less date values.
 
 - Toolset import: Don't ignore errors in ImmutableId._setId().
@@ -131,7 +131,7 @@ Products.GenericSetup Changelog
 - Deal with deprecation warnings for Zope 2.13.
 
 - Fixed bug which broke the tool upgrade tab after running an upgrade step
-  which used ``None`` as its destination version. 
+  which used ``None`` as its destination version.
   https://bugs.launchpad.net/bugs/553338
 
 
@@ -192,7 +192,7 @@ Products.GenericSetup Changelog
 - Fix utility removal so utility is not added when it is missing from the
   local component registry.
 
-- Fixed component handler to use ``for`` not ``for_`` in adapter directive. 
+- Fixed component handler to use ``for`` not ``for_`` in adapter directive.
   To support import of existing profiles ``for_`` is used as a fallback.
 
 - Changed testing.py to directly load zope.traversing's ZCML instead of going
@@ -251,7 +251,7 @@ Products.GenericSetup Changelog
   (https://bugs.launchpad.net/zope-cmf/+bug/255301)
 
 - Handle utility factories cleanly if zope.component >=3.5.0 is used.
- 
+
 - tool and utils: Removed deprecated code.
 
 - Update PropertyManagerHelpers to make it possible to remove elements from a
@@ -262,12 +262,12 @@ Products.GenericSetup Changelog
 - Made PropertyManagerHelpers class work for non-PropertyManager objects
 
   o Derived classes can supply a '_PROPERTIES' scehma, which is then used
-    to mock up a temporary propertysheet for the object.  The adapter's 
+    to mock up a temporary propertysheet for the object.  The adapter's
     methods ('_extractProperties', '_purgeProperties', '_initProperties')
     then run against that propertysheet.
 
 - Added logic to respect the destination of upgrade steps when determining
-  their applicability. 
+  their applicability.
 
 - Enhanced the readability of the upgrades tab on the tool.
 
@@ -295,7 +295,7 @@ Products.GenericSetup Changelog
   it updates 'last version for profile'.  (Backported from trunk)
 
 - Added a for_=None parameter to tool.py:listProfileInfo to have the same
-  signature as registry.py:listProfileInfo, so profiles can be filtered by 
+  signature as registry.py:listProfileInfo, so profiles can be filtered by
   interfaces.
 
 
@@ -304,7 +304,7 @@ Products.GenericSetup Changelog
 
 - Make sure that 'manage_createSnapshot' returns something to the browser
   when it's done, preventing an apparent hang.
-  (http://dev.plone.org/plone/ticket/8452, 
+  (http://dev.plone.org/plone/ticket/8452,
   https://bugs.launchpad.net/zope-cmf/+bug/161730)
 
 - Fixed invalid XML for the "Import' tab so it doesn't break when rendered
@@ -315,7 +315,7 @@ Products.GenericSetup Changelog
 ------------------
 
 - Recognize acquisition-wrapped components as being of the right underlying
-  type when testing for replacement during import.  
+  type when testing for replacement during import.
   (https://bugs.launchpad.net/zope-cmf/+bug/365202)
 
 - Don't fail when a sub-item cannot be adapted after creation when
@@ -471,7 +471,7 @@ Products.GenericSetup Changelog
   differ.
   (http://www.zope.org/Collectors/CMF/471)
 
-- Extend the ZCatalog import/export mechanism to allow removal of 
+- Extend the ZCatalog import/export mechanism to allow removal of
   metadata columns in addition to adding them.
   (http://www.zope.org/Collectors/CMF/483)
 
@@ -505,7 +505,7 @@ Products.GenericSetup Changelog
 - Refactored the "Properties" tab to separate baseline profiles from
   extension profiles, marking the option to reset the baseline as
   potentially dangerous for sites which already have one.  Allow
-  importing one or more extension profiles directly (all steps) from the 
+  importing one or more extension profiles directly (all steps) from the
   "Properties" tab.
 
 - No longer read the toolset xml and update the toolset regustry on
@@ -546,9 +546,9 @@ Products.GenericSetup Changelog
   existing PythonScript support
 
 - The dependency sorting was highly reliant on steps being added in the
-  right order to work. If import step A depends on import step B which 
-  depends on step C, and step C gets processed early, and they were 
-  processed in the order A, C, B, then the dependency order would be 
+  right order to work. If import step A depends on import step B which
+  depends on step C, and step C gets processed early, and they were
+  processed in the order A, C, B, then the dependency order would be
   incorrect. This is now fixed by keeping tack of steps with unresolved
   dependencies, and trying again after inserting everything else.
 
