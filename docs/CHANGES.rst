@@ -1,7 +1,7 @@
 Products.GenericSetup Changelog
 ===============================
 
-1.7.3 (unreleased)
+1.7.3 (2012-10-16)
 ------------------
 
 - Profiles are sorted on Upgrade form.
@@ -9,13 +9,11 @@ Products.GenericSetup Changelog
 - Use clickable labels with checkboxes on import, export and upgrade forms
   to improve usability.
 
-- TBD
-
 
 1.7.2 (2012-07-23)
 ------------------
 
-- Avoid using `emanage_FTPGet`` on snapshot exports: that method messes
+- Avoid using ``manage_FTPGet`` on snapshot exports: that method messes
   up the response headers.
 
 - ZopePageTemplate handler:  Fixed export encoding: since 1.7.0, exports
