@@ -4,7 +4,7 @@ Products.GenericSetup Changelog
 1.6.7 (unreleased)
 ------------------
 
-- TBD
+- On import, avoid clearing indexes whose state is unchanged.
 
 
 1.6.6 (2012-02-28)
