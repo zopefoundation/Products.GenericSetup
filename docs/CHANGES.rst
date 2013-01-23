@@ -53,6 +53,26 @@ Products.GenericSetup Changelog
   your code will also work with GenericSetup < 1.7
 
 
+1.6.6 (2012-02-28)
+------------------
+
+- Restored the ability to make the setup tool use only import / export
+  steps explicitly called out by the current profile, ignoring any which
+  might be globally registered.  This is particularly useful for configuring
+  sites with baseline profiles, where arbitrary add-on steps are not only
+  useless, but potentially damaging.
+
+
+1.6.5 (2012-01-27)
+------------------
+
+- While importing toolset.xml, print a warning when the class of a
+  required tool is not found and continue with the next tool.  The
+  previous behaviour could break the install or uninstall of any
+  add-on, as the missing class may easily be from a different
+  unrelated add-on that is no longer available in the zope instance.
+
+
 1.6.4 (2011-10-31)
 ------------------
 
