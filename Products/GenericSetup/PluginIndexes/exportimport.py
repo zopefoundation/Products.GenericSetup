@@ -54,8 +54,9 @@ class PluggableIndexNodeAdapter(NodeAdapterBase):
             if child.nodeName == 'indexed_attr':
                 indexed_attrs.append(
                                   child.getAttribute('value').encode('utf-8'))
-        self.context.indexed_attrs = indexed_attrs
-        self.context.clear()
+        if self.context.indexed_attrs != indexed_attrs:
+            self.context.indexed_attrs = indexed_attrs
+            self.context.clear()
 
     node = property(_exportNode, _importNode)
 
@@ -77,11 +78,18 @@ class DateIndexNodeAdapter(NodeAdapterBase, PropertyManagerHelpers):
     def _importNode(self, node):
         """Import the object from the DOM node.
         """
+        _before = {'map': self.context._properties,
+                   'items': self.context.propertyItems(),
+                  }
         if self.environ.shouldPurge():
             self._purgeProperties()
 
         self._initProperties(node)
-        self.context.clear()
+        _after = {'map': self.context._properties,
+                  'items': self.context.propertyItems(),
+                 }
+        if _before != _after:
+            self.context.clear()
 
     node = property(_exportNode, _importNode)
 
@@ -104,9 +112,12 @@ class DateRangeIndexNodeAdapter(NodeAdapterBase):
     def _importNode(self, node):
         """Import the object from the DOM node.
         """
+        _before = (self.context._since_field, self.context._until_field)
         self.context._edit(node.getAttribute('since_field').encode('utf-8'),
                            node.getAttribute('until_field').encode('utf-8'))
-        self.context.clear()
+        _after = (self.context._since_field, self.context._until_field)
+        if _before != _after:
+            self.context.clear()
 
     node = property(_exportNode, _importNode)
 
@@ -143,9 +154,12 @@ class FilteredSetNodeAdapter(NodeAdapterBase):
     def _importNode(self, node):
         """Import the object from the DOM node.
         """
+        _before = self.context.expr
         self.context.setExpression(
                               node.getAttribute('expression').encode('utf-8'))
-        self.context.clear()
+        _after = self.context.expr
+        if _before != _after:
+            self.context.clear()
 
     node = property(_exportNode, _importNode)
 
@@ -178,6 +192,7 @@ class TopicIndexNodeAdapter(NodeAdapterBase):
                 set = self.context.filteredSets[set_id]
                 importer = queryMultiAdapter((set, self.environ), INode)
                 importer.node = child
-        self.context.clear()
+        # Let the filtered sets handle themselves:  we have no state
+        #self.context.clear()
 
     node = property(_exportNode, _importNode)
