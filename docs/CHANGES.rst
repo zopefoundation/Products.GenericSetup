@@ -4,7 +4,9 @@ Products.GenericSetup Changelog
 1.6.8 (unreleased)
 ------------------
 
-- TBD
+- Accomodate ``PluginIndexes.exportimportPluggableIndexNodeAdapter`` to
+  being registered for indexes which have no ``indexed_attrs`` (e.g.,
+  Plone's ``GopipIndex``).
 
 
 1.6.7 (2013-01-23)
