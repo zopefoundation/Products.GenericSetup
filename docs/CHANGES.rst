@@ -55,6 +55,20 @@ Products.GenericSetup Changelog
   your code will also work with GenericSetup < 1.7
 
 
+1.6.8 (2013-01-27)
+------------------
+
+- Accomodate ``PluginIndexes.exportimportPluggableIndexNodeAdapter`` to
+  being registered for indexes which have no ``indexed_attrs`` (e.g.,
+  Plone's ``GopipIndex``).
+
+
+1.6.7 (2013-01-23)
+------------------
+
+- On import, avoid clearing indexes whose state is unchanged.
+
+
 1.6.6 (2012-02-28)
 ------------------
 
