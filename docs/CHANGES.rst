@@ -1,7 +1,7 @@
 Products.GenericSetup Changelog
 ===============================
 
-1.6.8 (unreleased)
+1.6.8 (2013-01-27)
 ------------------
 
 - Accomodate ``PluginIndexes.exportimportPluggableIndexNodeAdapter`` to
