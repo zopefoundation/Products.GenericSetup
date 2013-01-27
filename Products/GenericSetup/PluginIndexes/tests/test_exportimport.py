@@ -42,6 +42,11 @@ _KEYWORD_XML = """\
 </index>
 """
 
+_ODDBALL_XML = """\
+<index name="foo_keyword" meta_type="OddballIndex">
+</index>
+"""
+
 _PATH_XML = """\
 <index name="foo_path" meta_type="PathIndex"/>
 """
@@ -216,6 +221,21 @@ class UnchangedTests(unittest.TestCase):
         index.clear = _no_clear 
         adapted = PluggableIndexNodeAdapter(index, environ)
         adapted.node = parseString(_KEYWORD_XML).documentElement # no raise
+
+    def test_OddballIndex(self):
+        # Some indexes, e.g. Plone's 'GopipIndex', use ths adapter but don't
+        # have 'indexed_attrs'.
+        from xml.dom.minidom import parseString
+        from Products.GenericSetup.testing import DummySetupEnviron
+        from Products.GenericSetup.PluginIndexes.exportimport \
+                import PluggableIndexNodeAdapter
+        class Oddball(object):
+            def clear(*a):
+                raise AssertionError("Don't clear me!")
+        index = Oddball()
+        environ = DummySetupEnviron()
+        adapted = PluggableIndexNodeAdapter(index, environ)
+        adapted.node = parseString(_ODDBALL_XML).documentElement # no raise
 
     def test_DateIndex(self):
         from xml.dom.minidom import parseString

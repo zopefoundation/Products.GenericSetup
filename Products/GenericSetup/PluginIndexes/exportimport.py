@@ -50,11 +50,12 @@ class PluggableIndexNodeAdapter(NodeAdapterBase):
         """Import the object from the DOM node.
         """
         indexed_attrs = []
+        _before = getattr(self.context, 'indexed_attrs', [])
         for child in node.childNodes:
             if child.nodeName == 'indexed_attr':
                 indexed_attrs.append(
                                   child.getAttribute('value').encode('utf-8'))
-        if self.context.indexed_attrs != indexed_attrs:
+        if _before != indexed_attrs:
             self.context.indexed_attrs = indexed_attrs
             self.context.clear()
 
