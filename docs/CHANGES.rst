@@ -4,7 +4,8 @@ Products.GenericSetup Changelog
 1.6.9 (unreleased)
 ------------------
 
-- TBD
+- On import, avoid clearing a ``ZCTextIndexe`` or lexicon whose state
+  is unchanged.
 
 1.6.8 (2013-01-27)
 ------------------
