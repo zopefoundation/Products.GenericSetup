@@ -1,10 +1,10 @@
 Products.GenericSetup Changelog
 ===============================
 
-1.6.9 (unreleased)
+1.6.9 (2013-02-05)
 ------------------
 
-- On import, avoid clearing a ``ZCTextIndexe`` or lexicon whose state
+- On import, avoid clearing a ``ZCTextIndex`` or lexicon whose state
   is unchanged.
 
 1.6.8 (2013-01-27)
