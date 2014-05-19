@@ -608,6 +608,17 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
         # ensure the additional step on foo was imported
         self.failUnless('one' in result['steps'])
 
+    def test_runAllImportStepsFromProfile_skipStep(self):
+
+        site = self._makeSite()
+        tool = self._makeOne('setup_tool').__of__( site )
+        result = tool.runAllImportStepsFromProfile(
+            'snapshot-dummy',
+            blacklisted_steps=['toolset']
+        )
+
+        self.assertEqual( (result['messages']['toolset']), 'step skipped' )
+
     def test_runExportStep_nonesuch( self ):
 
         site = self._makeSite()
