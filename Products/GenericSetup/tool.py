@@ -59,6 +59,8 @@ IMPORT_STEPS_XML = 'import_steps.xml'
 EXPORT_STEPS_XML = 'export_steps.xml'
 TOOLSET_XML = 'toolset.xml'
 
+generic_logger = logging.getLogger(__name__)
+
 def exportStepRegistries(context):
     """ Built-in handler for exporting import / export step registries.
     """
@@ -275,6 +277,14 @@ class SetupTool(Folder):
             steps.update(set(_export_step_registry.listSteps()))
         return tuple(steps)
 
+    security.declareProtected(ManagePortal, 'listImportSteps')
+    def listImportSteps(self):
+        steps = set(self._import_registry.listSteps())
+        if not self._exclude_global_steps:
+            steps.update(set(_import_step_registry.listSteps()))
+        return tuple(steps)
+
+
     security.declareProtected(ManagePortal, 'getExportStepMetadata')
     def getExportStepMetadata(self, step, default=None):
         """Simple wrapper to query both the global and local step registry."""
@@ -303,6 +313,9 @@ class SetupTool(Folder):
         info = self.getImportStepMetadata(step_id)
 
         if info is None:
+            generic_logger.error(
+                "No such import step: '%s' Maybe you meant one of %s",
+                step_id, str(self.listImportSteps()))
             raise ValueError('No such import step: %s' % step_id)
 
         dependencies = info.get('dependencies', ())
