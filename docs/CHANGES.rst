@@ -1,11 +1,15 @@
 Products.GenericSetup Changelog
 ===============================
 
-1.7.4 (unreleased)
+1.7.5 (2014-10-23)
 ------------------
 
 - Allow to skip certain steps on runAllImportStepsFromProfile.
   [pbauer]
+
+
+1.7.4 (2013-06-12)
+------------------
 
 - On import, avoid clearing indexes whose state is unchanged.
 
