@@ -1,3 +1,12 @@
+normalize_version
+-----------------
+
+    >>> from Products.GenericSetup.upgrade import normalize_version
+    >>> normalize_version(None) is None
+    True
+    >>> normalize_version('1.1')
+    ('00000001', '00000001', '*final')
+
 UpgradeEntity
 -------------
 

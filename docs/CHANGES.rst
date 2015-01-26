@@ -4,7 +4,7 @@ Products.GenericSetup Changelog
 1.7.6 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Fixed compatibility with Setuptools 8.0 and later.
 
 
 1.7.5 (2014-10-23)

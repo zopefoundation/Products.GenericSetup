@@ -26,7 +26,7 @@ def normalize_version(version):
         version = '.'.join(version)
     if version in (None, 'unknown', 'all'):
         return None
-    return parse_version(version)
+    return tuple(parse_version(version))
 
 
 class UpgradeRegistry(object):
