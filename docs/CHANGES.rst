@@ -4,7 +4,10 @@ Products.GenericSetup Changelog
 1.7.6 (unreleased)
 ------------------
 
-- Fixed compatibility with Setuptools 8.0 and later.
+- Fixed compatibility with Setuptools 8.0 and later.  Upgrade steps
+  could get sorted in the wrong order, especially an empty version
+  string (upgrade step from any source version) sorted last instead of
+  first.
 
 
 1.7.5 (2014-10-23)
