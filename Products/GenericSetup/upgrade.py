@@ -24,9 +24,35 @@ from Products.GenericSetup.registry import GlobalRegistryStorage
 def normalize_version(version):
     if isinstance(version, tuple):
         version = '.'.join(version)
-    if version in (None, 'unknown', 'all'):
-        return None
-    return tuple(parse_version(version))
+    elif version is None:
+        version = ''
+    return parse_version(version)
+
+
+def _version_matches_all(version):
+    if isinstance(version, tuple):
+        version = '.'.join(version)
+    return version in (None, 'unknown', 'all')
+
+
+def _version_matches(source, step_source, step_dest, strict=False):
+    if _version_matches_all(source):
+        return True
+    # Step source and destination must match.
+    source = normalize_version(source)
+    # Check step source.
+    if not _version_matches_all(step_source):
+        start = normalize_version(step_source)
+        if strict:
+            if start != source:
+                return False
+        elif start < source:
+            return False
+    # Step source is okay. Now check step destination.
+    if _version_matches_all(step_dest):
+        return True
+    stop = normalize_version(step_dest)
+    return stop > source
 
 
 class UpgradeRegistry(object):
@@ -107,13 +133,7 @@ class UpgradeEntity(object):
         self.profile = profile
 
     def versionMatch(self, source):
-        source = normalize_version(source)
-        if source is None:
-            return True
-        start = normalize_version(self.source)
-        stop = normalize_version(self.dest)
-        return ((start is None or start == source) and
-                (stop is None or stop > source))
+        return _version_matches(source, self.source, self.dest, strict=True)
 
     def isProposed(self, tool, source):
         """Check if a step can be applied.
@@ -190,14 +210,8 @@ def _extractStepInfo(tool, id, step, source):
     """Returns the info data structure for a given step.
     """
     proposed = step.isProposed(tool, source)
-    if not proposed:
-        source = normalize_version(source)
-        if source is not None:
-            start = normalize_version(step.source)
-            stop = normalize_version(step.dest)
-            if ((start is not None and start < source) or
-                (stop is not None and stop <= source)):
-                return
+    if not proposed and not _version_matches(source, step.source, step.dest):
+        return
     info = {
         'id': id,
         'step': step,
@@ -225,7 +239,7 @@ def listUpgradeSteps(tool, profile_id, source):
             if info is None:
                 continue
             normsrc = normalize_version(step.source)
-            res.append(((normsrc or '', step.sortkey, info['proposed']), info))
+            res.append(((normsrc, step.sortkey, info['proposed']), info))
         else: # nested steps
             nested = []
             outer_proposed = False
@@ -239,7 +253,7 @@ def listUpgradeSteps(tool, profile_id, source):
                 src = nested[0]['source']
                 sortkey = nested[0]['sortkey']
                 normsrc = normalize_version(src)
-                res.append(((normsrc or '', sortkey, outer_proposed), nested))
+                res.append(((normsrc, sortkey, outer_proposed), nested))
     res.sort()
     res = [i[1] for i in res]
     return res

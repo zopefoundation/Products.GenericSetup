@@ -1,11 +1,79 @@
 normalize_version
 -----------------
 
+    The exact output can differ lots for various setuptools versions.
+    setuptools 7 and lower:
+      None  -> ('*final',)
+      '1.1' -> ('00000001', '00000001', '*final')
+    setuptools 8 and higher:
+      None  -> <LegacyVersion('')>
+      '1.1' -> <Version('1.1')>
+    Workaround is to turn the result into a tuple.  But that makes
+    pkg_resources complain when using setuptools 8 or higher:
+
+      RuntimeWarning: You have iterated over the result of
+      pkg_resources.parse_version. This is a legacy behavior which is
+      inconsistent with the new version class introduced in setuptools
+      8.0. In most cases, conversion to a tuple is unnecessary. For
+      comparison of versions, sort the Version instances directly. If
+      you have another use case requiring the tuple, please file a bug
+      with the setuptools project describing that need.
+
+    In our case the only important part is that sorting works
+    reliably, which is what we check here.
+
     >>> from Products.GenericSetup.upgrade import normalize_version
-    >>> normalize_version(None) is None
+    >>> normalize_version(None) < normalize_version('1.1')
     True
-    >>> normalize_version('1.1')
-    ('00000001', '00000001', '*final')
+    >>> normalize_version('1.1') > normalize_version(None)
+    True
+    >>> normalize_version('unknown') < normalize_version('1.1')
+    True
+    >>> normalize_version('1.0') < normalize_version('1.1')
+    True
+    >>> normalize_version(('1', '1')) == normalize_version('1.1')
+    True
+
+
+_version_matches_all
+-------------------
+
+    >>> from Products.GenericSetup.upgrade import _version_matches_all
+    >>> _version_matches_all(None)
+    True
+    >>> _version_matches_all('all')
+    True
+    >>> _version_matches_all('unknown')
+    True
+    >>> _version_matches_all('')
+    False
+    >>> _version_matches_all('1.0')
+    False
+    >>> _version_matches_all(('all', ))
+    True
+    >>> _version_matches_all(('1', '0'))
+    False
+
+
+_version_matches
+---------------
+
+    >>> from Products.GenericSetup.upgrade import _version_matches
+    >>> _version_matches(None, '1.0', '2.0')
+    True
+    >>> _version_matches('0.5', '1.0', '2.0')
+    True
+    >>> _version_matches('0.5', '1.0', '2.0', strict=True)
+    False
+    >>> _version_matches('1.0', '1.0', '2.0', strict=True)
+    True
+    >>> _version_matches('1.5', '1.0', '2.0')
+    False
+    >>> _version_matches('1.0', '1.0', '0.5')
+    False
+    >>> _version_matches('1.0', '1.0', 'unknown')
+    True
+
 
 UpgradeEntity
 -------------
