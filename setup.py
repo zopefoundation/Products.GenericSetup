@@ -9,23 +9,24 @@ package = os.path.join(here, 'Products', NAME)
 docs = os.path.join(here, 'docs')
 
 def _package_doc(name):
-    f = open(os.path.join(package, name))
-    return f.read()
+    with open(os.path.join(package, name)) as f:
+        return f.read()
 
 def _docs_doc(name):
-    f = open(os.path.join(docs, name))
-    return f.read()
+    with open(os.path.join(docs, name)) as f:
+        return f.read()
 
-_boundary = '\n' + ('-' * 60) + '\n\n'
-README = ( open('README.txt').read()
-         + _boundary
-         + _docs_doc('CHANGES.rst')
-         )
+with open('README.rst') as f:
+    README = f.read()
+
+_BOUNDARY = '\n' + ('-' * 60) + '\n\n'
+
+CHANGES = _docs_doc('CHANGES.rst')
 
 setup(name='Products.GenericSetup',
       version=_package_doc('version.txt').strip(),
       description='Read Zope configuration state from profile dirs / tarballs',
-      long_description=README,
+      long_description=README + _BOUNDARY + CHANGES,
       classifiers=[
         "Development Status :: 5 - Production/Stable",
         "Framework :: Plone",

@@ -1,5 +1,5 @@
-Products.GenericSetup README
-============================
+``Products.GenericSetup``
+=========================
 
 This product provides a mini-framework for expressing the configured
 state of a Zope Site as a set of filesystem artifacts.  These artifacts

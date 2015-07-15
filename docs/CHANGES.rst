@@ -1,5 +1,5 @@
-Products.GenericSetup Changelog
-===============================
+Changelog
+=========
 
 1.7.6 (unreleased)
 ------------------
