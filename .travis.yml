@@ -1,3 +1,4 @@
+sudo: false
 language: python
 install:
     - python bootstrap.py
@@ -5,4 +6,4 @@ install:
 script:
     - bin/test -pvc
 notifications:
-    email: false
+    email: tseaver@palldion.com
