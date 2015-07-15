@@ -1,8 +1,10 @@
 Changelog
 =========
 
-1.7.6 (unreleased)
+1.7.6 (2015-07-15)
 ------------------
+
+- Enabled testing under Travis.
 
 - Fixed compatibility with Setuptools 8.0 and later.  Upgrade steps
   could get sorted in the wrong order, especially an empty version
