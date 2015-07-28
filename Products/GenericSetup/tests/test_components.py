@@ -14,7 +14,6 @@
 """
 
 import unittest
-import Testing
 
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from Acquisition import aq_base
