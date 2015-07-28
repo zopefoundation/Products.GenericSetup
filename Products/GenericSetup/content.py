@@ -19,7 +19,6 @@ from csv import writer
 from StringIO import StringIO
 
 from zope.component import queryAdapter
-from zope.interface import directlyProvides
 from zope.interface import implements
 
 from Products.GenericSetup.interfaces import IContentFactory

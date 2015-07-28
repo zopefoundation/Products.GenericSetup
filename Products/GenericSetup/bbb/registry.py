@@ -17,3 +17,5 @@
 from Products.GenericSetup.registry import ImportStepRegistry
 from Products.GenericSetup.registry import ExportStepRegistry
 from Products.GenericSetup.registry import ToolsetRegistry
+
+ImportStepRegistry, ExportStepRegistry, ToolsetRegistry  # pyflakes

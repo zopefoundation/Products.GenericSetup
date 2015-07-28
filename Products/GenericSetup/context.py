@@ -34,7 +34,6 @@ from OFS.DTMLDocument import DTMLDocument
 from OFS.Folder import Folder
 from OFS.Image import File
 from OFS.Image import Image
-from OFS.Image import Pdata
 from Products.PageTemplates.ZopePageTemplate import ZopePageTemplate
 from Products.PythonScripts.PythonScript import PythonScript
 from zope.interface import implements
