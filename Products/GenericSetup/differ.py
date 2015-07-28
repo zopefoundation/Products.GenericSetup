@@ -52,20 +52,6 @@ def unidiff( a
         to be last-modified timestamps to be inserted in the
         header, as floating point values since the epoch.
 
-    Example:
-
-    >>> print ''.join(UniDiffer().compare(
-    ...     'one\ntwo\nthree\n'.splitlines(1),
-    ...     'ore\ntree\nemu\n'.splitlines(1))),
-    +++ original
-    --- modified
-    @@ -1,3 +1,3 @@
-    -one
-    +ore
-    -two
-    -three
-    +tree
-    +emu
     """
     if isinstance( a, basestring ):
         a = a.splitlines()
