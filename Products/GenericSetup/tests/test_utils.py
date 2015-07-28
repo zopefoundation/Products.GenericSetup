@@ -177,7 +177,7 @@ _REMOVE_ELEMENT_IMPORT = """\
 <dummy>
  <property name="lines1" purge="False">
    <element value="Foo" remove="True" />
-   <element value="Bar" />
+   <element value="Bar" remove="False" />
   </property>
  <property name="lines2" purge="False">
    <element value="Foo" remove="True" />
@@ -196,12 +196,14 @@ _ADD_IMPORT = """\
 <?xml version="1.0"?>
 <dummy>
  <object name="history" meta_type="Generic Setup Tool"/>
+ <object name="future" meta_type="Generic Setup Tool"/>
 </dummy>
 """
 _REMOVE_IMPORT = """\
 <?xml version="1.0"?>
 <dummy>
  <object name="history" remove="True"/>
+ <object name="future" remove="False"/>
 </dummy>
 """
 
@@ -209,6 +211,7 @@ _ADD_PROPERTY_IMPORT = """\
 <?xml version="1.0"?>
 <dummy>
  <property name="line1" type="string">Line 1</property>
+ <property name="line2" type="string">Line 2</property>
 </dummy>
 """
 
@@ -216,6 +219,7 @@ _REMOVE_PROPERTY_IMPORT = """\
 <?xml version="1.0"?>
 <dummy>
  <property name="line1" remove="True"/>
+ <property name="line2" type="string" remove="False"/>
 </dummy>
 """
 
@@ -522,22 +526,25 @@ class PropertyManagerHelpersTests(unittest.TestCase):
         obj = helpers.context
         obj._properties = ()
 
-        # Add property
+        # Add two properties
         node = _getDocumentElement(_ADD_PROPERTY_IMPORT)
         helpers._initProperties(node)
         self.assertTrue(obj.hasProperty('line1'))
         self.assertEquals(obj.getProperty('line1'), 'Line 1')
+        self.assertTrue(obj.hasProperty('line2'))
 
-        # Remove it again
+        # Remove one.
         node = _getDocumentElement(_REMOVE_PROPERTY_IMPORT)
         helpers._initProperties(node)
         self.assertFalse(obj.hasProperty('line1'))
+        self.assertTrue(obj.hasProperty('line2'))
 
         # Removing it a second time should not throw an
         # AttributeError.
         node = _getDocumentElement(_REMOVE_PROPERTY_IMPORT)
         helpers._initProperties(node)
         self.assertFalse(obj.hasProperty('line1'))
+        self.assertTrue(obj.hasProperty('line2'))
 
 
 class PropertyManagerHelpersNonPMContextTests(PropertyManagerHelpersTests):
@@ -698,21 +705,24 @@ class ObjectManagerHelpersTests(ZopeTestCase):
         obj = helpers.context
         self.failIf('history' in obj.objectIds())
 
-        # Add object
+        # Add two objects
         node = _getDocumentElement(_ADD_IMPORT)
         helpers._initObjects(node)
         self.failUnless('history' in obj.objectIds())
+        self.failUnless('future' in obj.objectIds())
 
-        # Remove it again
+        # Remove one
         node = _getDocumentElement(_REMOVE_IMPORT)
         helpers._initObjects(node)
         self.failIf('history' in obj.objectIds())
+        self.failUnless('future' in obj.objectIds())
         
         # Removing it a second time should not throw an
         # AttributeError.
         node = _getDocumentElement(_REMOVE_IMPORT)
         helpers._initObjects(node)
         self.failIf('history' in obj.objectIds())
+        self.failUnless('future' in obj.objectIds())
         
 
 class PrettyDocumentTests(unittest.TestCase):

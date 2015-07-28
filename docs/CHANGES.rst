@@ -4,6 +4,12 @@ Changelog
 1.7.7 (unreleased)
 ------------------
 
+- Check the boolean value of the ``remove`` option when importing
+  objects.  Previously we only checked if the ``remove`` option was
+  given, regardless of its value.  Supported are ``True``, ``Yes``,
+  and ``1``, where case does not matter.  The syntax for removing
+  objects, properties, and elements is now the same.
+
 - Support ``remove="True"`` for properties.
 
 

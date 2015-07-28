@@ -554,7 +554,8 @@ class ObjectManagerHelpers(object):
             parent = self.context
 
             obj_id = str(child.getAttribute('name'))
-            if child.hasAttribute('remove'):
+            if self._convertToBoolean(
+                child.getAttribute('remove') or 'False'):
                 if obj_id in parent.objectIds():
                     parent._delObject(obj_id)
                 continue
