@@ -205,6 +205,21 @@ _REMOVE_IMPORT = """\
 </dummy>
 """
 
+_ADD_PROPERTY_IMPORT = """\
+<?xml version="1.0"?>
+<dummy>
+ <property name="line1" type="string">Line 1</property>
+</dummy>
+"""
+
+_REMOVE_PROPERTY_IMPORT = """\
+<?xml version="1.0"?>
+<dummy>
+ <property name="line1" remove="True"/>
+</dummy>
+"""
+
+
 def _getDocumentElement(text):
     from xml.dom.minidom import parseString
     return parseString(text).documentElement
@@ -500,6 +515,30 @@ class PropertyManagerHelpersTests(unittest.TestCase):
 
         self.assertEquals(obj.getProperty('lines1'), ('Gee', 'Bar'))
         self.assertEquals(obj.getProperty('lines2'), ('Gee',))
+
+    def test_initProperties_remove_properties(self):
+        helpers = self._makeOne()
+        helpers.environ._should_purge = False # extension profile
+        obj = helpers.context
+        obj._properties = ()
+
+        # Add property
+        node = _getDocumentElement(_ADD_PROPERTY_IMPORT)
+        helpers._initProperties(node)
+        self.assertTrue(obj.hasProperty('line1'))
+        self.assertEquals(obj.getProperty('line1'), 'Line 1')
+
+        # Remove it again
+        node = _getDocumentElement(_REMOVE_PROPERTY_IMPORT)
+        helpers._initProperties(node)
+        self.assertFalse(obj.hasProperty('line1'))
+
+        # Removing it a second time should not throw an
+        # AttributeError.
+        node = _getDocumentElement(_REMOVE_PROPERTY_IMPORT)
+        helpers._initProperties(node)
+        self.assertFalse(obj.hasProperty('line1'))
+
 
 class PropertyManagerHelpersNonPMContextTests(PropertyManagerHelpersTests):
 

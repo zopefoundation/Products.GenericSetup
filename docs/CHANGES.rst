@@ -4,7 +4,7 @@ Changelog
 1.7.7 (unreleased)
 ------------------
 
-- TBD
+- Support ``remove="True"`` for properties.
 
 
 1.7.6 (2015-07-15)

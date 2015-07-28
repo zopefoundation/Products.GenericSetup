@@ -717,10 +717,14 @@ class PropertyManagerHelpers(object):
         for child in node.childNodes:
             if child.nodeName != 'property':
                 continue
+            remove = self._convertToBoolean(
+                child.getAttribute('remove') or 'False')
             prop_id = str(child.getAttribute('name'))
             prop_map = obj.propdict().get(prop_id, None)
 
             if prop_map is None:
+                if remove:
+                    continue
                 if child.hasAttribute('type'):
                     val = str(child.getAttribute('select_variable'))
                     prop_type = str(child.getAttribute('type'))
@@ -729,7 +733,13 @@ class PropertyManagerHelpers(object):
                 else:
                     raise ValueError("undefined property '%s'" % prop_id)
 
-            if not 'w' in prop_map.get('mode', 'wd'):
+            if remove:
+                if 'd' not in prop_map.get('mode', 'wd'):
+                    raise BadRequest('%s cannot be deleted' % prop_id)
+                obj._delProperty(prop_id)
+                continue
+
+            if 'w' not in prop_map.get('mode', 'wd'):
                 raise BadRequest('%s cannot be changed' % prop_id)
 
             new_elements = []
