@@ -180,7 +180,7 @@ class DirectoryImportContextTests( FilesystemTestBase
         from string import printable
 
         FILENAME = 'simple.txt'
-        fqpath = self._makeFile( FILENAME, printable )
+        self._makeFile( FILENAME, printable )
 
         site = DummySite('site').__of__(self.app)
         ctx = self._makeOne( site, self._PROFILE_PATH )
@@ -193,7 +193,7 @@ class DirectoryImportContextTests( FilesystemTestBase
 
         SUBDIR = 'subdir'
         FILENAME = os.path.join( SUBDIR, 'nested.txt' )
-        fqpath = self._makeFile( FILENAME, printable )
+        self._makeFile( FILENAME, printable )
 
         site = DummySite('site').__of__(self.app)
         ctx = self._makeOne( site, self._PROFILE_PATH )
@@ -206,7 +206,7 @@ class DirectoryImportContextTests( FilesystemTestBase
 
         SUBDIR = 'subdir'
         FILENAME = os.path.join( SUBDIR, 'nested.txt' )
-        fqpath = self._makeFile( FILENAME, printable )
+        self._makeFile( FILENAME, printable )
 
         site = DummySite('site').__of__(self.app)
         ctx = self._makeOne( site, self._PROFILE_PATH )
@@ -386,7 +386,7 @@ class DirectoryExportContextTests( FilesystemTestBase
         from string import printable
         text = u'Kein Weltraum links vom Gerät'
         FILENAME = 'unicode.txt'
-        fqname = self._makeFile( FILENAME, printable )
+        self._makeFile( FILENAME, printable )
 
         site = DummySite('site').__of__(self.app)
         ctx = self._makeOne( site, self._PROFILE_PATH )
@@ -1100,7 +1100,7 @@ class SnapshotImportContextTests(ZopeTestCase, ConformsToISetupContext,
                  ):
 
         snapshots = tool._getOb( 'snapshots' )
-        folder = snapshot = snapshots._getOb( snapshot_id )
+        folder = snapshots._getOb( snapshot_id )
 
         if subdir is not None:
 
@@ -1285,7 +1285,7 @@ class SnapshotImportContextTests(ZopeTestCase, ConformsToISetupContext,
         FILENAME = 'simple.txt'
 
         site, tool, ctx = self._makeOne( SNAPSHOT_ID )
-        file = self._makeFile( tool, SNAPSHOT_ID, FILENAME, printable )
+        self._makeFile( tool, SNAPSHOT_ID, FILENAME, printable )
 
         self.assertEqual( ctx.isDirectory( FILENAME ), False )
 
@@ -1299,7 +1299,7 @@ class SnapshotImportContextTests(ZopeTestCase, ConformsToISetupContext,
         PATH = '%s/%s' % ( SUBDIR, FILENAME )
 
         site, tool, ctx = self._makeOne( SNAPSHOT_ID )
-        file = self._makeFile( tool, SNAPSHOT_ID, FILENAME, printable
+        self._makeFile( tool, SNAPSHOT_ID, FILENAME, printable
                              , subdir=SUBDIR )
 
         self.assertEqual( ctx.isDirectory( PATH ), False )
@@ -1311,10 +1311,9 @@ class SnapshotImportContextTests(ZopeTestCase, ConformsToISetupContext,
         SNAPSHOT_ID = 'isDirectory_subdir'
         SUBDIR = 'subdir'
         FILENAME = 'nested.txt'
-        PATH = '%s/%s' % ( SUBDIR, FILENAME )
 
         site, tool, ctx = self._makeOne( SNAPSHOT_ID )
-        file = self._makeFile( tool, SNAPSHOT_ID, FILENAME, printable
+        self._makeFile( tool, SNAPSHOT_ID, FILENAME, printable
                              , subdir=SUBDIR )
 
         self.assertEqual( ctx.isDirectory( SUBDIR ), True )
@@ -1336,7 +1335,7 @@ class SnapshotImportContextTests(ZopeTestCase, ConformsToISetupContext,
         FILENAME = 'simple.txt'
 
         site, tool, ctx = self._makeOne( SNAPSHOT_ID )
-        file = self._makeFile( tool, SNAPSHOT_ID, FILENAME, printable )
+        self._makeFile( tool, SNAPSHOT_ID, FILENAME, printable )
 
         self.assertEqual( len( ctx.listDirectory( None ) ), 1 )
         self.failUnless( FILENAME in ctx.listDirectory( None ) )
@@ -1349,7 +1348,7 @@ class SnapshotImportContextTests(ZopeTestCase, ConformsToISetupContext,
         FILENAME = 'simple.txt'
 
         site, tool, ctx = self._makeOne( SNAPSHOT_ID )
-        file = self._makeFile( tool, SNAPSHOT_ID, FILENAME, printable )
+        self._makeFile( tool, SNAPSHOT_ID, FILENAME, printable )
 
         self.assertEqual( ctx.listDirectory( FILENAME ), None )
 
@@ -1363,7 +1362,7 @@ class SnapshotImportContextTests(ZopeTestCase, ConformsToISetupContext,
         PATH = '%s/%s' % ( SUBDIR, FILENAME )
 
         site, tool, ctx = self._makeOne( SNAPSHOT_ID )
-        file = self._makeFile( tool, SNAPSHOT_ID, FILENAME, printable
+        self._makeFile( tool, SNAPSHOT_ID, FILENAME, printable
                              , subdir=SUBDIR )
 
         self.assertEqual( ctx.listDirectory( PATH ), None )
@@ -1377,7 +1376,7 @@ class SnapshotImportContextTests(ZopeTestCase, ConformsToISetupContext,
         FILENAME = 'nested.txt'
 
         site, tool, ctx = self._makeOne( SNAPSHOT_ID )
-        file = self._makeFile( tool, SNAPSHOT_ID, FILENAME, printable
+        self._makeFile( tool, SNAPSHOT_ID, FILENAME, printable
                              , subdir=SUBDIR )
 
         names = ctx.listDirectory( SUBDIR )
@@ -1394,9 +1393,9 @@ class SnapshotImportContextTests(ZopeTestCase, ConformsToISetupContext,
         FILENAME2 = 'another.txt'
 
         site, tool, ctx = self._makeOne( SNAPSHOT_ID )
-        file1 = self._makeFile( tool, SNAPSHOT_ID, FILENAME1, printable
+        self._makeFile( tool, SNAPSHOT_ID, FILENAME1, printable
                               , subdir=SUBDIR )
-        file2 = self._makeFile( tool, SNAPSHOT_ID, FILENAME2, uppercase
+        self._makeFile( tool, SNAPSHOT_ID, FILENAME2, uppercase
                               , subdir=SUBDIR )
 
         names = ctx.listDirectory( SUBDIR )
@@ -1415,11 +1414,11 @@ class SnapshotImportContextTests(ZopeTestCase, ConformsToISetupContext,
         FILENAME3 = 'another.bak'
 
         site, tool, ctx = self._makeOne( SNAPSHOT_ID )
-        file1 = self._makeFile( tool, SNAPSHOT_ID, FILENAME1, printable
+        self._makeFile( tool, SNAPSHOT_ID, FILENAME1, printable
                               , subdir=SUBDIR )
-        file2 = self._makeFile( tool, SNAPSHOT_ID, FILENAME2, uppercase
+        self._makeFile( tool, SNAPSHOT_ID, FILENAME2, uppercase
                               , subdir=SUBDIR )
-        file3 = self._makeFile( tool, SNAPSHOT_ID, FILENAME3, 'abc'
+        self._makeFile( tool, SNAPSHOT_ID, FILENAME3, 'abc'
                               , subdir=SUBDIR )
 
         names = ctx.listDirectory(SUBDIR, skip=(FILENAME1,),

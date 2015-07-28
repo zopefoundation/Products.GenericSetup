@@ -177,7 +177,7 @@ class RolemapImportConfiguratorTests(BaseRegistryTests):
 
         rolemap_info = configurator.parseXML( _EMPTY_EXPORT )
 
-        self.assertEqual( len( rolemap_info[ 'roles' ] ), 4 )
+        self.assertEqual( len( rolemap_info[ 'roles' ] ), len(existing_roles) )
         self.assertEqual( len( rolemap_info[ 'permissions' ] ), 0 )
 
     def test_parseXML_added_role( self ):

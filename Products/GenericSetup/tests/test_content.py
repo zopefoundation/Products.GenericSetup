@@ -871,7 +871,7 @@ class DAVAwareFileAdapterTests(unittest.TestCase,
         context._files['subpath/to/dav_file.html'] = KNOWN_DAV % VALUES
 
         adapter.import_(context, 'subpath/to')
-        text = dav_file._was_put == KNOWN_DAV % VALUES
+        self.assertEqual(dav_file._was_put, KNOWN_DAV % VALUES)
 
 
 def _makePropertied(id):
