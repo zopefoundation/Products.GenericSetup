@@ -21,6 +21,9 @@ from Products.GenericSetup.permissions import ManagePortal
 from Products.GenericSetup.registry import _profile_registry \
     as profile_registry
 
+# This is for easier imports by add-ons.
+BASE, EXTENSION, profile_registry  # pyflakes
+
 security = ModuleSecurityInfo('Products.GenericSetup')
 security.declareProtected(ManagePortal, 'profile_registry')
 
@@ -40,6 +43,7 @@ def initialize(context):
 # BBB: for setup tools created with CMF 1.5 if CMFSetup isn't installed
 try:
     import Products.CMFSetup
+    Products.CMFSetup  # pyflakes
 except ImportError:
     import bbb
     import bbb.registry

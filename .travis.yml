@@ -9,4 +9,4 @@ install:
 script:
     - bin/test -pvc
 notifications:
-    email: tseaver@palldion.com
+    email: tseaver@palladion.com

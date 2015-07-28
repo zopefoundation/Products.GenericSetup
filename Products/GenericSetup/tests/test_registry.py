@@ -14,7 +14,6 @@
 """
 
 import unittest
-import Testing
 
 from OFS.Folder import Folder
 from Products.GenericSetup.testing import ExportImportZCMLLayer
@@ -439,9 +438,7 @@ class ImportStepRegistryTests( BaseRegistryTests
 
         registry = self._makeOne().__of__(self.app)
 
-        xml = registry.generateXML()
-
-        self._compareDOM( registry.generateXML(), _EMPTY_IMPORT_XML )
+        self._compareDOM( registry.generateXML(), _EMPTY_IMPORT_XML , debug=True)
 
     def test_generateXML_single( self ):
 
@@ -604,7 +601,7 @@ class ExportStepRegistryTests( BaseRegistryTests
     def test_getStep_defaulted( self ):
 
         registry = self._makeOne()
-        default = lambda x: false
+        default = lambda x: False
         self.assertEqual( registry.getStep( 'nonesuch', default ), default )
 
     def test_getStepMetadata_nonesuch( self ):
@@ -666,8 +663,6 @@ class ExportStepRegistryTests( BaseRegistryTests
     def test_generateXML_empty( self ):
 
         registry = self._makeOne().__of__(self.app)
-
-        xml = registry.generateXML()
 
         self._compareDOM( registry.generateXML(), _EMPTY_EXPORT_XML )
 

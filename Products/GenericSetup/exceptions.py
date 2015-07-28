@@ -18,3 +18,4 @@ security = ModuleSecurityInfo('Products.GenericSetup.exceptions')
 
 security.declarePublic('BadRequest')
 from zExceptions import BadRequest
+BadRequest  # pyflakes

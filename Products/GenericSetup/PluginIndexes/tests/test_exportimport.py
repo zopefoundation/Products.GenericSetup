@@ -14,7 +14,6 @@
 """
 
 import unittest
-import Testing
 
 from Products.GenericSetup.testing import NodeAdapterTestCase
 from Products.GenericSetup.testing import ExportImportZCMLLayer

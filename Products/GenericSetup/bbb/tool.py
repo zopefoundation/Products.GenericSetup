@@ -18,10 +18,12 @@ from Products.GenericSetup.tool import importToolset
 from Products.GenericSetup.tool import exportToolset
 from Products.GenericSetup.tool import SetupTool as BaseTool
 
+exportStepRegistries, importToolset, exportToolset  # pyflakes
+
 
 class SetupTool(BaseTool):
 
-    #BBB: for setup tools created with CMF 1.5
+    # BBB: for setup tools created with CMF 1.5
     id = 'portal_setup'
 
     def __init__(self, id='portal_setup'):

@@ -51,6 +51,10 @@ class DOMComparator:
                         for i in range( len( zipped ) )
                         if zipped[i][0] != zipped[i][1]
                     ]
+                # Ugly, but it will do.
+                print 'Diff:'
+                print diff
+                print
 
             print 'Found:'
             print fxml

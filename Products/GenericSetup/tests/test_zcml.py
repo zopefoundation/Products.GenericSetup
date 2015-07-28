@@ -82,7 +82,6 @@ def test_simpleRegisterProfile():
 
     Clean up and make sure the cleanup works::
 
-      >>> from zope.testing.cleanup import cleanUp
       >>> cleanUp()
     """
 
@@ -128,7 +127,6 @@ def test_registerProfile():
 
     Clean up and make sure the cleanup works::
 
-      >>> from zope.testing.cleanup import cleanUp
       >>> cleanUp()
     """
 
@@ -171,7 +169,6 @@ def test_registerUpgradeStep(self):
 
     Clean up and make sure the cleanup works::
 
-      >>> from zope.testing.cleanup import cleanUp
       >>> cleanUp()
     """
 
@@ -216,7 +213,6 @@ def test_registerUpgradeDepends(self):
 
     Clean up and make sure the cleanup works::
 
-      >>> from zope.testing.cleanup import cleanUp
       >>> cleanUp()
     """
 
@@ -333,7 +329,6 @@ def test_registerUpgradeSteps(self):
 
     Clean up and make sure the cleanup works::
 
-      >>> from zope.testing.cleanup import cleanUp
       >>> cleanUp()
     """
 

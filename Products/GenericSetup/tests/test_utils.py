@@ -14,7 +14,6 @@
 """
 
 import unittest
-import Testing
 
 from DateTime.DateTime import DateTime
 from Testing.ZopeTestCase import installProduct
