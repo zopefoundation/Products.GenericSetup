@@ -377,7 +377,7 @@ class TarballImportContext( BaseContext ):
             if not self.isDirectory(path):
                 return None
 
-            if path[-1] != '/':
+            if not path.endswith('/'):
                 path = path + '/'
 
         pfx_len = len(path)
@@ -406,7 +406,7 @@ class TarballImportContext( BaseContext ):
         return self._should_purge
 
     def _getTarInfo( self, path ):
-        if path[-1] == '/':
+        if path.endswith('/'):
             path = path[:-1]
         try:
             return self._archive.getmember( path )

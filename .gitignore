@@ -15,3 +15,11 @@ eggs
 local.cfg
 parts
 var
+
+# VirtualEnv on Windows:
+Include/
+Lib/
+Scripts/
+
+# Editor Backups:
+*~
