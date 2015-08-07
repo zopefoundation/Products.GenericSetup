@@ -1007,6 +1007,52 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
         tool.manage_doUpgrades()
         self.assertEqual(tool._profile_upgrade_versions, {})
 
+    def test_upgradeProfile_no_profile_id_or_updates(self):
+        site = self._makeSite()
+        site.setup_tool = self._makeOne('setup_tool')
+        tool = site.setup_tool
+        # Mostly this checks to see if we can call this without an
+        # exception.
+        tool.upgradeProfile('no.such.profile:default')
+        self.assertEqual(tool._profile_upgrade_versions, {})
+        tool.upgradeProfile('no.such.profile:default', dest='42')
+        self.assertEqual(tool._profile_upgrade_versions, {})
+
+    def test_upgradeProfile(self):
+        step1 = UpgradeStep('Step 1', 'foo', '0', '1', 'DESC',
+                            lambda tool: None)
+        step2 = UpgradeStep('Step 2', 'foo', '1', '2', 'DESC',
+                            lambda tool: None)
+        step3 = UpgradeStep('Step 3', 'foo', '2', '3', 'DESC',
+                            lambda tool: None)
+        step4 = UpgradeStep('Step 4', 'foo', '3', '4', 'DESC',
+                            lambda tool: None)
+        _registerUpgradeStep(step1)
+        _registerUpgradeStep(step2)
+        _registerUpgradeStep(step3)
+        _registerUpgradeStep(step4)
+        site = self._makeSite()
+        site.setup_tool = self._makeOne('setup_tool')
+        tool = site.setup_tool
+        self.assertEqual(tool.getLastVersionForProfile('foo'), 'unknown')
+        tool.setLastVersionForProfile('foo', '0')
+        self.assertEqual(tool.getLastVersionForProfile('foo'), ('0',))
+        # Upgrade the profile one step to version 1.
+        tool.upgradeProfile('foo', '1')
+        self.assertEqual(tool.getLastVersionForProfile('foo'), ('1',))
+        # Upgrade the profile two steps to version 3.
+        tool.upgradeProfile('foo', '3')
+        self.assertEqual(tool.getLastVersionForProfile('foo'), ('3',))
+        # Upgrade the profile to a non existing version.
+        tool.upgradeProfile('foo', 'no-such-step')
+        self.assertEqual(tool.getLastVersionForProfile('foo'), ('4',))
+        # Reset.
+        tool.setLastVersionForProfile('foo', '0')
+        self.assertEqual(tool.getLastVersionForProfile('foo'), ('0',))
+        # Upgrade the profile to the latest version.
+        tool.upgradeProfile('foo')
+        self.assertEqual(tool.getLastVersionForProfile('foo'), ('4',))
+
     def test_listExportSteps(self):
         site = self._makeSite()
         site.setup_tool = self._makeOne('setup_tool')
