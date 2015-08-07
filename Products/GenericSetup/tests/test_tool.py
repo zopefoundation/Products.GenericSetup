@@ -15,7 +15,6 @@
 
 import unittest
 
-import copy
 import os
 from StringIO import StringIO
 
@@ -78,6 +77,8 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
     _PROFILE_PATH2 = '/tmp/STT_test2'
 
     def afterSetUp(self):
+        from Products.GenericSetup.upgrade import _upgrade_registry
+        _upgrade_registry.clear()
         profile_registry.clear()
         global _before_import_events
         global _after_import_events
@@ -90,6 +91,9 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
         base_registry.unregisterHandler(handleBeforeProfileImportEvent)
         base_registry.unregisterHandler(handleProfileImportedEvent)
         FilesystemTestBase.beforeTearDown(self)
+        from Products.GenericSetup.upgrade import _upgrade_registry
+        profile_registry.clear()
+        _upgrade_registry.clear()
 
     def _getTargetClass(self):
         from Products.GenericSetup.tool import SetupTool
@@ -945,8 +949,6 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
                          '2007-03-15T12:34:56Z')
 
     def test_profileVersioning(self):
-        from Products.GenericSetup.upgrade import _upgrade_registry
-
         site = self._makeSite()
         site.setup_tool = self._makeOne('setup_tool')
         tool = site.setup_tool
@@ -963,7 +965,6 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
                                          product=product_name)
 
         # register upgrade step
-        orig_upgrade_registry = copy.copy(_upgrade_registry._registry)
         step = UpgradeStep("Upgrade",
                            "GenericSetup:dummy_profile", '*', '1.1', '',
                            dummy_upgrade,
@@ -986,12 +987,6 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
         self.assertEqual(tool.getLastVersionForProfile(profile_id),
                          ('1', '1'))
 
-        # reset ugprade registry
-        _upgrade_registry._registry = orig_upgrade_registry
-
-        # reset profile registry
-        profile_registry.unregisterProfile(profile_id, product_name)
-
     def test_manage_doUpgrades_no_profile_id_or_updates(self):
         site = self._makeSite()
         site.setup_tool = self._makeOne('setup_tool')
@@ -1000,25 +995,17 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
         self.assertEqual(tool._profile_upgrade_versions, {})
 
     def test_manage_doUpgrades_upgrade_w_no_target_version(self):
-        from Products.GenericSetup.upgrade import _upgrade_registry
-
-        old = dict(_upgrade_registry._registry)
-        try:
-            step = UpgradeStep('TITLE', 'foo', '*', '*', 'DESC',
-                                lambda tool: None)
-            _registerUpgradeStep(step)
-            site = self._makeSite()
-            site.setup_tool = self._makeOne('setup_tool')
-            tool = site.setup_tool
-            request = site.REQUEST
-            request['profile_id'] = ['foo']
-            request['upgrade'] = [step.id]
-            tool.manage_doUpgrades()
-            self.assertEqual(tool._profile_upgrade_versions, {})
-        finally:
-            _upgrade_registry.clear()
-            for key in old:
-                _upgrade_registry._registry[key] = old[key]
+        step = UpgradeStep('TITLE', 'foo', '*', '*', 'DESC',
+                            lambda tool: None)
+        _registerUpgradeStep(step)
+        site = self._makeSite()
+        site.setup_tool = self._makeOne('setup_tool')
+        tool = site.setup_tool
+        request = site.REQUEST
+        request['profile_id'] = ['foo']
+        request['upgrade'] = [step.id]
+        tool.manage_doUpgrades()
+        self.assertEqual(tool._profile_upgrade_versions, {})
 
     def test_listExportSteps(self):
         site = self._makeSite()
