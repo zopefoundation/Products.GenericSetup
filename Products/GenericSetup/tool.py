@@ -912,12 +912,77 @@ class SetupTool(Folder):
 
         # We update the profile version to the last one we have reached
         # with running an upgrade step.
-        if step and step.dest is not None and step.checker is None:
+        if step and step.dest is not None:
             self.setLastVersionForProfile(profile_id, step.dest)
 
         url = self.absolute_url()
         request.RESPONSE.redirect("%s/manage_upgrades?saved=%s"
                                     % (url, profile_id))
+
+    security.declareProtected(ManagePortal, 'upgradeProfile')
+    def upgradeProfile(self, profile_id, dest=None):
+        """Upgrade a profile.
+
+        Apply all upgrade steps.
+
+        When 'dest' is given, only update to that version.  If the
+        version is not found, give a warning and do nothing.
+
+        If the profile was not applied previously (last version for
+        profile is unknown) we do nothing.
+        """
+        if self.getLastVersionForProfile(profile_id) == 'unknown':
+            generic_logger.warn('Version of profile %s is unknown, '
+                                'refusing to upgrade.', profile_id)
+            return
+        if dest is not None:
+            # Upgrade to a specific destination version, if found.
+            if isinstance(dest, basestring):
+                dest = tuple(dest.split('.'))
+            if self.getLastVersionForProfile(profile_id) == dest:
+                generic_logger.warn('Profile %s is already at wanted '
+                                    'destination %r.', profile_id, dest)
+                return
+        upgrades = self.listUpgrades(profile_id)
+        # First get a list of single steps to apply.  This may be
+        # limited by the wanted destination version.
+        to_apply = []
+        dest_found = False
+        step = None
+        for upgrade in upgrades:
+            # An upgrade may be a single step (for a bare upgradeStep)
+            # or a list of steps (for upgradeSteps containing upgradeStep
+            # directives).
+            if not isinstance(upgrade, list):
+                upgrade = [upgrade]
+            for upgradestep in upgrade:
+                step = upgradestep['step']
+                to_apply.append(step)
+                if dest is not None and step.dest == dest:
+                    dest_found = True
+            if dest_found:
+                break
+        if dest is not None and not dest_found:
+            generic_logger.warn(
+                'No route found to destination version %r for profile %s. '
+                'Profile stays at current version, %r', dest, profile_id,
+                self.getLastVersionForProfile(profile_id))
+            return
+        if to_apply:
+            for step in to_apply:
+                step.doStep(self)
+            # We update the profile version to the last one we have
+            # reached with running an upgrade step.
+            if step and step.dest is not None:
+                self.setLastVersionForProfile(profile_id, step.dest)
+                generic_logger.info(
+                    'Profile %s upgraded to version %r.',
+                    profile_id, self.getLastVersionForProfile(profile_id))
+        else:
+            generic_logger.info(
+                'No upgrades available for profile %s. '
+                'Profile stays at version %r.', profile_id,
+                self.getLastVersionForProfile(profile_id))
 
     #
     #   Helper methods

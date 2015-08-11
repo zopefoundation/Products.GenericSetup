@@ -15,7 +15,6 @@
 
 import unittest
 
-import copy
 import os
 from StringIO import StringIO
 
@@ -78,6 +77,8 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
     _PROFILE_PATH2 = '/tmp/STT_test2'
 
     def afterSetUp(self):
+        from Products.GenericSetup.upgrade import _upgrade_registry
+        _upgrade_registry.clear()
         profile_registry.clear()
         global _before_import_events
         global _after_import_events
@@ -90,6 +91,9 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
         base_registry.unregisterHandler(handleBeforeProfileImportEvent)
         base_registry.unregisterHandler(handleProfileImportedEvent)
         FilesystemTestBase.beforeTearDown(self)
+        from Products.GenericSetup.upgrade import _upgrade_registry
+        profile_registry.clear()
+        _upgrade_registry.clear()
 
     def _getTargetClass(self):
         from Products.GenericSetup.tool import SetupTool
@@ -945,8 +949,6 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
                          '2007-03-15T12:34:56Z')
 
     def test_profileVersioning(self):
-        from Products.GenericSetup.upgrade import _upgrade_registry
-
         site = self._makeSite()
         site.setup_tool = self._makeOne('setup_tool')
         tool = site.setup_tool
@@ -963,7 +965,6 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
                                          product=product_name)
 
         # register upgrade step
-        orig_upgrade_registry = copy.copy(_upgrade_registry._registry)
         step = UpgradeStep("Upgrade",
                            "GenericSetup:dummy_profile", '*', '1.1', '',
                            dummy_upgrade,
@@ -986,12 +987,6 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
         self.assertEqual(tool.getLastVersionForProfile(profile_id),
                          ('1', '1'))
 
-        # reset ugprade registry
-        _upgrade_registry._registry = orig_upgrade_registry
-
-        # reset profile registry
-        profile_registry.unregisterProfile(profile_id, product_name)
-
     def test_manage_doUpgrades_no_profile_id_or_updates(self):
         site = self._makeSite()
         site.setup_tool = self._makeOne('setup_tool')
@@ -1000,25 +995,72 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
         self.assertEqual(tool._profile_upgrade_versions, {})
 
     def test_manage_doUpgrades_upgrade_w_no_target_version(self):
-        from Products.GenericSetup.upgrade import _upgrade_registry
+        step = UpgradeStep('TITLE', 'foo', '*', '*', 'DESC',
+                            lambda tool: None)
+        _registerUpgradeStep(step)
+        site = self._makeSite()
+        site.setup_tool = self._makeOne('setup_tool')
+        tool = site.setup_tool
+        request = site.REQUEST
+        request['profile_id'] = ['foo']
+        request['upgrade'] = [step.id]
+        tool.manage_doUpgrades()
+        self.assertEqual(tool._profile_upgrade_versions, {})
 
-        old = dict(_upgrade_registry._registry)
-        try:
-            step = UpgradeStep('TITLE', 'foo', '*', '*', 'DESC',
-                                lambda tool: None)
-            _registerUpgradeStep(step)
-            site = self._makeSite()
-            site.setup_tool = self._makeOne('setup_tool')
-            tool = site.setup_tool
-            request = site.REQUEST
-            request['profile_id'] = ['foo']
-            request['upgrade'] = [step.id]
-            tool.manage_doUpgrades()
-            self.assertEqual(tool._profile_upgrade_versions, {})
-        finally:
-            _upgrade_registry.clear()
-            for key in old:
-                _upgrade_registry._registry[key] = old[key]
+    def test_upgradeProfile_no_profile_id_or_updates(self):
+        site = self._makeSite()
+        site.setup_tool = self._makeOne('setup_tool')
+        tool = site.setup_tool
+        # Mostly this checks to see if we can call this without an
+        # exception.
+        tool.upgradeProfile('no.such.profile:default')
+        self.assertEqual(tool._profile_upgrade_versions, {})
+        tool.upgradeProfile('no.such.profile:default', dest='42')
+        self.assertEqual(tool._profile_upgrade_versions, {})
+
+    def test_upgradeProfile(self):
+        dummy_handler = lambda tool: None
+
+        def step3_handler(tool):
+            tool._step3_applied = 'just a marker'
+
+        def step3_checker(tool):
+            # False means already applied or does not apply.
+            # True means can be applied.
+            return not hasattr(tool, '_step3_applied')
+
+        step1 = UpgradeStep('Step 1', 'foo', '0', '1', 'DESC',
+                            dummy_handler)
+        step2 = UpgradeStep('Step 2', 'foo', '1', '2', 'DESC',
+                            dummy_handler)
+        step3 = UpgradeStep('Step 3', 'foo', '2', '3', 'DESC',
+                            step3_handler, checker=step3_checker)
+        step4 = UpgradeStep('Step 4', 'foo', '3', '4', 'DESC',
+                            dummy_handler)
+        _registerUpgradeStep(step1)
+        _registerUpgradeStep(step2)
+        _registerUpgradeStep(step3)
+        _registerUpgradeStep(step4)
+        site = self._makeSite()
+        site.setup_tool = self._makeOne('setup_tool')
+        tool = site.setup_tool
+        self.assertEqual(tool.getLastVersionForProfile('foo'), 'unknown')
+        tool.setLastVersionForProfile('foo', '0')
+        self.assertEqual(tool.getLastVersionForProfile('foo'), ('0',))
+        # Upgrade the profile one step to version 1.
+        tool.upgradeProfile('foo', '1')
+        self.assertEqual(tool.getLastVersionForProfile('foo'), ('1',))
+        # Upgrade the profile two steps to version 3.  This one has a
+        # checker.  The profile version must be correctly updated.
+        tool.upgradeProfile('foo', '3')
+        self.assertEqual(tool.getLastVersionForProfile('foo'), ('3',))
+        # Upgrade the profile to a non existing version.  Nothing
+        # should happen.
+        tool.upgradeProfile('foo', '5')
+        self.assertEqual(tool.getLastVersionForProfile('foo'), ('3',))
+        # Upgrade the profile to the latest version.
+        tool.upgradeProfile('foo')
+        self.assertEqual(tool.getLastVersionForProfile('foo'), ('4',))
 
     def test_listExportSteps(self):
         site = self._makeSite()
