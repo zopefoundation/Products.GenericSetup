@@ -5,10 +5,10 @@ Changelog
 ------------------
 
 - Added upgradeProfile method to setup tool.  This applies all
-  upgrades steps for the gibven profile, or updates it to the given
-  version.  If the profile does not exist, we warn and do nothing.  If
-  the there is no upgrade step to go to the specified version, we warn
-  and upgrade to the latest version.
+  upgrades steps for the given profile, or updates it to the optional
+  given version.  If the profile does not exist, we warn and do
+  nothing.  If there is no upgrade step to go to the specified
+  version, we warn and do nothing.
 
 - Check the boolean value of the ``remove`` option when importing
   objects.  Previously we only checked if the ``remove`` option was

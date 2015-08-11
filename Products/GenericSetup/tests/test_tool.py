@@ -1043,12 +1043,10 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
         # Upgrade the profile two steps to version 3.
         tool.upgradeProfile('foo', '3')
         self.assertEqual(tool.getLastVersionForProfile('foo'), ('3',))
-        # Upgrade the profile to a non existing version.
-        tool.upgradeProfile('foo', 'no-such-step')
-        self.assertEqual(tool.getLastVersionForProfile('foo'), ('4',))
-        # Reset.
-        tool.setLastVersionForProfile('foo', '0')
-        self.assertEqual(tool.getLastVersionForProfile('foo'), ('0',))
+        # Upgrade the profile to a non existing version.  Nothing
+        # should happen.
+        tool.upgradeProfile('foo', '5')
+        self.assertEqual(tool.getLastVersionForProfile('foo'), ('3',))
         # Upgrade the profile to the latest version.
         tool.upgradeProfile('foo')
         self.assertEqual(tool.getLastVersionForProfile('foo'), ('4',))

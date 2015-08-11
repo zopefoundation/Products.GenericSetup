@@ -926,8 +926,7 @@ class SetupTool(Folder):
         Apply all upgrade steps.
 
         When 'dest' is given, only update to that version.  If the
-        version is not found, give a warning and simply update to the
-        latest.
+        version is not found, give a warning and do nothing.
 
         If the profile was not applied previously (last version for
         profile is unknown) we do nothing.
@@ -945,6 +944,9 @@ class SetupTool(Folder):
                                     'destination %r.', profile_id, dest)
                 return
         upgrades = self.listUpgrades(profile_id)
+        # First get a list of single steps to apply.  This may be
+        # limited by the wanted destination version.
+        to_apply = []
         dest_found = False
         step = None
         for upgrade in upgrades:
@@ -955,19 +957,31 @@ class SetupTool(Folder):
                 upgrade = [upgrade]
             for upgradestep in upgrade:
                 step = upgradestep['step']
-                step.doStep(self)
+                to_apply.append(step)
                 if dest is not None and step.dest == dest:
                     dest_found = True
             if dest_found:
                 break
-        # We update the profile version to the last one we have reached
-        # with running an upgrade step.
-        if step and step.dest is not None and step.checker is None:
-            self.setLastVersionForProfile(profile_id, step.dest)
         if dest is not None and not dest_found:
             generic_logger.warn(
-                'Could not reach destination %r for profile %s. '
-                'Upgraded to the latest version, %r', dest, profile_id,
+                'No route found to destination version %r for profile %s. '
+                'Profile stays at current version, %r', dest, profile_id,
+                self.getLastVersionForProfile(profile_id))
+            return
+        if to_apply:
+            for step in to_apply:
+                step.doStep(self)
+            # We update the profile version to the last one we have
+            # reached with running an upgrade step.
+            if step and step.dest is not None and step.checker is None:
+                self.setLastVersionForProfile(profile_id, step.dest)
+                generic_logger.info(
+                    'Profile %s upgraded to version %r.',
+                    profile_id, self.getLastVersionForProfile(profile_id))
+        else:
+            generic_logger.info(
+                'No upgrades available for profile %s. '
+                'Profile stays at version %r.', profile_id,
                 self.getLastVersionForProfile(profile_id))
 
     #
