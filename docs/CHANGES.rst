@@ -1,7 +1,7 @@
 Changelog
 =========
 
-1.7.7 (unreleased)
+1.7.7 (2015-08-11)
 ------------------
 
 - Fix: when the last applied upgrade step had a checker, the profile
