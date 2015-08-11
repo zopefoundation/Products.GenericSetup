@@ -1019,14 +1019,24 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
         self.assertEqual(tool._profile_upgrade_versions, {})
 
     def test_upgradeProfile(self):
+        dummy_handler = lambda tool: None
+
+        def step3_handler(tool):
+            tool._step3_applied = 'just a marker'
+
+        def step3_checker(tool):
+            # False means already applied or does not apply.
+            # True means can be applied.
+            return not hasattr(tool, '_step3_applied')
+
         step1 = UpgradeStep('Step 1', 'foo', '0', '1', 'DESC',
-                            lambda tool: None)
+                            dummy_handler)
         step2 = UpgradeStep('Step 2', 'foo', '1', '2', 'DESC',
-                            lambda tool: None)
+                            dummy_handler)
         step3 = UpgradeStep('Step 3', 'foo', '2', '3', 'DESC',
-                            lambda tool: None)
+                            step3_handler, checker=step3_checker)
         step4 = UpgradeStep('Step 4', 'foo', '3', '4', 'DESC',
-                            lambda tool: None)
+                            dummy_handler)
         _registerUpgradeStep(step1)
         _registerUpgradeStep(step2)
         _registerUpgradeStep(step3)
@@ -1040,7 +1050,8 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
         # Upgrade the profile one step to version 1.
         tool.upgradeProfile('foo', '1')
         self.assertEqual(tool.getLastVersionForProfile('foo'), ('1',))
-        # Upgrade the profile two steps to version 3.
+        # Upgrade the profile two steps to version 3.  This one has a
+        # checker.  The profile version must be correctly updated.
         tool.upgradeProfile('foo', '3')
         self.assertEqual(tool.getLastVersionForProfile('foo'), ('3',))
         # Upgrade the profile to a non existing version.  Nothing

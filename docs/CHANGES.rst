@@ -4,6 +4,13 @@ Changelog
 1.7.7 (unreleased)
 ------------------
 
+- Fixed: when the last applied upgrade step had a checker, the profile
+  version was not updated.  Now we no longer look at the checker of
+  the last applied step when deciding whether to set the profile
+  version.  The checker, if any is set, normally returns True before
+  running the step (it can be applied), and False afterwards (it
+  was already applied).
+
 - Added upgradeProfile method to setup tool.  This applies all
   upgrades steps for the given profile, or updates it to the optional
   given version.  If the profile does not exist, we warn and do

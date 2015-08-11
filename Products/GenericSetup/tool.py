@@ -912,7 +912,7 @@ class SetupTool(Folder):
 
         # We update the profile version to the last one we have reached
         # with running an upgrade step.
-        if step and step.dest is not None and step.checker is None:
+        if step and step.dest is not None:
             self.setLastVersionForProfile(profile_id, step.dest)
 
         url = self.absolute_url()
@@ -973,7 +973,7 @@ class SetupTool(Folder):
                 step.doStep(self)
             # We update the profile version to the last one we have
             # reached with running an upgrade step.
-            if step and step.dest is not None and step.checker is None:
+            if step and step.dest is not None:
                 self.setLastVersionForProfile(profile_id, step.dest)
                 generic_logger.info(
                     'Profile %s upgraded to version %r.',
