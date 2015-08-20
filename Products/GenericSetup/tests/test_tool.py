@@ -1069,6 +1069,21 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
         self.assertEqual(tool.getLastVersionForProfile(profile_id),
                          ('1', '1'))
 
+    def test_get_and_setLastVersionForProfile(self):
+        site = self._makeSite()
+        site.setup_tool = self._makeOne('setup_tool')
+        tool = site.setup_tool
+        self.assertEqual(tool._profile_upgrade_versions, {})
+        # Any 'profile-' is stripped off in these calls.
+        self.assertEqual(tool.getLastVersionForProfile('foo'), 'unknown')
+        self.assertEqual(tool.getLastVersionForProfile('profile-foo'), 'unknown')
+        tool.setLastVersionForProfile('foo', '1.0')
+        self.assertEqual(tool.getLastVersionForProfile('foo'), ('1', '0'))
+        self.assertEqual(tool.getLastVersionForProfile('profile-foo'), ('1', '0'))
+        tool.setLastVersionForProfile('profile-foo', '2.0')
+        self.assertEqual(tool.getLastVersionForProfile('foo'), ('2', '0'))
+        self.assertEqual(tool.getLastVersionForProfile('profile-foo'), ('2', '0'))
+
     def test_manage_doUpgrades_no_profile_id_or_updates(self):
         site = self._makeSite()
         site.setup_tool = self._makeOne('setup_tool')

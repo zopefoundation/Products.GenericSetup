@@ -807,6 +807,8 @@ class SetupTool(Folder):
     def getLastVersionForProfile(self, profile_id):
         """Return the last upgraded version for the specified profile.
         """
+        if profile_id.startswith("profile-"):
+            profile_id = profile_id[len('profile-'):]
         version = self._profile_upgrade_versions.get(profile_id, 'unknown')
         return version
 
@@ -814,6 +816,8 @@ class SetupTool(Folder):
     def setLastVersionForProfile(self, profile_id, version):
         """Set the last upgraded version for the specified profile.
         """
+        if profile_id.startswith("profile-"):
+            profile_id = profile_id[len('profile-'):]
         if isinstance(version, basestring):
             version = tuple(version.split('.'))
         prof_versions = self._profile_upgrade_versions.copy()
@@ -839,10 +843,6 @@ class SetupTool(Folder):
 
     security.declareProtected(ManagePortal, "getProfileInfo")
     def getProfileInfo(self, profile_id):
-        if profile_id.startswith("profile-"):
-            profile_id = profile_id[len('profile-'):]
-        elif profile_id.startswith("snapshot-"):
-            profile_id = profile_id[len('snapshot-'):]
         return _profile_registry.getProfileInfo(profile_id)
 
     security.declareProtected(ManagePortal, 'getDependenciesForProfile')
@@ -994,30 +994,33 @@ class SetupTool(Folder):
     security.declarePrivate('_getImportContext')
     def _getImportContext(self, context_id, should_purge=None, archive=None):
         """ Crack ID and generate appropriate import context.
+
+        Note: it seems context_id (profile id) and archive (tarball)
+        are mutually exclusive.  Exactly one of the two should be
+        None.  There seems to be no use case for a different
+        combination.
         """
         encoding = self.getEncoding()
 
         if context_id is not None:
-            if context_id.startswith('profile-'):
-                context_id = context_id[len('profile-'):]
-                info = _profile_registry.getProfileInfo(context_id)
-
-                if info.get('product'):
-                    path = os.path.join(_getProductPath(info['product']),
-                                        info['path'])
-                else:
-                    path = info['path']
-                if should_purge is None:
-                    should_purge = (info.get('type') != EXTENSION)
-                return DirectoryImportContext(self, path, should_purge,
-                                              encoding)
-
-            elif context_id.startswith('snapshot-'):
+            if context_id.startswith('snapshot-'):
                 context_id = context_id[len('snapshot-'):]
                 if should_purge is None:
                     should_purge = True
                 return SnapshotImportContext(self, context_id, should_purge,
                                              encoding)
+            if context_id.startswith('profile-'):
+                context_id = context_id[len('profile-'):]
+            info = _profile_registry.getProfileInfo(context_id)
+            if info.get('product'):
+                path = os.path.join(_getProductPath(info['product']),
+                                    info['path'])
+            else:
+                path = info['path']
+            if should_purge is None:
+                should_purge = (info.get('type') != EXTENSION)
+            return DirectoryImportContext(self, path, should_purge,
+                                          encoding)
 
         if archive is not None:
             return TarballImportContext(tool=self,
@@ -1178,16 +1181,12 @@ class SetupTool(Folder):
         last_index = len(chain) - 1
         for index, profile_id in enumerate(chain):
             if not always_apply_profiles and index != last_index:
-                if profile_id.startswith("profile-"):
-                    stripped_id = profile_id[len('profile-'):]
-                else:
-                    stripped_id = profile_id
                 # Check if dependency profile was already applied.
-                if self.getLastVersionForProfile(stripped_id) != 'unknown':
+                if self.getLastVersionForProfile(profile_id) != 'unknown':
                     # Profile was already applied.
                     # Maybe apply upgrade steps, if any, otherwise continue.
                     if upgrade_dependencies:
-                        self.upgradeProfile(stripped_id)
+                        self.upgradeProfile(profile_id)
                     continue
             context = self._getImportContext(profile_id, purge_old, archive)
             self.applyContext(context)

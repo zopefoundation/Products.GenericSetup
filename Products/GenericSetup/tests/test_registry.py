@@ -1056,6 +1056,13 @@ class ProfileRegistryTests( BaseRegistryTests
         self.assertEqual( info[ 'type' ], PROFILE_TYPE )
         self.assertEqual( info[ 'for' ], None )
 
+        # We strip off any 'profile-' or 'snapshot-' at the beginning
+        # of the profile id.
+        info2 = registry.getProfileInfo( 'profile-' + PROFILE_ID )
+        self.assertEqual(info, info2)
+        info3 = registry.getProfileInfo( 'snapshot-' + PROFILE_ID )
+        self.assertEqual(info, info3)
+
     def test_registerProfile_duplicate( self ):
 
         NAME = 'one'
