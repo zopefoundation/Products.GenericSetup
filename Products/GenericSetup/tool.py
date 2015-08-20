@@ -352,7 +352,9 @@ class SetupTool(Folder):
                                      purge_old=None,
                                      ignore_dependencies=False,
                                      archive=None,
-                                     blacklisted_steps=None):
+                                     blacklisted_steps=None,
+                                     always_apply_profiles=False,
+                                     upgrade_dependencies=True):
         """ See ISetupTool.
         """
         __traceback_info__ = profile_id
@@ -362,7 +364,9 @@ class SetupTool(Folder):
                             profile_id=profile_id,
                             archive=archive,
                             ignore_dependencies=ignore_dependencies,
-                            blacklisted_steps=blacklisted_steps)
+                            blacklisted_steps=blacklisted_steps,
+                            always_apply_profiles=always_apply_profiles,
+                            upgrade_dependencies=upgrade_dependencies)
         if profile_id is None:
             prefix = 'import-all-from-tar'
         else:
@@ -1147,8 +1151,13 @@ class SetupTool(Folder):
                                    archive=None,
                                    ignore_dependencies=False,
                                    seen=None,
-                                   blacklisted_steps=None):
+                                   blacklisted_steps=None,
+                                   always_apply_profiles=False,
+                                   upgrade_dependencies=True):
 
+        if always_apply_profiles and upgrade_dependencies:
+            raise ValueError('always_apply_profiles and upgrade_dependencies '
+                             'cannot both be True.')
         if profile_id is not None and not ignore_dependencies:
             try:
                 chain = self.getProfileDependencyChain(profile_id)
@@ -1166,7 +1175,20 @@ class SetupTool(Folder):
 
         detect_steps = steps is None
 
-        for profile_id in chain:
+        last_index = len(chain) - 1
+        for index, profile_id in enumerate(chain):
+            if not always_apply_profiles and index != last_index:
+                if profile_id.startswith("profile-"):
+                    stripped_id = profile_id[len('profile-'):]
+                else:
+                    stripped_id = profile_id
+                # Check if dependency profile was already applied.
+                if self.getLastVersionForProfile(stripped_id) != 'unknown':
+                    # Profile was already applied.
+                    # Maybe apply upgrade steps, if any, otherwise continue.
+                    if upgrade_dependencies:
+                        self.upgradeProfile(stripped_id)
+                    continue
             context = self._getImportContext(profile_id, purge_old, archive)
             self.applyContext(context)
 
