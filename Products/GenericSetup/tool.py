@@ -1182,16 +1182,24 @@ class SetupTool(Folder):
 
         detect_steps = steps is None
 
+        # The chain is: first all dependency profiles ( recursively if
+        # applicable), and as last one the main profile for which we
+        # got passed the profile_id.
         last_index = len(chain) - 1
         for index, profile_id in enumerate(chain):
             if not always_apply_profiles and index != last_index:
-                # Check if dependency profile was already applied.
+                # If index is not the last index, then this is a
+                # dependency profile.  Check if this profile was
+                # already applied.
                 if self.getLastVersionForProfile(profile_id) != 'unknown':
                     # Profile was already applied.
                     # Maybe apply upgrade steps, if any, otherwise continue.
                     if upgrade_dependencies:
                         self.upgradeProfile(profile_id)
                     continue
+            # The next lines are done at least for the main profile.
+            # Possibly also for dependency profiles, depending on the
+            # condition above.
             context = self._getImportContext(profile_id, purge_old, archive)
             self.applyContext(context)
 
