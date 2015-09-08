@@ -50,5 +50,6 @@ def handleProfileImportedEvent(event):
 
     version = event.tool.getVersionForProfile(profile_id)
     if version and version != 'unknown':
-        profile_id = profile_id[len('profile-'):]
+        prefix = 'profile-'
+        profile_id = profile_id[len(prefix):]
         event.tool.setLastVersionForProfile(profile_id, version)

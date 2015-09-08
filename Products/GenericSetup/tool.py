@@ -807,8 +807,9 @@ class SetupTool(Folder):
     def getLastVersionForProfile(self, profile_id):
         """Return the last upgraded version for the specified profile.
         """
-        if profile_id.startswith("profile-"):
-            profile_id = profile_id[len('profile-'):]
+        prefix = 'profile-'
+        if profile_id.startswith(prefix):
+            profile_id = profile_id[len(prefix):]
         version = self._profile_upgrade_versions.get(profile_id, 'unknown')
         return version
 
@@ -816,8 +817,9 @@ class SetupTool(Folder):
     def setLastVersionForProfile(self, profile_id, version):
         """Set the last upgraded version for the specified profile.
         """
-        if profile_id.startswith("profile-"):
-            profile_id = profile_id[len('profile-'):]
+        prefix = 'profile-'
+        if profile_id.startswith(prefix):
+            profile_id = profile_id[len(prefix):]
         if isinstance(version, basestring):
             version = tuple(version.split('.'))
         prof_versions = self._profile_upgrade_versions.copy()
@@ -1003,14 +1005,16 @@ class SetupTool(Folder):
         encoding = self.getEncoding()
 
         if context_id is not None:
-            if context_id.startswith('snapshot-'):
-                context_id = context_id[len('snapshot-'):]
+            prefix = 'snapshot-'
+            if context_id.startswith(prefix):
+                context_id = context_id[len(prefix):]
                 if should_purge is None:
                     should_purge = True
                 return SnapshotImportContext(self, context_id, should_purge,
                                              encoding)
-            if context_id.startswith('profile-'):
-                context_id = context_id[len('profile-'):]
+            prefix = 'profile-'
+            if context_id.startswith(prefix):
+                context_id = context_id[len(prefix):]
             info = _profile_registry.getProfileInfo(context_id)
             if info.get('product'):
                 path = os.path.join(_getProductPath(info['product']),
