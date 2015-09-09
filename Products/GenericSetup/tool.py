@@ -1161,6 +1161,8 @@ class SetupTool(Folder):
                                    always_apply_profiles=False,
                                    upgrade_dependencies=True):
 
+        # 1. Gather a list of profiles to handle.
+
         if always_apply_profiles and upgrade_dependencies:
             raise ValueError('always_apply_profiles and upgrade_dependencies '
                              'cannot both be True.')
@@ -1174,8 +1176,12 @@ class SetupTool(Folder):
         else:
             chain = [profile_id]
 
-        results = []
+        # 2. For each profile, depending on the keyword arguments, either:
+        # a. do nothing or
+        # b. apply its upgrade steps or
+        # c. apply its full profile.
 
+        results = []
         detect_steps = steps is None
 
         # The chain is: first all dependency profiles ( recursively if
@@ -1195,15 +1201,12 @@ class SetupTool(Folder):
                     continue
             # The next lines are done at least for the main profile.
             # Possibly also for dependency profiles, depending on the
-            # condition above.
+            # condition above.  It applies the profile.
             context = self._getImportContext(profile_id, purge_old, archive)
             self.applyContext(context)
-
             if detect_steps:
                 steps = self.getSortedImportSteps()
-
             messages = {}
-
             event.notify(
                 BeforeProfileImportEvent(self, profile_id, steps, True))
             for step in steps:
@@ -1218,8 +1221,9 @@ class SetupTool(Folder):
                 context.clearNotes()
 
             event.notify(ProfileImportedEvent(self, profile_id, steps, True))
-
             results.append({'steps': steps, 'messages': messages})
+
+        # 3. Gather data for reporting back.
 
         data = {'steps': [], 'messages': {}}
         for result in results:
