@@ -1157,7 +1157,6 @@ class SetupTool(Folder):
                                    profile_id=None,
                                    archive=None,
                                    ignore_dependencies=False,
-                                   seen=None,
                                    blacklisted_steps=None,
                                    always_apply_profiles=False,
                                    upgrade_dependencies=True):
@@ -1174,9 +1173,6 @@ class SetupTool(Folder):
                 raise
         else:
             chain = [profile_id]
-            if seen is None:
-                seen = set()
-            seen.add(profile_id)
 
         results = []
 
