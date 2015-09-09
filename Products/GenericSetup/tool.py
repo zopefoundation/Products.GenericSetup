@@ -1185,9 +1185,9 @@ class SetupTool(Folder):
         # The chain is: first all dependency profiles ( recursively if
         # applicable), and as last one the main profile for which we
         # got passed the profile_id.
-        last_index = len(chain) - 1
-        for index, profile_id in enumerate(chain):
-            if not always_apply_profiles and index != last_index:
+        last_num = len(chain)
+        for num, profile_id in enumerate(chain, 1):
+            if not always_apply_profiles and num != last_num:
                 # If index is not the last index, then this is a
                 # dependency profile.  Check if this profile was
                 # already applied.
