@@ -15,10 +15,8 @@ Changelog
   are not applied again.  Instead, its upgrade steps, if any, are
   applied.  In code you can choose the old behavior of always applying
   the dependencies, by calling ``runAllImportStepsFromProfile`` with
-  ``always_apply_profiles=True``.  Or you can choose to be happy with
-  any applied version and ignore any upgrade steps, by using
-  ``upgrade_dependencies=False``.  Note that these arguments cannot
-  both be ``True``.
+  ``dependency_strategy=DEPENDENCY_STRATEGY_REAPPLY``.  There are four
+  strategies, which you can choose in the ZMI.
 
 
 1.7.7 (2015-08-11)

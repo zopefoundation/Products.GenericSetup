@@ -58,6 +58,13 @@ from Products.GenericSetup.utils import _wwwdir
 IMPORT_STEPS_XML = 'import_steps.xml'
 EXPORT_STEPS_XML = 'export_steps.xml'
 TOOLSET_XML = 'toolset.xml'
+# What do we do with already applied dependency profiles?
+# The behavior used to be: reapply.  Now there are more options.
+DEPENDENCY_STRATEGY_UPGRADE = 'upgrade'
+DEPENDENCY_STRATEGY_REAPPLY = 'reapply'
+DEPENDENCY_STRATEGY_NEW = 'new'
+DEPENDENCY_STRATEGY_IGNORE = 'ignore'
+DEFAULT_DEPENDENCY_STRATEGY = DEPENDENCY_STRATEGY_UPGRADE
 
 generic_logger = logging.getLogger(__name__)
 
@@ -353,8 +360,7 @@ class SetupTool(Folder):
                                      ignore_dependencies=False,
                                      archive=None,
                                      blacklisted_steps=None,
-                                     always_apply_profiles=False,
-                                     upgrade_dependencies=True):
+                                     dependency_strategy=None):
         """ See ISetupTool.
         """
         __traceback_info__ = profile_id
@@ -365,8 +371,7 @@ class SetupTool(Folder):
                             archive=archive,
                             ignore_dependencies=ignore_dependencies,
                             blacklisted_steps=blacklisted_steps,
-                            always_apply_profiles=always_apply_profiles,
-                            upgrade_dependencies=upgrade_dependencies)
+                            dependency_strategy=dependency_strategy)
         if profile_id is None:
             prefix = 'import-all-from-tar'
         else:
@@ -540,12 +545,14 @@ class SetupTool(Folder):
                                        messages=messages)
 
     security.declareProtected(ManagePortal, 'manage_importAllSteps')
-    def manage_importAllSteps(self, context_id=None):
+    def manage_importAllSteps(self, context_id=None, dependency_strategy=None):
         """ Import all steps.
         """
         if context_id is None:
             context_id = self.getBaselineContextID()
-        result = self.runAllImportStepsFromProfile(context_id, purge_old=None)
+        result = self.runAllImportStepsFromProfile(
+            context_id, purge_old=None,
+            dependency_strategy=dependency_strategy)
 
         steps_run = 'Steps run: %s' % ', '.join(result['steps'])
 
@@ -1158,14 +1165,46 @@ class SetupTool(Folder):
                                    archive=None,
                                    ignore_dependencies=False,
                                    blacklisted_steps=None,
-                                   always_apply_profiles=False,
-                                   upgrade_dependencies=True):
+                                   dependency_strategy=None):
 
-        # 1. Gather a list of profiles to handle.
+        # 1. Determine upgrade strategy.
+        #    What do we do with already applied dependency profiles?
 
-        if always_apply_profiles and upgrade_dependencies:
-            raise ValueError('always_apply_profiles and upgrade_dependencies '
-                             'cannot both be True.')
+        # There are two ways to say you want to ignore all
+        # dependencies.  If one is enabled, we enable the other too.
+        if dependency_strategy == DEPENDENCY_STRATEGY_IGNORE:
+            ignore_dependencies = True
+        elif ignore_dependencies:
+            dependency_strategy = DEPENDENCY_STRATEGY_IGNORE
+        # Turn None into the default:
+        if dependency_strategy is None:
+            dependency_strategy = DEFAULT_DEPENDENCY_STRATEGY
+        # Determine the settings based on the strategy.
+        if dependency_strategy == DEPENDENCY_STRATEGY_UPGRADE:
+            apply_new_profiles = True
+            reapply_old_profiles = False
+            upgrade_old_profiles = True
+        elif dependency_strategy == DEPENDENCY_STRATEGY_REAPPLY:
+            apply_new_profiles = True
+            reapply_old_profiles = True
+            upgrade_old_profiles = False
+        elif dependency_strategy == DEPENDENCY_STRATEGY_NEW:
+            apply_new_profiles = True
+            reapply_old_profiles = False
+            upgrade_old_profiles = False
+        elif dependency_strategy == DEPENDENCY_STRATEGY_IGNORE:
+            apply_new_profiles = False
+            reapply_old_profiles = False
+            upgrade_old_profiles = False
+        else:
+            raise ValueError('Unknown dependency_strategy %r.' %
+                             dependency_strategy)
+        generic_logger.info(
+            'Importing profile %s with dependency strategy %s.',
+            profile_id, dependency_strategy)
+
+        # 2. Gather a list of profiles to handle.
+
         if profile_id is not None and not ignore_dependencies:
             try:
                 chain = self.getProfileDependencyChain(profile_id)
@@ -1174,9 +1213,12 @@ class SetupTool(Folder):
                 logger.error('Unknown step in dependency chain: %s' % str(e))
                 raise
         else:
+            # Two possibilities:
+            # - We ignore dependencies, so we have a single profile id.
+            # - Profile id is None and we import a tarball (in the archive).
             chain = [profile_id]
 
-        # 2. For each profile, depending on the keyword arguments, either:
+        # 3. For each profile, depending on the keyword arguments, either:
         # a. do nothing or
         # b. apply its upgrade steps or
         # c. apply its full profile.
@@ -1189,16 +1231,26 @@ class SetupTool(Folder):
         # got passed the profile_id.
         last_num = len(chain)
         for num, profile_id in enumerate(chain, 1):
-            if not always_apply_profiles and num != last_num:
-                # If index is not the last index, then this is a
-                # dependency profile.  Check if this profile was
-                # already applied.
-                if self.getLastVersionForProfile(profile_id) != 'unknown':
+            if num == last_num:
+                generic_logger.info('Applying main profile %s', profile_id)
+            else:
+                # This is a dependency profile.  This means we are not
+                # completely ignoring them, otherwise it would not
+                # have ended up in the list.  Check if it was already
+                # applied.
+                if self.getLastVersionForProfile(profile_id) == 'unknown':
+                    # This is a new profile.
+                    if not apply_new_profiles:
+                        continue
+                    generic_logger.info('Applying profile %s', profile_id)
+                else:
                     # Profile was already applied.
-                    # Maybe apply upgrade steps, if any, otherwise continue.
-                    if upgrade_dependencies:
+                    if upgrade_old_profiles:
                         self.upgradeProfile(profile_id)
-                    continue
+                        continue
+                    if not reapply_old_profiles:
+                        continue
+                    generic_logger.info('Reapplying profile %s', profile_id)
             # The next lines are done at least for the main profile.
             # Possibly also for dependency profiles, depending on the
             # condition above.  It applies the profile.
@@ -1221,9 +1273,11 @@ class SetupTool(Folder):
                 context.clearNotes()
 
             event.notify(ProfileImportedEvent(self, profile_id, steps, True))
+            messages[profile_id] = (
+                'Imported with dependency strategy %s.' % dependency_strategy)
             results.append({'steps': steps, 'messages': messages})
 
-        # 3. Gather data for reporting back.
+        # 4. Gather data for reporting back.
 
         data = {'steps': [], 'messages': {}}
         for result in results:
