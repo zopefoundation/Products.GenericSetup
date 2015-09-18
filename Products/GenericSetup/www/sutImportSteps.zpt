@@ -83,29 +83,90 @@ procedure, in order to pick up changes since the site was created.
   </tr>
   </tal:loop>
 
+
   <tr valign="top" class="list-header">
-   <td colspan="4">&nbsp;</td>
+   <td colspan="4"><h3>Choose an action</h3></td>
+  </tr>
+
+  <tr valign="top" class="list-header">
+   <td colspan="4"><strong>Import selected steps</strong></td>
   </tr>
 
   <tr valign="top">
    <td />
    <td colspan="3">
-
     <input type="hidden" name="context_id" value="" tal:attributes="value context_id"/>
     <input type="hidden" name="run_dependencies:int:default" value="0" />
     <input class="form-element" type="checkbox" id="run_dependencies"
            name="run_dependencies:boolean" value="1" checked="checked" />
-    <label for="run_dependencies">Include dependencies?</label>
-    &nbsp; &nbsp;
-
+    <label for="run_dependencies">Include dependencies of steps?</label>
     <input class="form-element" type="submit"
            name="manage_importSelectedSteps:method"
            value=" Import selected steps " />
 
+   </td>
+  </tr>
+
+  <tr valign="top" class="list-header">
+   <td colspan="4"><strong>Import all steps</strong></td>
+  </tr>
+
+  <tr valign="top">
+   <td />
+   <td colspan="3">
+    <span>What do you want to do with dependency profiles (listed in the <code>metadata.xml</code> of the chosen profile)?</span>
+   </td>
+  </tr>
+  <tr valign="top">
+   <td />
+   <td colspan="3">
+    <input class="form-element" type="radio" id="dependency_strategy_upgrade"
+           name="dependency_strategy" value="upgrade" checked="checked" />
+    <label for="dependency_strategy_upgrade">Apply new profiles. Run <strong>upgrade</strong> steps for already applied profiles. <strong>Recommended.</strong></label>
+   </td>
+  </tr>
+  <tr valign="top">
+   <td />
+   <td colspan="3">
+    <input class="form-element" type="radio" id="dependency_strategy_reapply"
+           name="dependency_strategy" value="reapply" />
+    <label for="dependency_strategy_reapply"><strong>Apply</strong> all profiles. Already applied profiles are reapplied.</label>
+   </td>
+  </tr>
+  <tr valign="top">
+   <td />
+   <td colspan="3">
+    <input class="form-element" type="radio" id="dependency_strategy_new"
+           name="dependency_strategy" value="new" />
+    <label for="dependency_strategy_new">Apply <strong>only new</strong> profiles. Already applied profiles are left as is.</label>
+   </td>
+  </tr>
+  <tr valign="top">
+   <td />
+   <td colspan="3">
+    <input class="form-element" type="radio" id="dependency_strategy_ignore"
+           name="dependency_strategy" value="ignore" />
+    <label for="dependency_strategy_ignore"><strong>Ignore</strong> dependency profiles.</label>
+   </td>
+  </tr>
+  <tr valign="top">
+   <td />
+   <td colspan="3">
     <input class="form-element" type="submit"
            name="manage_importAllSteps:method"
            value=" Import all steps " />
+   </td>
+  </tr>
 
+  <tr valign="top" class="list-header">
+   <td colspan="4">
+   <strong>Import uploaded tarball</strong>
+   All options above are ignored.
+   </td>
+  </tr>
+  <tr valign="top">
+   <td />
+   <td colspan="3">
     <input class="form-element" type="file"
            name="tarball" />
     <input class="form-element" type="submit"
@@ -113,6 +174,8 @@ procedure, in order to pick up changes since the site was created.
            value=" Import uploaded tarball " />
    </td>
   </tr>
+
+
  </tbody>
 </table>
 

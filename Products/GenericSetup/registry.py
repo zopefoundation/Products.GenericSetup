@@ -644,6 +644,12 @@ class ProfileRegistry(Implicit):
     def getProfileInfo(self, profile_id, for_=None):
         """ See IProfileRegistry.
         """
+        prefixes = ('profile-', 'snapshot-')
+        for prefix in prefixes:
+            if profile_id.startswith(prefix):
+                profile_id = profile_id[len(prefix):]
+                break
+
         result = self._registered.get(profile_id)
         if result is None:
             raise KeyError(profile_id)

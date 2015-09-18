@@ -4,7 +4,19 @@ Changelog
 1.7.8 (unreleased)
 ------------------
 
-- TBD
+- Be more forgiving when dealing with profile ids with or without
+  ``profile-`` at the start.  All functions that accept a profile id
+  argument and only work when the id does *not* have this string at
+  the start, will now strip it off if it is there.  For example,
+  ``getLastVersionForProfile`` will give the same answer whether you
+  ask it for the version of profile id ``foo`` or ``profile-foo``.
+
+- Dependency profiles from ``metadata.xml`` that are already applied,
+  are not applied again.  Instead, its upgrade steps, if any, are
+  applied.  In code you can choose the old behavior of always applying
+  the dependencies, by calling ``runAllImportStepsFromProfile`` with
+  ``dependency_strategy=DEPENDENCY_STRATEGY_REAPPLY``.  There are four
+  strategies, which you can choose in the ZMI.
 
 
 1.7.7 (2015-08-11)

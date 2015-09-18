@@ -28,6 +28,7 @@ from Products.GenericSetup import profile_registry
 from Products.GenericSetup.interfaces import IBeforeProfileImportEvent
 from Products.GenericSetup.interfaces import IProfileImportedEvent
 from Products.GenericSetup.testing import ExportImportZCMLLayer
+from Products.GenericSetup.tests.common import _makeTestFile
 from Products.GenericSetup.tests.common import BaseRegistryTests
 from Products.GenericSetup.tests.common import DummyExportContext
 from Products.GenericSetup.tests.common import DummyImportContext
@@ -67,6 +68,20 @@ _METADATA_XML = """<?xml version="1.0"?>
   </dependencies>
 </metadata>
 """
+_DOUBLE_METADATA_XML = """<?xml version="1.0"?>
+<metadata>
+  <version>1.0</version>
+  <dependencies>
+    <dependency>profile-other:bar</dependency>
+    <dependency>profile-other:ham</dependency>
+  </dependencies>
+</metadata>
+"""
+_PLAIN_METADATA_XML = """<?xml version="1.0"?>
+<metadata>
+  <version>1.0</version>
+</metadata>
+"""
 
 
 class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
@@ -75,6 +90,7 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
 
     _PROFILE_PATH = '/tmp/STT_test'
     _PROFILE_PATH2 = '/tmp/STT_test2'
+    _PROFILE_PATH3 = '/tmp/STT_test3'
 
     def afterSetUp(self):
         from Products.GenericSetup.upgrade import _upgrade_registry
@@ -558,6 +574,131 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
                                           ignore_dependencies=False)
         self.assertEqual(_imported, [self._PROFILE_PATH2, self._PROFILE_PATH])
 
+    def _setup_dependency_strategy_test_tool(self):
+        # If we add a dependency profile in our metadata.xml, and this
+        # dependency was already applied, then we do not need to apply
+        # it yet again.  Once is quite enough, thank you.  Running any
+        # upgrade steps would be nice though.  There are options.
+        # Setup a tool and profiles for testing dependency strategies.
+        from Products.GenericSetup.metadata import METADATA_XML
+        self._makeFile(METADATA_XML, _DOUBLE_METADATA_XML)
+        _makeTestFile(METADATA_XML, self._PROFILE_PATH2, _PLAIN_METADATA_XML)
+        _makeTestFile(METADATA_XML, self._PROFILE_PATH3, _PLAIN_METADATA_XML)
+        site = self._makeSite()
+        tool = self._makeOne('setup_tool').__of__(site)
+
+        # Register main profile and two dependency profiles.
+        profile_registry.registerProfile('foo', 'Foo', '', self._PROFILE_PATH)
+        profile_registry.registerProfile('bar', 'Bar', '', self._PROFILE_PATH2)
+        profile_registry.registerProfile('ham', 'Ham', '', self._PROFILE_PATH3)
+
+        # Apply the second profile.
+        tool.runAllImportStepsFromProfile('profile-other:bar')
+
+        # Register an upgrade step.  Note that applying this step will
+        # set the profile version to 1.1, even though the metadata of
+        # the profile really says 1.0.  We will use this to check
+        # whether the upgrade step has been applied (version is 1.1)
+        # or the full profile has been applied (version is 1.0).
+        step_bar = UpgradeStep(
+            "Upgrade", "other:bar", '1.0', '1.1', '', dummy_upgrade, None, "1")
+        _registerUpgradeStep(step_bar)
+        # And another one.
+        step_ham = UpgradeStep(
+            "Upgrade", "other:ham", '1.0', '1.1', '', dummy_upgrade, None, "1")
+        _registerUpgradeStep(step_ham)
+
+        # Gather list of imported profiles.
+        tool._imported = []
+
+        def applyContext(context):
+            tool._imported.append(context._profile_path)
+
+        tool.applyContext = applyContext
+
+        return tool
+
+    def test_runAllImportStepsFromProfile_with_default_strategy(self):
+        # Default strategy: apply new profiles, upgrade old profiles.
+        tool = self._setup_dependency_strategy_test_tool()
+
+        # Run the main profile.
+        tool.runAllImportStepsFromProfile('profile-other:foo')
+        # The main and third profile have been applied.
+        self.assertEqual(tool._imported,
+                         [self._PROFILE_PATH3, self._PROFILE_PATH])
+        # The upgrade step of the second profile has been applied,
+        # pushing it to version 1.1.
+        self.assertEqual(tool.getLastVersionForProfile('other:bar'),
+                         ('1', '1'))
+        # Third profile is at 1.0.
+        self.assertEqual(tool.getLastVersionForProfile('other:ham'),
+                         ('1', '0'))
+
+    def test_runAllImportStepsFromProfile_with_reapply_strategy(self):
+        # You can choose the old behavior of always applying the
+        # dependencies.  This ignores any upgrade steps.
+        tool = self._setup_dependency_strategy_test_tool()
+
+        # Run the main profile.
+        from Products.GenericSetup.tool import DEPENDENCY_STRATEGY_REAPPLY
+        tool.runAllImportStepsFromProfile(
+            'profile-other:foo',
+            dependency_strategy=DEPENDENCY_STRATEGY_REAPPLY)
+        # All three profiles have been applied.
+        self.assertEqual(tool._imported,
+                         [self._PROFILE_PATH2, self._PROFILE_PATH3,
+                          self._PROFILE_PATH])
+        self.assertEqual(tool.getLastVersionForProfile('other:bar'),
+                         ('1', '0'))
+        self.assertEqual(tool.getLastVersionForProfile('other:ham'),
+                         ('1', '0'))
+
+    def test_runAllImportStepsFromProfile_with_new_strategy(self):
+        # You can choose to be happy with any applied version and
+        # ignore any upgrade steps.
+        tool = self._setup_dependency_strategy_test_tool()
+
+        # Run the main profile.
+        from Products.GenericSetup.tool import DEPENDENCY_STRATEGY_NEW
+        tool.runAllImportStepsFromProfile(
+            'profile-other:foo',
+            dependency_strategy=DEPENDENCY_STRATEGY_NEW)
+        # The main and third profile have been applied.
+        self.assertEqual(tool._imported,
+                         [self._PROFILE_PATH3, self._PROFILE_PATH])
+        # Second profile stays at 1.0.
+        self.assertEqual(tool.getLastVersionForProfile('other:bar'),
+                         ('1', '0'))
+        self.assertEqual(tool.getLastVersionForProfile('other:ham'),
+                         ('1', '0'))
+
+    def test_runAllImportStepsFromProfile_with_ignore_strategy(self):
+        # You can choose to be ignore all dependency profiles.
+        tool = self._setup_dependency_strategy_test_tool()
+
+        # Run the main profile.
+        from Products.GenericSetup.tool import DEPENDENCY_STRATEGY_IGNORE
+        tool.runAllImportStepsFromProfile(
+            'profile-other:foo',
+            dependency_strategy=DEPENDENCY_STRATEGY_IGNORE)
+        # Only the main profile has been applied.
+        self.assertEqual(tool._imported,
+                         [self._PROFILE_PATH])
+        # Second profile stays at 1.0.
+        self.assertEqual(tool.getLastVersionForProfile('other:bar'),
+                         ('1', '0'))
+        # Third profile is not applied.
+        self.assertEqual(tool.getLastVersionForProfile('other:ham'),
+                         ('unknown'))
+
+    def test_runAllImportStepsFromProfile_unknown_strategy(self):
+        site = self._makeSite()
+        tool = self._makeOne('setup_tool').__of__(site)
+        profile_registry.registerProfile('foo', 'Foo', '', self._PROFILE_PATH)
+        self.assertRaises(ValueError, tool.runAllImportStepsFromProfile,
+                          'profile-other:foo', dependency_strategy='random')
+
     def test_runAllImportStepsFromProfile_set_last_profile_version(self):
         from Products.GenericSetup.metadata import METADATA_XML
 
@@ -986,6 +1127,21 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
         tool.manage_doUpgrades()
         self.assertEqual(tool.getLastVersionForProfile(profile_id),
                          ('1', '1'))
+
+    def test_get_and_setLastVersionForProfile(self):
+        site = self._makeSite()
+        site.setup_tool = self._makeOne('setup_tool')
+        tool = site.setup_tool
+        self.assertEqual(tool._profile_upgrade_versions, {})
+        # Any 'profile-' is stripped off in these calls.
+        self.assertEqual(tool.getLastVersionForProfile('foo'), 'unknown')
+        self.assertEqual(tool.getLastVersionForProfile('profile-foo'), 'unknown')
+        tool.setLastVersionForProfile('foo', '1.0')
+        self.assertEqual(tool.getLastVersionForProfile('foo'), ('1', '0'))
+        self.assertEqual(tool.getLastVersionForProfile('profile-foo'), ('1', '0'))
+        tool.setLastVersionForProfile('profile-foo', '2.0')
+        self.assertEqual(tool.getLastVersionForProfile('foo'), ('2', '0'))
+        self.assertEqual(tool.getLastVersionForProfile('profile-foo'), ('2', '0'))
 
     def test_manage_doUpgrades_no_profile_id_or_updates(self):
         site = self._makeSite()

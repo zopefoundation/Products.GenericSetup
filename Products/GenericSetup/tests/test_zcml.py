@@ -166,6 +166,24 @@ def test_registerUpgradeStep(self):
       ('1', '1')
       >>> step.handler
       <function dummy_upgrade at ...>
+      >>> step_id = step.id
+      >>> step_id == keys[0]
+      True
+
+    Get the step in a different way::
+
+      >>> step2 = _ur.getUpgradeStep('default', step_id)
+      >>> step == step2
+      True
+
+    We strip off any 'profile-' at the beginning of the profile id::
+
+      >>> profile_steps2 = _ur.getUpgradeStepsForProfile('profile-default')
+      >>> profile_steps == profile_steps2
+      True
+      >>> step3 = _ur.getUpgradeStep('profile-default', step_id)
+      >>> step == step3
+      True
 
     Clean up and make sure the cleanup works::
 

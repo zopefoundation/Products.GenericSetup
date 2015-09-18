@@ -81,6 +81,9 @@ class UpgradeRegistry(object):
         None if there are no steps registered for a profile matching
         that id.
         """
+        prefix = 'profile-'
+        if profile_id.startswith(prefix):
+            profile_id = profile_id[len(prefix):]
         profile_steps = self._registry.get(profile_id)
         if profile_steps is None:
             self._registry[profile_id] = OOBTree()
@@ -91,6 +94,9 @@ class UpgradeRegistry(object):
         """Returns the specified upgrade step for the specified
         profile, or None if it doesn't exist.
         """
+        prefix = 'profile-'
+        if profile_id.startswith(prefix):
+            profile_id = profile_id[len(prefix):]
         profile_steps = self._registry.get(profile_id)
         if profile_steps is not None:
             step = profile_steps.get(step_id, None)
