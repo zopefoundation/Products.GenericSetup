@@ -65,6 +65,8 @@ DEPENDENCY_STRATEGY_REAPPLY = 'reapply'
 DEPENDENCY_STRATEGY_NEW = 'new'
 DEPENDENCY_STRATEGY_IGNORE = 'ignore'
 DEFAULT_DEPENDENCY_STRATEGY = DEPENDENCY_STRATEGY_UPGRADE
+# unknown profile version:
+UNKNOWN = 'unknown'
 
 generic_logger = logging.getLogger(__name__)
 
@@ -819,20 +821,42 @@ class SetupTool(Folder):
         prefix = 'profile-'
         if profile_id.startswith(prefix):
             profile_id = profile_id[len(prefix):]
-        version = self._profile_upgrade_versions.get(profile_id, 'unknown')
+        version = self._profile_upgrade_versions.get(profile_id, UNKNOWN)
         return version
 
     security.declareProtected(ManagePortal, 'setLastVersionForProfile')
     def setLastVersionForProfile(self, profile_id, version):
         """Set the last upgraded version for the specified profile.
         """
+        if version == UNKNOWN:
+            self.unsetLastVersionForProfile(profile_id)
+            return
         prefix = 'profile-'
         if profile_id.startswith(prefix):
             profile_id = profile_id[len(prefix):]
         if isinstance(version, basestring):
             version = tuple(version.split('.'))
+        # _profile_upgrade_versions is not persistent, so we must
+        # force a safe by storing it fresh on self, instead of editing
+        # the current dictionary.
         prof_versions = self._profile_upgrade_versions.copy()
         prof_versions[profile_id] = version
+        self._profile_upgrade_versions = prof_versions
+
+    security.declareProtected(ManagePortal, 'unsetLastVersionForProfile')
+    def unsetLastVersionForProfile(self, profile_id):
+        """Unset the last upgraded version for the specified profile.
+        """
+        prefix = 'profile-'
+        if profile_id.startswith(prefix):
+            profile_id = profile_id[len(prefix):]
+        # _profile_upgrade_versions is not persistent, so we must
+        # force a safe by storing it fresh on self, instead of editing
+        # the current dictionary.
+        prof_versions = self._profile_upgrade_versions.copy()
+        if profile_id not in prof_versions:
+            return
+        del prof_versions[profile_id]
         self._profile_upgrade_versions = prof_versions
 
     security.declareProtected(ManagePortal, 'getVersionForProfile')
@@ -840,7 +864,7 @@ class SetupTool(Folder):
         """Return the registered filesystem version for the specified
         profile.
         """
-        return self.getProfileInfo(profile_id).get('version', 'unknown')
+        return self.getProfileInfo(profile_id).get('version', UNKNOWN)
 
     security.declareProtected(ManagePortal, 'profileExists')
     def profileExists(self, profile_id):
@@ -946,7 +970,7 @@ class SetupTool(Folder):
         If the profile was not applied previously (last version for
         profile is unknown) we do nothing.
         """
-        if self.getLastVersionForProfile(profile_id) == 'unknown':
+        if self.getLastVersionForProfile(profile_id) == UNKNOWN:
             generic_logger.warn('Version of profile %s is unknown, '
                                 'refusing to upgrade.', profile_id)
             return
@@ -1240,7 +1264,7 @@ class SetupTool(Folder):
                 # completely ignoring them, otherwise it would not
                 # have ended up in the list.  Check if it was already
                 # applied.
-                if self.getLastVersionForProfile(profile_id) == 'unknown':
+                if self.getLastVersionForProfile(profile_id) == UNKNOWN:
                     # This is a new profile.
                     if not apply_new_profiles:
                         continue
