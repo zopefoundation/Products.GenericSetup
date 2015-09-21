@@ -48,7 +48,7 @@ class MailHostXMLAdapter(XMLAdapterBase):
             smtp_pwd = ''
         node.setAttribute('smtp_pwd', smtp_pwd)
 
-        #Older MH instances won't have 'smtp_queue' in instance dict
+        # Older MH instances won't have 'smtp_queue' in instance dict
         smtp_queue = bool(getattr(self.context, 'smtp_queue', False))
         node.setAttribute('smtp_queue', str(smtp_queue))
 
@@ -68,7 +68,7 @@ class MailHostXMLAdapter(XMLAdapterBase):
         self.context.smtp_uid = node.getAttribute('smtp_uid').encode('utf-8')
         self.context.smtp_pwd = node.getAttribute('smtp_pwd').encode('utf-8')
 
-        #Older MH instances won't have 'smtp_queue' in instance dict
+        # Older MH instances won't have 'smtp_queue' in instance dict
         if 'smtp_queue' in self.context.__dict__:
             if node.hasAttribute('smtp_queue'):
                 queue = node.getAttribute('smtp_queue')

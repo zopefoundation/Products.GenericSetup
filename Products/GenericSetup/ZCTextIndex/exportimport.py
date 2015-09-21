@@ -52,13 +52,13 @@ class ZCLexiconNodeAdapter(NodeAdapterBase):
         for child in node.childNodes:
             if child.nodeName == 'element':
                 element = element_factory.instantiate(
-                      child.getAttribute('group').encode('utf-8'),
-                      child.getAttribute('name').encode('utf-8'))
+                    child.getAttribute('group').encode('utf-8'),
+                    child.getAttribute('name').encode('utf-8'))
                 pipeline.append(element)
         pipeline = tuple(pipeline)
         if self.context._pipeline != pipeline:
             self.context._pipeline = pipeline
-            #clear lexicon
+            # clear lexicon
             self.context._wids = OIBTree()
             self.context._words = IOBTree()
             self.context.length = Length()
@@ -108,7 +108,7 @@ class ZCTextIndexNodeAdapter(NodeAdapterBase):
         for child in node.childNodes:
             if child.nodeName == 'indexed_attr':
                 indexed_attrs.append(
-                                  child.getAttribute('value').encode('utf-8'))
+                    child.getAttribute('value').encode('utf-8'))
         if self.context._indexed_attrs != indexed_attrs:
             self.context._indexed_attrs = indexed_attrs
             self.context.clear()

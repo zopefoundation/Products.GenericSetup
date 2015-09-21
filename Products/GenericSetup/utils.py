@@ -67,8 +67,8 @@ def _getDottedName(named):
     # remove leading underscore names if possible
 
     # Step 1: check if there is a short version
-    short_dotted = '.'.join([ n for n in dotted.split('.')
-                              if not n.startswith('_') ])
+    short_dotted = '.'.join([n for n in dotted.split('.')
+                             if not n.startswith('_')])
     if short_dotted == dotted:
         return dotted
 
@@ -87,6 +87,7 @@ def _getDottedName(named):
         return dotted
 
     return short_dotted
+
 
 def _resolveDottedName(dotted):
     __traceback_info__ = dotted
@@ -113,7 +114,7 @@ def _resolveDottedName(dotted):
             if not parts_copy:
                 return None
 
-    parts = parts[1:] # Funky semantics of __import__'s return value
+    parts = parts[1:]  # Funky semantics of __import__'s return value
 
     obj = module
 
@@ -124,6 +125,7 @@ def _resolveDottedName(dotted):
             return None
 
     return obj
+
 
 def _extractDocstring(func, default_title, default_description):
     try:
@@ -163,6 +165,7 @@ class ImportConfiguratorBase(Implicit):
         self._encoding = encoding
 
     security.declareProtected(ManagePortal, 'parseXML')
+
     def parseXML(self, xml):
         """ Pseudo API.
         """
@@ -202,7 +205,7 @@ class ImportConfiguratorBase(Implicit):
             if not name == '#text':
                 key = node_map[name].get(KEY, str(name))
                 info[key] = info.setdefault(key, ()) + (
-                                                    self._extractNode(child),)
+                    self._extractNode(child),)
 
             elif '#text' in node_map:
                 key = node_map['#text'].get(KEY, 'value')
@@ -230,26 +233,26 @@ class ImportConfiguratorBase(Implicit):
     def _getSharedImportMapping(self):
 
         return {
-          'object':
-            { 'i18n:domain':     {},
-              'name':            {KEY: 'id'},
-              'meta_type':       {},
-              'insert-before':   {},
-              'insert-after':    {},
-              'property':        {KEY: 'properties', DEFAULT: ()},
-              'object':          {KEY: 'objects', DEFAULT: ()},
-              'xmlns:i18n':      {} },
-          'property':
-            { 'name':            {KEY: 'id'},
-              '#text':           {KEY: 'value', DEFAULT: ''},
-              'element':         {KEY: 'elements', DEFAULT: ()},
-              'type':            {},
-              'select_variable': {},
-              'i18n:translate':  {} },
-          'element':
-            { 'value':           {KEY: None} },
-          'description':
-            { '#text':           {KEY: None, DEFAULT: ''} } }
+            'object':
+            {'i18n:domain': {},
+             'name': {KEY: 'id'},
+             'meta_type': {},
+             'insert-before': {},
+             'insert-after': {},
+             'property': {KEY: 'properties', DEFAULT: ()},
+             'object': {KEY: 'objects', DEFAULT: ()},
+             'xmlns:i18n': {}},
+            'property':
+            {'name': {KEY: 'id'},
+             '#text': {KEY: 'value', DEFAULT: ''},
+             'element': {KEY: 'elements', DEFAULT: ()},
+             'type': {},
+             'select_variable': {},
+             'i18n:translate': {}},
+            'element':
+            {'value': {KEY: None}},
+            'description':
+            {'#text': {KEY: None, DEFAULT: ''}}}
 
     def _convertToBoolean(self, val):
 
@@ -277,6 +280,7 @@ class ExportConfiguratorBase(Implicit):
         self._template = self._getExportTemplate()
 
     security.declareProtected(ManagePortal, 'generateXML')
+
     def generateXML(self, **kw):
         """ Pseudo API.
         """
@@ -289,6 +293,7 @@ InitializeClass(ExportConfiguratorBase)
 
 #
 ##############################################################################
+
 
 class _LineWrapper:
 
@@ -338,8 +343,7 @@ class _Element(Element):
 
         # move 'name', 'meta_type' and 'title' to the top, sort the rest
         attrs = self._get_attributes()
-        a_names = attrs.keys()
-        a_names.sort()
+        a_names = sorted(attrs.keys())
         if 'title' in a_names:
             a_names.remove('title')
             a_names.insert(0, 'title')
@@ -436,7 +440,7 @@ class NodeAdapterBase(object):
         for child in node.childNodes:
             if child.nodeName != '#text':
                 continue
-            lines = [ line.lstrip() for line in child.nodeValue.splitlines() ]
+            lines = [line.lstrip() for line in child.nodeValue.splitlines()]
             text += '\n'.join(lines)
         return text
 
@@ -516,7 +520,7 @@ class XMLAdapterBase(BodyAdapterBase):
 
     suffix = '.xml'
 
-    filename = '' # for error reporting during import
+    filename = ''  # for error reporting during import
 
 
 class ObjectManagerHelpers(object):
@@ -555,7 +559,7 @@ class ObjectManagerHelpers(object):
 
             obj_id = str(child.getAttribute('name'))
             if self._convertToBoolean(
-                child.getAttribute('remove') or 'False'):
+                    child.getAttribute('remove') or 'False'):
                 if obj_id in parent.objectIds():
                     parent._delObject(obj_id)
                 continue
@@ -628,10 +632,13 @@ class PropertyManagerHelpers(object):
             def __init__(self, real, properties):
                 self._real = real
                 self._properties = properties
+
             def p_self(self):
                 return self
+
             def v_self(self):
                 return self._real
+
             def propdict(self):
                 # PropertyManager method used by _initProperties
                 return dict([(p['id'], p) for p in self._properties])
@@ -705,7 +712,8 @@ class PropertyManagerHelpers(object):
                 elif prop_type in ('int', 'float'):
                     prop_value = 0
                 elif prop_type == 'date':
-                    prop_value = '1970/01/01 00:00:00 UTC' # DateTime(0) as UTC
+                    # DateTime(0) as UTC
+                    prop_value = '1970/01/01 00:00:00 UTC'
                 else:
                     prop_value = ''
                 self.context._updateProperty(prop_id, prop_value)
@@ -749,7 +757,7 @@ class PropertyManagerHelpers(object):
                 if sub.nodeName == 'element':
                     value = sub.getAttribute('value').encode(self._encoding)
                     if self._convertToBoolean(sub.getAttribute('remove')
-                                          or 'False'):
+                                              or 'False'):
                         remove_elements.append(value)
                         if value in new_elements:
                             new_elements.remove(value)
@@ -775,7 +783,7 @@ class PropertyManagerHelpers(object):
                 if isinstance(prop, (tuple, list)):
                     prop_value = (tuple([p for p in prop
                                          if p not in prop_value and
-                                            p not in remove_elements]) +
+                                         p not in remove_elements]) +
                                   tuple(prop_value))
 
             obj._updateProperty(prop_id, prop_value)
@@ -829,6 +837,7 @@ def exportObjects(obj, parent_path, context):
         for sub in obj.objectValues():
             exportObjects(sub, path + '/', context)
 
+
 def importObjects(obj, parent_path, context):
     """ Import subobjects recursively.
     """
@@ -841,7 +850,7 @@ def importObjects(obj, parent_path, context):
         filename = '%s%s' % (path, importer.suffix)
         body = context.readDataFile(filename)
         if body is not None:
-            importer.filename = filename # for error reporting
+            importer.filename = filename  # for error reporting
             importer.body = body
 
     if getattr(obj, 'objectValues', False):
@@ -851,11 +860,11 @@ def importObjects(obj, parent_path, context):
 
 def _computeTopologicalSort(steps):
     result = []
-    graph = [ (x['id'], x['dependencies']) for x in steps ]
+    graph = [(x['id'], x['dependencies']) for x in steps]
 
     unresolved = []
 
-    while 1:
+    while True:
         for node, edges in graph:
 
             after = -1
@@ -899,6 +908,7 @@ def _computeTopologicalSort(steps):
         unresolved = []
 
     return result
+
 
 def _getProductPath(product_name):
     """ Return the absolute path of the product's directory.

@@ -27,18 +27,19 @@ BASE, EXTENSION, profile_registry  # pyflakes
 security = ModuleSecurityInfo('Products.GenericSetup')
 security.declareProtected(ManagePortal, 'profile_registry')
 
+
 def initialize(context):
 
     import tool
 
     context.registerClass(tool.SetupTool,
-                          constructors=(#tool.addSetupToolForm,
-                                        tool.addSetupTool,
-                                        ),
+                          constructors=(  # tool.addSetupToolForm,
+                              tool.addSetupTool,
+                          ),
                           permissions=(ManagePortal,),
                           interfaces=None,
                           icon='www/tool.png',
-                         )
+                          )
 
 # BBB: for setup tools created with CMF 1.5 if CMFSetup isn't installed
 try:

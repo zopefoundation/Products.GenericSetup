@@ -39,7 +39,7 @@ class MailHostXMLAdapterTests(BodyAdapterTestCase, unittest.TestCase):
 
     def _getTargetClass(self):
         from Products.GenericSetup.MailHost.exportimport \
-                import MailHostXMLAdapter
+            import MailHostXMLAdapter
 
         return MailHostXMLAdapter
 
@@ -85,7 +85,7 @@ class MailHostXMLAdapterTestsWithQueue(BodyAdapterTestCase, unittest.TestCase):
 
     def _getTargetClass(self):
         from Products.GenericSetup.MailHost.exportimport \
-                import MailHostXMLAdapter
+            import MailHostXMLAdapter
 
         return MailHostXMLAdapter
 
@@ -94,9 +94,9 @@ class MailHostXMLAdapterTestsWithQueue(BodyAdapterTestCase, unittest.TestCase):
         self.assertEqual(obj.smtp_queue, True)
         self.assertEqual(type(obj.smtp_queue_directory), str)
         self.assertEqual(obj.smtp_queue_directory, '/tmp/mailqueue')
-        
+
     def test_body_get(self):
-        #Default Correctly Handled in MailHostXMLAdapterTests
+        # Default Correctly Handled in MailHostXMLAdapterTests
         pass
 
     def setUp(self):
@@ -132,4 +132,4 @@ def test_suite():
         unittest.makeSuite(MailHostXMLAdapterTestsWithoutQueue),
         unittest.makeSuite(MailHostXMLAdapterTestsWithQueue),
         unittest.makeSuite(MailHostXMLAdapterTestsWithNoneValue),
-        ))
+    ))
