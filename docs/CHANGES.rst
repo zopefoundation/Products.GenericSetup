@@ -1,7 +1,7 @@
 Changelog
 =========
 
-1.7.8 (unreleased)
+1.8.0 (unreleased)
 ------------------
 
 - Be more forgiving when dealing with profile ids with or without
