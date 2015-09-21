@@ -930,8 +930,8 @@ def _makeFolder(id):
     from zope.interface import providedBy
 
     folder = Folder(id)
-    directlyProvides(folder, providedBy(folder)
-                     + IObjectManager + IPropertyManager)
+    directlyProvides(folder, providedBy(folder) +
+                     IObjectManager + IPropertyManager)
 
     return folder
 

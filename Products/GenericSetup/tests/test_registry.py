@@ -28,19 +28,23 @@ from conformance import ConformsToIToolsetRegistry
 from conformance import ConformsToIProfileRegistry
 
 
-#==============================================================================
+# =============================================================================
 #   Dummy handlers
-#==============================================================================
-def ONE_FUNC(context): pass
+# =============================================================================
+def ONE_FUNC(context):
+    pass
 
 
-def TWO_FUNC(context): pass
+def TWO_FUNC(context):
+    pass
 
 
-def THREE_FUNC(context): pass
+def THREE_FUNC(context):
+    pass
 
 
-def FOUR_FUNC(context): pass
+def FOUR_FUNC(context):
+    pass
 
 
 def DOC_FUNC(site):
@@ -55,9 +59,9 @@ THREE_FUNC_NAME = '%s.%s' % (__name__, THREE_FUNC.__name__)
 FOUR_FUNC_NAME = '%s.%s' % (__name__, FOUR_FUNC.__name__)
 DOC_FUNC_NAME = '%s.%s' % (__name__, DOC_FUNC.__name__)
 
-#==============================================================================
+# =============================================================================
 #   SSR tests
-#==============================================================================
+# =============================================================================
 
 
 class ImportStepRegistryTests(BaseRegistryTests, ConformsToIStepRegistry, ConformsToIImportStepRegistry
@@ -419,7 +423,7 @@ _SINGLE_IMPORT_XML = """\
   One small step
  </import-step>
 </import-steps>
-""" % ( ONE_FUNC_NAME, )
+""" % (ONE_FUNC_NAME)
 
 _ORDERED_IMPORT_XML = """\
 <?xml version="1.0"?>
@@ -445,11 +449,11 @@ _ORDERED_IMPORT_XML = """\
   Texas two step
  </import-step>
 </import-steps>
-""" % ( ONE_FUNC_NAME, THREE_FUNC_NAME, TWO_FUNC_NAME )
+""" % (ONE_FUNC_NAME, THREE_FUNC_NAME, TWO_FUNC_NAME)
 
-#==============================================================================
+# =============================================================================
 #   ESR tests
-#==============================================================================
+# =============================================================================
 
 
 class ExportStepRegistryTests(BaseRegistryTests, ConformsToIStepRegistry, ConformsToIExportStepRegistry
@@ -480,7 +484,8 @@ class ExportStepRegistryTests(BaseRegistryTests, ConformsToIStepRegistry, Confor
     def test_getStep_defaulted(self):
 
         registry = self._makeOne()
-        default = lambda x: False
+        def default(x):
+            return False
         self.assertEqual(registry.getStep('nonesuch', default), default)
 
     def test_getStepMetadata_nonesuch(self):
@@ -629,7 +634,7 @@ _SINGLE_EXPORT_XML = """\
   One small step
  </export-step>
 </export-steps>
-""" % ( ONE_FUNC_NAME, )
+""" % (ONE_FUNC_NAME)
 
 _ORDERED_EXPORT_XML = """\
 <?xml version="1.0"?>
@@ -650,11 +655,11 @@ _ORDERED_EXPORT_XML = """\
   Texas two step
  </export-step>
 </export-steps>
-""" % ( ONE_FUNC_NAME, THREE_FUNC_NAME, TWO_FUNC_NAME )
+""" % (ONE_FUNC_NAME, THREE_FUNC_NAME, TWO_FUNC_NAME)
 
-#==============================================================================
+# =============================================================================
 #   ToolsetRegistry tests
-#==============================================================================
+# =============================================================================
 
 
 class ToolsetRegistryTests(BaseRegistryTests, ConformsToIToolsetRegistry

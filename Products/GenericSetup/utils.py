@@ -216,7 +216,7 @@ class ImportConfiguratorBase(Implicit):
         for k, v in node_map.items():
             key = v.get(KEY, k)
 
-            if DEFAULT in v and not key in info:
+            if DEFAULT in v and key not in info:
                 if isinstance(v[DEFAULT], basestring):
                     info[key] = v[DEFAULT] % info
                 else:
@@ -756,8 +756,8 @@ class PropertyManagerHelpers(object):
             for sub in child.childNodes:
                 if sub.nodeName == 'element':
                     value = sub.getAttribute('value').encode(self._encoding)
-                    if self._convertToBoolean(sub.getAttribute('remove')
-                                              or 'False'):
+                    if self._convertToBoolean(sub.getAttribute('remove') or
+                                              'False'):
                         remove_elements.append(value)
                         if value in new_elements:
                             new_elements.remove(value)
@@ -776,8 +776,8 @@ class PropertyManagerHelpers(object):
                 # are converted to the right type
                 prop_value = self._getNodeText(child).encode(self._encoding)
 
-            if not self._convertToBoolean(child.getAttribute('purge')
-                                          or 'True'):
+            if not self._convertToBoolean(child.getAttribute('purge') or
+                                          'True'):
                 # If the purge attribute is False, merge sequences
                 prop = obj.getProperty(prop_id)
                 if isinstance(prop, (tuple, list)):

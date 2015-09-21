@@ -1168,7 +1168,8 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
         self.assertEqual(tool._profile_upgrade_versions, {})
 
     def test_upgradeProfile(self):
-        dummy_handler = lambda tool: None
+        def dummy_handler(tool):
+            return
 
         def step3_handler(tool):
             tool._step3_applied = 'just a marker'
