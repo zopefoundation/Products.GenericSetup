@@ -21,6 +21,7 @@ from zope.interface import implements
 class TestSimpleItem(SimpleItem):
     pass
 
+
 class TestSimpleItemWithProperties(SimpleItem, PropertyManager):
     pass
 
@@ -30,6 +31,8 @@ four,five,six
 """
 
 from Products.GenericSetup.interfaces import ICSVAware
+
+
 class TestCSVAware(SimpleItem):
     implements(ICSVAware)
     _was_put = None
@@ -48,6 +51,8 @@ description = %s
 """
 
 from Products.GenericSetup.interfaces import IINIAware
+
+
 class TestINIAware(SimpleItem):
     implements(IINIAware)
     _was_put = None
@@ -68,6 +73,8 @@ Description: %s
 """
 
 from Products.GenericSetup.interfaces import IDAVAware
+
+
 class TestDAVAware(SimpleItem):
     implements(IDAVAware)
     _was_put = None

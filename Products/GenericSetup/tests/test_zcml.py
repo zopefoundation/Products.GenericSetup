@@ -31,17 +31,22 @@ except ImportError:
 def dummy_importstep(context):
     pass
 
+
 def dummy_exportstep(context):
     pass
+
 
 def dummy_upgrade(context):
     pass
 
+
 def b_dummy_upgrade(context):
     pass
 
+
 def c_dummy_upgrade(context):
     pass
+
 
 def test_simpleRegisterProfile():
     """
@@ -84,6 +89,7 @@ def test_simpleRegisterProfile():
 
       >>> cleanUp()
     """
+
 
 def test_registerProfile():
     """
@@ -129,6 +135,7 @@ def test_registerProfile():
 
       >>> cleanUp()
     """
+
 
 def test_registerUpgradeStep(self):
     """
@@ -190,6 +197,7 @@ def test_registerUpgradeStep(self):
       >>> cleanUp()
     """
 
+
 def test_registerUpgradeDepends(self):
     """
     Use the standalone genericsetup:upgradeDepends directive::
@@ -233,6 +241,7 @@ def test_registerUpgradeDepends(self):
 
       >>> cleanUp()
     """
+
 
 def test_registerUpgradeSteps(self):
     """
@@ -371,15 +380,14 @@ class ImportStepTests(unittest.TestCase):
              handler="Products.GenericSetup.tests.test_zcml.dummy_importstep">
          </genericsetup:importStep>
         </configure>""")
-        self.assertEqual( _import_step_registry.listSteps(), [u'name'])
-        data=_import_step_registry.getStepMetadata(u'name')
+        self.assertEqual(_import_step_registry.listSteps(), [u'name'])
+        data = _import_step_registry.getStepMetadata(u'name')
         self.assertEqual(data["handler"],
-                'Products.GenericSetup.tests.test_zcml.dummy_importstep')
+                         'Products.GenericSetup.tests.test_zcml.dummy_importstep')
         self.assertEqual(data["description"], u"description")
         self.assertEqual(data["title"], u"title")
         self.assertEqual(data["dependencies"], ())
         self.assertEqual(data["id"], u"name")
-
 
     def testWithDependency(self):
         zcml.load_string("""
@@ -393,9 +401,8 @@ class ImportStepTests(unittest.TestCase):
           <depends name="something.else"/>
          </genericsetup:importStep>
         </configure>""")
-        data=_import_step_registry.getStepMetadata(u'name')
+        data = _import_step_registry.getStepMetadata(u'name')
         self.assertEqual(data["dependencies"], (u"something.else",))
-
 
 
 class ExportStepTests(unittest.TestCase):
@@ -418,10 +425,10 @@ class ExportStepTests(unittest.TestCase):
             handler="Products.GenericSetup.tests.test_zcml.dummy_exportstep"
             />
         </configure>""")
-        self.assertEqual( _export_step_registry.listSteps(), [u'name'])
-        data=_export_step_registry.getStepMetadata(u'name')
+        self.assertEqual(_export_step_registry.listSteps(), [u'name'])
+        data = _export_step_registry.getStepMetadata(u'name')
         self.assertEqual(data["handler"],
-                'Products.GenericSetup.tests.test_zcml.dummy_exportstep')
+                         'Products.GenericSetup.tests.test_zcml.dummy_exportstep')
         self.assertEqual(data["description"], u"description")
         self.assertEqual(data["title"], u"title")
         self.assertEqual(data["id"], u"name")

@@ -41,6 +41,7 @@ ONE_STEP_ZCML = '''\
     />
 </configure>'''
 
+
 class ImportStepTests(unittest.TestCase):
 
     def setUp(self):
@@ -56,20 +57,20 @@ class ImportStepTests(unittest.TestCase):
     def testOneStepImport(self):
         zcml.load_string(ONE_STEP_ZCML)
         self.assertEqual(_import_step_registry.listSteps(),
-            [ u'Products.GenericSetup.teststep'  ])
+                         [u'Products.GenericSetup.teststep'])
         info = _import_step_registry.getStepMetadata(
             u'Products.GenericSetup.teststep')
-        self.assertEqual( info['description'],
-                u'step description' )
-        self.assertEqual( info['title'],
-                u'step title' )
-        self.assertEqual( info['handler'],
-                'Products.GenericSetup.initialize')
-        self.assertEqual( info['id'],
-                u'Products.GenericSetup.teststep' )
+        self.assertEqual(info['description'],
+                         u'step description')
+        self.assertEqual(info['title'],
+                         u'step title')
+        self.assertEqual(info['handler'],
+                         'Products.GenericSetup.initialize')
+        self.assertEqual(info['id'],
+                         u'Products.GenericSetup.teststep')
 
 
 def test_suite():
     return unittest.TestSuite((
         unittest.makeSuite(ImportStepTests),
-        ))
+    ))

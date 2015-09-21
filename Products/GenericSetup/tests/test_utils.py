@@ -229,14 +229,14 @@ def _getDocumentElement(text):
     return parseString(text).documentElement
 
 
-def _testFunc( *args, **kw ):
-
+def _testFunc(*args, **kw):
     """ This is a test.
 
     This is only a test.
     """
 
 _TEST_FUNC_NAME = 'Products.GenericSetup.tests.test_utils._testFunc'
+
 
 class Whatever:
     pass
@@ -248,42 +248,42 @@ whatever_inst.__name__ = 'whatever_inst'
 
 _WHATEVER_INST_NAME = 'Products.GenericSetup.tests.test_utils.whatever_inst'
 
-class UtilsTests( unittest.TestCase ):
 
-    def test__getDottedName_simple( self ):
+class UtilsTests(unittest.TestCase):
 
-        from Products.GenericSetup.utils import _getDottedName
-
-        self.assertEqual( _getDottedName( _testFunc ), _TEST_FUNC_NAME )
-
-    def test__getDottedName_string( self ):
+    def test__getDottedName_simple(self):
 
         from Products.GenericSetup.utils import _getDottedName
 
-        self.assertEqual( _getDottedName( _TEST_FUNC_NAME ), _TEST_FUNC_NAME )
+        self.assertEqual(_getDottedName(_testFunc), _TEST_FUNC_NAME)
 
-    def test__getDottedName_unicode( self ):
+    def test__getDottedName_string(self):
+
+        from Products.GenericSetup.utils import _getDottedName
+
+        self.assertEqual(_getDottedName(_TEST_FUNC_NAME), _TEST_FUNC_NAME)
+
+    def test__getDottedName_unicode(self):
 
         from Products.GenericSetup.utils import _getDottedName
 
         dotted = u'%s' % _TEST_FUNC_NAME
-        self.assertEqual( _getDottedName( dotted ), _TEST_FUNC_NAME )
-        self.assertEqual( type( _getDottedName( dotted ) ), str )
+        self.assertEqual(_getDottedName(dotted), _TEST_FUNC_NAME)
+        self.assertEqual(type(_getDottedName(dotted)), str)
 
-    def test__getDottedName_class( self ):
-
-        from Products.GenericSetup.utils import _getDottedName
-
-        self.assertEqual( _getDottedName( Whatever ), _WHATEVER_NAME )
-
-    def test__getDottedName_inst( self ):
+    def test__getDottedName_class(self):
 
         from Products.GenericSetup.utils import _getDottedName
 
-        self.assertEqual( _getDottedName( whatever_inst )
-                        , _WHATEVER_INST_NAME )
+        self.assertEqual(_getDottedName(Whatever), _WHATEVER_NAME)
 
-    def test__getDottedName_noname( self ):
+    def test__getDottedName_inst(self):
+
+        from Products.GenericSetup.utils import _getDottedName
+
+        self.assertEqual(_getDottedName(whatever_inst), _WHATEVER_INST_NAME)
+
+    def test__getDottedName_noname(self):
 
         from Products.GenericSetup.utils import _getDottedName
 
@@ -291,7 +291,7 @@ class UtilsTests( unittest.TestCase ):
             pass
 
         doh = Doh()
-        self.assertRaises( ValueError, _getDottedName, doh )
+        self.assertRaises(ValueError, _getDottedName, doh)
 
 
 class PropertyManagerHelpersTests(unittest.TestCase):
@@ -354,14 +354,14 @@ class PropertyManagerHelpersTests(unittest.TestCase):
         obj._updateProperty('foo_date', '2000/01/01 00:00:00 UTC')
         obj._updateProperty('foo_float', '1.1')
         obj._updateProperty('foo_int', '1')
-        obj._updateProperty('foo_lines', 
-                u'Foo\nLines\n\xfcbrigens'.encode('utf-8'))
+        obj._updateProperty('foo_lines',
+                            u'Foo\nLines\n\xfcbrigens'.encode('utf-8'))
         obj._updateProperty('foo_long', '1')
         obj._updateProperty('foo_string', 'Foo String')
         obj._updateProperty('foo_text', 'Foo\nText')
-        obj._updateProperty( 'foo_tokens', ('Foo', 'Tokens') )
+        obj._updateProperty('foo_tokens', ('Foo', 'Tokens'))
         obj._updateProperty('foo_selection', 'Foo')
-        obj._updateProperty( 'foo_mselection', ('Foo', 'Baz') )
+        obj._updateProperty('foo_mselection', ('Foo', 'Baz'))
         obj.foo_boolean0 = 0
         obj._updateProperty('foo_date_naive', '2000/01/01 00:00:00')
         obj._updateProperty('foo_ro', 'RO')
@@ -390,7 +390,7 @@ class PropertyManagerHelpersTests(unittest.TestCase):
 
         # The extraction process wants to decode text properties
         # to unicode using the default ZPublisher encoding, which
-        # defaults to iso-8859-15. We force UTF-8 here because we 
+        # defaults to iso-8859-15. We force UTF-8 here because we
         # forced our properties to be UTF-8 encoded.
         helpers._encoding = 'utf-8'
         node.appendChild(helpers._extractProperties())
@@ -475,12 +475,12 @@ class PropertyManagerHelpersTests(unittest.TestCase):
         helpers._initProperties(node)
 
         self.assertEqual(helpers.context.getProperty('i18n_domain'),
-                        'dummy_domain')
+                         'dummy_domain')
 
     def test__initProperties_nopurge_base(self):
         helpers = self._makeOne()
         node = _getDocumentElement(_NOPURGE_IMPORT)
-        helpers.environ._should_purge = True # base profile
+        helpers.environ._should_purge = True  # base profile
         obj = helpers.context
         obj._properties = ()
         obj.manage_addProperty('lines1', ('Foo', 'Gee'), 'lines')
@@ -495,7 +495,7 @@ class PropertyManagerHelpersTests(unittest.TestCase):
     def test__initProperties_nopurge_extension(self):
         helpers = self._makeOne()
         node = _getDocumentElement(_NOPURGE_IMPORT)
-        helpers.environ._should_purge = False # extension profile
+        helpers.environ._should_purge = False  # extension profile
         obj = helpers.context
         obj._properties = ()
         obj.manage_addProperty('lines1', ('Foo', 'Gee'), 'lines')
@@ -510,7 +510,7 @@ class PropertyManagerHelpersTests(unittest.TestCase):
     def test_initProperties_remove_elements(self):
         helpers = self._makeOne()
         node = _getDocumentElement(_REMOVE_ELEMENT_IMPORT)
-        helpers.environ._should_purge = False # extension profile
+        helpers.environ._should_purge = False  # extension profile
         obj = helpers.context
         obj._properties = ()
         obj.manage_addProperty('lines1', ('Foo', 'Gee'), 'lines')
@@ -522,7 +522,7 @@ class PropertyManagerHelpersTests(unittest.TestCase):
 
     def test_initProperties_remove_properties(self):
         helpers = self._makeOne()
-        helpers.environ._should_purge = False # extension profile
+        helpers.environ._should_purge = False  # extension profile
         obj = helpers.context
         obj._properties = ()
 
@@ -716,14 +716,14 @@ class ObjectManagerHelpersTests(ZopeTestCase):
         helpers._initObjects(node)
         self.failIf('history' in obj.objectIds())
         self.failUnless('future' in obj.objectIds())
-        
+
         # Removing it a second time should not throw an
         # AttributeError.
         node = _getDocumentElement(_REMOVE_IMPORT)
         helpers._initObjects(node)
         self.failIf('history' in obj.objectIds())
         self.failUnless('future' in obj.objectIds())
-        
+
 
 class PrettyDocumentTests(unittest.TestCase):
 
@@ -732,7 +732,7 @@ class PrettyDocumentTests(unittest.TestCase):
         original = 'baz &nbsp;<bar>&"\''
         expected = ('<?xml version="1.0"?>\n'
                     '<doc bar="" foo="baz '
-                        '&amp;nbsp;&lt;bar&gt;&amp;&quot;\'"/>\n')
+                    '&amp;nbsp;&lt;bar&gt;&amp;&quot;\'"/>\n')
 
         doc = PrettyDocument()
         node = doc.createElement('doc')
@@ -772,4 +772,4 @@ def test_suite():
         unittest.makeSuite(MarkerInterfaceHelpersTests),
         unittest.makeSuite(ObjectManagerHelpersTests),
         unittest.makeSuite(PrettyDocumentTests),
-        ))
+    ))
