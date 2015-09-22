@@ -29,28 +29,28 @@ from Products.GenericSetup.testing import DummyLogger
 
 class DOMComparator:
 
-    def _compareDOM( self, found_text, expected_text, debug=False ):
+    def _compareDOM(self, found_text, expected_text, debug=False):
 
-        found_lines = [ x.strip() for x in found_text.splitlines() ]
-        found_text = '\n'.join( filter( None, found_lines ) )
+        found_lines = [x.strip() for x in found_text.splitlines()]
+        found_text = '\n'.join(filter(None, found_lines))
 
-        expected_lines = [ x.strip() for x in expected_text.splitlines() ]
-        expected_text = '\n'.join( filter( None, expected_lines ) )
+        expected_lines = [x.strip() for x in expected_text.splitlines()]
+        expected_text = '\n'.join(filter(None, expected_lines))
 
         from xml.dom.minidom import parseString
-        found = parseString( found_text )
-        expected = parseString( expected_text )
+        found = parseString(found_text)
+        expected = parseString(expected_text)
         fxml = found.toxml()
         exml = expected.toxml()
 
         if fxml != exml:
 
             if debug:
-                zipped = zip( fxml, exml )
-                diff = [ ( i, zipped[i][0], zipped[i][1] )
-                        for i in range( len( zipped ) )
+                zipped = zip(fxml, exml)
+                diff = [(i, zipped[i][0], zipped[i][1])
+                        for i in range(len(zipped))
                         if zipped[i][0] != zipped[i][1]
-                    ]
+                        ]
                 # Ugly, but it will do.
                 print 'Diff:'
                 print diff
@@ -63,7 +63,7 @@ class DOMComparator:
             print exml
             print
 
-        self.assertEqual( found.toxml(), expected.toxml() )
+        self.assertEqual(found.toxml(), expected.toxml())
 
 
 class BaseRegistryTests(ZopeTestCase, DOMComparator):
@@ -72,29 +72,30 @@ class BaseRegistryTests(ZopeTestCase, DOMComparator):
         self.root = self.app
         newSecurityManager(None, UnrestrictedUser('god', '', ['Manager'], ''))
 
-    def _makeOne( self, *args, **kw ):
+    def _makeOne(self, *args, **kw):
         # Derived classes must implement _getTargetClass
-        return self._getTargetClass()( *args, **kw )
+        return self._getTargetClass()(*args, **kw)
 
 
-def _clearTestDirectory( root_path ):
+def _clearTestDirectory(root_path):
 
-    if os.path.exists( root_path ):
-        shutil.rmtree( root_path )
+    if os.path.exists(root_path):
+        shutil.rmtree(root_path)
 
-def _makeTestFile( filename, root_path, contents ):
 
-    path, filename = os.path.split( filename )
+def _makeTestFile(filename, root_path, contents):
 
-    subdir = os.path.join( root_path, path )
+    path, filename = os.path.split(filename)
 
-    if not os.path.exists( subdir ):
-        os.makedirs( subdir )
+    subdir = os.path.join(root_path, path)
 
-    fqpath = os.path.join( subdir, filename )
+    if not os.path.exists(subdir):
+        os.makedirs(subdir)
 
-    file = open( fqpath, 'wb' )
-    file.write( contents )
+    fqpath = os.path.join(subdir, filename)
+
+    file = open(fqpath, 'wb')
+    file.write(contents)
     file.close()
     return fqpath
 
@@ -111,71 +112,70 @@ class FilesystemTestBase(ZopeTestCase):
         return _makeTestFile(filename, self._PROFILE_PATH, contents)
 
 
-class TarballTester( DOMComparator ):
+class TarballTester(DOMComparator):
 
-    def _verifyTarballContents( self, fileish, toc_list, when=None ):
+    def _verifyTarballContents(self, fileish, toc_list, when=None):
 
-        fileish.seek( 0L )
-        tarfile = TarFile.open( 'foo.tar.gz', fileobj=fileish, mode='r:gz' )
-        items = tarfile.getnames()
-        items.sort()
+        fileish.seek(0L)
+        tarfile = TarFile.open('foo.tar.gz', fileobj=fileish, mode='r:gz')
+        items = sorted(tarfile.getnames())
         toc_list.sort()
 
-        self.assertEqual( len( items ), len( toc_list ) )
-        for i in range( len( items ) ):
-            self.assertEqual( items[ i ].rstrip('/'), toc_list[ i ] )
+        self.assertEqual(len(items), len(toc_list))
+        for i in range(len(items)):
+            self.assertEqual(items[i].rstrip('/'), toc_list[i])
 
         if when is not None:
             for tarinfo in tarfile:
-                self.failIf( tarinfo.mtime < when )
+                self.failIf(tarinfo.mtime < when)
 
-    def _verifyTarballEntry( self, fileish, entry_name, data ):
+    def _verifyTarballEntry(self, fileish, entry_name, data):
 
-        fileish.seek( 0L )
-        tarfile = TarFile.open( 'foo.tar.gz', fileobj=fileish, mode='r:gz' )
-        extract = tarfile.extractfile( entry_name )
+        fileish.seek(0L)
+        tarfile = TarFile.open('foo.tar.gz', fileobj=fileish, mode='r:gz')
+        extract = tarfile.extractfile(entry_name)
         found = extract.read()
-        self.assertEqual( found, data )
+        self.assertEqual(found, data)
 
-    def _verifyTarballEntryXML( self, fileish, entry_name, data ):
+    def _verifyTarballEntryXML(self, fileish, entry_name, data):
 
-        fileish.seek( 0L )
-        tarfile = TarFile.open( 'foo.tar.gz', fileobj=fileish, mode='r:gz' )
-        extract = tarfile.extractfile( entry_name )
+        fileish.seek(0L)
+        tarfile = TarFile.open('foo.tar.gz', fileobj=fileish, mode='r:gz')
+        extract = tarfile.extractfile(entry_name)
         found = extract.read()
-        self._compareDOM( found, data )
+        self._compareDOM(found, data)
 
 
 class DummyExportContext:
 
     implements(IExportContext)
 
-    def __init__( self, site, tool=None ):
+    def __init__(self, site, tool=None):
         self._site = site
         self._tool = tool
         self._wrote = []
         self._notes = []
 
-    def getSite( self ):
+    def getSite(self):
         return self._site
 
-    def getSetupTool( self ):
+    def getSetupTool(self):
         return self._tool
 
     def getLogger(self, name):
         return DummyLogger(name, self._notes)
 
-    def writeDataFile( self, filename, text, content_type, subdir=None ):
+    def writeDataFile(self, filename, text, content_type, subdir=None):
         if subdir is not None:
-            filename = '%s/%s' % ( subdir, filename )
-        self._wrote.append( ( filename, text, content_type ) )
+            filename = '%s/%s' % (subdir, filename)
+        self._wrote.append((filename, text, content_type))
 
 
 class DummyImportContext:
 
     implements(IImportContext)
 
-    def __init__( self, site, purge=True, encoding=None, tool=None ):
+    def __init__(self, site, purge=True, encoding=None, tool=None):
         self._site = site
         self._tool = tool
         self._purge = purge
@@ -183,31 +183,31 @@ class DummyImportContext:
         self._files = {}
         self._notes = []
 
-    def getSite( self ):
+    def getSite(self):
         return self._site
 
-    def getSetupTool( self ):
+    def getSetupTool(self):
         return self._tool
 
-    def getEncoding( self ):
+    def getEncoding(self):
         return self._encoding
 
     def getLogger(self, name):
         return DummyLogger(name, self._notes)
 
-    def readDataFile( self, filename, subdir=None ):
+    def readDataFile(self, filename, subdir=None):
 
         if subdir is not None:
-            filename = '/'.join( (subdir, filename) )
+            filename = '/'.join((subdir, filename))
 
-        return self._files.get( filename )
+        return self._files.get(filename)
 
-    def shouldPurge( self ):
+    def shouldPurge(self):
 
         return self._purge
 
 
-def dummy_handler( context ):
+def dummy_handler(context):
 
     pass
 
@@ -218,4 +218,3 @@ class SecurityRequestTest(ZopeTestCase):
     def setUp(self):
         ZopeTestCase.setUp(self)
         self.root = self.app
-

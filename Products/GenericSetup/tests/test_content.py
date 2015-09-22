@@ -104,7 +104,7 @@ class SimpleINIAwareTests(unittest.TestCase, ConformsToIINIAware):
         adapter = self._getTargetClass()(context)
         adapter.put_ini('''\
 [DEFAULT]
-int_prop = 13 
+int_prop = 13
 \nfloat_prop = 2.818
 \ndate_prop = %s''' % DATESTR2)
         self.assertEqual(len(context.propertyIds()), 3)
@@ -148,15 +148,15 @@ class FolderishExporterImporterTests(unittest.TestCase):
         from Products.GenericSetup.interfaces import IDAVAware
 
         from Products.GenericSetup.content import \
-             SimpleINIAware
+            SimpleINIAware
         from Products.GenericSetup.content import \
-             FolderishExporterImporter
+            FolderishExporterImporter
         from Products.GenericSetup.content import \
-             CSVAwareFileAdapter
+            CSVAwareFileAdapter
         from Products.GenericSetup.content import \
-             INIAwareFileAdapter
+            INIAwareFileAdapter
         from Products.GenericSetup.content import \
-             DAVAwareFileAdapter
+            DAVAwareFileAdapter
 
         sm = getSiteManager()
 
@@ -204,7 +204,6 @@ class FolderishExporterImporterTests(unittest.TestCase):
                            (IDAVAware,),
                            IFilesystemImporter,
                            )
-
 
     def test_export_empty_site(self):
         from Products.GenericSetup.tests.common import DummyExportContext
@@ -333,7 +332,7 @@ class FolderishExporterImporterTests(unittest.TestCase):
             self.assertEqual(objects[index][0], ITEM_IDS[index])
             self.assertEqual(objects[index][1], dotted)
 
-            filename, text, content_type = context._wrote[index+2]
+            filename, text, content_type = context._wrote[index + 2]
             self.assertEqual(filename, 'structure/%s.ini' % ITEM_IDS[index])
             object = site._getOb(ITEM_IDS[index])
             self.assertEqual(text.strip(),
@@ -370,7 +369,7 @@ class FolderishExporterImporterTests(unittest.TestCase):
         exporter = self._getExporter()
         exporter(context)
 
-        self.assertEqual(len(context._wrote), 2 + (2 *len(FOLDER_IDS)))
+        self.assertEqual(len(context._wrote), 2 + (2 * len(FOLDER_IDS)))
         filename, text, content_type = context._wrote[0]
         self.assertEqual(filename, 'structure/.objects')
         self.assertEqual(content_type, 'text/comma-separated-values')
@@ -499,14 +498,14 @@ class FolderishExporterImporterTests(unittest.TestCase):
         for id in FOLDER_IDS:
             context._files['structure/%s/.objects' % id] = ''
             context._files['structure/%s/.properties' % id] = (
-                _PROPERTIES_TEMPLATE % id )
+                _PROPERTIES_TEMPLATE % id)
 
         _ROOT_OBJECTS = '\n'.join(['%s,%s' % (id, dotted)
-                                        for id in FOLDER_IDS])
+                                   for id in FOLDER_IDS])
 
         context._files['structure/.objects'] = _ROOT_OBJECTS
         context._files['structure/.properties'] = (
-                _PROPERTIES_TEMPLATE % 'Test Site')
+            _PROPERTIES_TEMPLATE % 'Test Site')
 
         importer = self._getImporter()
         importer(context)
@@ -528,13 +527,13 @@ class FolderishExporterImporterTests(unittest.TestCase):
         context = DummyImportContext(site)
         # We want to add 'baz' to 'foo', without losing 'bar'
         context._files['structure/.objects'] = '\n'.join(
-                            ['%s,%s' % (x, dotted) for x in ITEM_IDS])
+            ['%s,%s' % (x, dotted) for x in ITEM_IDS])
         for index in range(len(ITEM_IDS)):
             id = ITEM_IDS[index]
             context._files[
-                    'structure/%s.ini' % id] = KNOWN_INI % ('Title: %s' % id,
-                                                            'xyzzy',
-                                                           )
+                'structure/%s.ini' % id] = KNOWN_INI % ('Title: %s' % id,
+                                                        'xyzzy',
+                                                        )
         importer = self._getImporter()
         importer(context)
 
@@ -555,7 +554,7 @@ class FolderishExporterImporterTests(unittest.TestCase):
         context = DummyImportContext(site)
         # We want to add 'baz' to 'foo', without losing 'bar'
         context._files['structure/.objects'] = '\n'.join(
-                            ['%s,%s' % (x, dotted) for x in ('no_adapter',)])
+            ['%s,%s' % (x, dotted) for x in ('no_adapter',)])
         importer = self._getImporter()
         importer(context)
 
@@ -582,9 +581,9 @@ class FolderishExporterImporterTests(unittest.TestCase):
         for index in range(len(ITEM_IDS)):
             id = ITEM_IDS[index]
             context._files[
-                    'structure/%s.ini' % id] = KNOWN_INI % ('Title: %s' % id,
-                                                            'xyzzy',
-                                                           )
+                'structure/%s.ini' % id] = KNOWN_INI % ('Title: %s' % id,
+                                                        'xyzzy',
+                                                        )
         importer = self._getImporter()
         importer(context)
 
@@ -604,13 +603,13 @@ class FolderishExporterImporterTests(unittest.TestCase):
         context = DummyImportContext(site)
         # We want to add 'baz' to 'foo', without losing 'bar'
         context._files['structure/.objects'] = '\n'.join(
-                                ['%s,Unknown Type' % x for x in ITEM_IDS])
+            ['%s,Unknown Type' % x for x in ITEM_IDS])
         for index in range(len(ITEM_IDS)):
             id = ITEM_IDS[index]
             context._files[
-                    'structure/%s.ini' % id] = KNOWN_INI % ('Title: %s' % id,
-                                                            'xyzzy',
-                                                           )
+                'structure/%s.ini' % id] = KNOWN_INI % ('Title: %s' % id,
+                                                        'xyzzy',
+                                                        )
 
         importer = self._getImporter()
         importer(context)
@@ -698,10 +697,10 @@ class FolderishExporterImporterTests(unittest.TestCase):
         context = DummyImportContext(site)
         # We want to add 'baz' to 'foo', without losing 'bar'
         context._files['structure/.objects'
-                      ] = 'foo,%s' % _getDottedName(foo.__class__)
+                       ] = 'foo,%s' % _getDottedName(foo.__class__)
         context._files['structure/.preserve'] = '*'
         context._files['structure/foo/.objects'
-                      ] = 'baz,%s' % _getDottedName(bar.__class__)
+                       ] = 'baz,%s' % _getDottedName(bar.__class__)
         context._files['structure/foo/.preserve'] = '*'
         context._files['structure/foo/baz/.objects'] = ''
 
@@ -732,18 +731,18 @@ class Test_globpattern(unittest.TestCase):
 
     def test_simple(self):
         self._checkResults('b*', self.NAMELIST,
-                            [x for x in self.NAMELIST if x.startswith('b')])
+                           [x for x in self.NAMELIST if x.startswith('b')])
 
     def test_multiple(self):
         self._checkResults('b*\n*x', self.NAMELIST,
-                            [x for x in self.NAMELIST
-                                if x.startswith('b') or x.endswith('x')])
+                           [x for x in self.NAMELIST
+                            if x.startswith('b') or x.endswith('x')])
 
 
 class CSVAwareFileAdapterTests(unittest.TestCase,
                                ConformsToIFilesystemExporter,
                                ConformsToIFilesystemImporter,
-                              ):
+                               ):
 
     def _getTargetClass(self):
         from Products.GenericSetup.content import CSVAwareFileAdapter
@@ -794,6 +793,7 @@ Title = %s
 Description = This is a test
 """
 
+
 class INIAwareFileAdapterTests(unittest.TestCase,
                                ConformsToIFilesystemExporter,
                                ConformsToIFilesystemImporter,
@@ -827,7 +827,7 @@ class INIAwareFileAdapterTests(unittest.TestCase,
         adapter = self._makeOne(ini_file)
         context = DummyImportContext(None)
         context._files['subpath/to/ini_file.html.ini'] = (
-                        KNOWN_INI % ('Title: ini_file', 'abc'))
+            KNOWN_INI % ('Title: ini_file', 'abc'))
 
         adapter.import_(context, 'subpath/to')
         text = ini_file._was_put
@@ -883,6 +883,7 @@ def _makePropertied(id):
 
     return propertied
 
+
 def _makeCSVAware(id, csv=None):
     from Products.GenericSetup.tests.faux_objects import TestCSVAware
 
@@ -929,8 +930,8 @@ def _makeFolder(id):
     from zope.interface import providedBy
 
     folder = Folder(id)
-    directlyProvides(folder, providedBy(folder)
-                             + IObjectManager + IPropertyManager)
+    directlyProvides(folder, providedBy(folder) +
+                     IObjectManager + IPropertyManager)
 
     return folder
 
@@ -939,6 +940,7 @@ def _parseCSV(text):
     from csv import reader
     from StringIO import StringIO
     return [x for x in reader(StringIO(text))]
+
 
 def _parseINI(text):
     from ConfigParser import ConfigParser

@@ -58,7 +58,7 @@ class FolderXMLAdapter(XMLAdapterBase, ObjectManagerHelpers,
     def _exportBody(self):
         """Export the object as a file body.
         """
-        if not self.context.meta_type in ('Folder', 'Folder (Ordered)'):
+        if self.context.meta_type not in ('Folder', 'Folder (Ordered)'):
             return None
 
         return XMLAdapterBase._exportBody(self)

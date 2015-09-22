@@ -115,13 +115,14 @@ _ZCTEXT_XML = """\
  </index>
 """
 
+
 class ZCatalogXMLAdapterTests(BodyAdapterTestCase, unittest.TestCase):
 
     layer = ExportImportZCMLLayer
 
     def _getTargetClass(self):
         from Products.GenericSetup.ZCatalog.exportimport \
-                import ZCatalogXMLAdapter
+            import ZCatalogXMLAdapter
 
         return ZCatalogXMLAdapter
 
@@ -189,7 +190,7 @@ class ZCatalogXMLAdapterTests(BodyAdapterTestCase, unittest.TestCase):
         context = DummySetupEnviron()
         adapted = getMultiAdapter((self._obj, context), IBody)
         self.assertEqual(adapted.body,
-                       _CATALOG_BODY % (_LEXICON_XML, _TEXT_XML, _COLUMN_XML))
+                         _CATALOG_BODY % (_LEXICON_XML, _TEXT_XML, _COLUMN_XML))
 
     def test_body_set_update(self):
         # Assert that the catalog ends up the way we expect it to.
@@ -204,4 +205,4 @@ class ZCatalogXMLAdapterTests(BodyAdapterTestCase, unittest.TestCase):
 def test_suite():
     return unittest.TestSuite((
         unittest.makeSuite(ZCatalogXMLAdapterTests),
-        ))
+    ))

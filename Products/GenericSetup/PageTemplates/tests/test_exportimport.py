@@ -31,7 +31,7 @@ class ZopePageTemplateBodyAdapterTests(BodyAdapterTestCase, unittest.TestCase):
 
     def _getTargetClass(self):
         from Products.GenericSetup.PageTemplates.exportimport \
-                import ZopePageTemplateBodyAdapter
+            import ZopePageTemplateBodyAdapter
 
         return ZopePageTemplateBodyAdapter
 
@@ -48,4 +48,4 @@ class ZopePageTemplateBodyAdapterTests(BodyAdapterTestCase, unittest.TestCase):
 def test_suite():
     return unittest.TestSuite((
         unittest.makeSuite(ZopePageTemplateBodyAdapterTests),
-        ))
+    ))

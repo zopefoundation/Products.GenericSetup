@@ -37,7 +37,7 @@ class PythonScriptBodyAdapterTests(BodyAdapterTestCase, unittest.TestCase):
 
     def _getTargetClass(self):
         from Products.GenericSetup.PythonScripts.exportimport \
-                import PythonScriptBodyAdapter
+            import PythonScriptBodyAdapter
 
         return PythonScriptBodyAdapter
 
@@ -51,4 +51,4 @@ class PythonScriptBodyAdapterTests(BodyAdapterTestCase, unittest.TestCase):
 def test_suite():
     return unittest.TestSuite((
         unittest.makeSuite(PythonScriptBodyAdapterTests),
-        ))
+    ))

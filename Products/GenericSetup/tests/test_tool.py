@@ -51,11 +51,15 @@ from Products.GenericSetup.upgrade import listUpgradeSteps
 from Products.GenericSetup.upgrade import UpgradeStep
 
 _before_import_events = []
+
+
 @adapter(IBeforeProfileImportEvent)
 def handleBeforeProfileImportEvent(event):
     _before_import_events.append(event)
 
 _after_import_events = []
+
+
 @adapter(IProfileImportedEvent)
 def handleProfileImportedEvent(event):
     _after_import_events.append(event)
@@ -116,33 +120,33 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
 
         return SetupTool
 
-    def _makeSite( self, title="Don't care" ):
+    def _makeSite(self, title="Don't care"):
 
         site = Folder()
-        site._setId( 'site' )
+        site._setId('site')
         site.title = title
 
-        self.app._setObject( 'site', site )
-        return self.app._getOb( 'site' )
+        self.app._setObject('site', site)
+        return self.app._getOb('site')
 
-    def test_empty( self ):
+    def test_empty(self):
 
         tool = self._makeOne('setup_tool')
 
-        self.assertEqual( tool.getBaselineContextID(), '' )
+        self.assertEqual(tool.getBaselineContextID(), '')
 
         import_registry = tool.getImportStepRegistry()
-        self.assertEqual( len( import_registry.listSteps() ), 0 )
+        self.assertEqual(len(import_registry.listSteps()), 0)
 
         export_registry = tool.getExportStepRegistry()
         export_steps = export_registry.listSteps()
         self.assertEqual(len(export_steps), 0)
 
         toolset_registry = tool.getToolsetRegistry()
-        self.assertEqual( len( toolset_registry.listForbiddenTools() ), 0 )
-        self.assertEqual( len( toolset_registry.listRequiredTools() ), 0 )
+        self.assertEqual(len(toolset_registry.listForbiddenTools()), 0)
+        self.assertEqual(len(toolset_registry.listRequiredTools()), 0)
 
-    def test_getBaselineContextID( self ):
+    def test_getBaselineContextID(self):
         from Products.GenericSetup.tool import EXPORT_STEPS_XML
         from Products.GenericSetup.tool import IMPORT_STEPS_XML
         from Products.GenericSetup.tool import TOOLSET_XML
@@ -156,27 +160,23 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
         profile_registry.registerProfile('foo', 'Foo', '', self._PROFILE_PATH)
         tool.setBaselineContext('profile-other:foo')
 
-        self.assertEqual( tool.getBaselineContextID(), 'profile-other:foo' )
+        self.assertEqual(tool.getBaselineContextID(), 'profile-other:foo')
 
-    def test_setBaselineContext_invalid( self ):
-
-        tool = self._makeOne('setup_tool')
-
-        self.assertRaises( KeyError
-                         , tool.setBaselineContext
-                         , 'profile-foo'
-                         )
-
-    def test_setBaselineContext_empty_string( self ):
+    def test_setBaselineContext_invalid(self):
 
         tool = self._makeOne('setup_tool')
 
-        self.assertRaises( KeyError
-                         , tool.setBaselineContext
-                         , ''
-                         )
+        self.assertRaises(KeyError, tool.setBaselineContext, 'profile-foo'
+                          )
 
-    def test_setBaselineContext( self ):
+    def test_setBaselineContext_empty_string(self):
+
+        tool = self._makeOne('setup_tool')
+
+        self.assertRaises(KeyError, tool.setBaselineContext, ''
+                          )
+
+    def test_setBaselineContext(self):
         from Products.GenericSetup.tool import EXPORT_STEPS_XML
         from Products.GenericSetup.tool import IMPORT_STEPS_XML
         from Products.GenericSetup.tool import TOOLSET_XML
@@ -191,70 +191,71 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
         profile_registry.registerProfile('foo', 'Foo', '', self._PROFILE_PATH)
         tool.setBaselineContext('profile-other:foo')
 
-        self.assertEqual( tool.getBaselineContextID(), 'profile-other:foo' )
+        self.assertEqual(tool.getBaselineContextID(), 'profile-other:foo')
 
         import_registry = tool.getImportStepRegistry()
-        self.assertEqual( len( import_registry.listSteps() ), 1 )
-        self.failUnless( 'one' in import_registry.listSteps() )
-        info = import_registry.getStepMetadata( 'one' )
-        self.assertEqual( info[ 'id' ], 'one' )
-        self.assertEqual( info[ 'title' ], 'One Step' )
-        self.assertEqual( info[ 'version' ], '1' )
-        self.failUnless( 'One small step' in info[ 'description' ] )
-        self.assertEqual( info[ 'handler' ]
-                        , 'Products.GenericSetup.tests.test_registry.ONE_FUNC')
+        self.assertEqual(len(import_registry.listSteps()), 1)
+        self.failUnless('one' in import_registry.listSteps())
+        info = import_registry.getStepMetadata('one')
+        self.assertEqual(info['id'], 'one')
+        self.assertEqual(info['title'], 'One Step')
+        self.assertEqual(info['version'], '1')
+        self.failUnless('One small step' in info['description'])
+        self.assertEqual(
+            info['handler'],
+            'Products.GenericSetup.tests.test_registry.ONE_FUNC')
 
-        self.assertEqual( import_registry.getStep( 'one' ), ONE_FUNC )
+        self.assertEqual(import_registry.getStep('one'), ONE_FUNC)
 
         export_registry = tool.getExportStepRegistry()
-        self.assertEqual( len( export_registry.listSteps() ), 1 )
-        self.failUnless( 'one' in import_registry.listSteps() )
-        info = export_registry.getStepMetadata( 'one' )
-        self.assertEqual( info[ 'id' ], 'one' )
-        self.assertEqual( info[ 'title' ], 'One Step' )
-        self.failUnless( 'One small step' in info[ 'description' ] )
-        self.assertEqual( info[ 'handler' ]
-                        , 'Products.GenericSetup.tests.test_registry.ONE_FUNC')
+        self.assertEqual(len(export_registry.listSteps()), 1)
+        self.failUnless('one' in import_registry.listSteps())
+        info = export_registry.getStepMetadata('one')
+        self.assertEqual(info['id'], 'one')
+        self.assertEqual(info['title'], 'One Step')
+        self.failUnless('One small step' in info['description'])
+        self.assertEqual(
+            info['handler'],
+            'Products.GenericSetup.tests.test_registry.ONE_FUNC')
 
-        self.assertEqual( export_registry.getStep( 'one' ), ONE_FUNC )
+        self.assertEqual(export_registry.getStep('one'), ONE_FUNC)
 
     def test_runImportStepFromProfile_nonesuch(self):
 
         site = self._makeSite()
 
-        tool = self._makeOne('setup_tool').__of__( site )
+        tool = self._makeOne('setup_tool').__of__(site)
 
-        self.assertRaises( KeyError, tool.runImportStepFromProfile,
-                           '', 'nonesuch' )
+        self.assertRaises(KeyError, tool.runImportStepFromProfile,
+                          '', 'nonesuch')
 
     def test_runImportStepFromProfile_simple(self):
 
         TITLE = 'original title'
-        site = self._makeSite( TITLE )
+        site = self._makeSite(TITLE)
 
-        tool = self._makeOne('setup_tool').__of__( site )
+        tool = self._makeOne('setup_tool').__of__(site)
 
         registry = tool.getImportStepRegistry()
-        registry.registerStep( 'simple', '1', _uppercaseSiteTitle )
+        registry.registerStep('simple', '1', _uppercaseSiteTitle)
 
-        result = tool.runImportStepFromProfile( 'snapshot-dummy', 'simple' )
+        result = tool.runImportStepFromProfile('snapshot-dummy', 'simple')
 
-        self.assertEqual( len( result[ 'steps' ] ), 1 )
+        self.assertEqual(len(result['steps']), 1)
 
-        self.assertEqual( result[ 'steps' ][ 0 ], 'simple' )
-        self.assertEqual( result[ 'messages' ][ 'simple' ]
-                        , 'Uppercased title' )
+        self.assertEqual(result['steps'][0], 'simple')
+        self.assertEqual(result['messages']['simple'], 'Uppercased title')
 
-        self.assertEqual( site.title, TITLE.upper() )
+        self.assertEqual(site.title, TITLE.upper())
 
         global _before_import_events
-        self.assertEqual( len(_before_import_events), 1)
+        self.assertEqual(len(_before_import_events), 1)
         self.assertEqual(_before_import_events[0].profile_id, 'snapshot-dummy')
         self.assertEqual(_before_import_events[0].steps, ['simple'])
         self.assertEqual(_before_import_events[0].full_import, False)
 
         global _after_import_events
-        self.assertEqual( len(_after_import_events), 1)
+        self.assertEqual(len(_after_import_events), 1)
         self.assertEqual(_after_import_events[0].profile_id, 'snapshot-dummy')
         self.assertEqual(_after_import_events[0].steps, ['simple'])
         self.assertEqual(_after_import_events[0].full_import, False)
@@ -262,37 +263,35 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
     def test_runImportStepFromProfile_dependencies(self):
 
         TITLE = 'original title'
-        site = self._makeSite( TITLE )
+        site = self._makeSite(TITLE)
 
-        tool = self._makeOne('setup_tool').__of__( site )
+        tool = self._makeOne('setup_tool').__of__(site)
 
         registry = tool.getImportStepRegistry()
-        registry.registerStep( 'dependable', '1', _underscoreSiteTitle )
-        registry.registerStep( 'dependent', '1'
-                             , _uppercaseSiteTitle, ( 'dependable', ) )
+        registry.registerStep('dependable', '1', _underscoreSiteTitle)
+        registry.registerStep(
+            'dependent', '1', _uppercaseSiteTitle, ('dependable', ))
 
-        result = tool.runImportStepFromProfile( 'snapshot-dummy', 'dependent' )
+        result = tool.runImportStepFromProfile('snapshot-dummy', 'dependent')
 
-        self.assertEqual( len( result[ 'steps' ] ), 2 )
+        self.assertEqual(len(result['steps']), 2)
 
-        self.assertEqual( result[ 'steps' ][ 0 ], 'dependable' )
-        self.assertEqual( result[ 'messages' ][ 'dependable' ]
-                        , 'Underscored title' )
+        self.assertEqual(result['steps'][0], 'dependable')
+        self.assertEqual(result['messages']['dependable'], 'Underscored title')
 
-        self.assertEqual( result[ 'steps' ][ 1 ], 'dependent' )
-        self.assertEqual( result[ 'messages' ][ 'dependent' ]
-                        , 'Uppercased title' )
-        self.assertEqual( site.title, TITLE.replace( ' ', '_' ).upper() )
+        self.assertEqual(result['steps'][1], 'dependent')
+        self.assertEqual(result['messages']['dependent'], 'Uppercased title')
+        self.assertEqual(site.title, TITLE.replace(' ', '_').upper())
 
         global _before_import_events
-        self.assertEqual( len(_before_import_events), 1)
+        self.assertEqual(len(_before_import_events), 1)
         self.assertEqual(_before_import_events[0].profile_id, 'snapshot-dummy')
         self.assertEqual(_before_import_events[0].steps,
                          ['dependable', 'dependent'])
         self.assertEqual(_before_import_events[0].full_import, False)
 
         global _after_import_events
-        self.assertEqual( len(_after_import_events), 1)
+        self.assertEqual(len(_after_import_events), 1)
         self.assertEqual(_after_import_events[0].profile_id, 'snapshot-dummy')
         self.assertEqual(_after_import_events[0].steps,
                          ['dependable', 'dependent'])
@@ -301,34 +300,33 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
     def test_runImportStepFromProfile_skip_dependencies(self):
 
         TITLE = 'original title'
-        site = self._makeSite( TITLE )
+        site = self._makeSite(TITLE)
 
-        tool = self._makeOne('setup_tool').__of__( site )
+        tool = self._makeOne('setup_tool').__of__(site)
 
         registry = tool.getImportStepRegistry()
-        registry.registerStep( 'dependable', '1', _underscoreSiteTitle )
-        registry.registerStep( 'dependent', '1'
-                             , _uppercaseSiteTitle, ( 'dependable', ) )
+        registry.registerStep('dependable', '1', _underscoreSiteTitle)
+        registry.registerStep(
+            'dependent', '1', _uppercaseSiteTitle, ('dependable', ))
 
-        result = tool.runImportStepFromProfile( 'snapshot-dummy', 'dependent',
-                                                run_dependencies=False )
+        result = tool.runImportStepFromProfile('snapshot-dummy', 'dependent',
+                                               run_dependencies=False)
 
-        self.assertEqual( len( result[ 'steps' ] ), 1 )
+        self.assertEqual(len(result['steps']), 1)
 
-        self.assertEqual( result[ 'steps' ][ 0 ], 'dependent' )
-        self.assertEqual( result[ 'messages' ][ 'dependent' ]
-                        , 'Uppercased title' )
+        self.assertEqual(result['steps'][0], 'dependent')
+        self.assertEqual(result['messages']['dependent'], 'Uppercased title')
 
-        self.assertEqual( site.title, TITLE.upper() )
+        self.assertEqual(site.title, TITLE.upper())
 
         global _before_import_events
-        self.assertEqual( len(_before_import_events), 1)
+        self.assertEqual(len(_before_import_events), 1)
         self.assertEqual(_before_import_events[0].profile_id, 'snapshot-dummy')
         self.assertEqual(_before_import_events[0].steps, ['dependent'])
         self.assertEqual(_before_import_events[0].full_import, False)
 
         global _after_import_events
-        self.assertEqual( len(_after_import_events), 1)
+        self.assertEqual(len(_after_import_events), 1)
         self.assertEqual(_after_import_events[0].profile_id, 'snapshot-dummy')
         self.assertEqual(_after_import_events[0].steps, ['dependent'])
         self.assertEqual(_after_import_events[0].full_import, False)
@@ -337,72 +335,72 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
 
         site = self._makeSite()
 
-        tool = self._makeOne('setup_tool').__of__( site )
+        tool = self._makeOne('setup_tool').__of__(site)
         registry = tool.getImportStepRegistry()
-        registry.registerStep( 'purging', '1', _purgeIfRequired )
+        registry.registerStep('purging', '1', _purgeIfRequired)
 
-        result = tool.runImportStepFromProfile( 'snapshot-dummy', 'purging' )
+        result = tool.runImportStepFromProfile('snapshot-dummy', 'purging')
 
-        self.assertEqual( len( result[ 'steps' ] ), 1 )
-        self.assertEqual( result[ 'steps' ][ 0 ], 'purging' )
-        self.assertEqual( result[ 'messages' ][ 'purging' ], 'Purged' )
-        self.failUnless( site.purged )
+        self.assertEqual(len(result['steps']), 1)
+        self.assertEqual(result['steps'][0], 'purging')
+        self.assertEqual(result['messages']['purging'], 'Purged')
+        self.failUnless(site.purged)
 
     def test_runImportStepFromProfile_explicit_purge(self):
 
         site = self._makeSite()
 
-        tool = self._makeOne('setup_tool').__of__( site )
+        tool = self._makeOne('setup_tool').__of__(site)
         registry = tool.getImportStepRegistry()
-        registry.registerStep( 'purging', '1', _purgeIfRequired )
+        registry.registerStep('purging', '1', _purgeIfRequired)
 
-        result = tool.runImportStepFromProfile( 'snapshot-dummy', 'purging',
-                                                purge_old=True )
+        result = tool.runImportStepFromProfile('snapshot-dummy', 'purging',
+                                               purge_old=True)
 
-        self.assertEqual( len( result[ 'steps' ] ), 1 )
-        self.assertEqual( result[ 'steps' ][ 0 ], 'purging' )
-        self.assertEqual( result[ 'messages' ][ 'purging' ], 'Purged' )
-        self.failUnless( site.purged )
+        self.assertEqual(len(result['steps']), 1)
+        self.assertEqual(result['steps'][0], 'purging')
+        self.assertEqual(result['messages']['purging'], 'Purged')
+        self.failUnless(site.purged)
 
     def test_runImportStepFromProfile_skip_purge(self):
 
         site = self._makeSite()
 
-        tool = self._makeOne('setup_tool').__of__( site )
+        tool = self._makeOne('setup_tool').__of__(site)
         registry = tool.getImportStepRegistry()
-        registry.registerStep( 'purging', '1', _purgeIfRequired )
+        registry.registerStep('purging', '1', _purgeIfRequired)
 
-        result = tool.runImportStepFromProfile( 'snapshot-dummy', 'purging',
-                                                purge_old=False )
+        result = tool.runImportStepFromProfile('snapshot-dummy', 'purging',
+                                               purge_old=False)
 
-        self.assertEqual( len( result[ 'steps' ] ), 1 )
-        self.assertEqual( result[ 'steps' ][ 0 ], 'purging' )
-        self.assertEqual( result[ 'messages' ][ 'purging' ], 'Unpurged' )
-        self.failIf( site.purged )
+        self.assertEqual(len(result['steps']), 1)
+        self.assertEqual(result['steps'][0], 'purging')
+        self.assertEqual(result['messages']['purging'], 'Unpurged')
+        self.failIf(site.purged)
 
     def test_runImportStepFromProfile_consistent_context(self):
 
         site = self._makeSite()
 
-        tool = self._makeOne('setup_tool').__of__( site )
+        tool = self._makeOne('setup_tool').__of__(site)
 
         registry = tool.getImportStepRegistry()
-        registry.registerStep( 'purging', '1', _purgeIfRequired )
-        registry.registerStep( 'dependent', '1'
-                             , _uppercaseSiteTitle, ( 'purging', ) )
+        registry.registerStep('purging', '1', _purgeIfRequired)
+        registry.registerStep(
+            'dependent', '1', _uppercaseSiteTitle, ('purging', ))
 
         tool.runImportStepFromProfile('snapshot-dummy', 'dependent',
                                       purge_old=False)
-        self.failIf( site.purged )
+        self.failIf(site.purged)
 
     def test_runAllImportStepsFromProfile_empty(self):
 
         site = self._makeSite()
-        tool = self._makeOne('setup_tool').__of__( site )
+        tool = self._makeOne('setup_tool').__of__(site)
 
         result = tool.runAllImportStepsFromProfile('snapshot-dummy')
 
-        self.assertEqual( len(result['steps']), 3 )
+        self.assertEqual(len(result['steps']), 3)
 
     def test_runAllImportStepsFromProfile_inquicksuccession(self):
         """
@@ -412,7 +410,7 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
         """
 
         site = self._makeSite()
-        tool = self._makeOne('setup_tool').__of__( site )
+        tool = self._makeOne('setup_tool').__of__(site)
 
         tool.runAllImportStepsFromProfile('snapshot-dummy')
         tool.runAllImportStepsFromProfile('snapshot-dummy')
@@ -425,36 +423,32 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
 
         TITLE = 'original title'
         PROFILE_ID = 'snapshot-testing'
-        site = self._makeSite( TITLE )
-        tool = self._makeOne('setup_tool').__of__( site )
+        site = self._makeSite(TITLE)
+        tool = self._makeOne('setup_tool').__of__(site)
         tool._exclude_global_steps = True
 
         registry = tool.getImportStepRegistry()
-        registry.registerStep( 'dependable', '1'
-                             , _underscoreSiteTitle, ( 'purging', ) )
-        registry.registerStep( 'dependent', '1'
-                             , _uppercaseSiteTitle, ( 'dependable', ) )
-        registry.registerStep( 'purging', '1'
-                             , _purgeIfRequired )
+        registry.registerStep(
+            'dependable', '1', _underscoreSiteTitle, ('purging', ))
+        registry.registerStep(
+            'dependent', '1', _uppercaseSiteTitle, ('dependable', ))
+        registry.registerStep('purging', '1', _purgeIfRequired)
 
         result = tool.runAllImportStepsFromProfile(PROFILE_ID)
 
-        self.assertEqual( len(result['steps']), 3 )
+        self.assertEqual(len(result['steps']), 3)
 
-        self.assertEqual( result['steps'][0], 'purging' )
-        self.assertEqual( result[ 'messages' ][ 'purging' ]
-                        , 'Purged' )
+        self.assertEqual(result['steps'][0], 'purging')
+        self.assertEqual(result['messages']['purging'], 'Purged')
 
-        self.assertEqual( result['steps'][1], 'dependable' )
-        self.assertEqual( result[ 'messages' ][ 'dependable' ]
-                        , 'Underscored title' )
+        self.assertEqual(result['steps'][1], 'dependable')
+        self.assertEqual(result['messages']['dependable'], 'Underscored title')
 
-        self.assertEqual( result['steps'][2], 'dependent' )
-        self.assertEqual( result[ 'messages' ][ 'dependent' ]
-                        , 'Uppercased title' )
+        self.assertEqual(result['steps'][2], 'dependent')
+        self.assertEqual(result['messages']['dependent'], 'Uppercased title')
 
-        self.assertEqual( site.title, TITLE.replace( ' ', '_' ).upper() )
-        self.failUnless( site.purged )
+        self.assertEqual(site.title, TITLE.replace(' ', '_').upper())
+        self.failUnless(site.purged)
 
         prefix = 'import-all-%s' % PROFILE_ID
         logged = [x for x in tool.objectIds('File') if x.startswith(prefix)]
@@ -464,16 +458,15 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
 
         TITLE = 'original title'
         PROFILE_ID = u'snapshot-testing'
-        site = self._makeSite( TITLE )
-        tool = self._makeOne('setup_tool').__of__( site )
+        site = self._makeSite(TITLE)
+        tool = self._makeOne('setup_tool').__of__(site)
 
         registry = tool.getImportStepRegistry()
-        registry.registerStep( 'dependable', '1'
-                             , _underscoreSiteTitle, ( 'purging', ) )
-        registry.registerStep( 'dependent', '1'
-                             , _uppercaseSiteTitle, ( 'dependable', ) )
-        registry.registerStep( 'purging', '1'
-                             , _purgeIfRequired )
+        registry.registerStep(
+            'dependable', '1', _underscoreSiteTitle, ('purging', ))
+        registry.registerStep(
+            'dependent', '1', _uppercaseSiteTitle, ('dependable', ))
+        registry.registerStep('purging', '1', _purgeIfRequired)
 
         tool.runAllImportStepsFromProfile(PROFILE_ID)
 
@@ -484,56 +477,52 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
     def test_runAllImportStepsFromProfile_sorted_explicit_purge(self):
 
         site = self._makeSite()
-        tool = self._makeOne('setup_tool').__of__( site )
+        tool = self._makeOne('setup_tool').__of__(site)
         tool._exclude_global_steps = True
 
         registry = tool.getImportStepRegistry()
-        registry.registerStep( 'dependable', '1'
-                             , _underscoreSiteTitle, ( 'purging', ) )
-        registry.registerStep( 'dependent', '1'
-                             , _uppercaseSiteTitle, ( 'dependable', ) )
-        registry.registerStep( 'purging', '1'
-                             , _purgeIfRequired )
+        registry.registerStep(
+            'dependable', '1', _underscoreSiteTitle, ('purging', ))
+        registry.registerStep(
+            'dependent', '1', _uppercaseSiteTitle, ('dependable', ))
+        registry.registerStep('purging', '1', _purgeIfRequired)
 
         result = tool.runAllImportStepsFromProfile('snapshot-dummy',
-                                                   purge_old=True )
+                                                   purge_old=True)
 
-        self.assertEqual( len(result['steps']), 3 )
+        self.assertEqual(len(result['steps']), 3)
 
-        self.assertEqual( result['steps'][0], 'purging' )
-        self.assertEqual( result[ 'messages' ][ 'purging' ]
-                        , 'Purged' )
+        self.assertEqual(result['steps'][0], 'purging')
+        self.assertEqual(result['messages']['purging'], 'Purged')
 
-        self.assertEqual( result['steps'][1], 'dependable' )
-        self.assertEqual( result['steps'][2], 'dependent' )
-        self.failUnless( site.purged )
+        self.assertEqual(result['steps'][1], 'dependable')
+        self.assertEqual(result['steps'][2], 'dependent')
+        self.failUnless(site.purged)
 
     def test_runAllImportStepsFromProfile_sorted_skip_purge(self):
 
         site = self._makeSite()
-        tool = self._makeOne('setup_tool').__of__( site )
+        tool = self._makeOne('setup_tool').__of__(site)
         tool._exclude_global_steps = True
 
         registry = tool.getImportStepRegistry()
-        registry.registerStep( 'dependable', '1'
-                             , _underscoreSiteTitle, ( 'purging', ) )
-        registry.registerStep( 'dependent', '1'
-                             , _uppercaseSiteTitle, ( 'dependable', ) )
-        registry.registerStep( 'purging', '1'
-                             , _purgeIfRequired )
+        registry.registerStep(
+            'dependable', '1', _underscoreSiteTitle, ('purging', ))
+        registry.registerStep(
+            'dependent', '1', _uppercaseSiteTitle, ('dependable', ))
+        registry.registerStep('purging', '1', _purgeIfRequired)
 
         result = tool.runAllImportStepsFromProfile('snapshot-dummy',
-                                                   purge_old=False )
+                                                   purge_old=False)
 
-        self.assertEqual( len(result['steps']), 3 )
+        self.assertEqual(len(result['steps']), 3)
 
-        self.assertEqual( result['steps'][0], 'purging' )
-        self.assertEqual( result[ 'messages' ][ 'purging' ]
-                        , 'Unpurged' )
+        self.assertEqual(result['steps'][0], 'purging')
+        self.assertEqual(result['messages']['purging'], 'Unpurged')
 
-        self.assertEqual( result['steps'][1], 'dependable' )
-        self.assertEqual( result['steps'][2], 'dependent' )
-        self.failIf( site.purged )
+        self.assertEqual(result['steps'][1], 'dependable')
+        self.assertEqual(result['steps'][2], 'dependent')
+        self.failIf(site.purged)
 
     def test_runAllImportStepsFromProfile_without_depends(self):
         from Products.GenericSetup.metadata import METADATA_XML
@@ -541,15 +530,16 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
         self._makeFile(METADATA_XML, _METADATA_XML)
 
         site = self._makeSite()
-        tool = self._makeOne('setup_tool').__of__( site )
+        tool = self._makeOne('setup_tool').__of__(site)
 
         profile_registry.registerProfile('foo', 'Foo', '', self._PROFILE_PATH)
 
         _imported = []
+
         def applyContext(context):
             _imported.append(context._profile_path)
 
-        tool.applyContext=applyContext
+        tool.applyContext = applyContext
         tool.runAllImportStepsFromProfile('profile-other:foo',
                                           ignore_dependencies=True)
         self.assertEqual(_imported, [self._PROFILE_PATH])
@@ -560,16 +550,17 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
         self._makeFile(METADATA_XML, _METADATA_XML)
 
         site = self._makeSite()
-        tool = self._makeOne('setup_tool').__of__( site )
+        tool = self._makeOne('setup_tool').__of__(site)
 
         profile_registry.registerProfile('foo', 'Foo', '', self._PROFILE_PATH)
         profile_registry.registerProfile('bar', 'Bar', '', self._PROFILE_PATH2)
 
         _imported = []
+
         def applyContext(context):
             _imported.append(context._profile_path)
 
-        tool.applyContext=applyContext
+        tool.applyContext = applyContext
         tool.runAllImportStepsFromProfile('profile-other:foo',
                                           ignore_dependencies=False)
         self.assertEqual(_imported, [self._PROFILE_PATH2, self._PROFILE_PATH])
@@ -705,7 +696,7 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
         self._makeFile(METADATA_XML, _METADATA_XML)
 
         site = self._makeSite()
-        tool = self._makeOne('setup_tool').__of__( site )
+        tool = self._makeOne('setup_tool').__of__(site)
 
         profile_registry.registerProfile('foo', 'Foo', '', self._PROFILE_PATH)
 
@@ -741,7 +732,7 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
         self._makeFile('import_steps.xml', _IMPORT_STEPS_XML)
 
         site = self._makeSite()
-        tool = self._makeOne('setup_tool').__of__( site )
+        tool = self._makeOne('setup_tool').__of__(site)
 
         profile_registry.registerProfile('foo', 'Foo', '', self._PROFILE_PATH)
         profile_registry.registerProfile('bar', 'Bar', '', self._PROFILE_PATH2)
@@ -755,33 +746,32 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
     def test_runAllImportStepsFromProfile_skipStep(self):
 
         site = self._makeSite()
-        tool = self._makeOne('setup_tool').__of__( site )
+        tool = self._makeOne('setup_tool').__of__(site)
         result = tool.runAllImportStepsFromProfile(
             'snapshot-dummy',
             blacklisted_steps=['toolset']
         )
 
-        self.assertEqual( (result['messages']['toolset']), 'step skipped' )
+        self.assertEqual((result['messages']['toolset']), 'step skipped')
 
-    def test_runExportStep_nonesuch( self ):
+    def test_runExportStep_nonesuch(self):
 
         site = self._makeSite()
-        tool = self._makeOne('setup_tool').__of__( site )
+        tool = self._makeOne('setup_tool').__of__(site)
 
-        self.assertRaises( ValueError, tool.runExportStep, 'nonesuch' )
+        self.assertRaises(ValueError, tool.runExportStep, 'nonesuch')
 
     def test_runExportStep_step_registry_empty(self):
         site = self._makeSite()
         site.setup_tool = self._makeOne('setup_tool')
         tool = site.setup_tool
 
-        result = tool.runExportStep( 'step_registries' )
+        result = tool.runExportStep('step_registries')
 
-        self.assertEqual( len( result[ 'steps' ] ), 1 )
-        self.assertEqual( result[ 'steps' ][ 0 ], 'step_registries' )
-        self.assertEqual( result[ 'messages' ][ 'step_registries' ]
-                        , None
-                        )
+        self.assertEqual(len(result['steps']), 1)
+        self.assertEqual(result['steps'][0], 'step_registries')
+        self.assertEqual(result['messages']['step_registries'], None
+                         )
 
     def test_runExportStep_step_registry_default(self):
         site = self._makeSite()
@@ -789,25 +779,27 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
         tool = site.setup_tool
         tool._import_registry.registerStep('foo', handler='foo.bar')
         tool._export_registry.registerStep('step_registries',
-                'Products.GenericSetup.tool.exportStepRegistries',
-                'Export import / export steps.')
+                                           'Products.GenericSetup.tool.exportStepRegistries',
+                                           'Export import / export steps.')
 
-        result = tool.runExportStep( 'step_registries' )
+        result = tool.runExportStep('step_registries')
 
-        self.assertEqual( len( result[ 'steps' ] ), 1 )
-        self.assertEqual( result[ 'steps' ][ 0 ], 'step_registries' )
-        self.assertEqual( result[ 'messages' ][ 'step_registries' ]
-                        , None
-                        )
-        fileish = StringIO( result[ 'tarball' ] )
+        self.assertEqual(len(result['steps']), 1)
+        self.assertEqual(result['steps'][0], 'step_registries')
+        self.assertEqual(result['messages']['step_registries'], None
+                         )
+        fileish = StringIO(result['tarball'])
 
-        self._verifyTarballContents( fileish, [ 'import_steps.xml'
-                                              , 'export_steps.xml'
-                                              ] )
-        self._verifyTarballEntryXML( fileish, 'import_steps.xml'
-                                   , _DEFAULT_STEP_REGISTRIES_IMPORT_XML )
-        self._verifyTarballEntryXML( fileish, 'export_steps.xml'
-                                   , _DEFAULT_STEP_REGISTRIES_EXPORT_XML )
+        self._verifyTarballContents(fileish, ['import_steps.xml', 'export_steps.xml'
+                                              ])
+        self._verifyTarballEntryXML(
+            fileish,
+            'import_steps.xml',
+            _DEFAULT_STEP_REGISTRIES_IMPORT_XML)
+        self._verifyTarballEntryXML(
+            fileish,
+            'export_steps.xml',
+            _DEFAULT_STEP_REGISTRIES_EXPORT_XML)
 
     def test_runAllExportSteps_empty(self):
         site = self._makeSite()
@@ -816,11 +808,10 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
 
         result = tool.runAllExportSteps()
 
-        self.assertEqual( len(result['steps'] ), 4 )
-        self.assertEqual( result['steps'][1], 'step_registries' )
-        self.assertEqual( result[ 'messages' ][ 'step_registries' ]
-                        , None
-                        )
+        self.assertEqual(len(result['steps']), 4)
+        self.assertEqual(result['steps'][1], 'step_registries')
+        self.assertEqual(result['messages']['step_registries'], None
+                         )
 
     def test_runAllExportSteps_default(self):
         site = self._makeSite()
@@ -828,78 +819,77 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
         tool = site.setup_tool
         tool._import_registry.registerStep('foo', handler='foo.bar')
         tool._export_registry.registerStep('step_registries',
-                'Products.GenericSetup.tool.exportStepRegistries',
-                'Export import / export steps.')
+                                           'Products.GenericSetup.tool.exportStepRegistries',
+                                           'Export import / export steps.')
 
         result = tool.runAllExportSteps()
 
-        self.assertEqual( len(result['steps']), 4 )
-        self.assertEqual( result['steps'][1], 'step_registries' )
-        self.assertEqual( result[ 'messages' ][ 'step_registries' ]
-                        , None
-                        )
-        fileish = StringIO( result[ 'tarball' ] )
+        self.assertEqual(len(result['steps']), 4)
+        self.assertEqual(result['steps'][1], 'step_registries')
+        self.assertEqual(result['messages']['step_registries'], None
+                         )
+        fileish = StringIO(result['tarball'])
 
-        self._verifyTarballContents( fileish, [ 'import_steps.xml'
-                                              , 'export_steps.xml'
-                                              , 'rolemap.xml'
-                                              , 'toolset.xml'
-                                              ] )
-        self._verifyTarballEntryXML( fileish, 'import_steps.xml'
-                                   , _DEFAULT_STEP_REGISTRIES_IMPORT_XML )
-        self._verifyTarballEntryXML( fileish, 'export_steps.xml'
-                                   , _DEFAULT_STEP_REGISTRIES_EXPORT_XML )
+        self._verifyTarballContents(fileish, ['import_steps.xml', 'export_steps.xml', 'rolemap.xml', 'toolset.xml'
+                                              ])
+        self._verifyTarballEntryXML(
+            fileish,
+            'import_steps.xml',
+            _DEFAULT_STEP_REGISTRIES_IMPORT_XML)
+        self._verifyTarballEntryXML(
+            fileish,
+            'export_steps.xml',
+            _DEFAULT_STEP_REGISTRIES_EXPORT_XML)
 
-    def test_runAllExportSteps_extras( self ):
+    def test_runAllExportSteps_extras(self):
         site = self._makeSite()
         site.setup_tool = self._makeOne('setup_tool')
         tool = site.setup_tool
         tool._export_registry.registerStep('step_registries',
-                'Products.GenericSetup.tool.exportStepRegistries',
-                'Export import / export steps.')
+                                           'Products.GenericSetup.tool.exportStepRegistries',
+                                           'Export import / export steps.')
 
         import_reg = tool.getImportStepRegistry()
-        import_reg.registerStep( 'dependable', '1'
-                               , _underscoreSiteTitle, ( 'purging', ) )
-        import_reg.registerStep( 'dependent', '1'
-                               , _uppercaseSiteTitle, ( 'dependable', ) )
-        import_reg.registerStep( 'purging', '1'
-                               , _purgeIfRequired )
+        import_reg.registerStep(
+            'dependable', '1', _underscoreSiteTitle, ('purging', ))
+        import_reg.registerStep(
+            'dependent', '1', _uppercaseSiteTitle, ('dependable', ))
+        import_reg.registerStep('purging', '1', _purgeIfRequired)
 
         export_reg = tool.getExportStepRegistry()
-        export_reg.registerStep( 'properties'
-                               , _exportPropertiesINI )
+        export_reg.registerStep('properties', _exportPropertiesINI)
 
         result = tool.runAllExportSteps()
 
-        self.assertEqual( len(result['steps']), 5 )
+        self.assertEqual(len(result['steps']), 5)
 
-        self.failUnless( 'properties' in result[ 'steps' ] )
-        self.assertEqual( result[ 'messages' ][ 'properties' ]
-                        , 'Exported properties'
-                        )
+        self.failUnless('properties' in result['steps'])
+        self.assertEqual(result['messages']['properties'], 'Exported properties'
+                         )
 
-        self.failUnless( 'step_registries' in result[ 'steps' ] )
-        self.assertEqual( result[ 'messages' ][ 'step_registries' ]
-                        , None
-                        )
+        self.failUnless('step_registries' in result['steps'])
+        self.assertEqual(result['messages']['step_registries'], None
+                         )
 
-        fileish = StringIO( result[ 'tarball' ] )
+        fileish = StringIO(result['tarball'])
 
-        self._verifyTarballContents( fileish, [ 'import_steps.xml'
-                                              , 'export_steps.xml'
-                                              , 'properties.ini'
-                                              , 'rolemap.xml'
-                                              , 'toolset.xml'
-                                              ] )
-        self._verifyTarballEntryXML( fileish, 'import_steps.xml'
-                                   , _EXTRAS_STEP_REGISTRIES_IMPORT_XML )
-        self._verifyTarballEntryXML( fileish, 'export_steps.xml'
-                                   , _EXTRAS_STEP_REGISTRIES_EXPORT_XML )
-        self._verifyTarballEntry( fileish, 'properties.ini'
-                                , _PROPERTIES_INI % site.title  )
+        self._verifyTarballContents(fileish, ['import_steps.xml', 'export_steps.xml', 'properties.ini', 'rolemap.xml', 'toolset.xml'
+                                              ])
+        self._verifyTarballEntryXML(
+            fileish,
+            'import_steps.xml',
+            _EXTRAS_STEP_REGISTRIES_IMPORT_XML)
+        self._verifyTarballEntryXML(
+            fileish,
+            'export_steps.xml',
+            _EXTRAS_STEP_REGISTRIES_EXPORT_XML)
+        self._verifyTarballEntry(
+            fileish,
+            'properties.ini',
+            _PROPERTIES_INI %
+            site.title)
 
-    def test_createSnapshot_default( self ):
+    def test_createSnapshot_default(self):
         _EXPECTED = [('import_steps.xml', _DEFAULT_STEP_REGISTRIES_IMPORT_XML),
                      ('export_steps.xml', _DEFAULT_STEP_REGISTRIES_EXPORT_XML),
                      ('rolemap.xml', 'dummy'),
@@ -910,25 +900,24 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
         tool = site.setup_tool
         tool._import_registry.registerStep('foo', handler='foo.bar')
         tool._export_registry.registerStep('step_registries',
-                'Products.GenericSetup.tool.exportStepRegistries',
-                'Export import / export steps.')
+                                           'Products.GenericSetup.tool.exportStepRegistries',
+                                           'Export import / export steps.')
 
-        self.assertEqual( len( tool.listSnapshotInfo() ), 0 )
+        self.assertEqual(len(tool.listSnapshotInfo()), 0)
 
-        result = tool.createSnapshot( 'default' )
+        result = tool.createSnapshot('default')
 
-        self.assertEqual( len(result['steps']), 4 )
-        self.assertEqual( result['steps'][1], 'step_registries' )
-        self.assertEqual( result[ 'messages' ][ 'step_registries' ]
-                        , None
-                        )
+        self.assertEqual(len(result['steps']), 4)
+        self.assertEqual(result['steps'][1], 'step_registries')
+        self.assertEqual(result['messages']['step_registries'], None
+                         )
 
-        snapshot = result[ 'snapshot' ]
+        snapshot = result['snapshot']
 
-        self.assertEqual( len( snapshot.objectIds() ), len( _EXPECTED ) )
+        self.assertEqual(len(snapshot.objectIds()), len(_EXPECTED))
 
-        for id in [ x[0] for x in _EXPECTED ]:
-            self.failUnless( id in snapshot.objectIds() )
+        for id in [x[0] for x in _EXPECTED]:
+            self.failUnless(id in snapshot.objectIds())
 
         def normalize_xml(xml):
             # using this might mask a real problem on windows, but so far the
@@ -937,20 +926,20 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
                            [line.strip() for line in xml.splitlines() if line])
             return ' '.join(lines)
 
-        fileobj = snapshot._getOb( 'import_steps.xml' )
-        self.assertEqual( normalize_xml( fileobj.read() ),
-                          normalize_xml(_DEFAULT_STEP_REGISTRIES_IMPORT_XML))
+        fileobj = snapshot._getOb('import_steps.xml')
+        self.assertEqual(normalize_xml(fileobj.read()),
+                         normalize_xml(_DEFAULT_STEP_REGISTRIES_IMPORT_XML))
 
-        fileobj = snapshot._getOb( 'export_steps.xml' )
-        self.assertEqual( normalize_xml( fileobj.read() ),
-                          normalize_xml(_DEFAULT_STEP_REGISTRIES_EXPORT_XML ))
+        fileobj = snapshot._getOb('export_steps.xml')
+        self.assertEqual(normalize_xml(fileobj.read()),
+                         normalize_xml(_DEFAULT_STEP_REGISTRIES_EXPORT_XML))
 
-        self.assertEqual( len( tool.listSnapshotInfo() ), 1 )
+        self.assertEqual(len(tool.listSnapshotInfo()), 1)
 
-        info = tool.listSnapshotInfo()[ 0 ]
+        info = tool.listSnapshotInfo()[0]
 
-        self.assertEqual( info[ 'id' ], 'default' )
-        self.assertEqual( info[ 'title' ], 'default' )
+        self.assertEqual(info['id'], 'default')
+        self.assertEqual(info['title'], 'default')
 
     def test_applyContext(self):
         from Products.GenericSetup.tool import EXPORT_STEPS_XML
@@ -963,38 +952,38 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
         tool.getExportStepRegistry().clear()
         tool.getToolsetRegistry().clear()
 
-        context = DummyImportContext( site, tool=tool )
-        context._files[ IMPORT_STEPS_XML ] = _SINGLE_IMPORT_XML
-        context._files[ EXPORT_STEPS_XML ] = _SINGLE_EXPORT_XML
-        context._files[ TOOLSET_XML ] = _NORMAL_TOOLSET_XML
+        context = DummyImportContext(site, tool=tool)
+        context._files[IMPORT_STEPS_XML] = _SINGLE_IMPORT_XML
+        context._files[EXPORT_STEPS_XML] = _SINGLE_EXPORT_XML
+        context._files[TOOLSET_XML] = _NORMAL_TOOLSET_XML
 
         tool.applyContext(context)
 
         import_registry = tool.getImportStepRegistry()
-        self.assertEqual( len( import_registry.listSteps() ), 1 )
-        self.failUnless( 'one' in import_registry.listSteps() )
-        info = import_registry.getStepMetadata( 'one' )
+        self.assertEqual(len(import_registry.listSteps()), 1)
+        self.failUnless('one' in import_registry.listSteps())
+        info = import_registry.getStepMetadata('one')
 
-        self.assertEqual( info[ 'id' ], 'one' )
-        self.assertEqual( info[ 'title' ], 'One Step' )
-        self.assertEqual( info[ 'version' ], '1' )
-        self.failUnless( 'One small step' in info[ 'description' ] )
-        self.assertEqual(info[ 'handler' ],
-                         'Products.GenericSetup.tests.test_registry.ONE_FUNC' )
+        self.assertEqual(info['id'], 'one')
+        self.assertEqual(info['title'], 'One Step')
+        self.assertEqual(info['version'], '1')
+        self.failUnless('One small step' in info['description'])
+        self.assertEqual(info['handler'],
+                         'Products.GenericSetup.tests.test_registry.ONE_FUNC')
 
-        self.assertEqual( import_registry.getStep( 'one' ), ONE_FUNC )
+        self.assertEqual(import_registry.getStep('one'), ONE_FUNC)
 
         export_registry = tool.getExportStepRegistry()
-        self.assertEqual( len( export_registry.listSteps() ), 1 )
-        self.failUnless( 'one' in import_registry.listSteps() )
-        info = export_registry.getStepMetadata( 'one' )
-        self.assertEqual( info[ 'id' ], 'one' )
-        self.assertEqual( info[ 'title' ], 'One Step' )
-        self.failUnless( 'One small step' in info[ 'description' ] )
-        self.assertEqual(info[ 'handler' ],
-                         'Products.GenericSetup.tests.test_registry.ONE_FUNC' )
+        self.assertEqual(len(export_registry.listSteps()), 1)
+        self.failUnless('one' in import_registry.listSteps())
+        info = export_registry.getStepMetadata('one')
+        self.assertEqual(info['id'], 'one')
+        self.assertEqual(info['title'], 'One Step')
+        self.failUnless('One small step' in info['description'])
+        self.assertEqual(info['handler'],
+                         'Products.GenericSetup.tests.test_registry.ONE_FUNC')
 
-        self.assertEqual( export_registry.getStep( 'one' ), ONE_FUNC )
+        self.assertEqual(export_registry.getStep('one'), ONE_FUNC)
 
     def test_listContextInfos_empty(self):
         site = self._makeSite()
@@ -1135,13 +1124,17 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
         self.assertEqual(tool._profile_upgrade_versions, {})
         # Any 'profile-' is stripped off in these calls.
         self.assertEqual(tool.getLastVersionForProfile('foo'), 'unknown')
-        self.assertEqual(tool.getLastVersionForProfile('profile-foo'), 'unknown')
+        self.assertEqual(
+            tool.getLastVersionForProfile('profile-foo'),
+            'unknown')
         tool.setLastVersionForProfile('foo', '1.0')
         self.assertEqual(tool.getLastVersionForProfile('foo'), ('1', '0'))
-        self.assertEqual(tool.getLastVersionForProfile('profile-foo'), ('1', '0'))
+        self.assertEqual(
+            tool.getLastVersionForProfile('profile-foo'), ('1', '0'))
         tool.setLastVersionForProfile('profile-foo', '2.0')
         self.assertEqual(tool.getLastVersionForProfile('foo'), ('2', '0'))
-        self.assertEqual(tool.getLastVersionForProfile('profile-foo'), ('2', '0'))
+        self.assertEqual(
+            tool.getLastVersionForProfile('profile-foo'), ('2', '0'))
 
     def test_manage_doUpgrades_no_profile_id_or_updates(self):
         site = self._makeSite()
@@ -1152,7 +1145,7 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
 
     def test_manage_doUpgrades_upgrade_w_no_target_version(self):
         step = UpgradeStep('TITLE', 'foo', '*', '*', 'DESC',
-                            lambda tool: None)
+                           lambda tool: None)
         _registerUpgradeStep(step)
         site = self._makeSite()
         site.setup_tool = self._makeOne('setup_tool')
@@ -1175,7 +1168,8 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
         self.assertEqual(tool._profile_upgrade_versions, {})
 
     def test_upgradeProfile(self):
-        dummy_handler = lambda tool: None
+        def dummy_handler(tool):
+            return
 
         def step3_handler(tool):
             tool._step3_applied = 'just a marker'
@@ -1270,10 +1264,10 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
         self._makeFile(METADATA_XML, _METADATA_XML)
 
         site = self._makeSite()
-        tool = self._makeOne('setup_tool').__of__( site )
+        tool = self._makeOne('setup_tool').__of__(site)
 
         profile_registry.registerProfile('foo', 'Foo', '', self._PROFILE_PATH,
-                                        for_=ISite)
+                                         for_=ISite)
         # tool.listProfileInfo should call registry.listProfileInfo
         # with the for_ parameter
         self.assertEqual(len(tool.listProfileInfo()), 1)
@@ -1355,43 +1349,46 @@ Title=%s
 """
 
 
-def _underscoreSiteTitle( context ):
+def _underscoreSiteTitle(context):
 
     site = context.getSite()
-    site.title = site.title.replace( ' ', '_' )
+    site.title = site.title.replace(' ', '_')
     return 'Underscored title'
 
-def _uppercaseSiteTitle( context ):
+
+def _uppercaseSiteTitle(context):
 
     site = context.getSite()
     site.title = site.title.upper()
     return 'Uppercased title'
 
-def _purgeIfRequired( context ):
+
+def _purgeIfRequired(context):
 
     site = context.getSite()
     purged = site.purged = context.shouldPurge()
     return purged and 'Purged' or 'Unpurged'
 
-def _exportPropertiesINI( context ):
+
+def _exportPropertiesINI(context):
 
     site = context.getSite()
     text = _PROPERTIES_INI % site.title
 
-    context.writeDataFile( 'properties.ini', text, 'text/plain' )
+    context.writeDataFile('properties.ini', text, 'text/plain')
 
     return 'Exported properties'
 
 
 class _ToolsetSetup(BaseRegistryTests):
 
-    def _initSite( self ):
+    def _initSite(self):
         from Products.GenericSetup.tool import SetupTool
 
         site = Folder()
-        site._setId( 'site' )
-        self.app._setObject( 'site', site )
-        site = self.app._getOb( 'site' )
+        site._setId('site')
+        self.app._setObject('site', site)
+        site = self.app._getOb('site')
         site._setObject('setup_tool', SetupTool('setup_tool'))
         return site
 
@@ -1400,40 +1397,40 @@ class Test_exportToolset(_ToolsetSetup):
 
     layer = ExportImportZCMLLayer
 
-    def test_empty( self ):
+    def test_empty(self):
         from Products.GenericSetup.tool import exportToolset
         from Products.GenericSetup.tool import TOOLSET_XML
 
         site = self._initSite()
-        context = DummyExportContext( site, tool=site.setup_tool )
+        context = DummyExportContext(site, tool=site.setup_tool)
 
-        exportToolset( context )
+        exportToolset(context)
 
-        self.assertEqual( len( context._wrote ), 1 )
-        filename, text, content_type = context._wrote[ 0 ]
-        self.assertEqual( filename, TOOLSET_XML )
-        self._compareDOM( text, _EMPTY_TOOLSET_XML )
-        self.assertEqual( content_type, 'text/xml' )
+        self.assertEqual(len(context._wrote), 1)
+        filename, text, content_type = context._wrote[0]
+        self.assertEqual(filename, TOOLSET_XML)
+        self._compareDOM(text, _EMPTY_TOOLSET_XML)
+        self.assertEqual(content_type, 'text/xml')
 
-    def test_normal( self ):
+    def test_normal(self):
         from Products.GenericSetup.tool import exportToolset
         from Products.GenericSetup.tool import TOOLSET_XML
 
         site = self._initSite()
         toolset = site.setup_tool.getToolsetRegistry()
-        toolset.addForbiddenTool( 'doomed' )
-        toolset.addRequiredTool( 'mandatory', 'path.to.one' )
-        toolset.addRequiredTool( 'obligatory', 'path.to.another' )
+        toolset.addForbiddenTool('doomed')
+        toolset.addRequiredTool('mandatory', 'path.to.one')
+        toolset.addRequiredTool('obligatory', 'path.to.another')
 
-        context = DummyExportContext( site, tool=site.setup_tool )
+        context = DummyExportContext(site, tool=site.setup_tool)
 
-        exportToolset( context )
+        exportToolset(context)
 
-        self.assertEqual( len( context._wrote ), 1 )
-        filename, text, content_type = context._wrote[ 0 ]
-        self.assertEqual( filename, TOOLSET_XML )
-        self._compareDOM( text, _NORMAL_TOOLSET_XML )
-        self.assertEqual( content_type, 'text/xml' )
+        self.assertEqual(len(context._wrote), 1)
+        filename, text, content_type = context._wrote[0]
+        self.assertEqual(filename, TOOLSET_XML)
+        self._compareDOM(text, _NORMAL_TOOLSET_XML)
+        self.assertEqual(content_type, 'text/xml')
 
 
 class Test_importToolset(_ToolsetSetup):
@@ -1445,35 +1442,35 @@ class Test_importToolset(_ToolsetSetup):
         from Products.GenericSetup.tool import TOOLSET_XML
 
         site = self._initSite()
-        context = DummyImportContext( site, tool=site.setup_tool )
+        context = DummyImportContext(site, tool=site.setup_tool)
 
         # Import forbidden
-        context._files[ TOOLSET_XML ] = _FORBIDDEN_TOOLSET_XML
-        importToolset( context )
+        context._files[TOOLSET_XML] = _FORBIDDEN_TOOLSET_XML
+        importToolset(context)
 
         tool = context.getSetupTool()
         toolset = tool.getToolsetRegistry()
 
-        self.assertEqual( len( toolset.listForbiddenTools() ), 3 )
-        self.failUnless( 'doomed' in toolset.listForbiddenTools() )
-        self.failUnless( 'damned' in toolset.listForbiddenTools() )
-        self.failUnless( 'blasted' in toolset.listForbiddenTools() )
+        self.assertEqual(len(toolset.listForbiddenTools()), 3)
+        self.failUnless('doomed' in toolset.listForbiddenTools())
+        self.failUnless('damned' in toolset.listForbiddenTools())
+        self.failUnless('blasted' in toolset.listForbiddenTools())
 
         # Import required
-        context._files[ TOOLSET_XML ] = _REQUIRED_TOOLSET_XML
-        importToolset( context )
+        context._files[TOOLSET_XML] = _REQUIRED_TOOLSET_XML
+        importToolset(context)
 
-        self.assertEqual( len( toolset.listRequiredTools() ), 2 )
-        self.failUnless( 'mandatory' in toolset.listRequiredTools() )
-        info = toolset.getRequiredToolInfo( 'mandatory' )
-        self.assertEqual( info[ 'class' ],
-                          'Products.GenericSetup.tests.test_tool.DummyTool' )
-        self.failUnless( 'obligatory' in toolset.listRequiredTools() )
-        info = toolset.getRequiredToolInfo( 'obligatory' )
-        self.assertEqual( info[ 'class' ],
-                          'Products.GenericSetup.tests.test_tool.DummyTool' )
+        self.assertEqual(len(toolset.listRequiredTools()), 2)
+        self.failUnless('mandatory' in toolset.listRequiredTools())
+        info = toolset.getRequiredToolInfo('mandatory')
+        self.assertEqual(info['class'],
+                         'Products.GenericSetup.tests.test_tool.DummyTool')
+        self.failUnless('obligatory' in toolset.listRequiredTools())
+        info = toolset.getRequiredToolInfo('obligatory')
+        self.assertEqual(info['class'],
+                         'Products.GenericSetup.tests.test_tool.DummyTool')
 
-    def test_tool_ids( self ):
+    def test_tool_ids(self):
         # The tool import mechanism used to rely on the fact that all tools
         # have unique IDs set at the class level and that you can call their
         # constructor with no arguments. However, there might be tools
@@ -1482,14 +1479,14 @@ class Test_importToolset(_ToolsetSetup):
         from Products.GenericSetup.tool import TOOLSET_XML
 
         site = self._initSite()
-        context = DummyImportContext( site, tool=site.setup_tool )
-        context._files[ TOOLSET_XML ] = _REQUIRED_TOOLSET_XML
+        context = DummyImportContext(site, tool=site.setup_tool)
+        context._files[TOOLSET_XML] = _REQUIRED_TOOLSET_XML
 
-        importToolset( context )
+        importToolset(context)
 
-        for tool_id in ( 'mandatory', 'obligatory' ):
-            tool = getattr( site, tool_id )
-            self.assertEqual( tool.getId(), tool_id )
+        for tool_id in ('mandatory', 'obligatory'):
+            tool = getattr(site, tool_id)
+            self.assertEqual(tool.getId(), tool_id)
 
     def test_tool_id_required(self):
         # Tests that tool creation will still work when an id is required
@@ -1507,108 +1504,120 @@ class Test_importToolset(_ToolsetSetup):
             tool = getattr(site, tool_id)
             self.assertEqual(tool.getId(), tool_id)
 
-    def test_forbidden_tools( self ):
+    def test_forbidden_tools(self):
         from Products.GenericSetup.tool import importToolset
         from Products.GenericSetup.tool import TOOLSET_XML
 
-        TOOL_IDS = ( 'doomed', 'blasted', 'saved' )
+        TOOL_IDS = ('doomed', 'blasted', 'saved')
 
         site = self._initSite()
 
         for tool_id in TOOL_IDS:
             pseudo = Folder()
-            pseudo._setId( tool_id )
-            site._setObject( tool_id, pseudo )
+            pseudo._setId(tool_id)
+            site._setObject(tool_id, pseudo)
 
-        self.assertEqual( len( site.objectIds() ), len( TOOL_IDS ) + 1 )
+        self.assertEqual(len(site.objectIds()), len(TOOL_IDS) + 1)
 
         for tool_id in TOOL_IDS:
-            self.failUnless( tool_id in site.objectIds() )
+            self.failUnless(tool_id in site.objectIds())
 
-        context = DummyImportContext( site, tool=site.setup_tool )
-        context._files[ TOOLSET_XML ] = _FORBIDDEN_TOOLSET_XML
+        context = DummyImportContext(site, tool=site.setup_tool)
+        context._files[TOOLSET_XML] = _FORBIDDEN_TOOLSET_XML
 
-        importToolset( context )
+        importToolset(context)
 
-        self.assertEqual( len( site.objectIds() ), 2 )
-        self.failUnless( 'setup_tool' in site.objectIds() )
-        self.failUnless( 'saved' in site.objectIds() )
+        self.assertEqual(len(site.objectIds()), 2)
+        self.failUnless('setup_tool' in site.objectIds())
+        self.failUnless('saved' in site.objectIds())
 
-    def test_required_tools_missing( self ):
+    def test_required_tools_missing(self):
         from Products.GenericSetup.tool import importToolset
         from Products.GenericSetup.tool import TOOLSET_XML
 
         site = self._initSite()
-        self.assertEqual( len( site.objectIds() ), 1 )
+        self.assertEqual(len(site.objectIds()), 1)
 
-        context = DummyImportContext( site, tool=site.setup_tool )
-        context._files[ TOOLSET_XML ] = _REQUIRED_TOOLSET_XML
+        context = DummyImportContext(site, tool=site.setup_tool)
+        context._files[TOOLSET_XML] = _REQUIRED_TOOLSET_XML
 
-        importToolset( context )
+        importToolset(context)
 
-        self.assertEqual( len( site.objectIds() ), 3 )
-        self.failUnless( isinstance( aq_base( site._getOb( 'mandatory' ) )
-                                   , DummyTool ) )
-        self.failUnless( isinstance( aq_base( site._getOb( 'obligatory' ) )
-                                   , DummyTool ) )
+        self.assertEqual(len(site.objectIds()), 3)
+        self.failUnless(
+            isinstance(
+                aq_base(
+                    site._getOb('mandatory')),
+                DummyTool))
+        self.failUnless(
+            isinstance(
+                aq_base(
+                    site._getOb('obligatory')),
+                DummyTool))
 
-    def test_required_tools_no_replacement( self ):
+    def test_required_tools_no_replacement(self):
         from Products.GenericSetup.tool import importToolset
         from Products.GenericSetup.tool import TOOLSET_XML
 
         site = self._initSite()
 
         mandatory = DummyTool()
-        mandatory._setId( 'mandatory' )
-        site._setObject( 'mandatory', mandatory )
+        mandatory._setId('mandatory')
+        site._setObject('mandatory', mandatory)
 
         obligatory = DummyTool()
-        obligatory._setId( 'obligatory' )
-        site._setObject( 'obligatory', obligatory )
+        obligatory._setId('obligatory')
+        site._setObject('obligatory', obligatory)
 
-        self.assertEqual( len( site.objectIds() ), 3 )
+        self.assertEqual(len(site.objectIds()), 3)
 
-        context = DummyImportContext( site, tool=site.setup_tool )
-        context._files[ TOOLSET_XML ] = _REQUIRED_TOOLSET_XML
+        context = DummyImportContext(site, tool=site.setup_tool)
+        context._files[TOOLSET_XML] = _REQUIRED_TOOLSET_XML
 
-        importToolset( context )
+        importToolset(context)
 
-        self.assertEqual( len( site.objectIds() ), 3 )
-        self.failUnless( aq_base( site._getOb( 'mandatory' ) ) is mandatory )
-        self.failUnless( aq_base( site._getOb( 'obligatory' ) ) is obligatory )
+        self.assertEqual(len(site.objectIds()), 3)
+        self.failUnless(aq_base(site._getOb('mandatory')) is mandatory)
+        self.failUnless(aq_base(site._getOb('obligatory')) is obligatory)
 
-    def test_required_tools_with_replacement( self ):
+    def test_required_tools_with_replacement(self):
         from Products.GenericSetup.tool import importToolset
         from Products.GenericSetup.tool import TOOLSET_XML
 
         site = self._initSite()
 
         mandatory = AnotherDummyTool()
-        mandatory._setId( 'mandatory' )
-        site._setObject( 'mandatory', mandatory )
+        mandatory._setId('mandatory')
+        site._setObject('mandatory', mandatory)
 
         obligatory = SubclassedDummyTool()
-        obligatory._setId( 'obligatory' )
-        site._setObject( 'obligatory', obligatory )
+        obligatory._setId('obligatory')
+        site._setObject('obligatory', obligatory)
 
-        self.assertEqual( len( site.objectIds() ), 3 )
+        self.assertEqual(len(site.objectIds()), 3)
 
-        context = DummyImportContext( site, tool=site.setup_tool )
-        context._files[ TOOLSET_XML ] = _REQUIRED_TOOLSET_XML
+        context = DummyImportContext(site, tool=site.setup_tool)
+        context._files[TOOLSET_XML] = _REQUIRED_TOOLSET_XML
 
-        importToolset( context )
+        importToolset(context)
 
-        self.assertEqual( len( site.objectIds() ), 3 )
+        self.assertEqual(len(site.objectIds()), 3)
 
-        self.failIf( aq_base( site._getOb( 'mandatory' ) ) is mandatory )
-        self.failUnless( isinstance( aq_base( site._getOb( 'mandatory' ) )
-                                   , DummyTool ) )
+        self.failIf(aq_base(site._getOb('mandatory')) is mandatory)
+        self.failUnless(
+            isinstance(
+                aq_base(
+                    site._getOb('mandatory')),
+                DummyTool))
 
-        self.failIf( aq_base( site._getOb( 'obligatory' ) ) is obligatory )
-        self.failUnless( isinstance( aq_base( site._getOb( 'obligatory' ) )
-                                   , DummyTool ) )
+        self.failIf(aq_base(site._getOb('obligatory')) is obligatory)
+        self.failUnless(
+            isinstance(
+                aq_base(
+                    site._getOb('obligatory')),
+                DummyTool))
 
-    def test_required_tools_missing_acquired_nofail( self ):
+    def test_required_tools_missing_acquired_nofail(self):
         from Products.GenericSetup.tool import importToolset
         from Products.GenericSetup.tool import TOOLSET_XML
 
@@ -1616,12 +1625,12 @@ class Test_importToolset(_ToolsetSetup):
         parent_site = Folder()
 
         mandatory = AnotherDummyTool()
-        mandatory._setId( 'mandatory' )
-        parent_site._setObject( 'mandatory', mandatory )
+        mandatory._setId('mandatory')
+        parent_site._setObject('mandatory', mandatory)
 
         obligatory = AnotherDummyTool()
-        obligatory._setId( 'obligatory' )
-        parent_site._setObject( 'obligatory', obligatory )
+        obligatory._setId('obligatory')
+        parent_site._setObject('obligatory', obligatory)
 
         site = site.__of__(parent_site)
 
@@ -1629,37 +1638,43 @@ class Test_importToolset(_ToolsetSetup):
         # should not prevent new objects from being created if they
         # don't exist in the site
 
-        context = DummyImportContext( site, tool=site.setup_tool )
-        context._files[ TOOLSET_XML ] = _REQUIRED_TOOLSET_XML
+        context = DummyImportContext(site, tool=site.setup_tool)
+        context._files[TOOLSET_XML] = _REQUIRED_TOOLSET_XML
 
-        importToolset( context )
+        importToolset(context)
 
-        self.failIf( aq_base( site._getOb( 'mandatory' ) ) is mandatory )
-        self.failUnless( isinstance( aq_base( site._getOb( 'mandatory' ) )
-                                   , DummyTool ) )
+        self.failIf(aq_base(site._getOb('mandatory')) is mandatory)
+        self.failUnless(
+            isinstance(
+                aq_base(
+                    site._getOb('mandatory')),
+                DummyTool))
 
-        self.failIf( aq_base( site._getOb( 'obligatory' ) ) is obligatory )
-        self.failUnless( isinstance( aq_base( site._getOb( 'obligatory' ) )
-                                   , DummyTool ) )
+        self.failIf(aq_base(site._getOb('obligatory')) is obligatory)
+        self.failUnless(
+            isinstance(
+                aq_base(
+                    site._getOb('obligatory')),
+                DummyTool))
 
-    def test_required_tools_missing_class_with_replacement( self ):
+    def test_required_tools_missing_class_with_replacement(self):
         from Products.GenericSetup.tool import importToolset
         from Products.GenericSetup.tool import TOOLSET_XML
 
         site = self._initSite()
 
         obligatory = AnotherDummyTool()
-        obligatory._setId( 'obligatory' )
-        site._setObject( 'obligatory', obligatory )
+        obligatory._setId('obligatory')
+        site._setObject('obligatory', obligatory)
 
-        self.assertEqual( len( site.objectIds() ), 2 )
+        self.assertEqual(len(site.objectIds()), 2)
 
-        context = DummyImportContext( site, tool=site.setup_tool )
-        context._files[ TOOLSET_XML ] = _BAD_CLASS_TOOLSET_XML
+        context = DummyImportContext(site, tool=site.setup_tool)
+        context._files[TOOLSET_XML] = _BAD_CLASS_TOOLSET_XML
 
-        importToolset( context )
+        importToolset(context)
 
-        self.assertEqual( len( site.objectIds() ), 2 )
+        self.assertEqual(len(site.objectIds()), 2)
 
 
 class DummyTool(Folder):
@@ -1738,9 +1753,10 @@ _BAD_CLASS_TOOLSET_XML = """\
 </tool-setup>
 """
 
+
 def test_suite():
     return unittest.TestSuite((
-        unittest.makeSuite( SetupToolTests ),
-        unittest.makeSuite( Test_exportToolset ),
-        unittest.makeSuite( Test_importToolset ),
-        ))
+        unittest.makeSuite(SetupToolTests),
+        unittest.makeSuite(Test_exportToolset),
+        unittest.makeSuite(Test_importToolset),
+    ))

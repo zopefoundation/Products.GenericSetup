@@ -24,7 +24,8 @@ from Products.GenericSetup.registry import _import_step_registry
 from Products.GenericSetup.registry import _export_step_registry
 from Products.GenericSetup.registry import _profile_registry
 
-#### genericsetup:registerProfile
+# genericsetup:registerProfile
+
 
 class IRegisterProfileDirective(Interface):
 
@@ -85,10 +86,10 @@ def registerProfile(_context, name=u'default', title=None, description=None,
         discriminator=('registerProfile', product, name),
         callable=_profile_registry.registerProfile,
         args=(name, title, description, directory, product, provides, for_)
-        )
+    )
 
 
-#### genericsetup:exportStep
+# genericsetup:exportStep
 
 class IExportStepDirective(Interface):
     name = PythonIdentifier(
@@ -112,17 +113,16 @@ class IExportStepDirective(Interface):
         required=True)
 
 
-
 def exportStep(context, name, handler, title=None, description=None):
 
     context.action(
         discriminator=('exportStep', name),
         callable=_export_step_registry.registerStep,
         args=(name, handler, title, description),
-        )
+    )
 
 
-#### genericsetup:importStep
+# genericsetup:importStep
 
 class IImportStepDirective(Interface):
 
@@ -181,10 +181,10 @@ class importStep:
             callable=_import_step_registry.registerStep,
             args=(self.name, None, self.handler, self.dependencies, self.title,
                   self.description),
-            )
+        )
 
 
-#### genericsetup:upgradeStep
+# genericsetup:upgradeStep
 
 import zope.schema
 import zope.configuration
@@ -192,6 +192,7 @@ from upgrade import UpgradeStep
 from upgrade import UpgradeDepends
 from upgrade import _registerUpgradeStep
 from upgrade import _registerNestedUpgradeStep
+
 
 class IUpgradeStepsDirective(Interface):
 
@@ -258,33 +259,33 @@ class IUpgradeDependsSubDirective(Interface):
     title = zope.schema.TextLine(
         title=u"Title",
         required=True,
-        )
+    )
 
     description = zope.schema.TextLine(
         title=u"Upgrade dependency description",
         required=False,
-        )
+    )
 
     import_profile = zope.schema.TextLine(
         title=u"GenericSetup profile id to load, if not the same as the "
-               u"current profile.",
+        u"current profile.",
         required=False)
 
     import_steps = zope.configuration.fields.Tokens(
         title=u"Import steps to rerun",
         required=False,
         value_type=zope.schema.TextLine(title=u"Import step"),
-        )
+    )
 
     run_deps = zope.schema.Bool(
         title=u"Run import step dependencies?",
         required=False,
-        )
+    )
 
     purge = zope.schema.Bool(
         title=u"Import steps w/ purge=True?",
         required=False,
-        )
+    )
 
 
 class IUpgradeDependsDirective(IUpgradeStepsDirective,
@@ -303,7 +304,8 @@ def upgradeStep(_context, title, profile, handler, description=None,
         discriminator=('upgradeStep', source, destination, handler, sortkey),
         callable=_registerUpgradeStep,
         args=(step,),
-        )
+    )
+
 
 def upgradeDepends(_context, title, profile, description=None,
                    import_profile=None, import_steps=[], source='*',
@@ -317,7 +319,7 @@ def upgradeDepends(_context, title, profile, description=None,
                        str(import_steps), checker, sortkey),
         callable=_registerUpgradeStep,
         args=(step,),
-        )
+    )
 
 
 class upgradeSteps(object):
@@ -347,7 +349,7 @@ class upgradeSteps(object):
                            self.sortkey),
             callable=_registerNestedUpgradeStep,
             args=(step, self.id),
-            )
+        )
 
     def upgradeDepends(self, _context, title, description=None,
                        import_profile=None, import_steps=[], run_deps=False,
@@ -364,7 +366,7 @@ class upgradeSteps(object):
                            import_profile, str(import_steps), self.sortkey),
             callable=_registerNestedUpgradeStep,
             args=(step, self.id)
-            )
+        )
 
     def __call__(self):
         return ()

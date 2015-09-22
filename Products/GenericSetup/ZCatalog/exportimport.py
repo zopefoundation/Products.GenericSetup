@@ -73,7 +73,7 @@ class ZCatalogXMLAdapter(XMLAdapterBase, ObjectManagerHelpers,
     def _extractIndexes(self):
         fragment = self._doc.createDocumentFragment()
         indexes = self.context.getIndexObjects()[:]
-        indexes.sort(lambda x,y: cmp(x.getId(), y.getId()))
+        indexes.sort(lambda x, y: cmp(x.getId(), y.getId()))
         for idx in indexes:
             exporter = queryMultiAdapter((idx, self.environ), INode)
             if exporter:
@@ -120,8 +120,7 @@ class ZCatalogXMLAdapter(XMLAdapterBase, ObjectManagerHelpers,
 
     def _extractColumns(self):
         fragment = self._doc.createDocumentFragment()
-        schema = self.context.schema()[:]
-        schema.sort()
+        schema = sorted(self.context.schema()[:])
         for col in schema:
             child = self._doc.createElement('column')
             child.setAttribute('value', col)

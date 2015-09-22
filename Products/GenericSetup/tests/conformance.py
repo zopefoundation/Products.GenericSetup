@@ -16,104 +16,116 @@ Derived testcase classes should define '_getTargetClass()', which must
 return the class being tested for conformance.
 """
 
+
 class ConformsToISetupContext:
 
-    def test_ISetupContext_conformance( self ):
+    def test_ISetupContext_conformance(self):
 
         from Products.GenericSetup.interfaces import ISetupContext
         from zope.interface.verify import verifyClass
 
-        verifyClass( ISetupContext, self._getTargetClass() )
+        verifyClass(ISetupContext, self._getTargetClass())
+
 
 class ConformsToIImportContext:
 
-    def test_IImportContext_conformance( self ):
+    def test_IImportContext_conformance(self):
 
         from Products.GenericSetup.interfaces import IImportContext
         from zope.interface.verify import verifyClass
 
-        verifyClass( IImportContext, self._getTargetClass() )
+        verifyClass(IImportContext, self._getTargetClass())
+
 
 class ConformsToIExportContext:
 
-    def test_IExportContext_conformance( self ):
+    def test_IExportContext_conformance(self):
 
         from Products.GenericSetup.interfaces import IExportContext
         from zope.interface.verify import verifyClass
 
-        verifyClass( IExportContext, self._getTargetClass() )
+        verifyClass(IExportContext, self._getTargetClass())
+
 
 class ConformsToIChunkableExportContext:
 
-    def test_IChunkableExportContext_conformance( self ):
+    def test_IChunkableExportContext_conformance(self):
 
         from Products.GenericSetup.interfaces import IChunkableExportContext
         from zope.interface.verify import verifyClass
 
-        verifyClass( IChunkableExportContext, self._getTargetClass() )
+        verifyClass(IChunkableExportContext, self._getTargetClass())
+
 
 class ConformsToIChunkableImportContext:
 
-    def test_IChunkableImportContext_conformance( self ):
+    def test_IChunkableImportContext_conformance(self):
 
         from Products.GenericSetup.interfaces import IChunkableImportContext
         from zope.interface.verify import verifyClass
 
-        verifyClass( IChunkableImportContext, self._getTargetClass() )
+        verifyClass(IChunkableImportContext, self._getTargetClass())
+
 
 class ConformsToIStepRegistry:
 
-    def test_IStepRegistry_conformance( self ):
+    def test_IStepRegistry_conformance(self):
 
         from Products.GenericSetup.interfaces import IStepRegistry
         from zope.interface.verify import verifyClass
 
-        verifyClass( IStepRegistry, self._getTargetClass() )
+        verifyClass(IStepRegistry, self._getTargetClass())
+
 
 class ConformsToIImportStepRegistry:
 
-    def test_IImportStepRegistry_conformance( self ):
+    def test_IImportStepRegistry_conformance(self):
 
         from Products.GenericSetup.interfaces import IImportStepRegistry
         from zope.interface.verify import verifyClass
 
-        verifyClass( IImportStepRegistry, self._getTargetClass() )
+        verifyClass(IImportStepRegistry, self._getTargetClass())
+
 
 class ConformsToIExportStepRegistry:
 
-    def test_IExportStepRegistry_conformance( self ):
+    def test_IExportStepRegistry_conformance(self):
 
         from Products.GenericSetup.interfaces import IExportStepRegistry
         from zope.interface.verify import verifyClass
 
-        verifyClass( IExportStepRegistry, self._getTargetClass() )
+        verifyClass(IExportStepRegistry, self._getTargetClass())
+
 
 class ConformsToIToolsetRegistry:
 
-    def test_IToolsetRegistry_conformance( self ):
+    def test_IToolsetRegistry_conformance(self):
 
         from Products.GenericSetup.interfaces import IToolsetRegistry
         from zope.interface.verify import verifyClass
 
-        verifyClass( IToolsetRegistry, self._getTargetClass() )
+        verifyClass(IToolsetRegistry, self._getTargetClass())
+
 
 class ConformsToIProfileRegistry:
 
-    def test_IProfileRegistry_conformance( self ):
+    def test_IProfileRegistry_conformance(self):
 
         from Products.GenericSetup.interfaces import IProfileRegistry
         from zope.interface.verify import verifyClass
 
-        verifyClass( IProfileRegistry, self._getTargetClass() )
+        verifyClass(IProfileRegistry, self._getTargetClass())
+
 
 class ConformsToISetupTool:
 
-    def test_ISetupTool_conformance( self ):
+    def test_ISetupTool_conformance(self):
 
         from Products.GenericSetup.interfaces import ISetupTool
         from zope.interface.verify import verifyClass
 
-        verifyClass( ISetupTool, self._getTargetClass() )
+        verifyClass(ISetupTool, self._getTargetClass())
+
 
 class ConformsToIContentFactory:
 
@@ -122,7 +134,8 @@ class ConformsToIContentFactory:
         from Products.GenericSetup.interfaces import IContentFactory
         from zope.interface.verify import verifyClass
 
-        verifyClass( IContentFactory, self._getTargetClass() )
+        verifyClass(IContentFactory, self._getTargetClass())
+
 
 class ConformsToIContentFactoryName:
 
@@ -131,7 +144,8 @@ class ConformsToIContentFactoryName:
         from Products.GenericSetup.interfaces import IContentFactoryName
         from zope.interface.verify import verifyClass
 
-        verifyClass( IContentFactoryName, self._getTargetClass() )
+        verifyClass(IContentFactoryName, self._getTargetClass())
+
 
 class ConformsToIFilesystemExporter:
 
@@ -140,7 +154,8 @@ class ConformsToIFilesystemExporter:
         from Products.GenericSetup.interfaces import IFilesystemExporter
         from zope.interface.verify import verifyClass
 
-        verifyClass( IFilesystemExporter, self._getTargetClass() )
+        verifyClass(IFilesystemExporter, self._getTargetClass())
+
 
 class ConformsToIFilesystemImporter:
 
@@ -149,7 +164,8 @@ class ConformsToIFilesystemImporter:
         from Products.GenericSetup.interfaces import IFilesystemImporter
         from zope.interface.verify import verifyClass
 
-        verifyClass( IFilesystemImporter, self._getTargetClass() )
+        verifyClass(IFilesystemImporter, self._getTargetClass())
+
 
 class ConformsToIINIAware:
 
@@ -158,7 +174,8 @@ class ConformsToIINIAware:
         from Products.GenericSetup.interfaces import IINIAware
         from zope.interface.verify import verifyClass
 
-        verifyClass (IINIAware, self._getTargetClass() )
+        verifyClass(IINIAware, self._getTargetClass())
+
 
 class ConformsToICSVAware:
 
@@ -167,7 +184,8 @@ class ConformsToICSVAware:
         from Products.GenericSetup.interfaces import ICSVAware
         from zope.interface.verify import verifyClass
 
-        verifyClass( ICSVAware, self._getTargetClass() )
+        verifyClass(ICSVAware, self._getTargetClass())
+
 
 class ConformsToIDAVAware:
 
@@ -176,4 +194,4 @@ class ConformsToIDAVAware:
         from Products.GenericSetup.interfaces import IDAVAware
         from zope.interface.verify import verifyClass
 
-        verifyClass( IDAVAware, self._getTargetClass() )
+        verifyClass(IDAVAware, self._getTargetClass())

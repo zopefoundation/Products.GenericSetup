@@ -40,7 +40,7 @@ _METADATA_MAP = {
     'description': desc,
     'version': version,
     'dependencies': (dep1, dep2),
-    }
+}
 
 _METADATA_EMPTY_DEPENDENCIES_XML = """<?xml version="1.0"?>
 <metadata>
@@ -54,15 +54,16 @@ _METADATA_MAP_EMPTY_DEPENDENCIES = {
     'description': desc,
     'version': version,
     'dependencies': (),
-    }
+}
 
-class ProfileMetadataTests( ZopeTestCase ):
+
+class ProfileMetadataTests(ZopeTestCase):
 
     installProduct('GenericSetup')
 
     def test_parseXML(self):
-        metadata = ProfileMetadata( '' )
-        parsed = metadata.parseXML( _METADATA_XML )
+        metadata = ProfileMetadata('')
+        parsed = metadata.parseXML(_METADATA_XML)
         self.assertEqual(parsed, _METADATA_MAP)
 
     def test_relativePath(self):
@@ -78,11 +79,12 @@ class ProfileMetadataTests( ZopeTestCase ):
 
     def test_parseXML_empty_dependencies(self):
         # https://bugs.launchpad.net/bugs/255301
-        metadata = ProfileMetadata( '')
+        metadata = ProfileMetadata('')
         parsed = metadata.parseXML(_METADATA_EMPTY_DEPENDENCIES_XML)
         self.assertEqual(parsed, _METADATA_MAP_EMPTY_DEPENDENCIES)
 
+
 def test_suite():
     return unittest.TestSuite((
-        unittest.makeSuite( ProfileMetadataTests ),
-        ))
+        unittest.makeSuite(ProfileMetadataTests),
+    ))

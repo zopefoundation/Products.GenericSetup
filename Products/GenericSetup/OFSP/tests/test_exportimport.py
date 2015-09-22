@@ -52,4 +52,4 @@ class FolderXMLAdapterTests(BodyAdapterTestCase, unittest.TestCase):
 def test_suite():
     return unittest.TestSuite((
         unittest.makeSuite(FolderXMLAdapterTests),
-        ))
+    ))

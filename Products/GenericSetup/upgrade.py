@@ -64,6 +64,7 @@ class UpgradeRegistry(object):
       - id -> step for single steps
       - id -> [ (id1, step1), (id2, step2) ] for nested steps
     """
+
     def __init__(self):
         self._registry = GlobalRegistryStorage(IUpgradeSteps)
 
@@ -102,12 +103,12 @@ class UpgradeRegistry(object):
             step = profile_steps.get(step_id, None)
             if step is None:
                 for key in profile_steps.keys():
-                    if type(profile_steps[key]) == list:
+                    if isinstance(profile_steps[key], list):
                         subs = dict(profile_steps[key])
                         step = subs.get(step_id, None)
                         if step is not None:
                             break
-            elif type(step) == list:
+            elif isinstance(step, list):
                 subs = dict(step)
                 step = subs.get(step_id, None)
             return step
@@ -119,6 +120,7 @@ class UpgradeEntity(object):
     """
     Base class for actions to be taken during an upgrade process.
     """
+
     def __init__(self, title, profile, source, dest, desc, checker=None,
                  sortkey=0):
         self.id = str(abs(hash('%s%s%s%s' % (title, source, dest, sortkey))))
@@ -156,6 +158,7 @@ class UpgradeEntity(object):
 class UpgradeStep(UpgradeEntity):
     """A step to upgrade a component.
     """
+
     def __init__(self, title, profile, source, dest, desc, handler,
                  checker=None, sortkey=0):
         super(UpgradeStep, self).__init__(title, profile, source, dest,
@@ -170,11 +173,12 @@ class UpgradeDepends(UpgradeEntity):
     """A specialized upgrade step that re-runs a particular import
     step from the profile.
     """
+
     def __init__(self, title, profile, source, dest, desc, import_profile=None,
                  import_steps=[], run_deps=False, purge=False, checker=None,
                  sortkey=0):
         super(UpgradeDepends, self).__init__(title, profile, source, dest,
-                                          desc, checker, sortkey)
+                                             desc, checker, sortkey)
         self.import_profile = import_profile
         self.import_steps = import_steps
         self.run_deps = run_deps
@@ -200,10 +204,12 @@ class UpgradeDepends(UpgradeEntity):
                                               purge_old=self.purge,
                                               ignore_dependencies=ign_deps)
 
+
 def _registerUpgradeStep(step):
     profile_id = step.profile
     profile_steps = _upgrade_registry.getUpgradeStepsForProfile(profile_id)
     profile_steps[step.id] = step
+
 
 def _registerNestedUpgradeStep(step, outer_id):
     profile_id = step.profile
@@ -211,6 +217,7 @@ def _registerNestedUpgradeStep(step, outer_id):
     nested_steps = profile_steps.get(outer_id, [])
     nested_steps.append((step.id, step))
     profile_steps[outer_id] = nested_steps
+
 
 def _extractStepInfo(tool, id, step, source):
     """Returns the info data structure for a given step.
@@ -227,11 +234,13 @@ def _extractStepInfo(tool, id, step, source):
         'description': step.description,
         'proposed': proposed,
         'sortkey': step.sortkey,
-        }
+    }
     return info
+
 
 def listProfilesWithUpgrades():
     return _upgrade_registry.keys()
+
 
 def listUpgradeSteps(tool, profile_id, source):
     """Lists upgrade steps available from a given version, for a given
@@ -246,7 +255,7 @@ def listUpgradeSteps(tool, profile_id, source):
                 continue
             normsrc = normalize_version(step.source)
             res.append(((normsrc, step.sortkey, info['proposed']), info))
-        else: # nested steps
+        else:  # nested steps
             nested = []
             outer_proposed = False
             for inner_id, inner_step in step:

@@ -54,7 +54,7 @@ class PluggableIndexNodeAdapter(NodeAdapterBase):
         for child in node.childNodes:
             if child.nodeName == 'indexed_attr':
                 indexed_attrs.append(
-                                  child.getAttribute('value').encode('utf-8'))
+                    child.getAttribute('value').encode('utf-8'))
         if _before != indexed_attrs:
             self.context.indexed_attrs = indexed_attrs
             self.context.clear()
@@ -81,14 +81,14 @@ class DateIndexNodeAdapter(NodeAdapterBase, PropertyManagerHelpers):
         """
         _before = {'map': self.context._properties,
                    'items': self.context.propertyItems(),
-                  }
+                   }
         if self.environ.shouldPurge():
             self._purgeProperties()
 
         self._initProperties(node)
         _after = {'map': self.context._properties,
                   'items': self.context.propertyItems(),
-                 }
+                  }
         if _before != _after:
             self.context.clear()
 
@@ -157,7 +157,7 @@ class FilteredSetNodeAdapter(NodeAdapterBase):
         """
         _before = self.context.expr
         self.context.setExpression(
-                              node.getAttribute('expression').encode('utf-8'))
+            node.getAttribute('expression').encode('utf-8'))
         _after = self.context.expr
         if _before != _after:
             self.context.clear()
@@ -194,6 +194,6 @@ class TopicIndexNodeAdapter(NodeAdapterBase):
                 importer = queryMultiAdapter((set, self.environ), INode)
                 importer.node = child
         # Let the filtered sets handle themselves:  we have no state
-        #self.context.clear()
+        # self.context.clear()
 
     node = property(_exportNode, _importNode)
