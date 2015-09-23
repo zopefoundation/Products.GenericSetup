@@ -55,6 +55,7 @@ except ImportError:
     # Avoid generating a spurious dependency
     PersistentComponents = None
 
+
 def createComponentRegistry(context):
     enableSite(context, iface=IObjectManagerSite)
 
@@ -66,17 +67,20 @@ def createComponentRegistry(context):
     components._components = components
     context.setSiteManager(components)
 
+
 class IDummyInterface(Interface):
     """A dummy interface."""
 
     def verify():
         """Returns True."""
 
+
 class IDummyInterface2(Interface):
     """A second dummy interface."""
 
     def verify():
         """Returns True."""
+
 
 class DummyUtility(object):
     """A dummy utility."""
@@ -86,17 +90,20 @@ class DummyUtility(object):
     def verify(self):
         return True
 
+
 class IAnotherDummy(Interface):
     """A third dummy interface."""
 
     def inc():
         """Increments handle count"""
 
+
 class IAnotherDummy2(Interface):
     """A second dummy interface."""
 
     def verify():
         """Returns True."""
+
 
 class DummyObject(object):
     """A dummy object to pass to the handler."""
@@ -107,6 +114,7 @@ class DummyObject(object):
 
     def inc(self):
         self.handled += 1
+
 
 class DummyAdapter(object):
     """A dummy adapter."""
@@ -119,10 +127,12 @@ class DummyAdapter(object):
     def verify(self):
         return True
 
+
 def dummy_handler(context):
     """A dummy event handler."""
-    
+
     context.inc()
+
 
 class DummyTool(SimpleItem):
     """A dummy tool."""
@@ -133,6 +143,7 @@ class DummyTool(SimpleItem):
     security = ClassSecurityInfo()
 
     security.declarePublic('verify')
+
     def verify(self):
         return True
 
@@ -148,6 +159,7 @@ class DummyTool2(SimpleItem):
     security = ClassSecurityInfo()
 
     security.declarePublic('verify')
+
     def verify(self):
         return True
 
@@ -258,16 +270,16 @@ class ComponentRegistryXMLAdapterTests(BodyAdapterTestCase, unittest.TestCase):
         util.__name__ = name
         util.__parent__ = aq_base(obj)
         obj._setObject(name, aq_base(util),
-            set_owner=False, suppress_events=True)
+                       set_owner=False, suppress_events=True)
         obj.registerUtility(aq_base(obj[name]), IDummyInterface)
 
         util = DummyUtility()
         name = ('Products.GenericSetup.tests.test_components.'
-                    'IDummyInterface2-foo')
+                'IDummyInterface2-foo')
         util.__name__ = name
         util.__parent__ = aq_base(obj)
         obj._setObject(name, aq_base(util),
-            set_owner=False, suppress_events=True)
+                       set_owner=False, suppress_events=True)
         obj.registerUtility(aq_base(obj[name]), IDummyInterface2, name=u'foo')
 
         tool = aq_base(obj.aq_parent['dummy_tool'])
@@ -287,7 +299,7 @@ class ComponentRegistryXMLAdapterTests(BodyAdapterTestCase, unittest.TestCase):
 
         dummy = DummyObject()
         results = [adap.verify() for adap in
-                        subscribers([dummy], IAnotherDummy2)]
+                   subscribers([dummy], IAnotherDummy2)]
         self.assertEquals(results, [True])
 
         dummy = DummyObject()
@@ -299,7 +311,7 @@ class ComponentRegistryXMLAdapterTests(BodyAdapterTestCase, unittest.TestCase):
         self.failUnless(util.verify())
         self.failUnless(util.__parent__ == obj)
         name = ('Products.GenericSetup.tests.test_components.'
-                    'IDummyInterface2-foo')
+                'IDummyInterface2-foo')
         self.assertEquals(util.__name__, name)
         self.failUnless(name in obj.objectIds())
 
@@ -407,7 +419,7 @@ class ComponentRegistryXMLAdapterTests(BodyAdapterTestCase, unittest.TestCase):
 
         dummy = DummyObject()
         results = [adap.verify() for adap in
-                        subscribers([dummy], IAnotherDummy2)]
+                   subscribers([dummy], IAnotherDummy2)]
         self.assertEquals(results, [])
 
         dummy = DummyObject()
@@ -416,7 +428,7 @@ class ComponentRegistryXMLAdapterTests(BodyAdapterTestCase, unittest.TestCase):
 
         util = queryUtility(IDummyInterface2, name=u'foo')
         name = ('Products.GenericSetup.tests.test_components.'
-                    'IDummyInterface2-foo')
+                'IDummyInterface2-foo')
         self.failUnless(util is None)
         self.failIf(name in obj.objectIds())
 
@@ -460,11 +472,11 @@ if PersistentComponents is not None:
     def test_suite():
         # reimport to make sure tests are run from Products
         from Products.GenericSetup.tests.test_components \
-                import ComponentRegistryXMLAdapterTests
+            import ComponentRegistryXMLAdapterTests
 
         return unittest.TestSuite((
             unittest.makeSuite(ComponentRegistryXMLAdapterTests),
-            ))
+        ))
 else:
     def test_suite():
         return unittest.TestSuite()
