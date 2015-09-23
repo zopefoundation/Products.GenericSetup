@@ -94,9 +94,9 @@ class MailHostXMLAdapterTestsWithQueue(BodyAdapterTestCase, unittest.TestCase):
         self.assertEqual(obj.smtp_queue, True)
         self.assertEqual(type(obj.smtp_queue_directory), str)
         self.assertEqual(obj.smtp_queue_directory, '/tmp/mailqueue')
-        
+
     def test_body_get(self):
-        #Default Correctly Handled in MailHostXMLAdapterTests
+        # Default Correctly Handled in MailHostXMLAdapterTests
         pass
 
     def setUp(self):

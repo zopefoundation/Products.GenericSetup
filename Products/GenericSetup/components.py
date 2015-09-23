@@ -529,6 +529,7 @@ def importComponentRegistry(context):
             logger = context.getLogger('componentregistry')
             logger.debug("Nothing to import")
 
+
 def exportComponentRegistry(context):
     """Export local components.
     """

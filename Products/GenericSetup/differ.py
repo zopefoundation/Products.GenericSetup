@@ -23,6 +23,7 @@ from Products.GenericSetup.interfaces import SKIPPED_FILES
 
 BLANKS_REGEX = re.compile( r'^\s*$' )
 
+
 def unidiff( a
            , b
            , filename_a='original'

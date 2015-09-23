@@ -88,6 +88,7 @@ def _getDottedName(named):
 
     return short_dotted
 
+
 def _resolveDottedName(dotted):
     __traceback_info__ = dotted
 
@@ -124,6 +125,7 @@ def _resolveDottedName(dotted):
             return None
 
     return obj
+
 
 def _extractDocstring(func, default_title, default_description):
     try:
@@ -289,6 +291,7 @@ InitializeClass(ExportConfiguratorBase)
 
 #
 ##############################################################################
+
 
 class _LineWrapper:
 
@@ -829,6 +832,7 @@ def exportObjects(obj, parent_path, context):
         for sub in obj.objectValues():
             exportObjects(sub, path + '/', context)
 
+
 def importObjects(obj, parent_path, context):
     """ Import subobjects recursively.
     """
@@ -899,6 +903,7 @@ def _computeTopologicalSort(steps):
         unresolved = []
 
     return result
+
 
 def _getProductPath(product_name):
     """ Return the absolute path of the product's directory.

@@ -115,6 +115,7 @@ _ZCTEXT_XML = """\
  </index>
 """
 
+
 class ZCatalogXMLAdapterTests(BodyAdapterTestCase, unittest.TestCase):
 
     layer = ExportImportZCMLLayer

@@ -30,8 +30,8 @@ from Products.GenericSetup.utils import CONVERTER, DEFAULT, KEY
 #
 _FILENAME = 'rolemap.xml'
 
-def importRolemap( context ):
 
+def importRolemap( context ):
     """ Import roles / permission map from an XML file.
 
     o 'context' must implement IImportContext.
@@ -106,7 +106,6 @@ def importRolemap( context ):
 
 
 def exportRolemap( context ):
-
     """ Export roles / permission map as an XML file
 
     o 'context' must implement IExportContext.
@@ -149,14 +148,12 @@ class RolemapExportConfigurator(ExportConfiguratorBase):
 
     security.declareProtected( ManagePortal, 'listRoles' )
     def listRoles( self ):
-
         """ List the valid role IDs for our site.
         """
         return self._site.valid_roles()
 
     security.declareProtected( ManagePortal, 'listPermissions' )
     def listPermissions( self ):
-
         """ List permissions for export.
 
         o Returns a sqeuence of mappings describing locally-modified

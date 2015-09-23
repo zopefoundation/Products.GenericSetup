@@ -47,7 +47,7 @@ class ProfileMetadata( ImportConfiguratorBase ):
         self._encoding = encoding
 
     def __call__( self ):
-        
+
         full_path = os.path.join( self._path, METADATA_XML )
         if not os.path.exists( full_path ):
             return {}

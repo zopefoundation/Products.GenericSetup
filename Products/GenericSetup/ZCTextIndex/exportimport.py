@@ -58,7 +58,7 @@ class ZCLexiconNodeAdapter(NodeAdapterBase):
         pipeline = tuple(pipeline)
         if self.context._pipeline != pipeline:
             self.context._pipeline = pipeline
-            #clear lexicon
+            # clear lexicon
             self.context._wids = OIBTree()
             self.context._words = IOBTree()
             self.context.length = Length()
