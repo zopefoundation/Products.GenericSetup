@@ -116,10 +116,9 @@ class TarballTester(DOMComparator):
 
     def _verifyTarballContents(self, fileish, toc_list, when=None):
 
-        fileish.seek(0L)
+        fileish.seek(0)
         tarfile = TarFile.open('foo.tar.gz', fileobj=fileish, mode='r:gz')
-        items = tarfile.getnames()
-        items.sort()
+        items = sorted(tarfile.getnames())
         toc_list.sort()
 
         self.assertEqual(len(items), len(toc_list))
@@ -132,7 +131,7 @@ class TarballTester(DOMComparator):
 
     def _verifyTarballEntry(self, fileish, entry_name, data):
 
-        fileish.seek(0L)
+        fileish.seek(0)
         tarfile = TarFile.open('foo.tar.gz', fileobj=fileish, mode='r:gz')
         extract = tarfile.extractfile(entry_name)
         found = extract.read()
@@ -140,7 +139,7 @@ class TarballTester(DOMComparator):
 
     def _verifyTarballEntryXML(self, fileish, entry_name, data):
 
-        fileish.seek(0L)
+        fileish.seek(0)
         tarfile = TarFile.open('foo.tar.gz', fileobj=fileish, mode='r:gz')
         extract = tarfile.extractfile(entry_name)
         found = extract.read()
