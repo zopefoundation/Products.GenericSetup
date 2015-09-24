@@ -570,6 +570,7 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
         # upgrade steps would be nice though.  There are options.
         # Setup a tool and profiles for testing dependency strategies.
         from Products.GenericSetup.metadata import METADATA_XML
+        from Products.GenericSetup.interfaces import EXTENSION
         self._makeFile(METADATA_XML, _DOUBLE_METADATA_XML)
         _makeTestFile(METADATA_XML, self._PROFILE_PATH2, _PLAIN_METADATA_XML)
         _makeTestFile(METADATA_XML, self._PROFILE_PATH3, _PLAIN_METADATA_XML)
@@ -577,9 +578,12 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
         tool = self._makeOne('setup_tool').__of__(site)
 
         # Register main profile and two dependency profiles.
-        profile_registry.registerProfile('foo', 'Foo', '', self._PROFILE_PATH)
-        profile_registry.registerProfile('bar', 'Bar', '', self._PROFILE_PATH2)
-        profile_registry.registerProfile('ham', 'Ham', '', self._PROFILE_PATH3)
+        profile_registry.registerProfile('foo', 'Foo', '', self._PROFILE_PATH,
+                                         profile_type=EXTENSION)
+        profile_registry.registerProfile('bar', 'Bar', '', self._PROFILE_PATH2,
+                                         profile_type=EXTENSION)
+        profile_registry.registerProfile('ham', 'Ham', '', self._PROFILE_PATH3,
+                                         profile_type=EXTENSION)
 
         # Apply the second profile.
         tool.runAllImportStepsFromProfile('profile-other:bar')
@@ -752,8 +756,40 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
 
         self.assertEqual((result['messages']['toolset']), 'step skipped')
 
-    def test_runExportStep_nonesuch(self):
+    def test_runAllImportStepsFromProfile_with_base_profile(self):
+        # Applying a base profile should clear the profile upgrade
+        # versions.
+        from Products.GenericSetup.interfaces import BASE
+        from Products.GenericSetup.interfaces import EXTENSION
+        from Products.GenericSetup.metadata import METADATA_XML
+        site = self._makeSite()
+        site.setup_tool = self._makeOne('setup_tool')
+        tool = site.setup_tool
+        self._makeFile(METADATA_XML, _METADATA_XML)
+        _makeTestFile(METADATA_XML, self._PROFILE_PATH2, _PLAIN_METADATA_XML)
+        _makeTestFile(METADATA_XML, self._PROFILE_PATH3, _PLAIN_METADATA_XML)
 
+        # Register a base and two extension profile.  The base profile
+        # 'foo' has a dependency 'bar'.  This might not make sense,
+        # but it will serve to check that we clear the profile
+        # versions right before we apply the base profile, which means
+        # right after any dependency profiles.
+        profile_registry.registerProfile(
+            'foo', 'Foo', '', self._PROFILE_PATH, profile_type=BASE)
+        profile_registry.registerProfile(
+            'bar', 'Bar', '', self._PROFILE_PATH2, profile_type=EXTENSION)
+        profile_registry.registerProfile(
+            'ham', 'Ham', '', self._PROFILE_PATH3, profile_type=EXTENSION)
+        # Apply the extension profile.
+        tool.runAllImportStepsFromProfile('profile-other:ham')
+        self.assertEqual(tool._profile_upgrade_versions,
+                         {u'other:ham': (u'1', u'0')})
+        # Apply the base profile.
+        tool.runAllImportStepsFromProfile('profile-other:foo')
+        self.assertEqual(tool._profile_upgrade_versions,
+                         {u'other:foo': (u'1', u'0')})
+
+    def test_runExportStep_nonesuch(self):
         site = self._makeSite()
         tool = self._makeOne('setup_tool').__of__(site)
 
