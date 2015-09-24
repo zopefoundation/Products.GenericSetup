@@ -866,6 +866,13 @@ class SetupTool(Folder):
         """
         return self.getProfileInfo(profile_id).get('version', UNKNOWN)
 
+    security.declareProtected(ManagePortal, 'purgeProfileVersions')
+    def purgeProfileVersions(self):
+        """Purge the profile upgrade versions.
+        """
+        self._profile_upgrade_versions = {}
+        generic_logger.info('Profile upgrade versions purged.')
+
     security.declareProtected(ManagePortal, 'profileExists')
     def profileExists(self, profile_id):
         """Check if a profile exists."""

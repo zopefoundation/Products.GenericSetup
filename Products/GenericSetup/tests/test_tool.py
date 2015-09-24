@@ -1139,6 +1139,17 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
         tool.unsetLastVersionForProfile('bar')
         self.assertEqual(tool._profile_upgrade_versions, {})
 
+    def test_purgeProfileVersions(self):
+        site = self._makeSite()
+        site.setup_tool = self._makeOne('setup_tool')
+        tool = site.setup_tool
+        tool.setLastVersionForProfile('foo', '1.0')
+        tool.setLastVersionForProfile('bar', '2.0')
+        self.assertEqual(tool._profile_upgrade_versions,
+                         {'foo': ('1', '0'), 'bar': ('2', '0')})
+        tool.purgeProfileVersions()
+        self.assertEqual(tool._profile_upgrade_versions, {})
+
     def test_manage_doUpgrades_no_profile_id_or_updates(self):
         site = self._makeSite()
         site.setup_tool = self._makeOne('setup_tool')
