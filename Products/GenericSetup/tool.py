@@ -1270,7 +1270,8 @@ class SetupTool(Folder):
             except KeyError:
                 # this will be a snapshot profile
                 profile_type = None
-            if profile_type == BASE:
+            if profile_type == BASE and (purge_old is None or purge_old):
+                # purge_old should be None or explicitly true
                 self.purgeProfileVersions()
             if num == last_num:
                 generic_logger.info('Applying main profile %s', profile_id)
