@@ -14,7 +14,6 @@ class ImportStepsView(BrowserView):
         steps=[step for step in steps if step['invalid']]
         return steps
 
-
     def doubleSteps(self):
         steps=set(self.tool_registry.listSteps())
         globals=set(self.global_registry.listSteps())
@@ -24,10 +23,8 @@ class ImportStepsView(BrowserView):
         return steps
 
 
-
 class ExportStepsView(ImportStepsView):
     def __init__(self, context, request):
         BrowserView.__init__(self, context, request)
         self.global_registry=_export_step_registry
         self.tool_registry=context.getExportStepRegistry()
-

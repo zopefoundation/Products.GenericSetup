@@ -13,6 +13,7 @@
 """GenericSetup browser view utils.
 """
 
+
 class AddWithPresettingsViewBase:
 
     """Base class for add views with selectable presettings.

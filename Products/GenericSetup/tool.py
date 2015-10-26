@@ -68,6 +68,7 @@ DEFAULT_DEPENDENCY_STRATEGY = DEPENDENCY_STRATEGY_UPGRADE
 
 generic_logger = logging.getLogger(__name__)
 
+
 def exportStepRegistries(context):
     """ Built-in handler for exporting import / export step registries.
     """
@@ -89,6 +90,7 @@ def exportStepRegistries(context):
         logger.info('Local export steps exported.')
     else:
         logger.debug('No local export steps.')
+
 
 def importToolset(context):
     """ Import required / forbidden tools from XML file.
@@ -144,6 +146,7 @@ def importToolset(context):
                 site._setObject(tool_id, tool_class())
 
     logger.info('Toolset imported.')
+
 
 def exportToolset(context):
     """ Export required / forbidden tools to XML file.
@@ -290,7 +293,6 @@ class SetupTool(Folder):
         if not self._exclude_global_steps:
             steps.update(set(_import_step_registry.listSteps()))
         return tuple(steps)
-
 
     security.declareProtected(ManagePortal, 'getExportStepMetadata')
     def getExportStepMetadata(self, step, default=None):
@@ -1356,6 +1358,7 @@ Comparing configurations: '%s' and '%s'
 _TOOL_ID = 'setup_tool'
 
 addSetupToolForm = PageTemplateFile('toolAdd.zpt', _wwwdir)
+
 
 def addSetupTool(dispatcher, RESPONSE):
     """

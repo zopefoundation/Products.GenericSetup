@@ -194,6 +194,6 @@ class TopicIndexNodeAdapter(NodeAdapterBase):
                 importer = queryMultiAdapter((set, self.environ), INode)
                 importer.node = child
         # Let the filtered sets handle themselves:  we have no state
-        #self.context.clear()
+        # self.context.clear()
 
     node = property(_exportNode, _importNode)

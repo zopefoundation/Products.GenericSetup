@@ -33,8 +33,11 @@ from Products.GenericSetup.utils import _resolveDottedName
 #
 #   setup_tool handlers
 #
+
+
 def exportSiteStructure(context):
     IFilesystemExporter(context.getSite()).export(context, 'structure', True)
+
 
 def importSiteStructure(context):
     IFilesystemImporter(context.getSite()).import_(context, 'structure', True)
@@ -225,7 +228,7 @@ class FolderishExporterImporter(object):
     def _mustPreserve(self):
         return [x for x in self.context.objectItems()
                         if ISetupTool.providedBy(x[1])]
- 
+
 
 def _globtest(globpattern, namelist):
     """ Filter names in 'namelist', returning those which match 'globpattern'.
@@ -275,6 +278,7 @@ class CSVAwareFileAdapter(object):
             stream = StringIO(data)
             self.context.put_csv(stream)
 
+
 class INIAwareFileAdapter(object):
     """ Exporter/importer for content whose "natural" representation is an
         '.ini' file.
@@ -308,6 +312,7 @@ class INIAwareFileAdapter(object):
             logger.info('no .ini file for %s/%s' % (subdir, cid))
         else:
             self.context.put_ini(data)
+
 
 class SimpleINIAware(object):
     """ Exporter/importer for content which doesn't know from INI.
@@ -344,6 +349,7 @@ class SimpleINIAware(object):
             else:
                 context._updateProperty(option, value)
 
+
 class FauxDAVRequest:
 
     def __init__(self, **kw):
@@ -360,11 +366,13 @@ class FauxDAVRequest:
     def get_header(self, key, default=None):
         return self._headers.get(key, default)
 
+
 class FauxDAVResponse:
     def setHeader(self, key, value, lock=False):
         pass  # stub this out to mollify webdav.Resource
     def setStatus(self, value, reason=None):
         pass  # stub this out to mollify webdav.Resource
+
 
 class DAVAwareFileAdapter(object):
     """ Exporter/importer for content who handle their own FTP / DAV PUTs.

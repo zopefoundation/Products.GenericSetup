@@ -139,21 +139,18 @@ class BaseContext(SetupEnviron):
 
     security.declareProtected( ManagePortal, 'getSite' )
     def getSite( self ):
-
         """ See ISetupContext.
         """
         return aq_self(self._site)
 
     security.declareProtected( ManagePortal, 'getSetupTool' )
     def getSetupTool( self ):
-
         """ See ISetupContext.
         """
         return self._tool
 
     security.declareProtected( ManagePortal, 'getEncoding' )
     def getEncoding( self ):
-
         """ See ISetupContext.
         """
         return self._encoding
@@ -166,14 +163,12 @@ class BaseContext(SetupEnviron):
 
     security.declareProtected( ManagePortal, 'listNotes' )
     def listNotes(self):
-
         """ See ISetupContext.
         """
         return self._messages[:]
 
     security.declareProtected( ManagePortal, 'clearNotes' )
     def clearNotes(self):
-
         """ See ISetupContext.
         """
         self._messages[:] = []
@@ -200,7 +195,6 @@ class DirectoryImportContext( BaseContext ):
 
     security.declareProtected( ManagePortal, 'openDataFile' )
     def openDataFile( self, filename, subdir=None ):
-
         """ See IImportContext.
         """
         if subdir is None:
@@ -215,7 +209,6 @@ class DirectoryImportContext( BaseContext ):
 
     security.declareProtected( ManagePortal, 'readDataFile' )
     def readDataFile( self, filename, subdir=None ):
-
         """ See IImportContext.
         """
         result = None
@@ -227,7 +220,6 @@ class DirectoryImportContext( BaseContext ):
 
     security.declareProtected( ManagePortal, 'getLastModified' )
     def getLastModified( self, path ):
-
         """ See IImportContext.
         """
         full_path = os.path.join( self._profile_path, path )
@@ -239,7 +231,6 @@ class DirectoryImportContext( BaseContext ):
 
     security.declareProtected( ManagePortal, 'isDirectory' )
     def isDirectory( self, path ):
-
         """ See IImportContext.
         """
         full_path = os.path.join( self._profile_path, path )
@@ -252,7 +243,6 @@ class DirectoryImportContext( BaseContext ):
     security.declareProtected( ManagePortal, 'listDirectory' )
     def listDirectory(self, path, skip=SKIPPED_FILES,
                       skip_suffixes=SKIPPED_SUFFIXES):
-
         """ See IImportContext.
         """
         if path is None:
@@ -289,7 +279,6 @@ class DirectoryExportContext( BaseContext ):
 
     security.declareProtected( ManagePortal, 'openDataFile' )
     def openDataFile( self, filename, content_type, subdir=None ):
-
         """ See IChunkableExportContext.
         """
         if subdir is None:
@@ -308,7 +297,6 @@ class DirectoryExportContext( BaseContext ):
 
     security.declareProtected( ManagePortal, 'writeDataFile' )
     def writeDataFile( self, filename, text, content_type, subdir=None ):
-
         """ See IExportContext.
         """
         if isinstance(text, unicode):
@@ -337,7 +325,6 @@ class TarballImportContext( BaseContext ):
         self._should_purge = bool( should_purge )
 
     def readDataFile( self, filename, subdir=None ):
-
         """ See IImportContext.
         """
         if subdir is not None:
@@ -351,14 +338,12 @@ class TarballImportContext( BaseContext ):
         return file.read()
 
     def getLastModified( self, path ):
-
         """ See IImportContext.
         """
         info = self._getTarInfo( path )
         return info and DateTime(info.mtime) or None
 
     def isDirectory( self, path ):
-
         """ See IImportContext.
         """
         info = self._getTarInfo( path )
@@ -368,7 +353,6 @@ class TarballImportContext( BaseContext ):
 
     def listDirectory(self, path, skip=SKIPPED_FILES,
                       skip_suffixes=SKIPPED_SUFFIXES):
-
         """ See IImportContext.
         """
         if path is None:  # root is special case:  no leading '/'
@@ -400,7 +384,6 @@ class TarballImportContext( BaseContext ):
         return names
 
     def shouldPurge( self ):
-
         """ See IImportContext.
         """
         return self._should_purge
@@ -441,7 +424,6 @@ class TarballExportContext( BaseContext ):
 
     security.declareProtected( ManagePortal, 'writeDataFile' )
     def writeDataFile( self, filename, text, content_type, subdir=None ):
-
         """ See IExportContext.
         """
         if subdir is not None:
@@ -478,7 +460,6 @@ class TarballExportContext( BaseContext ):
 
     security.declareProtected( ManagePortal, 'getArchive' )
     def getArchive( self ):
-
         """ Close the archive, and return it as a big string.
         """
         self._archive.close()
@@ -486,7 +467,6 @@ class TarballExportContext( BaseContext ):
 
     security.declareProtected( ManagePortal, 'getArchiveFilename' )
     def getArchiveFilename( self ):
-
         """ Close the archive, and return it as a big string.
         """
         return self._archive_filename
@@ -507,7 +487,6 @@ class SnapshotExportContext( BaseContext ):
 
     security.declareProtected( ManagePortal, 'writeDataFile' )
     def writeDataFile( self, filename, text, content_type, subdir=None ):
-
         """ See IExportContext.
         """
         if subdir is not None:
@@ -531,14 +510,12 @@ class SnapshotExportContext( BaseContext ):
 
     security.declareProtected( ManagePortal, 'getSnapshotURL' )
     def getSnapshotURL( self ):
-
         """ See IExportContext.
         """
         return '%s/%s' % ( self._tool.absolute_url(), self._snapshot_id )
 
     security.declareProtected( ManagePortal, 'getSnapshotFolder' )
     def getSnapshotFolder( self ):
-
         """ See IExportContext.
         """
         return self._ensureSnapshotsFolder()
@@ -582,7 +559,6 @@ class SnapshotExportContext( BaseContext ):
 
     security.declarePrivate( '_ensureSnapshotsFolder' )
     def _ensureSnapshotsFolder( self, subdir=None ):
-
         """ Ensure that the appropriate snapshot folder exists.
         """
         path = [ 'snapshots', self._snapshot_id ]
@@ -625,7 +601,6 @@ class SnapshotImportContext( BaseContext ):
 
     security.declareProtected( ManagePortal, 'readDataFile' )
     def readDataFile( self, filename, subdir=None ):
-
         """ See IImportContext.
         """
         if subdir is not None:
@@ -654,7 +629,6 @@ class SnapshotImportContext( BaseContext ):
 
     security.declareProtected( ManagePortal, 'getLastModified' )
     def getLastModified( self, path ):
-
         """ See IImportContext.
         """
         try:
@@ -673,7 +647,6 @@ class SnapshotImportContext( BaseContext ):
 
     security.declareProtected( ManagePortal, 'isDirectory' )
     def isDirectory( self, path ):
-
         """ See IImportContext.
         """
         try:
@@ -687,7 +660,6 @@ class SnapshotImportContext( BaseContext ):
 
     security.declareProtected( ManagePortal, 'listDirectory' )
     def listDirectory(self, path, skip=(), skip_suffixes=()):
-
         """ See IImportContext.
         """
         try:
@@ -711,7 +683,6 @@ class SnapshotImportContext( BaseContext ):
 
     security.declareProtected( ManagePortal, 'shouldPurge' )
     def shouldPurge( self ):
-
         """ See IImportContext.
         """
         return self._should_purge
@@ -721,7 +692,6 @@ class SnapshotImportContext( BaseContext ):
     #
     security.declarePrivate( '_getSnapshotFolder' )
     def _getSnapshotFolder( self, subdir=None ):
-
         """ Return the appropriate snapshot (sub)folder.
         """
         path = [ 'snapshots', self._snapshot_id ]

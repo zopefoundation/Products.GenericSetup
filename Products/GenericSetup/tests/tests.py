@@ -16,6 +16,7 @@
 import doctest
 import unittest
 
+
 def test_suite():
     suite = unittest.TestSuite()
     suite.addTest(doctest.DocFileSuite('upgrade.txt'))

@@ -27,6 +27,7 @@ BASE, EXTENSION, profile_registry  # pyflakes
 security = ModuleSecurityInfo('Products.GenericSetup')
 security.declareProtected(ManagePortal, 'profile_registry')
 
+
 def initialize(context):
 
     import tool

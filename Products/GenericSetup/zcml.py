@@ -24,7 +24,8 @@ from Products.GenericSetup.registry import _import_step_registry
 from Products.GenericSetup.registry import _export_step_registry
 from Products.GenericSetup.registry import _profile_registry
 
-#### genericsetup:registerProfile
+# genericsetup:registerProfile
+
 
 class IRegisterProfileDirective(Interface):
 
@@ -88,7 +89,7 @@ def registerProfile(_context, name=u'default', title=None, description=None,
         )
 
 
-#### genericsetup:exportStep
+# genericsetup:exportStep
 
 class IExportStepDirective(Interface):
     name = PythonIdentifier(
@@ -112,7 +113,6 @@ class IExportStepDirective(Interface):
         required=True)
 
 
-
 def exportStep(context, name, handler, title=None, description=None):
 
     context.action(
@@ -122,7 +122,7 @@ def exportStep(context, name, handler, title=None, description=None):
         )
 
 
-#### genericsetup:importStep
+# genericsetup:importStep
 
 class IImportStepDirective(Interface):
 
@@ -184,7 +184,7 @@ class importStep:
             )
 
 
-#### genericsetup:upgradeStep
+# genericsetup:upgradeStep
 
 import zope.schema
 import zope.configuration
@@ -192,6 +192,7 @@ from upgrade import UpgradeStep
 from upgrade import UpgradeDepends
 from upgrade import _registerUpgradeStep
 from upgrade import _registerNestedUpgradeStep
+
 
 class IUpgradeStepsDirective(Interface):
 
@@ -304,6 +305,7 @@ def upgradeStep(_context, title, profile, handler, description=None,
         callable=_registerUpgradeStep,
         args=(step,),
         )
+
 
 def upgradeDepends(_context, title, profile, description=None,
                    import_profile=None, import_steps=[], source='*',
