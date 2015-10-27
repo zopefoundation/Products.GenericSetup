@@ -4,7 +4,16 @@ Changelog
 1.8.1 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Purge the profile upgrade versions before applying a base profile.
+  [maurits]
+
+- Added ``purgeProfileVersions`` method to ``portal_setup``.  This
+  removes the all profiles profile upgrade versions.
+
+- Added ``unsetLastVersionForProfile`` method to ``portal_setup``.  This
+  removes the profile id from the profile upgrade versions.  Calling
+  ``setLastVersionForProfile`` with ``unknown`` as version now has the
+  same effect.
 
 
 1.8.0 (2015-09-21)
