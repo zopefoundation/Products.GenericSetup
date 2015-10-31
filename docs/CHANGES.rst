@@ -5,7 +5,6 @@ Changelog
 ------------------
 
 - Purge the profile upgrade versions before applying a base profile.
-  [maurits]
 
 - Added ``purgeProfileVersions`` method to ``portal_setup``.  This
   removes the all profiles profile upgrade versions.
