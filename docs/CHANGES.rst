@@ -1,7 +1,7 @@
 Changelog
 =========
 
-1.8.1 (unreleased)
+1.8.1 (2015-12-16)
 ------------------
 
 - Purge the profile upgrade versions before applying a base profile.
