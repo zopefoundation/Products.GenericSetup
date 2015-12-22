@@ -4,6 +4,10 @@ Changelog
 1.8.2 (unreleased)
 ------------------
 
+- Fixed importing a tarball.  This got an AttributeError: "'NoneType'
+  object has no attribute 'startswith'".
+  [maurits]
+
 - Split overly complex Import tab into three tabs: Import (for
   importing a full profile), Advanced Import (the original
   ``manage_importSteps`` url leads to this tab), and Tarball Import.
