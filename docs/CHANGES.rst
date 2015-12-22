@@ -4,7 +4,13 @@ Changelog
 1.8.2 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Upgrades tab: show profiles with pending upgrades separately.  These
+  are the most important ones.  This avoids the need to manually go
+  through the whole list in order to find profiles that may need
+  action.  This uses new methods on the setup tool:
+  ``hasPendingUpgrades``, ``listProfilesWithPendingUpgrades``,
+  ``listUptodateProfiles``.
+  [maurits]
 
 
 1.8.1 (2015-12-16)

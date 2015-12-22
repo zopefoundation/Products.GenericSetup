@@ -938,6 +938,67 @@ class SetupTool(Folder):
                 res.append(self._massageUpgradeInfo(info))
         return res
 
+    security.declareProtected(ManagePortal, 'hasUpgradesAvailable')
+    def hasPendingUpgrades(self, profile_id=None):
+        """Are upgrade steps pending?
+
+        Pending means: a not yet applied upgrade step for an already
+        applied profile.
+
+        With a profile_id, we only check the given profile.
+
+        Without a profile_id, we check if there is any profile at all
+        that has an upgrade available.
+        """
+        if profile_id is not None:
+            profile_ids = [profile_id]
+        else:
+            profile_ids = self.listProfilesWithUpgrades()
+        for profile_id in profile_ids:
+            if self.getLastVersionForProfile(profile_id) == UNKNOWN:
+                # We are not interested in profiles that have never been
+                # applied.
+                continue
+            if self.listUpgrades(profile_id):
+                return True
+        return False
+
+    security.declareProtected(ManagePortal, 'listProfilesWithPendingUpgrades')
+    def listProfilesWithPendingUpgrades(self):
+        """List profile ids with pending upgrade steps.
+
+        Pending means: a not yet applied upgrade step for an already
+        applied profile.
+        """
+        res = []
+        for profile_id in self.listProfilesWithUpgrades():
+            if self.getLastVersionForProfile(profile_id) == UNKNOWN:
+                # We are not interested in profiles that have never been
+                # applied.
+                continue
+            if self.listUpgrades(profile_id):
+                res.append(profile_id)
+        return res
+
+    security.declareProtected(ManagePortal, 'listUptodateProfiles')
+    def listUptodateProfiles(self):
+        """List profile ids without pending upgrade steps.
+
+        Pending means: a not yet applied upgrade step for an already
+        applied profile.
+
+        We ignore profiles that have no upgrade steps at all.
+        """
+        res = []
+        for profile_id in self.listProfilesWithUpgrades():
+            if self.getLastVersionForProfile(profile_id) == UNKNOWN:
+                # We are not interested in profiles that have never been
+                # applied.
+                continue
+            if not self.listUpgrades(profile_id):
+                res.append(profile_id)
+        return res
+
     security.declareProtected(ManagePortal, 'manage_doUpgrades')
     def manage_doUpgrades(self, request=None):
         """Perform all selected upgrade steps.

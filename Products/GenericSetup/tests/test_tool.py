@@ -1186,6 +1186,176 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
         tool.purgeProfileVersions()
         self.assertEqual(tool._profile_upgrade_versions, {})
 
+    def test_listProfilesWithUpgrades(self):
+        site = self._makeSite()
+        site.setup_tool = self._makeOne('setup_tool')
+        tool = site.setup_tool
+        self.assertEqual(tool.listProfilesWithUpgrades(), [])
+        self.assertEqual(tool.listProfilesWithPendingUpgrades(), [])
+        self.assertEqual(tool.listUptodateProfiles(), [])
+        self.assertEqual(tool.hasPendingUpgrades(), False)
+        profile_id = 'dummy_profile'
+        product_name = 'GenericSetup'
+        directory = os.path.split(__file__)[0]
+        path = os.path.join(directory, 'versioned_profile')
+
+        # register profile
+        profile_registry.registerProfile(profile_id,
+                                         'Dummy Profile',
+                                         'This is a dummy profile',
+                                         path,
+                                         product=product_name)
+        self.assertEqual(tool.listProfilesWithUpgrades(), [])
+        self.assertEqual(tool.listProfilesWithPendingUpgrades(), [])
+        self.assertEqual(tool.listUptodateProfiles(), [])
+        self.assertEqual(tool.hasPendingUpgrades(), False)
+
+        # register upgrade step
+        step1 = UpgradeStep("Upgrade 1",
+                            "GenericSetup:dummy_profile", '*', '1.1', '',
+                            dummy_upgrade,
+                            None, "1")
+        _registerUpgradeStep(step1)
+        self.assertEqual(tool.listProfilesWithUpgrades(),
+                         [u'GenericSetup:dummy_profile'])
+        self.assertEqual(tool.listProfilesWithPendingUpgrades(), [])
+        self.assertEqual(tool.listUptodateProfiles(), [])
+        self.assertEqual(tool.hasPendingUpgrades(), False)
+
+        # register another upgrade step
+        step2 = UpgradeStep("Upgrade 2",
+                            "GenericSetup:dummy_profile", '1.1', '1.2', '',
+                            dummy_upgrade,
+                            None, "1")
+        _registerUpgradeStep(step2)
+        self.assertEqual(tool.listProfilesWithUpgrades(),
+                         [u'GenericSetup:dummy_profile'])
+        self.assertEqual(tool.listProfilesWithPendingUpgrades(), [])
+        self.assertEqual(tool.listUptodateProfiles(), [])
+        self.assertEqual(tool.hasPendingUpgrades(), False)
+
+        # get full profile id
+        profile_id = ':'.join((product_name, profile_id))
+
+        # Pretend the profile was installed
+        tool.setLastVersionForProfile(profile_id, '1.0')
+        self.assertEqual(tool.listProfilesWithUpgrades(),
+                         [u'GenericSetup:dummy_profile'])
+        self.assertEqual(tool.listProfilesWithPendingUpgrades(),
+                         [u'GenericSetup:dummy_profile'])
+        self.assertEqual(tool.listUptodateProfiles(), [])
+        self.assertEqual(tool.hasPendingUpgrades(), True)
+
+        # run first upgrade step
+        request = site.REQUEST
+        request.form['profile_id'] = profile_id
+        steps = listUpgradeSteps(tool, profile_id, '1.0')
+        step_id = steps[0]['id']
+        request.form['upgrades'] = [step_id]
+        tool.manage_doUpgrades()
+        self.assertEqual(tool.getLastVersionForProfile(profile_id),
+                         ('1', '1'))
+        self.assertEqual(tool.listProfilesWithUpgrades(),
+                         [u'GenericSetup:dummy_profile'])
+        self.assertEqual(tool.listProfilesWithPendingUpgrades(),
+                         [u'GenericSetup:dummy_profile'])
+        self.assertEqual(tool.listUptodateProfiles(), [])
+        self.assertEqual(tool.hasPendingUpgrades(), True)
+
+        # run second upgrade step
+        request = site.REQUEST
+        request.form['profile_id'] = profile_id
+        steps = listUpgradeSteps(tool, profile_id, '1.1')
+        step_id = steps[0]['id']
+        request.form['upgrades'] = [step_id]
+        tool.manage_doUpgrades()
+        self.assertEqual(tool.getLastVersionForProfile(profile_id),
+                         ('1', '2'))
+        self.assertEqual(tool.listProfilesWithUpgrades(),
+                         [u'GenericSetup:dummy_profile'])
+        self.assertEqual(tool.listProfilesWithPendingUpgrades(), [])
+        self.assertEqual(tool.listUptodateProfiles(),
+                         [u'GenericSetup:dummy_profile'])
+        self.assertEqual(tool.hasPendingUpgrades(), False)
+
+        # Pretend the profile was never installed.
+        tool.unsetLastVersionForProfile(profile_id)
+        self.assertEqual(tool.listProfilesWithPendingUpgrades(), [])
+        self.assertEqual(tool.listUptodateProfiles(), [])
+        self.assertEqual(tool.hasPendingUpgrades(), False)
+
+    def test_hasPendingUpgrades(self):
+        site = self._makeSite()
+        site.setup_tool = self._makeOne('setup_tool')
+        tool = site.setup_tool
+        profile_id_1 = 'dummy_profile1'
+        profile_id_2 = 'dummy_profile2'
+        product_name = 'GenericSetup'
+        directory = os.path.split(__file__)[0]
+        path = os.path.join(directory, 'versioned_profile')
+
+        # register profiles
+        profile_registry.registerProfile(profile_id_1,
+                                         'Dummy Profile 1',
+                                         'This is dummy profile 1',
+                                         path,
+                                         product=product_name)
+        profile_registry.registerProfile(profile_id_2,
+                                         'Dummy Profile 2',
+                                         'This is dummy profile 2',
+                                         path,
+                                         product=product_name)
+
+        # get full profile ids
+        profile_id_1 = ':'.join((product_name, profile_id_1))
+        profile_id_2 = ':'.join((product_name, profile_id_2))
+
+        # test
+        self.assertEqual(tool.hasPendingUpgrades(), False)
+        self.assertEqual(tool.hasPendingUpgrades(profile_id_1), False)
+        self.assertEqual(tool.hasPendingUpgrades(profile_id_2), False)
+        self.assertEqual(tool.hasPendingUpgrades('non-existing'), False)
+
+        # register upgrade steps
+        step1 = UpgradeStep("Upgrade 1",
+                            profile_id_1, '*', '1.1', '',
+                            dummy_upgrade,
+                            None, "1")
+        _registerUpgradeStep(step1)
+        step2 = UpgradeStep("Upgrade 2",
+                            profile_id_2, '*', '2.2', '',
+                            dummy_upgrade,
+                            None, "2")
+        _registerUpgradeStep(step2)
+        # No profile has been applied, so no upgrade is pending.
+        self.assertEqual(tool.hasPendingUpgrades(), False)
+        self.assertEqual(tool.hasPendingUpgrades(profile_id_1), False)
+        self.assertEqual(tool.hasPendingUpgrades(profile_id_2), False)
+
+        # Pretend profile 1 was installed to an earlier version.
+        tool.setLastVersionForProfile(profile_id_1, '1.0')
+        self.assertEqual(tool.hasPendingUpgrades(), True)
+        self.assertEqual(tool.hasPendingUpgrades(profile_id_1), True)
+        self.assertEqual(tool.hasPendingUpgrades(profile_id_2), False)
+
+        # Pretend profile 2 was installed to an earlier version.
+        tool.setLastVersionForProfile(profile_id_2, '2.0')
+        self.assertEqual(tool.hasPendingUpgrades(), True)
+        self.assertEqual(tool.hasPendingUpgrades(profile_id_1), True)
+        self.assertEqual(tool.hasPendingUpgrades(profile_id_2), True)
+
+        # Pretend profile 1 was installed to the final version.
+        tool.setLastVersionForProfile(profile_id_1, '1.1')
+        self.assertEqual(tool.hasPendingUpgrades(), True)
+        self.assertEqual(tool.hasPendingUpgrades(profile_id_1), False)
+        self.assertEqual(tool.hasPendingUpgrades(profile_id_2), True)
+
+        # Pretend profile 2 was installed to the final version.
+        tool.setLastVersionForProfile(profile_id_2, '2.2')
+        self.assertEqual(tool.hasPendingUpgrades(), False)
+        self.assertEqual(tool.hasPendingUpgrades(profile_id_1), False)
+        self.assertEqual(tool.hasPendingUpgrades(profile_id_2), False)
+
     def test_manage_doUpgrades_no_profile_id_or_updates(self):
         site = self._makeSite()
         site.setup_tool = self._makeOne('setup_tool')
