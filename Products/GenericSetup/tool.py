@@ -938,7 +938,7 @@ class SetupTool(Folder):
                 res.append(self._massageUpgradeInfo(info))
         return res
 
-    security.declareProtected(ManagePortal, 'hasUpgradesAvailable')
+    security.declareProtected(ManagePortal, 'hasPendingUpgrades')
     def hasPendingUpgrades(self, profile_id=None):
         """Are upgrade steps pending?
 

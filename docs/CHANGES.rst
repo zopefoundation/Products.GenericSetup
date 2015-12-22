@@ -4,6 +4,10 @@ Changelog
 1.8.2 (unreleased)
 ------------------
 
+- Show note on import tab when there are pending upgrades.  Especially
+  show this for the currently selected profile.
+  [maurits]
+
 - Upgrades tab: show profiles with pending upgrades separately.  These
   are the most important ones.  This avoids the need to manually go
   through the whole list in order to find profiles that may need
