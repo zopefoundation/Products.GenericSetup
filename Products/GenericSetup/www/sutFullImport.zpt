@@ -11,14 +11,11 @@
 <h1 tal:replace="structure context/manage_page_header">PAGE HEADER</h1>
 <h2 tal:replace="structure context/manage_tabs">TABS</h2>
 
-<h3>Site Configuration Advanced Import Steps</h3>
+<h3>Site Configuration Full Import</h3>
 
 <p class="form-help">
-This tool allows one to re-run individual steps of the site setup
-procedure, in order to pick up changes since the site was created.
-</p>
-<p class="form-help">
-For a simpler form, see the <a href="manage_importSteps">Import</a> tab.
+For advanced options, like re-running individual steps,
+see the <a href="manage_advancedImportSteps">Advanced Import</a> tab.
 </p>
 <p class="form-help" tal:condition="has_pending_upgrades">
   <strong>
@@ -29,7 +26,7 @@ For a simpler form, see the <a href="manage_importSteps">Import</a> tab.
 <h3>Select Profile or Snapshot</h3>
 
 <form action="." method="post" id="profileform"
-      tal:attributes="action string:${context/absolute_url}/manage_importSteps">
+      tal:attributes="action string:${context/absolute_url}/manage_fullImport">
 <select name="context_id"
         onchange="document.getElementById('profileform').submit();">
  <option value=""
@@ -43,14 +40,14 @@ For a simpler form, see the <a href="manage_importSteps">Import</a> tab.
 </select>
   <noscript>
     <input class="form-element" type="submit"
-           name="manage_advancedImportSteps:method"
+           name="manage_importSteps:method"
            value="Switch profile" />
   </noscript>
 </form>
 
 <div tal:condition="context_id|nothing">
 
-<h3>Available Import Steps for "<span tal:replace="context_title">Base profile</span>"</h3>
+<h3>Import all steps of "<span tal:replace="context_title">Base profile</span>"</h3>
 
 <p class="form-help" tal:condition="python:context.hasPendingUpgrades(context_id)">
   <strong>
@@ -61,65 +58,34 @@ For a simpler form, see the <a href="manage_importSteps">Import</a> tab.
 <form action="." method="post" enctype="multipart/form-data"
       tal:attributes="action context/absolute_url">
 <tal:dummy define="dummy python:context.applyContextById(context_id)"/>
-<input type="hidden" name="ids:default:tokens" value="" />
+<input type="hidden" name="context_id" value="" tal:attributes="value context_id"/>
 
-<table cellspacing="0" cellpadding="4">
-
- <thead>
-  <tr class="list-header">
-   <td class="list-item">Sel.</td>
-   <td class="list-item">#</td>
-   <td class="list-item">Title / Description</td>
-   <td class="list-item">Handler</td>
-  </tr>
- </thead>
-
- <tbody tal:define="step_ids context/getSortedImportSteps;
-                   ">
-  <tal:loop tal:repeat="step_id step_ids">
-  <tr valign="top"
-      tal:define="info python: context.getImportStepMetadata( step_id );"
-      tal:attributes="class python:
-                     repeat[ 'step_id' ].odd and 'row-normal' or 'row-hilite';
-                     style python:info['invalid'] and 'background: red' or None" >
-   <td class="list-item" width="16">
-    <input type="checkbox" name="ids:list" value="STEP_ID"
-           tal:attributes="id step_id;
-                           value step_id" />
-   </td>
-   <td align="right" class="list-item"
-       tal:content="repeat/step_id/number">1</td>
-   <td class="list-item">
-    <label tal:content="info/title"
-           tal:attributes="for step_id">STEP TITLE</label><br />
-    <em tal:content="info/description">STEP DESCRIPTION</em>
-   </td>
-   <td class="list-item"
-       tal:content="info/handler">DOTTED.NAME</td>
-  </tr>
-  </tal:loop>
-
-  <tr valign="top" class="list-header">
-   <td colspan="4"><strong>Import selected steps</strong></td>
-  </tr>
-
-  <tr valign="top">
-   <td />
-   <td colspan="3">
-    <input type="hidden" name="context_id" value="" tal:attributes="value context_id"/>
-    <input type="hidden" name="run_dependencies:int:default" value="0" />
-    <input class="form-element" type="checkbox" id="run_dependencies"
-           name="run_dependencies:boolean" value="1" checked="checked" />
-    <label for="run_dependencies">Include dependencies of steps?</label>
+<p>What do you want to do with dependency profiles (listed in the <code>metadata.xml</code> of the chosen profile)?</p>
+<p>
+    <input class="form-element" type="radio" id="dependency_strategy_upgrade"
+           name="dependency_strategy" value="upgrade" checked="checked" />
+    <label for="dependency_strategy_upgrade">Apply new profiles. Run <strong>upgrade</strong> steps for already applied profiles. <strong>Recommended.</strong></label>
+</p>
+<p>
+    <input class="form-element" type="radio" id="dependency_strategy_reapply"
+           name="dependency_strategy" value="reapply" />
+    <label for="dependency_strategy_reapply"><strong>Apply</strong> all profiles. Already applied profiles are reapplied.</label>
+</p>
+<p>
+    <input class="form-element" type="radio" id="dependency_strategy_new"
+           name="dependency_strategy" value="new" />
+    <label for="dependency_strategy_new">Apply <strong>only new</strong> profiles. Already applied profiles are left as is.</label>
+</p>
+<p>
+    <input class="form-element" type="radio" id="dependency_strategy_ignore"
+           name="dependency_strategy" value="ignore" />
+    <label for="dependency_strategy_ignore"><strong>Ignore</strong> dependency profiles.</label>
+</p>
+<p>
     <input class="form-element" type="submit"
-           name="manage_importSelectedSteps:method"
-           value=" Import selected steps " />
-
-   </td>
-  </tr>
-
- </tbody>
-</table>
+           name="manage_importAllSteps:method"
+           value=" Import all steps " />
+</p>
 
 <table cellspacing="0" cellpadding="4"
        tal:condition="options/messages | nothing">

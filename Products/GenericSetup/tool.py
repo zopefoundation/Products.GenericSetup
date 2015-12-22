@@ -493,9 +493,11 @@ class SetupTool(Folder):
     manage_options = (
         Folder.manage_options[:1] +
         ({'label': 'Profiles', 'action': 'manage_tool'},
-         {'label': 'Import', 'action': 'manage_importSteps'},
+         {'label': 'Import', 'action': 'manage_fullImport'},
          {'label': 'Export', 'action': 'manage_exportSteps'},
          {'label': 'Upgrades', 'action': 'manage_upgrades'},
+         {'label': 'Advanced Import', 'action': 'manage_importSteps'},
+         {'label': 'Tarball Import', 'action': 'manage_tarballImport'},
          {'label': 'Snapshots', 'action': 'manage_snapshots'},
          {'label': 'Comparison', 'action': 'manage_showDiff'},
          {'label': 'Manage', 'action': 'manage_stepRegistry'}) +
@@ -519,6 +521,14 @@ class SetupTool(Folder):
 
     security.declareProtected(ManagePortal, 'manage_importSteps')
     manage_importSteps = PageTemplateFile('sutImportSteps', _wwwdir)
+
+    security.declareProtected(ManagePortal, 'manage_fullImport')
+    manage_fullImport = PageTemplateFile(
+        'sutFullImport', _wwwdir)
+
+    security.declareProtected(ManagePortal, 'manage_tarballImport')
+    manage_tarballImport = PageTemplateFile(
+        'sutTarballImport', _wwwdir)
 
     security.declareProtected(ManagePortal, 'manage_importSelectedSteps')
     def manage_importSelectedSteps(self, ids, run_dependencies,

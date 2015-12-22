@@ -4,6 +4,11 @@ Changelog
 1.8.2 (unreleased)
 ------------------
 
+- Split overly complex Import tab into three tabs: Import (for
+  importing a full profile), Advanced Import (the original
+  ``manage_importSteps`` url leads to this tab), and Tarball Import.
+  [maurits]
+
 - Show note on import tab when there are pending upgrades.  Especially
   show this for the currently selected profile.
   [maurits]
