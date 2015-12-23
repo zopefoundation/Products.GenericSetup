@@ -4,6 +4,9 @@ Changelog
 1.8.2 (unreleased)
 ------------------
 
+- Added simple toggle for all steps on the advanced import tab.
+  [maurits]
+
 - Fixed importing a tarball.  This got an AttributeError: "'NoneType'
   object has no attribute 'startswith'".
   [maurits]

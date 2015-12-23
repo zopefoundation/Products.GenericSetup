@@ -99,6 +99,11 @@ For a simpler form, see the <a href="manage_importSteps">Import</a> tab.
   </tr>
   </tal:loop>
 
+  <tr valign="top">
+   <td colspan="4"><strong onclick="inputs = document.getElementsByTagName('input'); for (var index = 0; index &lt; inputs.length; index++) {inputs[index].checked = inputs[index].checked ? false : true};">Toggle selection</strong></td>
+  </tr>
+
+
   <tr valign="top" class="list-header">
    <td colspan="4"><strong>Import selected steps</strong></td>
   </tr>
