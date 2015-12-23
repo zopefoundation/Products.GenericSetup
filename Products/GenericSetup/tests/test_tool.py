@@ -1494,6 +1494,49 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
         self.assertEqual(len(tool.listProfileInfo(for_=IDerivedSite)), 1)
         self.assertEqual(len(tool.listProfileInfo(for_=IAnotherSite)), 0)
 
+    def test_profileExists(self):
+        from Products.GenericSetup.interfaces import EXTENSION
+        from Products.GenericSetup.metadata import METADATA_XML
+        site = self._makeSite()
+        tool = self._makeOne('setup_tool').__of__(site)
+
+        # Register two extension profiles.  Profile 'foo' has a dependency
+        # 'bar'.
+        self._makeFile(METADATA_XML, _METADATA_XML)
+        _makeTestFile(METADATA_XML, self._PROFILE_PATH2, _PLAIN_METADATA_XML)
+        profile_registry.registerProfile(
+            'foo', 'Foo', '', self._PROFILE_PATH, profile_type=EXTENSION)
+        profile_registry.registerProfile(
+            'bar', 'Bar', '', self._PROFILE_PATH2, profile_type=EXTENSION)
+
+        self.assertTrue(tool.profileExists('other:foo'))
+        self.assertTrue(tool.profileExists('other:bar'))
+        self.assertFalse(tool.profileExists('snapshot-something'))
+        self.assertFalse(tool.profileExists(None))
+        self.assertFalse(tool.profileExists('nonesuch'))
+
+    def test_getDependenciesForProfile(self):
+        from Products.GenericSetup.interfaces import EXTENSION
+        from Products.GenericSetup.metadata import METADATA_XML
+        site = self._makeSite()
+        tool = self._makeOne('setup_tool').__of__(site)
+
+        # Register two extension profiles.  Profile 'foo' has a dependency
+        # 'bar'.
+        self._makeFile(METADATA_XML, _METADATA_XML)
+        _makeTestFile(METADATA_XML, self._PROFILE_PATH2, _PLAIN_METADATA_XML)
+        profile_registry.registerProfile(
+            'foo', 'Foo', '', self._PROFILE_PATH, profile_type=EXTENSION)
+        profile_registry.registerProfile(
+            'bar', 'Bar', '', self._PROFILE_PATH2, profile_type=EXTENSION)
+
+        self.assertEqual(tool.getDependenciesForProfile('other:foo'),
+                         (u'profile-other:bar', ))
+        self.assertEqual(tool.getDependenciesForProfile('other:bar'), ())
+        self.assertEqual(tool.getDependenciesForProfile('snapshot-some'), ())
+        self.assertEqual(tool.getDependenciesForProfile(None), ())
+        self.assertRaises(KeyError, tool.getDependenciesForProfile, 'nonesuch')
+
 
 _DEFAULT_STEP_REGISTRIES_EXPORT_XML = ("""\
 <?xml version="1.0"?>

@@ -886,6 +886,8 @@ class SetupTool(Folder):
     security.declareProtected(ManagePortal, 'profileExists')
     def profileExists(self, profile_id):
         """Check if a profile exists."""
+        if profile_id is None:
+            return False
         try:
             self.getProfileInfo(profile_id)
         except KeyError:
@@ -899,6 +901,8 @@ class SetupTool(Folder):
 
     security.declareProtected(ManagePortal, 'getDependenciesForProfile')
     def getDependenciesForProfile(self, profile_id):
+        if profile_id is None:
+            return ()
         if profile_id.startswith("snapshot-"):
             return ()
 
