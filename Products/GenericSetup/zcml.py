@@ -67,9 +67,22 @@ class IRegisterProfileDirective(Interface):
         default=None,
         required=False)
 
+    pre_handler = GlobalObject(
+        title=u'Pre handler',
+        description=(u'Function called before applying all steps. '
+                     'It gets passed the setup tool as context.'),
+        required=False)
+
+    post_handler = GlobalObject(
+        title=u'Post handler',
+        description=(u'Function called after applying all steps. '
+                     'It gets passed the setup tool as context.'),
+        required=False)
+
 
 def registerProfile(_context, name=u'default', title=None, description=None,
-                    directory=None, provides=BASE, for_=None):
+                    directory=None, provides=BASE, for_=None,
+                    pre_handler=None, post_handler=None):
     """ Add a new profile to the registry.
     """
     product = _context.package.__name__
@@ -85,7 +98,8 @@ def registerProfile(_context, name=u'default', title=None, description=None,
     _context.action(
         discriminator=('registerProfile', product, name),
         callable=_profile_registry.registerProfile,
-        args=(name, title, description, directory, product, provides, for_)
+        args=(name, title, description, directory, product, provides, for_,
+              pre_handler, post_handler)
         )
 
 

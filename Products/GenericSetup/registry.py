@@ -690,12 +690,23 @@ class ProfileRegistry(Implicit):
 
     security.declareProtected(ManagePortal, 'registerProfile')
     def registerProfile(self, name, title, description, path, product=None,
-                        profile_type=BASE, for_=None):
+                        profile_type=BASE, for_=None, pre_handler=None,
+                        post_handler=None):
         """ See IProfileRegistry.
         """
         profile_id = self._computeProfileId(name, product)
         if self._registered.get(profile_id) is not None:
             raise KeyError('Duplicate profile ID: %s' % profile_id)
+
+        # Typos in pre/post handler should be caught on zope startup.
+        if pre_handler:
+            if _resolveDottedName(pre_handler) is None:
+                raise ValueError('pre_handler points to non existing '
+                                 'function: %s' % pre_handler)
+        if post_handler:
+            if _resolveDottedName(post_handler) is None:
+                raise ValueError('post_handler points to non existing '
+                                 'function: %s' % post_handler)
 
         info = {'id': profile_id,
                 'title': title,
@@ -703,7 +714,10 @@ class ProfileRegistry(Implicit):
                 'path': path,
                 'product': product,
                 'type': profile_type,
-                'for': for_}
+                'for': for_,
+                'pre_handler': pre_handler,
+                'post_handler': post_handler,
+                }
 
         metadata = ProfileMetadata(path, product=product)()
 

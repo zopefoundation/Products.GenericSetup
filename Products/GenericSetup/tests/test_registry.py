@@ -899,6 +899,8 @@ class ProfileRegistryTests(BaseRegistryTests, ConformsToIProfileRegistry
         self.assertEqual(info['product'], PRODUCT)
         self.assertEqual(info['type'], PROFILE_TYPE)
         self.assertEqual(info['for'], None)
+        self.assertEqual(info['pre_handler'], None)
+        self.assertEqual(info['post_handler'], None)
 
         # We strip off any 'profile-' or 'snapshot-' at the beginning
         # of the profile id.

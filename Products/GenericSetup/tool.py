@@ -1252,6 +1252,18 @@ class SetupTool(Folder):
                 'tarball': context.getArchive(),
                 'filename': context.getArchiveFilename()}
 
+    security.declarePrivate('_doRunHandler')
+    def _doRunHandler(self, handler):
+        """Run a single handler.
+
+        This is expected to be a dotted name of a pre_handler or
+        post_handler of a profile.  It is passed the tool as context.
+        """
+        handler_function = _resolveDottedName(handler)
+        if handler_function is None:
+            raise ValueError('Invalid handler: %s' % handler)
+        return handler_function(self)
+
     security.declareProtected(ManagePortal, 'getProfileDependencyChain')
     def getProfileDependencyChain(self, profile_id, seen=None):
         if seen is None:
@@ -1344,10 +1356,13 @@ class SetupTool(Folder):
         last_num = len(chain)
         for num, profile_id in enumerate(chain, 1):
             try:
-                profile_type = self.getProfileInfo(profile_id).get('type')
+                profile_info = self.getProfileInfo(profile_id)
             except KeyError:
                 # this will be a snapshot profile
+                profile_info = {}
                 profile_type = None
+            else:
+                profile_type = profile_info.get('type')
             if num == last_num:
                 generic_logger.info('Applying main profile %s', profile_id)
             else:
@@ -1382,6 +1397,11 @@ class SetupTool(Folder):
             if profile_type == BASE and (purge_old is None or purge_old):
                 # purge_old should be None or explicitly true
                 self.purgeProfileVersions()
+            # Run optional pre_handler if available.
+            pre_handler = profile_info.get('pre_handler')
+            if pre_handler:
+                self._doRunHandler(pre_handler)
+            # Run all import steps.
             for step in steps:
                 if blacklisted_steps and step in blacklisted_steps:
                     message = 'step skipped'
@@ -1392,7 +1412,10 @@ class SetupTool(Folder):
                                       for x in context.listNotes() ])
                 messages[step] = '\n'.join(message_list)
                 context.clearNotes()
-
+            # Run optional post_handler if available.
+            post_handler = profile_info.get('post_handler')
+            if post_handler:
+                self._doRunHandler(post_handler)
             event.notify(ProfileImportedEvent(self, profile_id, steps, True))
             messages[profile_id] = (
                 'Imported with dependency strategy %s.' % dependency_strategy)
