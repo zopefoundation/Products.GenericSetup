@@ -100,7 +100,9 @@ For a simpler form, see the <a href="manage_importSteps">Import</a> tab.
   </tal:loop>
 
   <tr valign="top">
-   <td colspan="4"><strong onclick="inputs = document.getElementsByTagName('input'); for (var index = 0; index &lt; inputs.length; index++) {inputs[index].checked = inputs[index].checked ? false : true};">Toggle selection</strong></td>
+    <td colspan="4">
+      <button type="button" onclick="inputs = document.getElementsByTagName('input'); for (var index = 0; index &lt; inputs.length; index++) {inputs[index].checked = inputs[index].checked ? false : true}; return false;">Toggle selection</button>
+    </td>
   </tr>
 
 
