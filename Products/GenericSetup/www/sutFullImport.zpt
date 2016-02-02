@@ -27,10 +27,14 @@ see the <a href="manage_importSteps">Advanced Import</a> tab.
 <p class="form-help">
   After you have selected a profile, you will get some options.
 </p>
+<tal:title_or_id repeat="select_key python:['title', 'id']">
 <form action="." method="post" id="profileform"
-      tal:attributes="action string:${context/absolute_url}/manage_fullImport">
+      tal:attributes="action string:${context/absolute_url}/manage_fullImport;
+                      id string:profileform_${select_key}">
+  <p tal:condition="python:select_key == 'title'">You can select a profile by <strong>title</strong>:</p>
+  <p tal:condition="python:select_key == 'id'">or you can select a profile by <strong>id</strong>:</p>
 <select name="context_id"
-        onchange="document.getElementById('profileform').submit();">
+        tal:attributes="onchange string:document.getElementById('profileform_${select_key}').submit();">
  <option value=""
          tal:attributes="selected not:context_id">
  Please select an option</option>
@@ -41,7 +45,7 @@ see the <a href="manage_importSteps">Advanced Import</a> tab.
  <option value="context-CONTEXT_ID"
     tal:repeat="context extension_contexts"
     tal:attributes="value context/id; selected python:context_id==context['id']"
-    tal:content="context/title">CONTEXT_TITLE</option>
+    tal:content="python:context[select_key]">Context title or id</option>
 </select>
   <noscript>
     <input class="form-element" type="submit"
@@ -49,6 +53,7 @@ see the <a href="manage_importSteps">Advanced Import</a> tab.
            value="Switch profile" />
   </noscript>
 </form>
+</tal:title_or_id>
 
 <div tal:condition="context_id|nothing">
 
