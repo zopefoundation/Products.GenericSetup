@@ -695,7 +695,7 @@ class SetupTool(Folder):
         return base + ext
 
     security.declareProtected(ManagePortal, 'listContextInfos')
-    def listContextInfos(self):
+    def listContextInfos(self, order_by='sortable_title'):
         """ List registered profiles and snapshots.
         """
         def readableType(x):
@@ -711,14 +711,14 @@ class SetupTool(Folder):
                     'type': 'snapshot',
                     }
                    for info in self.listSnapshotInfo()]
-        s_infos.sort(key=itemgetter('sortable_title'))
+        s_infos.sort(key=itemgetter(order_by))
         p_infos = [{'id': 'profile-%s' % info['id'],
                     'title': info['title'],
                     'sortable_title': info['title'].lower(),
                     'type': readableType(info['type']),
                     }
                    for info in self.listProfileInfo()]
-        p_infos.sort(key=itemgetter('sortable_title'))
+        p_infos.sort(key=itemgetter(order_by))
 
         return tuple(s_infos + p_infos)
 

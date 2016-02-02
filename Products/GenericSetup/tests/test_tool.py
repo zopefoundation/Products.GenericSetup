@@ -1053,6 +1053,38 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
         self.assertEqual(info['title'], 'Foo')
         self.assertEqual(info['type'], 'extension')
 
+    def test_listContextInfos_with_ordering(self):
+        from Products.GenericSetup.interfaces import BASE
+        from Products.GenericSetup.interfaces import EXTENSION
+
+        # three extension profiles
+        profile_registry.registerProfile(
+            'bar', 'bar', '', self._PROFILE_PATH, 'bar', EXTENSION)
+        profile_registry.registerProfile(
+            'foo', 'foo', '', self._PROFILE_PATH, 'foo', EXTENSION)
+        profile_registry.registerProfile(
+            'upper', 'UPPER', '', self._PROFILE_PATH, 'UPPER', EXTENSION)
+        # one base profile
+        profile_registry.registerProfile(
+            'base', 'base', '', self._PROFILE_PATH, 'base', BASE)
+
+        site = self._makeSite()
+        site.setup_tool = self._makeOne('setup_tool')
+        tool = site.setup_tool
+        tool.createSnapshot('UPPER')
+        tool.createSnapshot('lower')
+        infos = tool.listContextInfos()
+        self.assertEqual(len(infos), 6)
+        # We sort case insensitively, so by lowercase.
+        # First snapshots.
+        self.assertEqual(infos[0]['id'], 'snapshot-lower')
+        self.assertEqual(infos[1]['id'], 'snapshot-UPPER')
+        # Then base and extension profiles
+        self.assertEqual(infos[2]['id'], 'profile-bar:bar')
+        self.assertEqual(infos[3]['id'], 'profile-base:base')
+        self.assertEqual(infos[4]['id'], 'profile-foo:foo')
+        self.assertEqual(infos[5]['id'], 'profile-UPPER:upper')
+
     def test_getProfileImportDate_nonesuch(self):
         site = self._makeSite()
         site.setup_tool = self._makeOne('setup_tool')
