@@ -64,6 +64,7 @@ see the <a href="manage_importSteps">Advanced Import</a> tab.
       tal:attributes="action context/absolute_url">
 <input type="hidden" name="context_id" value="" tal:attributes="value context_id"/>
 
+<tal:dependencies condition="python:len(context.getProfileDependencyChain(context_id)) &gt; 1">
 <p>What do you want to do with dependency profiles (listed in the <code>metadata.xml</code> of the chosen profile)?</p>
 <p>
     <input class="form-element" type="radio" id="dependency_strategy_upgrade"
@@ -85,6 +86,8 @@ see the <a href="manage_importSteps">Advanced Import</a> tab.
            name="dependency_strategy" value="ignore" />
     <label for="dependency_strategy_ignore"><strong>Ignore</strong> dependency profiles.</label>
 </p>
+</tal:dependencies>
+
 <p>
     <input class="form-element" type="submit"
            name="manage_importAllSteps:method"
