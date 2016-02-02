@@ -15,7 +15,7 @@
 
 <p class="form-help">
 For advanced options, like re-running individual steps,
-see the <a href="manage_advancedImportSteps">Advanced Import</a> tab.
+see the <a href="manage_importSteps">Advanced Import</a> tab.
 </p>
 <p class="form-help" tal:condition="has_pending_upgrades">
   <strong>
