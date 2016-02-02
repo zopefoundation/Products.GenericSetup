@@ -4,7 +4,16 @@ Changelog
 1.8.2 (unreleased)
 ------------------
 
+- Sorted import profiles alphabetically lowercase.  Allow selecting a
+  profile by title or id.  [maurits]
+
+- Do not show dependency options on the full import tab when there are
+  no dependencies.  [maurits]
+
+- Do not select a profile by default in the import tabs.  [maurits]
+
 - Added simple toggle for all steps on the advanced import tab.
+  Also added this on the export tab.
   [maurits]
 
 - Fixed importing a tarball.  This got an AttributeError: "'NoneType'
