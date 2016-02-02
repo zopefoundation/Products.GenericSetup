@@ -706,17 +706,19 @@ class SetupTool(Folder):
             return 'unknown'
 
         s_infos = [{'id': 'snapshot-%s' % info['id'],
-                     'title': info['title'],
-                     'type': 'snapshot',
-                   }
-                    for info in self.listSnapshotInfo()]
-        s_infos.sort(key=itemgetter('title'))
+                    'title': info['title'],
+                    'sortable_title': info['title'].lower(),
+                    'type': 'snapshot',
+                    }
+                   for info in self.listSnapshotInfo()]
+        s_infos.sort(key=itemgetter('sortable_title'))
         p_infos = [{'id': 'profile-%s' % info['id'],
                     'title': info['title'],
+                    'sortable_title': info['title'].lower(),
                     'type': readableType(info['type']),
-                   }
+                    }
                    for info in self.listProfileInfo()]
-        p_infos.sort(key=itemgetter('title'))
+        p_infos.sort(key=itemgetter('sortable_title'))
 
         return tuple(s_infos + p_infos)
 
