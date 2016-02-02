@@ -57,6 +57,12 @@ see the <a href="manage_importSteps">Advanced Import</a> tab.
 
 <div tal:condition="context_id|nothing">
 
+<p tal:condition="python:context_id == base_context_id"
+   style="color: red">
+You have selected the baseline profile.
+Reapplying these import steps is potentially a dangerous operation.
+</p>
+
 <h3>Import all steps of "<span tal:replace="context_title">Base profile</span>"</h3>
 
 <p class="form-help" tal:condition="python:context.hasPendingUpgrades(context_id)">
