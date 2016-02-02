@@ -1,5 +1,5 @@
 <tal:block define="base_context_id context/getBaselineContextID;
-                   context_id request/context_id|base_context_id;
+                   context_id request/context_id|nothing;
                    contexts context/listContextInfos;
                    base_context_title python:[c['title'] for c in contexts if c['id']==base_context_id];
                    base_context_title python:base_context_title and base_context_title[0] or 'NOT SET';
@@ -27,11 +27,16 @@ For a simpler form, see the <a href="manage_importSteps">Import</a> tab.
 </p>
 
 <h3>Select Profile or Snapshot</h3>
-
+<p class="form-help">
+  After you have selected a profile, you will get some options.
+</p>
 <form action="." method="post" id="profileform"
       tal:attributes="action string:${context/absolute_url}/manage_importSteps">
 <select name="context_id"
         onchange="document.getElementById('profileform').submit();">
+ <option value=""
+         tal:attributes="selected not:context_id">
+ Please select an option</option>
  <option value=""
          tal:attributes="value base_context_id;
                          selected python:context_id==base_context_id">
