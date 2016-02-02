@@ -570,8 +570,8 @@ class SetupTool(Folder):
 
         steps_run = 'Steps run: %s' % ', '.join(result['steps'])
 
-        return self.manage_importSteps(manage_tabs_message=steps_run,
-                                       messages=result['messages'])
+        return self.manage_fullImport(manage_tabs_message=steps_run,
+                                      messages=result['messages'])
 
     security.declareProtected(ManagePortal, 'manage_importExtensions')
     def manage_importExtensions(self, RESPONSE, profile_ids=()):
@@ -592,8 +592,8 @@ class SetupTool(Folder):
                 for k, v in result['messages'].items():
                     detail['%s:%s' % (profile_id, k)] = v
 
-            return self.manage_importSteps(manage_tabs_message=message,
-                                        messages=detail)
+            return self.manage_fullImport(manage_tabs_message=message,
+                                          messages=detail)
 
     security.declareProtected(ManagePortal, 'manage_importTarball')
     def manage_importTarball(self, tarball):
@@ -606,8 +606,8 @@ class SetupTool(Folder):
 
         steps_run = 'Steps run: %s' % ', '.join(result['steps'])
 
-        return self.manage_importSteps(manage_tabs_message=steps_run,
-                                       messages=result['messages'])
+        return self.manage_tarballImport(manage_tabs_message=steps_run,
+                                         messages=result['messages'])
 
     security.declareProtected(ManagePortal, 'manage_exportSteps')
     manage_exportSteps = PageTemplateFile('sutExportSteps', _wwwdir)
