@@ -705,19 +705,21 @@ class SetupTool(Folder):
                 return 'extension'
             return 'unknown'
 
-        s_infos = [{'id': 'snapshot-%s' % info['id'],
-                    'title': info['title'],
-                    'sortable_title': info['title'].lower(),
-                    'type': 'snapshot',
-                    }
-                   for info in self.listSnapshotInfo()]
+        s_infos = [{
+            'id': 'snapshot-%s' % info['id'],
+            'sortable_id': info['id'].lower(),
+            'title': info['title'],
+            'sortable_title': info['title'].lower(),
+            'type': 'snapshot',
+            } for info in self.listSnapshotInfo()]
         s_infos.sort(key=itemgetter(order_by))
-        p_infos = [{'id': 'profile-%s' % info['id'],
-                    'title': info['title'],
-                    'sortable_title': info['title'].lower(),
-                    'type': readableType(info['type']),
-                    }
-                   for info in self.listProfileInfo()]
+        p_infos = [{
+            'id': 'profile-%s' % info['id'],
+            'sortable_id': info['id'].lower(),
+            'title': info['title'],
+            'sortable_title': info['title'].lower(),
+            'type': readableType(info['type']),
+            } for info in self.listProfileInfo()]
         p_infos.sort(key=itemgetter(order_by))
 
         return tuple(s_infos + p_infos)

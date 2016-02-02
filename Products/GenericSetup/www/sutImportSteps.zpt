@@ -6,7 +6,7 @@
                    context_title python:[c['title'] for c in contexts if c['id']==context_id];
                    context_title python:context_title and context_title[0] or 'UNKNOWN';
                    extension_contexts python:[c for c in contexts if c['type'] in ['extension','snapshot']];
-                   extension_contexts_ordered_by_id python:[c for c in context.listContextInfos(order_by='id') if c['type'] in ['extension','snapshot']];
+                   extension_contexts_ordered_by_id python:[c for c in context.listContextInfos(order_by='sortable_id') if c['type'] in ['extension','snapshot']];
                    has_pending_upgrades context/hasPendingUpgrades;
                    ">
 <h1 tal:replace="structure context/manage_page_header">PAGE HEADER</h1>
