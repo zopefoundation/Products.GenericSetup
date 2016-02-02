@@ -493,9 +493,11 @@ class SetupTool(Folder):
     manage_options = (
         Folder.manage_options[:1] +
         ({'label': 'Profiles', 'action': 'manage_tool'},
-         {'label': 'Import', 'action': 'manage_importSteps'},
+         {'label': 'Import', 'action': 'manage_fullImport'},
          {'label': 'Export', 'action': 'manage_exportSteps'},
          {'label': 'Upgrades', 'action': 'manage_upgrades'},
+         {'label': 'Advanced Import', 'action': 'manage_importSteps'},
+         {'label': 'Tarball Import', 'action': 'manage_tarballImport'},
          {'label': 'Snapshots', 'action': 'manage_snapshots'},
          {'label': 'Comparison', 'action': 'manage_showDiff'},
          {'label': 'Manage', 'action': 'manage_stepRegistry'}) +
@@ -519,6 +521,14 @@ class SetupTool(Folder):
 
     security.declareProtected(ManagePortal, 'manage_importSteps')
     manage_importSteps = PageTemplateFile('sutImportSteps', _wwwdir)
+
+    security.declareProtected(ManagePortal, 'manage_fullImport')
+    manage_fullImport = PageTemplateFile(
+        'sutFullImport', _wwwdir)
+
+    security.declareProtected(ManagePortal, 'manage_tarballImport')
+    manage_tarballImport = PageTemplateFile(
+        'sutTarballImport', _wwwdir)
 
     security.declareProtected(ManagePortal, 'manage_importSelectedSteps')
     def manage_importSelectedSteps(self, ids, run_dependencies,
@@ -560,8 +570,8 @@ class SetupTool(Folder):
 
         steps_run = 'Steps run: %s' % ', '.join(result['steps'])
 
-        return self.manage_importSteps(manage_tabs_message=steps_run,
-                                       messages=result['messages'])
+        return self.manage_fullImport(manage_tabs_message=steps_run,
+                                      messages=result['messages'])
 
     security.declareProtected(ManagePortal, 'manage_importExtensions')
     def manage_importExtensions(self, RESPONSE, profile_ids=()):
@@ -582,8 +592,8 @@ class SetupTool(Folder):
                 for k, v in result['messages'].items():
                     detail['%s:%s' % (profile_id, k)] = v
 
-            return self.manage_importSteps(manage_tabs_message=message,
-                                        messages=detail)
+            return self.manage_fullImport(manage_tabs_message=message,
+                                          messages=detail)
 
     security.declareProtected(ManagePortal, 'manage_importTarball')
     def manage_importTarball(self, tarball):
@@ -596,8 +606,8 @@ class SetupTool(Folder):
 
         steps_run = 'Steps run: %s' % ', '.join(result['steps'])
 
-        return self.manage_importSteps(manage_tabs_message=steps_run,
-                                       messages=result['messages'])
+        return self.manage_tarballImport(manage_tabs_message=steps_run,
+                                         messages=result['messages'])
 
     security.declareProtected(ManagePortal, 'manage_exportSteps')
     manage_exportSteps = PageTemplateFile('sutExportSteps', _wwwdir)
@@ -685,7 +695,7 @@ class SetupTool(Folder):
         return base + ext
 
     security.declareProtected(ManagePortal, 'listContextInfos')
-    def listContextInfos(self):
+    def listContextInfos(self, order_by='sortable_title'):
         """ List registered profiles and snapshots.
         """
         def readableType(x):
@@ -695,18 +705,22 @@ class SetupTool(Folder):
                 return 'extension'
             return 'unknown'
 
-        s_infos = [{'id': 'snapshot-%s' % info['id'],
-                     'title': info['title'],
-                     'type': 'snapshot',
-                   }
-                    for info in self.listSnapshotInfo()]
-        s_infos.sort(key=itemgetter('title'))
-        p_infos = [{'id': 'profile-%s' % info['id'],
-                    'title': info['title'],
-                    'type': readableType(info['type']),
-                   }
-                   for info in self.listProfileInfo()]
-        p_infos.sort(key=itemgetter('title'))
+        s_infos = [{
+            'id': 'snapshot-%s' % info['id'],
+            'sortable_id': info['id'].lower(),
+            'title': info['title'],
+            'sortable_title': info['title'].lower(),
+            'type': 'snapshot',
+            } for info in self.listSnapshotInfo()]
+        s_infos.sort(key=itemgetter(order_by))
+        p_infos = [{
+            'id': 'profile-%s' % info['id'],
+            'sortable_id': info['id'].lower(),
+            'title': info['title'],
+            'sortable_title': info['title'].lower(),
+            'type': readableType(info['type']),
+            } for info in self.listProfileInfo()]
+        p_infos.sort(key=itemgetter(order_by))
 
         return tuple(s_infos + p_infos)
 
@@ -876,6 +890,8 @@ class SetupTool(Folder):
     security.declareProtected(ManagePortal, 'profileExists')
     def profileExists(self, profile_id):
         """Check if a profile exists."""
+        if profile_id is None:
+            return False
         try:
             self.getProfileInfo(profile_id)
         except KeyError:
@@ -889,6 +905,8 @@ class SetupTool(Folder):
 
     security.declareProtected(ManagePortal, 'getDependenciesForProfile')
     def getDependenciesForProfile(self, profile_id):
+        if profile_id is None:
+            return ()
         if profile_id.startswith("snapshot-"):
             return ()
 
@@ -936,6 +954,67 @@ class SetupTool(Folder):
                 res.append(subset)
             else:
                 res.append(self._massageUpgradeInfo(info))
+        return res
+
+    security.declareProtected(ManagePortal, 'hasPendingUpgrades')
+    def hasPendingUpgrades(self, profile_id=None):
+        """Are upgrade steps pending?
+
+        Pending means: a not yet applied upgrade step for an already
+        applied profile.
+
+        With a profile_id, we only check the given profile.
+
+        Without a profile_id, we check if there is any profile at all
+        that has an upgrade available.
+        """
+        if profile_id is not None:
+            profile_ids = [profile_id]
+        else:
+            profile_ids = self.listProfilesWithUpgrades()
+        for profile_id in profile_ids:
+            if self.getLastVersionForProfile(profile_id) == UNKNOWN:
+                # We are not interested in profiles that have never been
+                # applied.
+                continue
+            if self.listUpgrades(profile_id):
+                return True
+        return False
+
+    security.declareProtected(ManagePortal, 'listProfilesWithPendingUpgrades')
+    def listProfilesWithPendingUpgrades(self):
+        """List profile ids with pending upgrade steps.
+
+        Pending means: a not yet applied upgrade step for an already
+        applied profile.
+        """
+        res = []
+        for profile_id in self.listProfilesWithUpgrades():
+            if self.getLastVersionForProfile(profile_id) == UNKNOWN:
+                # We are not interested in profiles that have never been
+                # applied.
+                continue
+            if self.listUpgrades(profile_id):
+                res.append(profile_id)
+        return res
+
+    security.declareProtected(ManagePortal, 'listUptodateProfiles')
+    def listUptodateProfiles(self):
+        """List profile ids without pending upgrade steps.
+
+        Pending means: a not yet applied upgrade step for an already
+        applied profile.
+
+        We ignore profiles that have no upgrade steps at all.
+        """
+        res = []
+        for profile_id in self.listProfilesWithUpgrades():
+            if self.getLastVersionForProfile(profile_id) == UNKNOWN:
+                # We are not interested in profiles that have never been
+                # applied.
+                continue
+            if not self.listUpgrades(profile_id):
+                res.append(profile_id)
         return res
 
     security.declareProtected(ManagePortal, 'manage_doUpgrades')

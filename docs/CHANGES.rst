@@ -4,7 +4,38 @@ Changelog
 1.8.2 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Sorted import profiles alphabetically lowercase.  Allow selecting a
+  profile by title or id.  [maurits]
+
+- Do not show dependency options on the full import tab when there are
+  no dependencies.  [maurits]
+
+- Do not select a profile by default in the import tabs.  [maurits]
+
+- Added simple toggle for all steps on the advanced import tab.
+  Also added this on the export tab.
+  [maurits]
+
+- Fixed importing a tarball.  This got an AttributeError: "'NoneType'
+  object has no attribute 'startswith'".
+  [maurits]
+
+- Split overly complex Import tab into three tabs: Import (for
+  importing a full profile), Advanced Import (the original
+  ``manage_importSteps`` url leads to this tab), and Tarball Import.
+  [maurits]
+
+- Show note on import tab when there are pending upgrades.  Especially
+  show this for the currently selected profile.
+  [maurits]
+
+- Upgrades tab: show profiles with pending upgrades separately.  These
+  are the most important ones.  This avoids the need to manually go
+  through the whole list in order to find profiles that may need
+  action.  This uses new methods on the setup tool:
+  ``hasPendingUpgrades``, ``listProfilesWithPendingUpgrades``,
+  ``listUptodateProfiles``.
+  [maurits]
 
 
 1.8.1 (2015-12-16)

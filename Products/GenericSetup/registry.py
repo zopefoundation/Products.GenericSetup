@@ -644,6 +644,16 @@ class ProfileRegistry(Implicit):
     def getProfileInfo(self, profile_id, for_=None):
         """ See IProfileRegistry.
         """
+        if profile_id is None:
+            # tarball import
+            info = {'id': u'',
+                    'title': u'',
+                    'description': u'',
+                    'path': u'',
+                    'product': u'',
+                    'type': None,
+                    'for': None}
+            return info
         prefixes = ('profile-', 'snapshot-')
         for prefix in prefixes:
             if profile_id.startswith(prefix):

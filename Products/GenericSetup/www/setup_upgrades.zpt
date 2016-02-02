@@ -1,5 +1,8 @@
 <html tal:define="profile_id request/saved | request/profile_id | nothing;
-                  prof_w_upgrades context/listProfilesWithUpgrades">
+                  prof_with_upgrades context/listProfilesWithUpgrades;
+                  prof_with_pending_upgrades context/listProfilesWithPendingUpgrades;
+                  prof_uptodate context/listUptodateProfiles;
+                  has_pending_upgrades context/hasPendingUpgrades">
 
 <h1 tal:replace="structure context/manage_page_header">PAGE HEADER</h1>
 <h2 tal:replace="structure context/manage_tabs">TABS</h2>
@@ -10,18 +13,38 @@
 
 <h3>Upgrades</h3>
 
-<tal:choose-profile condition="prof_w_upgrades">
+<tal:pending condition="has_pending_upgrades">
+  <strong>
+    These profiles have pending upgrades:
+  </strong>
+  <tal:choose-pending-profile condition="prof_with_pending_upgrades">
+    <form method="post" action="manage_upgrades">
+      <select name="profile_id">
+        <option tal:repeat="prof_id prof_with_pending_upgrades"
+                tal:content="prof_id"
+                tal:attributes="selected python:prof_id == profile_id"/>
+      </select>
+      <input type="submit" value="Choose Profile" />
+    </form>
+  </tal:choose-pending-profile>
+</tal:pending>
+
+<tal:choose-uptodate-profile condition="prof_uptodate">
+  <strong>
+    These profiles have no pending upgrades, but old steps are
+    available if needed:
+  </strong>
   <form method="post" action="manage_upgrades">
     <select name="profile_id">
-      <option tal:repeat="prof_id context/listProfilesWithUpgrades"
+      <option tal:repeat="prof_id prof_uptodate"
               tal:content="prof_id"
               tal:attributes="selected python:prof_id == profile_id"/>
     </select>
     <input type="submit" value="Choose Profile" />
   </form>
-</tal:choose-profile>
+</tal:choose-uptodate-profile>
 
-<strong tal:condition="not: prof_w_upgrades">
+<strong tal:condition="not: prof_with_upgrades">
   No profiles with registered upgrade steps.
 </strong>
 

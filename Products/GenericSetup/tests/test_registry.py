@@ -968,6 +968,19 @@ class ProfileRegistryTests(BaseRegistryTests, ConformsToIProfileRegistry
         self.assertEqual(info['type'], PROFILE_TYPE)
         self.assertEqual(info['for'], FOR)
 
+    def test_getProfileInfo_tarball(self):
+        # When importing a tarball, some code calls getProfileInfo with id
+        # None.  This must not crash.
+        registry = self._makeOne()
+        self.assertEqual(registry.getProfileInfo(None),
+                         {'description': u'',
+                          'for': None,
+                          'id': u'',
+                          'path': u'',
+                          'product': u'',
+                          'title': u'',
+                         'type': None})
+
 
 def test_suite():
     return unittest.TestSuite((
