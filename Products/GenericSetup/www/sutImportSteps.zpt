@@ -84,6 +84,7 @@ For a simpler form, see the <a href="manage_importSteps">Import</a> tab.
                      style python:info['invalid'] and 'background: red' or None" >
    <td class="list-item" width="16">
     <input type="checkbox" name="ids:list" value="STEP_ID"
+           class="step_checkbox"
            tal:attributes="id step_id;
                            value step_id" />
    </td>
@@ -101,7 +102,7 @@ For a simpler form, see the <a href="manage_importSteps">Import</a> tab.
 
   <tr valign="top">
     <td colspan="4">
-      <button type="button" onclick="inputs = document.getElementsByTagName('input'); for (var index = 0; index &lt; inputs.length; index++) {inputs[index].checked = inputs[index].checked ? false : true}; return false;">Toggle selection</button>
+      <button type="button" onclick="inputs = document.querySelectorAll('.step_checkbox'); for (var index = 0; index &lt; inputs.length; index++) {inputs[index].checked = inputs[index].checked ? false : true}; return false;">Toggle selection</button>
     </td>
   </tr>
 
