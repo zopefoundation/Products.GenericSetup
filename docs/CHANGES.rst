@@ -4,6 +4,12 @@ Changelog
 1.8.2 (unreleased)
 ------------------
 
+- Added optional ``pre_handler`` and ``post_handler`` to
+  ``registerProfile`` directive.  When set, these dotted names are
+  resolved to a function and are passed the setup tool as single
+  argument.  They are called before and after applying all import
+  steps of the profile they are registered for.  [maurits]
+
 - Sorted import profiles alphabetically lowercase.  Allow selecting a
   profile by title or id.  [maurits]
 

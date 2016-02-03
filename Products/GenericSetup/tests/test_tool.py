@@ -789,6 +789,34 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
         self.assertEqual(tool._profile_upgrade_versions,
                          {u'other:foo': (u'1', u'0')})
 
+    def test_runAllImportStepsFromProfile_with_unknown_pre_handler(self):
+        # Registering already fails.
+        self.assertRaises(
+            ValueError, profile_registry.registerProfile,
+            'foo', 'Foo', '', self._PROFILE_PATH,
+            pre_handler='Products.GenericSetup.tests.test_tool.foo_handler')
+
+    def test_runAllImportStepsFromProfile_with_unknown_post_handler(self):
+        # Registering already fails.
+        self.assertRaises(
+            ValueError, profile_registry.registerProfile,
+            'foo', 'Foo', '', self._PROFILE_PATH,
+            post_handler='Products.GenericSetup.tests.test_tool.foo_handler')
+
+    def test_runAllImportStepsFromProfile_with_pre_post_handlers(self):
+        site = self._makeSite()
+        tool = self._makeOne('setup_tool').__of__(site)
+        profile_registry.registerProfile(
+            'foo', 'Foo', '', self._PROFILE_PATH,
+            pre_handler='Products.GenericSetup.tests.test_tool.pre_handler',
+            post_handler='Products.GenericSetup.tests.test_tool.post_handler')
+        tool.runAllImportStepsFromProfile('profile-other:foo')
+        self.assertEqual(tool.pre_handler_called, 1)
+        self.assertEqual(tool.post_handler_called, 1)
+        tool.runAllImportStepsFromProfile('profile-other:foo')
+        self.assertEqual(tool.pre_handler_called, 2)
+        self.assertEqual(tool.post_handler_called, 2)
+
     def test_runExportStep_nonesuch(self):
         site = self._makeSite()
         tool = self._makeOne('setup_tool').__of__(site)
@@ -1982,6 +2010,20 @@ class DummyToolImmutableId(Folder):
     def _setId(self, id):
         if id != self.getId():
             raise ValueError()
+
+
+def pre_handler(tool):
+    try:
+        tool.pre_handler_called += 1
+    except AttributeError:
+        tool.pre_handler_called = 1
+
+
+def post_handler(tool):
+    try:
+        tool.post_handler_called += 1
+    except AttributeError:
+        tool.post_handler_called = 1
 
 
 _FORBIDDEN_TOOLSET_XML = """\
