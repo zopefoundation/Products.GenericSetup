@@ -552,11 +552,10 @@ class ToolsetRegistry(Implicit):
     def addForbiddenTool(self, tool_id):
         """ See IToolsetRegistry.
         """
+        self._required.pop(tool_id, None)
+
         if tool_id in self._forbidden:
             return
-
-        if self._required.get(tool_id) is not None:
-            raise ValueError('Tool %s is required!' % tool_id)
 
         self._forbidden.append(tool_id)
 
@@ -586,7 +585,7 @@ class ToolsetRegistry(Implicit):
         """ See IToolsetRegistry.
         """
         if tool_id in self._forbidden:
-            raise ValueError("Forbidden tool ID: %s" % tool_id)
+            self._forbidden.remove(tool_id)
 
         self._required[tool_id] = {'id': tool_id, 'class': dotted_name}
 
