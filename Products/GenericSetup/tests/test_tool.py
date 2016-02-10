@@ -803,13 +803,29 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
             'foo', 'Foo', '', self._PROFILE_PATH,
             post_handler='Products.GenericSetup.tests.test_tool.foo_handler')
 
-    def test_runAllImportStepsFromProfile_with_pre_post_handlers(self):
+    def test_runAllImportStepsFromProfile_with_pre_post_handlers_dotted_names(self):
         site = self._makeSite()
         tool = self._makeOne('setup_tool').__of__(site)
         profile_registry.registerProfile(
             'foo', 'Foo', '', self._PROFILE_PATH,
             pre_handler='Products.GenericSetup.tests.test_tool.pre_handler',
             post_handler='Products.GenericSetup.tests.test_tool.post_handler')
+        tool.runAllImportStepsFromProfile('profile-other:foo')
+        self.assertEqual(tool.pre_handler_called, 1)
+        self.assertEqual(tool.post_handler_called, 1)
+        tool.runAllImportStepsFromProfile('profile-other:foo')
+        self.assertEqual(tool.pre_handler_called, 2)
+        self.assertEqual(tool.post_handler_called, 2)
+
+    def test_runAllImportStepsFromProfile_with_pre_post_handlers_functions(self):
+        # When you register a profile with pre/post handlers in zcml, you do
+        # not get dotted names (strings) but an actual function.
+        site = self._makeSite()
+        tool = self._makeOne('setup_tool').__of__(site)
+        profile_registry.registerProfile(
+            'foo', 'Foo', '', self._PROFILE_PATH,
+            pre_handler=pre_handler,
+            post_handler=post_handler)
         tool.runAllImportStepsFromProfile('profile-other:foo')
         self.assertEqual(tool.pre_handler_called, 1)
         self.assertEqual(tool.post_handler_called, 1)

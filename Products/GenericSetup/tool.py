@@ -16,6 +16,7 @@
 import logging
 import os
 import time
+import types
 from cgi import escape
 from operator import itemgetter
 
@@ -1256,12 +1257,16 @@ class SetupTool(Folder):
     def _doRunHandler(self, handler):
         """Run a single handler.
 
-        This is expected to be a dotted name of a pre_handler or
-        post_handler of a profile.  It is passed the tool as context.
+        This is expected to be a function or a dotted name of a
+        pre_handler or post_handler of a profile.  It is passed the tool
+        as context.
         """
-        handler_function = _resolveDottedName(handler)
-        if handler_function is None:
-            raise ValueError('Invalid handler: %s' % handler)
+        if isinstance(handler, types.FunctionType):
+            handler_function = handler
+        else:
+            handler_function = _resolveDottedName(handler)
+            if handler_function is None:
+                raise ValueError('Invalid handler: %s' % handler)
         return handler_function(self)
 
     security.declareProtected(ManagePortal, 'getProfileDependencyChain')
