@@ -39,6 +39,8 @@ from Products.GenericSetup.utils import _resolveDottedName
 from Products.GenericSetup.utils import _extractDocstring
 from Products.GenericSetup.utils import _computeTopologicalSort
 
+import types
+
 #
 #   XML parser
 #
@@ -700,11 +702,13 @@ class ProfileRegistry(Implicit):
 
         # Typos in pre/post handler should be caught on zope startup.
         if pre_handler:
-            if _resolveDottedName(pre_handler) is None:
+            if (not isinstance(pre_handler, types.FunctionType) and
+                    _resolveDottedName(pre_handler) is None):
                 raise ValueError('pre_handler points to non existing '
                                  'function: %s' % pre_handler)
         if post_handler:
-            if _resolveDottedName(post_handler) is None:
+            if (not isinstance(post_handler, types.FunctionType) and
+                    _resolveDottedName(post_handler) is None):
                 raise ValueError('post_handler points to non existing '
                                  'function: %s' % post_handler)
 
