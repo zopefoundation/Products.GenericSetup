@@ -1,7 +1,7 @@
 Changelog
 =========
 
-1.8.2 (unreleased)
+1.8.2 (2016-02-24)
 ------------------
 
 - Added optional ``pre_handler`` and ``post_handler`` to
