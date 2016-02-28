@@ -83,10 +83,12 @@ class _ToolsetParser(_HandlerBase):
         tool_id = self._extract(attrs, 'tool_id')
         remove = self._extract(attrs, 'remove')
         if remove is not None:
+            opposite = 'required' if name == 'forbidden' else 'forbidden'
             raise ValueError(
                 "The 'remove' keyword is not supported in toolset.xml. "
-                "Failed to remove {0} from {1} tools".format(
-                    tool_id, name))
+                "Failed to remove '{0}' from {1} tools. "
+                "Use an element '{2}' instead.".format(
+                    tool_id, name, opposite))
 
         if name == 'forbidden':
             if tool_id not in self._forbidden:
