@@ -78,16 +78,21 @@ class _ToolsetParser(_HandlerBase):
 
     def startElement(self, name, attrs):
         if name == 'tool-setup':
-            pass
+            return
 
-        elif name == 'forbidden':
-            tool_id = self._extract(attrs, 'tool_id')
+        tool_id = self._extract(attrs, 'tool_id')
+        remove = self._extract(attrs, 'remove')
+        if remove is not None:
+            raise ValueError(
+                "The 'remove' keyword is not supported in toolset.xml. "
+                "Failed to remove {0} from {1} tools".format(
+                    tool_id, name))
 
+        if name == 'forbidden':
             if tool_id not in self._forbidden:
                 self._forbidden.append(tool_id)
 
         elif name == 'required':
-            tool_id = self._extract(attrs, 'tool_id')
             dotted_name = self._extract(attrs, 'class')
             self._required[tool_id] = dotted_name
 

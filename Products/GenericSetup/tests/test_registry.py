@@ -827,6 +827,15 @@ class ToolsetRegistryTests(BaseRegistryTests, ConformsToIToolsetRegistry
         self.assertEqual(len(configurator.listForbiddenTools()), 0)
         self.assertEqual(len(configurator.listRequiredToolInfo()), 1)
 
+    def test_parseXML_wrong(self):
+
+        site = self._initSite()
+        configurator = self._makeOne().__of__(site)
+
+        # The 'remove' keyword is explicitly not supported.
+        self.assertRaises(
+            ValueError, configurator.parseXML, _WRONG_TOOLSET_XML)
+
 
 _EMPTY_TOOLSET_XML = """\
 <?xml version="1.0"?>
@@ -848,6 +857,13 @@ _CONFUSED_TOOLSET_XML = """\
 <tool-setup>
  <forbidden tool_id="confused" />
  <required tool_id="confused" class="path.to.one" />
+</tool-setup>
+"""
+
+_WRONG_TOOLSET_XML = """\
+<?xml version="1.0"?>
+<tool-setup>
+ <required tool_id="confused" class="path.to.one" remove="" />
 </tool-setup>
 """
 
