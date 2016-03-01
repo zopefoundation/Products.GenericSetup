@@ -96,7 +96,10 @@ class ComponentRegistryXMLAdapter(XMLAdapterBase):
                 self._initAdapters(child)
                 self._logger.info('Adapters registered.')
             if child.nodeName == 'subscribers':
+                # These should have either a factory or a handler.  Not both.
+                # Handle factory:
                 self._initSubscriptionAdapters(child)
+                # Handle handler:
                 self._initHandlers(child)
                 self._logger.info('Subscribers registered.')
             if child.nodeName == 'utilities':
@@ -193,6 +196,9 @@ class ComponentRegistryXMLAdapter(XMLAdapterBase):
             if child.nodeName != 'subscriber':
                 continue
 
+            # We only handle subscribers with a factory attribute.
+            # The handler attribute is handled by _initHandlers.
+            # Only one of the two attributes is supported in a subscriber.
             factory = child.getAttribute('factory')
             if not factory:
                 continue
@@ -233,6 +239,9 @@ class ComponentRegistryXMLAdapter(XMLAdapterBase):
             if child.nodeName != 'subscriber':
                 continue
 
+            # We only handle subscribers with a handler attribute.
+            # The factory attribute is handled by _initSubscriptionAdapters.
+            # Only one of the two attributes is supported in a subscriber.
             handler = child.getAttribute('handler')
             if not handler:
                 continue
