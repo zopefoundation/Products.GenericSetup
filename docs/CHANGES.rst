@@ -6,7 +6,13 @@ Changelog
 
 New:
 
-- *add item here*
+- Allowed overriding required and forbidden tools in ``toolset.xml``.
+  If a tool is currently required and you import a ``toolset.xml``
+  where it is forbidden, we remove the tool from the required list and
+  add it to the forbidden list.  And the other way around.  The
+  previous behavior was to raise an exception, which left no way in
+  xml to remove a tool.  Fail with a ValueError when the ``remove``
+  keyword is used.  The expected behavior is unclear.  [maurits]
 
 Fixes:
 

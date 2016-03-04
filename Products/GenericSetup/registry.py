@@ -78,16 +78,23 @@ class _ToolsetParser(_HandlerBase):
 
     def startElement(self, name, attrs):
         if name == 'tool-setup':
-            pass
+            return
 
-        elif name == 'forbidden':
-            tool_id = self._extract(attrs, 'tool_id')
+        tool_id = self._extract(attrs, 'tool_id')
+        remove = self._extract(attrs, 'remove')
+        if remove is not None:
+            opposite = 'required' if name == 'forbidden' else 'forbidden'
+            raise ValueError(
+                "The 'remove' keyword is not supported in toolset.xml. "
+                "Failed to remove '{0}' from {1} tools. "
+                "Use an element '{2}' instead.".format(
+                    tool_id, name, opposite))
 
+        if name == 'forbidden':
             if tool_id not in self._forbidden:
                 self._forbidden.append(tool_id)
 
         elif name == 'required':
-            tool_id = self._extract(attrs, 'tool_id')
             dotted_name = self._extract(attrs, 'class')
             self._required[tool_id] = dotted_name
 
@@ -552,11 +559,11 @@ class ToolsetRegistry(Implicit):
     def addForbiddenTool(self, tool_id):
         """ See IToolsetRegistry.
         """
+        if tool_id in self._required:
+            del self._required[tool_id]
+
         if tool_id in self._forbidden:
             return
-
-        if self._required.get(tool_id) is not None:
-            raise ValueError('Tool %s is required!' % tool_id)
 
         self._forbidden.append(tool_id)
 
@@ -586,7 +593,7 @@ class ToolsetRegistry(Implicit):
         """ See IToolsetRegistry.
         """
         if tool_id in self._forbidden:
-            raise ValueError("Forbidden tool ID: %s" % tool_id)
+            self._forbidden.remove(tool_id)
 
         self._required[tool_id] = {'id': tool_id, 'class': dotted_name}
 

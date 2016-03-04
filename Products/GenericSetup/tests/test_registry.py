@@ -714,9 +714,12 @@ class ToolsetRegistryTests(BaseRegistryTests, ConformsToIToolsetRegistry
         configurator = self._makeOne().__of__(site)
 
         configurator.addRequiredTool('required', 'some.dotted.name')
+        self.assertEqual(len(configurator.listRequiredToolInfo()), 1)
+        self.assertEqual(len(configurator.listForbiddenTools()), 0)
 
-        self.assertRaises(
-            ValueError, configurator.addForbiddenTool, 'required')
+        configurator.addForbiddenTool('required')
+        self.assertEqual(len(configurator.listRequiredToolInfo()), 0)
+        self.assertEqual(len(configurator.listForbiddenTools()), 1)
 
     def test_addRequiredTool_multiple(self):
 
@@ -760,9 +763,12 @@ class ToolsetRegistryTests(BaseRegistryTests, ConformsToIToolsetRegistry
         configurator = self._makeOne().__of__(site)
 
         configurator.addForbiddenTool('forbidden')
+        self.assertEqual(len(configurator.listRequiredToolInfo()), 0)
+        self.assertEqual(len(configurator.listForbiddenTools()), 1)
 
-        self.assertRaises(ValueError, configurator.addRequiredTool, 'forbidden', 'a.name'
-                          )
+        configurator.addRequiredTool('forbidden', 'a.name')
+        self.assertEqual(len(configurator.listRequiredToolInfo()), 1)
+        self.assertEqual(len(configurator.listForbiddenTools()), 0)
 
     def test_generateXML_empty(self):
 
@@ -817,8 +823,18 @@ class ToolsetRegistryTests(BaseRegistryTests, ConformsToIToolsetRegistry
         site = self._initSite()
         configurator = self._makeOne().__of__(site)
 
-        self.assertRaises(ValueError, configurator.parseXML,
-                          _CONFUSED_TOOLSET_XML)
+        configurator.parseXML(_CONFUSED_TOOLSET_XML)
+        self.assertEqual(len(configurator.listForbiddenTools()), 0)
+        self.assertEqual(len(configurator.listRequiredToolInfo()), 1)
+
+    def test_parseXML_wrong(self):
+
+        site = self._initSite()
+        configurator = self._makeOne().__of__(site)
+
+        # The 'remove' keyword is explicitly not supported.
+        self.assertRaises(
+            ValueError, configurator.parseXML, _WRONG_TOOLSET_XML)
 
 
 _EMPTY_TOOLSET_XML = """\
@@ -841,6 +857,13 @@ _CONFUSED_TOOLSET_XML = """\
 <tool-setup>
  <forbidden tool_id="confused" />
  <required tool_id="confused" class="path.to.one" />
+</tool-setup>
+"""
+
+_WRONG_TOOLSET_XML = """\
+<?xml version="1.0"?>
+<tool-setup>
+ <required tool_id="confused" class="path.to.one" remove="" />
 </tool-setup>
 """
 
