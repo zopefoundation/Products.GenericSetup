@@ -1,10 +1,8 @@
 Changelog
 =========
 
-1.8.3 (unreleased)
+1.8.3 (2016-04-28)
 ------------------
-
-New:
 
 - Allowed overriding required and forbidden tools in ``toolset.xml``.
   If a tool is currently required and you import a ``toolset.xml``
@@ -13,10 +11,6 @@ New:
   previous behavior was to raise an exception, which left no way in
   xml to remove a tool.  Fail with a ValueError when the ``remove``
   keyword is used.  The expected behavior is unclear.  [maurits]
-
-Fixes:
-
-- *add item here*
 
 
 1.8.2 (2016-02-24)
