@@ -23,6 +23,7 @@ from OFS.Folder import Folder
 from zope.component import adapter
 from zope.component import provideHandler
 from zope.component.globalregistry import base as base_registry
+import transaction
 
 from Products.GenericSetup import profile_registry
 from Products.GenericSetup.interfaces import IBeforeProfileImportEvent
@@ -1462,6 +1463,37 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
         self.assertEqual(tool._profile_upgrade_versions, {})
         tool.upgradeProfile('no.such.profile:default', dest='42')
         self.assertEqual(tool._profile_upgrade_versions, {})
+
+    def test_persistent_profile_upgrade_versions(self):
+        site = self._makeSite()
+        site.setup_tool = self._makeOne('setup_tool')
+        tool = site.setup_tool
+        savepoint1 = transaction.savepoint()
+        tool.setLastVersionForProfile('foo', '1.0')
+        savepoint2 = transaction.savepoint()
+        tool.setLastVersionForProfile('bar', '2.0')
+        self.assertEqual(tool._profile_upgrade_versions,
+                         {'foo': ('1', '0'), 'bar': ('2', '0')})
+        savepoint2.rollback()
+        self.assertEqual(tool._profile_upgrade_versions,
+                         {'foo': ('1', '0')})
+        savepoint1.rollback()
+        self.assertEqual(tool._profile_upgrade_versions, {})
+
+    def test_separate_profile_upgrade_versions(self):
+        # _profile_upgrade_versions used to be a class property.  That is fine
+        # as long as we only work on copies, otherwise state is shared between
+        # two instances.  We now create the property in the __init__ method,
+        # but let's test it to avoid a regression.
+        site = self._makeSite()
+        site.setup_tool1 = self._makeOne('setup_tool1')
+        tool1 = site.setup_tool1
+        site.setup_tool2 = self._makeOne('setup_tool2')
+        tool2 = site.setup_tool2
+        tool1._profile_upgrade_versions['foo'] = '1.0'
+        self.assertEqual(tool2._profile_upgrade_versions, {})
+        tool2.setLastVersionForProfile('bar', '2.0')
+        self.assertEqual(self._makeOne('t')._profile_upgrade_versions, {})
 
     def test_upgradeProfile(self):
         dummy_handler = lambda tool: None

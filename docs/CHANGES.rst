@@ -4,7 +4,10 @@ Changelog
 1.8.4 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Made ``_profile_upgrade_versions`` a PersistentMapping.  When
+  ``(un)setLastVersionForProfile`` is called, we migrate the original
+  Python dictionary.  This makes some code easier and plays nicer with
+  transactions, which may especially help during tests.  [maurits]
 
 
 1.8.3 (2016-04-28)
