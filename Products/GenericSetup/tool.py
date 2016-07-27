@@ -26,6 +26,7 @@ from App.class_init import InitializeClass
 from OFS.Folder import Folder
 from OFS.Image import File
 from Products.PageTemplates.PageTemplateFile import PageTemplateFile
+from persistent.mapping import PersistentMapping
 from zope import event
 from zope.interface import implements
 
@@ -175,6 +176,13 @@ class SetupTool(Folder):
 
     _baseline_context_id = ''
 
+    # Mapping from profile id to last applied version.  We set this in __init__
+    # now, but keep it here to avoid a possible AttributeError for existing
+    # tools that have not added any versions here, which would have caused a
+    # copy to be made.  The not persistent dict will cause the tool to get its
+    # own mapping when setLastVersionForProfile or unsetLastVersionForProfile
+    # are called, replacing the one from the class shared by all such existing
+    # instances.
     _profile_upgrade_versions = {}
 
     _exclude_global_steps = False
@@ -186,6 +194,7 @@ class SetupTool(Folder):
         self._import_registry = ImportStepRegistry()
         self._export_registry = ExportStepRegistry()
         self._toolset_registry = ToolsetRegistry()
+        self._profile_upgrade_versions = PersistentMapping()
 
     #
     #   ISetupTool API
@@ -851,12 +860,11 @@ class SetupTool(Folder):
             profile_id = profile_id[len(prefix):]
         if isinstance(version, basestring):
             version = tuple(version.split('.'))
-        # _profile_upgrade_versions is not persistent, so we must
-        # force a safe by storing it fresh on self, instead of editing
-        # the current dictionary.
-        prof_versions = self._profile_upgrade_versions.copy()
-        prof_versions[profile_id] = version
-        self._profile_upgrade_versions = prof_versions
+        if not isinstance(self._profile_upgrade_versions, PersistentMapping):
+            # migrate to persistent
+            self._profile_upgrade_versions = PersistentMapping(
+                self._profile_upgrade_versions)
+        self._profile_upgrade_versions[profile_id] = version
 
     security.declareProtected(ManagePortal, 'unsetLastVersionForProfile')
     def unsetLastVersionForProfile(self, profile_id):
@@ -865,14 +873,13 @@ class SetupTool(Folder):
         prefix = 'profile-'
         if profile_id.startswith(prefix):
             profile_id = profile_id[len(prefix):]
-        # _profile_upgrade_versions is not persistent, so we must
-        # force a safe by storing it fresh on self, instead of editing
-        # the current dictionary.
-        prof_versions = self._profile_upgrade_versions.copy()
-        if profile_id not in prof_versions:
+        if profile_id not in self._profile_upgrade_versions:
             return
-        del prof_versions[profile_id]
-        self._profile_upgrade_versions = prof_versions
+        if not isinstance(self._profile_upgrade_versions, PersistentMapping):
+            # migrate to persistent
+            self._profile_upgrade_versions = PersistentMapping(
+                self._profile_upgrade_versions)
+        del self._profile_upgrade_versions[profile_id]
 
     security.declareProtected(ManagePortal, 'getVersionForProfile')
     def getVersionForProfile(self, profile_id):
@@ -885,7 +892,7 @@ class SetupTool(Folder):
     def purgeProfileVersions(self):
         """Purge the profile upgrade versions.
         """
-        self._profile_upgrade_versions = {}
+        self._profile_upgrade_versions = PersistentMapping()
         generic_logger.info('Profile upgrade versions purged.')
 
     security.declareProtected(ManagePortal, 'profileExists')
