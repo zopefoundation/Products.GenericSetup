@@ -1,7 +1,7 @@
 Changelog
 =========
 
-1.8.4 (unreleased)
+1.8.4 (2016-09-21)
 ------------------
 
 - Made ``_profile_upgrade_versions`` a PersistentMapping.  When
