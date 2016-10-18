@@ -4,10 +4,7 @@
     xmlns:zcml="http://namespaces.zope.org/zcml"
     i18n_domain="genericsetup">
 
-  <include
-      zcml:condition="not-installed five.formlib"
-      package="zope.formlib"
-      />
+  <include package="z3c.form"/>
 
   <include package=".browser"/>
 

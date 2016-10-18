@@ -15,13 +15,13 @@
 
 import os.path
 
-import zope.formlib
 from Products.Five.browser.decode import processInputs
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from Products.Five.component.interfaces import IObjectManagerSite
+from z3c.form import field
+from z3c.form import form
 from zope.component import adapts
 from zope.component import getMultiAdapter
-from zope.formlib import form
 from zope.interface import implements
 from zope.interface import Interface
 from zope.schema import Text
@@ -30,8 +30,6 @@ from ZPublisher import HTTPRequest
 from Products.GenericSetup.context import SetupEnviron
 from Products.GenericSetup.interfaces import IBody
 
-_FORMLIB_DIR = os.path.dirname(zope.formlib.__file__)
-_PAGEFORM_PATH = os.path.join(_FORMLIB_DIR, 'pageform.pt')
 
 
 class IComponentsSetupSchema(Interface):
@@ -62,16 +60,14 @@ class ComponentsSetupSchemaAdapter(object):
     body = property(_getBody, _setBody)
 
 
-class ComponentsSetupView(form.PageEditForm):
+class ComponentsSetupView(form.EditForm):
 
     """Components setup view for IObjectManagerSite.
     """
 
-    template = ViewPageTemplateFile(_PAGEFORM_PATH)
-
     label = u'Component Registry: XML Configuration'
 
-    form_fields = form.FormFields(IComponentsSetupSchema)
+    fields = field.Fields(IComponentsSetupSchema)
 
     def update(self):
         # BBB: for Zope < 2.14

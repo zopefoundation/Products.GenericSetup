@@ -147,6 +147,7 @@ class ExportImportZCMLLayer(ZopeLite):
         import Products.Five
         import Products.GenericSetup
         import zope.traversing
+        import z3c.form
 
         # BBB for Zope 2.12
         try:
@@ -160,6 +161,7 @@ class ExportImportZCMLLayer(ZopeLite):
             pass
 
         zcml.load_config('meta.zcml', Products.Five)
+        zcml.load_config('meta.zcml', z3c.form)
         zcml.load_config('meta.zcml', Products.GenericSetup)
 
         try:

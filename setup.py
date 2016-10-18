@@ -63,7 +63,7 @@ setup(
         'five.localsitemanager',
         # 'Products.MailHost', # BBB: disabled for Zope 2.12
         # 'Products.PythonScripts', # BBB: disabled for Zope 2.12
-        'zope.formlib',
+        'z3c.form',
         ],
     tests_require=[
         'zope.testrunner',
