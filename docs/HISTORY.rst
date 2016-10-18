@@ -9,6 +9,7 @@ Historical Changelog
   being registered for indexes which have no ``indexed_attrs`` (e.g.,
   Plone's ``GopipIndex``).
 
+- Remove zope.formlib dependency, use z3c.form instead.
 
 1.6.7 (2013-01-23)
 ------------------
