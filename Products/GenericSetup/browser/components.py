@@ -75,18 +75,16 @@ class ComponentsSetupView(form.EditForm):
             processInputs(self.request, [HTTPRequest.default_encoding])
         super(ComponentsSetupView, self).update()
 
-    def setUpWidgets(self, ignore_request=False):
-        super(ComponentsSetupView,
-              self).setUpWidgets(ignore_request=ignore_request)
-        self.widgets['body'].height = 24
+    def updateWidgets(self):
+        super(ComponentsSetupView, self).updateWidgets()
+        self.widgets['body'].rows = 24
+        self.widgets['body'].cols = 60
 
 
 class ComponentsSetupTab(ComponentsSetupView):
 
     """Components setup ZMI tab for IObjectManagerSite.
     """
-
-    base_template = ComponentsSetupView.template
 
     template = ViewPageTemplateFile('components.pt')
 

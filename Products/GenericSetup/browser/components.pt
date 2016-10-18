@@ -16,5 +16,5 @@
 </style>
 
 <br />
-<metal:macro metal:use-macro="view/base_template/macros/form" />
+<metal:macro metal:use-macro="view/@@ploneform-macros/form" />
 <h1 tal:replace="structure context/manage_page_footer">PAGE FOOTER</h1>
