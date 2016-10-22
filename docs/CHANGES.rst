@@ -4,8 +4,7 @@ Changelog
 1.8.5 (unreleased)
 ------------------
 
-- Nothing changed yet.
-
+- Stopped using a form library to render the components form.
 
 1.8.4 (2016-09-21)
 ------------------

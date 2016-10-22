@@ -13,15 +13,13 @@
 """Components setup view.
 """
 
-import os.path
-
-import zope.formlib
+from Products.Five import BrowserView
 from Products.Five.browser.decode import processInputs
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from Products.Five.component.interfaces import IObjectManagerSite
 from zope.component import adapts
+from zope.component import getAdapter
 from zope.component import getMultiAdapter
-from zope.formlib import form
 from zope.interface import implements
 from zope.interface import Interface
 from zope.schema import Text
@@ -29,9 +27,6 @@ from ZPublisher import HTTPRequest
 
 from Products.GenericSetup.context import SetupEnviron
 from Products.GenericSetup.interfaces import IBody
-
-_FORMLIB_DIR = os.path.dirname(zope.formlib.__file__)
-_PAGEFORM_PATH = os.path.join(_FORMLIB_DIR, 'pageform.pt')
 
 
 class IComponentsSetupSchema(Interface):
@@ -62,27 +57,28 @@ class ComponentsSetupSchemaAdapter(object):
     body = property(_getBody, _setBody)
 
 
-class ComponentsSetupView(form.PageEditForm):
+class ComponentsSetupView(BrowserView):
 
     """Components setup view for IObjectManagerSite.
     """
 
-    template = ViewPageTemplateFile(_PAGEFORM_PATH)
-
-    label = u'Component Registry: XML Configuration'
-
-    form_fields = form.FormFields(IComponentsSetupSchema)
+    template = form_template = ViewPageTemplateFile('components_form.pt')
+    status = ''
 
     def update(self):
         # BBB: for Zope < 2.14
         if not getattr(self.request, 'postProcessInputs', False):
             processInputs(self.request, [HTTPRequest.default_encoding])
-        super(ComponentsSetupView, self).update()
 
-    def setUpWidgets(self, ignore_request=False):
-        super(ComponentsSetupView,
-              self).setUpWidgets(ignore_request=ignore_request)
-        self.widgets['body'].height = 24
+        self.adapter = getAdapter(self.context, IComponentsSetupSchema)
+
+        if 'apply' in self.request.form:
+            self.adapter.body = self.request.form['body']
+            self.status = 'Saved changes.'
+
+    def __call__(self):
+        self.update()
+        return self.template()
 
 
 class ComponentsSetupTab(ComponentsSetupView):
@@ -90,8 +86,4 @@ class ComponentsSetupTab(ComponentsSetupView):
     """Components setup ZMI tab for IObjectManagerSite.
     """
 
-    base_template = ComponentsSetupView.template
-
     template = ViewPageTemplateFile('components.pt')
-
-    label = None
