@@ -9,6 +9,12 @@
 <p>
     <input class="form-element" type="file"
            name="tarball" />
+    <input type="hidden" name="submitted" value="yes" />
+    <label>
+    <input class="form-element" type="checkbox" checked="checked"
+           name="purge_old" />
+    Purge existing settings
+    </label>
     <input class="form-element" type="submit"
            name="manage_importTarball:method"
            value=" Import uploaded tarball " />

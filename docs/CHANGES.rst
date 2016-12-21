@@ -4,7 +4,10 @@ Changelog
 1.8.6 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Added a ``purge_old`` option to the tarball import form.
+  By default this option is checked, which matches the previous behavior.
+  If you uncheck it, this avoids purging old settings for any import step
+  that is run.  [maurits]
 
 
 1.8.5 (2016-11-01)
