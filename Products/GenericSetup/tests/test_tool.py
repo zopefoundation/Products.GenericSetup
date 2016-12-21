@@ -18,6 +18,8 @@ import unittest
 import os
 from StringIO import StringIO
 
+from AccessControl.SecurityManagement import newSecurityManager
+from AccessControl.User import UnrestrictedUser
 from Acquisition import aq_base
 from OFS.Folder import Folder
 from zope.component import adapter
@@ -26,6 +28,7 @@ from zope.component.globalregistry import base as base_registry
 import transaction
 
 from Products.GenericSetup import profile_registry
+from Products.GenericSetup.context import TarballExportContext
 from Products.GenericSetup.interfaces import IBeforeProfileImportEvent
 from Products.GenericSetup.interfaces import IProfileImportedEvent
 from Products.GenericSetup.testing import ExportImportZCMLLayer
@@ -952,6 +955,67 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
             fileish, 'export_steps.xml', _EXTRAS_STEP_REGISTRIES_EXPORT_XML)
         self._verifyTarballEntry(
             fileish, 'properties.ini', _PROPERTIES_INI % site.title)
+
+    def test_manage_importTarball(self):
+        # Tests for importing a tarball with GenericSetup files.
+        # We are especially interested to see if old settings get purged.
+        site = self._makeSite()
+        site.setup_tool = self._makeOne('setup_tool')
+        tool = site.setup_tool
+        # We need to be Manager to see the result of calling
+        # manage_importTarball.
+        newSecurityManager(None, UnrestrictedUser('root', '', ['Manager'], ''))
+
+        ROLEMAP_XML = """<?xml version="1.0"?>
+<rolemap>
+  <roles>
+    <role name="%s" />
+  </roles>
+  <permissions />
+</rolemap>
+"""
+
+        def rolemap_tarball(name):
+            # Create a tarball archive with rolemap.xml containing 'name' as
+            # role.
+            context = TarballExportContext(tool)
+            context.writeDataFile(
+                'rolemap.xml', ROLEMAP_XML % name, 'text/xml')
+            return context.getArchive()
+
+        # Import first role.
+        tool.manage_importTarball(rolemap_tarball('First'))
+        self.assertTrue('First' in site.valid_roles())
+
+        # Import second role.
+        tool.manage_importTarball(rolemap_tarball('Second'))
+        self.assertTrue('Second' in site.valid_roles())
+        # The first role has been purged, because that is the default.
+        self.assertFalse('First' in site.valid_roles())
+        # A few standard roles are never removed, probably because they are
+        # defined one level higher.
+        self.assertTrue('Anonymous' in site.valid_roles())
+        self.assertTrue('Authenticated' in site.valid_roles())
+        self.assertTrue('Manager' in site.valid_roles())
+        self.assertTrue('Owner' in site.valid_roles())
+
+        # Import third role in non-purge mode.
+        tool.manage_importTarball(rolemap_tarball('Third'), purge_old=False)
+        self.assertTrue('Third' in site.valid_roles())
+        # The second role is still there.
+        self.assertTrue('Second' in site.valid_roles())
+
+        # When you use the form, and uncheck the purge_old checkbox, then the
+        # browser does not send the purge_old parameter in the request.  To
+        # work around this, the form always passes a hidden 'submitted'
+        # parameter.
+        # Import fourth role in non-purge mode with a form submit.
+        tool.manage_importTarball(rolemap_tarball('Fourth'), submitted='yes')
+        self.assertTrue('Fourth' in site.valid_roles())
+        # The other roles are still there.
+        self.assertTrue('Second' in site.valid_roles())
+        self.assertTrue('Third' in site.valid_roles())
+        self.assertTrue('Manager' in site.valid_roles())
 
     def test_createSnapshot_default(self):
         _EXPECTED = [('import_steps.xml', _DEFAULT_STEP_REGISTRIES_IMPORT_XML),

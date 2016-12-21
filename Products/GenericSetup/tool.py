@@ -606,13 +606,25 @@ class SetupTool(Folder):
                                           messages=detail)
 
     security.declareProtected(ManagePortal, 'manage_importTarball')
-    def manage_importTarball(self, tarball):
+    def manage_importTarball(self, tarball, submitted=None, purge_old=None):
         """ Import steps from the uploaded tarball.
         """
         if getattr(tarball, 'read', None) is not None:
             tarball = tarball.read()
 
-        result = self.runAllImportStepsFromProfile(None, True, archive=tarball)
+        if purge_old is None:
+            if submitted:
+                # The form was submitted, and the purge_old checkbox was not
+                # checked, which means it does not end up in the method call.
+                # So we must set it to False here.
+                purge_old = False
+            else:
+                # No form was submitted: the method was called manually.
+                # To avoid surprises, use the previous default.
+                purge_old = True
+
+        result = self.runAllImportStepsFromProfile(
+            None, purge_old=purge_old, archive=tarball)
 
         steps_run = 'Steps run: %s' % ', '.join(result['steps'])
 
