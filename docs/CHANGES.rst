@@ -1,7 +1,7 @@
 Changelog
 =========
 
-1.8.6 (unreleased)
+1.8.6 (2016-12-30)
 ------------------
 
 - Added a ``purge_old`` option to the tarball import form.
