@@ -932,7 +932,7 @@ class ProfileRegistryTests(BaseRegistryTests, ConformsToIProfileRegistry
         info3 = registry.getProfileInfo('snapshot-' + PROFILE_ID)
         self.assertEqual(info, info3)
 
-    def test_registerProfile_duplicate(self):
+    def test_registerProfile_duplicate_same(self):
 
         NAME = 'one'
         TITLE = 'One'
@@ -941,6 +941,23 @@ class ProfileRegistryTests(BaseRegistryTests, ConformsToIProfileRegistry
 
         registry = self._makeOne()
         registry.registerProfile(NAME, TITLE, DESCRIPTION, PATH)
+        # If we register the exact same profile, this should be fine.
+        # We will just keep the old one.
+        info = registry.getProfileInfo('other:one')
+        registry.registerProfile(NAME, TITLE, DESCRIPTION, PATH)
+        new_info = registry.getProfileInfo('other:one')
+        self.assertEqual(info, new_info)
+
+    def test_registerProfile_duplicate_other(self):
+
+        NAME = 'one'
+        TITLE = 'One'
+        DESCRIPTION = 'One profile'
+        PATH = '/path/to/one'
+
+        registry = self._makeOne()
+        registry.registerProfile(NAME, TITLE, DESCRIPTION, PATH)
+        DESCRIPTION = 'Other profile'
         self.assertRaises(KeyError, registry.registerProfile,
                           NAME, TITLE, DESCRIPTION, PATH)
 

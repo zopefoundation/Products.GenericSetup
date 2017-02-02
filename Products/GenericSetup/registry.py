@@ -39,7 +39,11 @@ from Products.GenericSetup.utils import _resolveDottedName
 from Products.GenericSetup.utils import _extractDocstring
 from Products.GenericSetup.utils import _computeTopologicalSort
 
+import logging
 import types
+
+
+logger = logging.getLogger('Products.GenericSetup')
 
 #
 #   XML parser
@@ -704,8 +708,6 @@ class ProfileRegistry(Implicit):
         """ See IProfileRegistry.
         """
         profile_id = self._computeProfileId(name, product)
-        if self._registered.get(profile_id) is not None:
-            raise KeyError('Duplicate profile ID: %s' % profile_id)
 
         # Typos in pre/post handler should be caught on zope startup.
         if pre_handler:
@@ -734,6 +736,16 @@ class ProfileRegistry(Implicit):
 
         # metadata.xml description trumps ZCML description... awkward
         info.update(metadata)
+
+        existing_info = self._registered.get(profile_id)
+        if existing_info is not None:
+            # If it is the same, we can safely accept it.
+            # This may happen during tests.
+            if info == existing_info:
+                logger.warn('Duplicate profile ID with same info ignored: %s'
+                            % profile_id)
+                return
+            raise KeyError('Duplicate profile ID: %s' % profile_id)
 
         self._registered[profile_id] = info
 
