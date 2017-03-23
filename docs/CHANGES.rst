@@ -4,7 +4,12 @@ Changelog
 1.8.7 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Allow registering the same profile twice if it really is the same.
+  This is mostly for tests where the registry may not be cleaned up
+  correctly in case of problems in test teardown.
+  If you register the same profile twice in zcml, you still get a
+  conflict from ``zope.configuration`` during Zope startup.
+  [maurits]
 
 
 1.8.6 (2016-12-30)
