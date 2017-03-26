@@ -1,7 +1,7 @@
 Changelog
 =========
 
-1.8.7 (unreleased)
+1.8.7 (2017-03-26)
 ------------------
 
 - Allow registering the same profile twice if it really is the same.
