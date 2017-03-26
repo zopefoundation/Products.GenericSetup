@@ -1,6 +1,22 @@
 Changelog
 =========
 
+1.8.8 (unreleased)
+------------------
+
+Breaking changes:
+
+- *add item here*
+
+New features:
+
+- *add item here*
+
+Bug fixes:
+
+- *add item here*
+
+
 1.8.7 (2017-03-26)
 ------------------
 
