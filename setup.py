@@ -13,17 +13,13 @@ def _package_doc(name):
     with open(os.path.join(package, name)) as f:
         return f.read()
 
-
-def _docs_doc(name):
-    with open(os.path.join(docs, name)) as f:
-        return f.read()
-
 with open('README.rst') as f:
     README = f.read()
 
-_BOUNDARY = '\n' + ('-' * 60) + '\n\n'
+with open('CHANGES.rst') as f:
+    CHANGES = f.read()
 
-CHANGES = _docs_doc('CHANGES.rst')
+_BOUNDARY = '\n' + ('-' * 60) + '\n\n'
 
 setup(
     name='Products.GenericSetup',
