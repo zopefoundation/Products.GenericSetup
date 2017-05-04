@@ -8,6 +8,8 @@ Breaking changes:
 
 - Drop support for Python 2.6.
 
+- Require Zope 4.0a3 as minimun supported Zope version.
+
 New features:
 
 - *add item here*

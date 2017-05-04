@@ -16,6 +16,7 @@
 import unittest
 from Testing import ZopeTestCase
 ZopeTestCase.installProduct('ZCTextIndex', 1)
+ZopeTestCase.installProduct('PluginIndexes', 1)
 
 from zope.component import getMultiAdapter
 

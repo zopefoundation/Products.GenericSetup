@@ -54,10 +54,11 @@ setup(
                     ],
     install_requires=[
         'setuptools',
-        'Zope2 >= 2.12.3',
+        'Zope2 >= 4.0a3',
         'five.localsitemanager',
-        # 'Products.MailHost', # BBB: disabled for Zope 2.12
-        # 'Products.PythonScripts', # BBB: disabled for Zope 2.12
+        'Products.MailHost',
+        'Products.PythonScripts',
+        'Products.ZCatalog',
         ],
     tests_require=[
         'zope.testrunner',
