@@ -1,12 +1,14 @@
 Changelog
 =========
 
-1.8.8 (unreleased)
+1.9.0 (unreleased)
 ------------------
 
 Breaking changes:
 
-- *add item here*
+- Drop support for Python 2.6.
+
+- Require Zope 4.0a3 as minimun supported Zope version.
 
 New features:
 

@@ -13,17 +13,13 @@ def _package_doc(name):
     with open(os.path.join(package, name)) as f:
         return f.read()
 
-
-def _docs_doc(name):
-    with open(os.path.join(docs, name)) as f:
-        return f.read()
-
 with open('README.rst') as f:
     README = f.read()
 
-_BOUNDARY = '\n' + ('-' * 60) + '\n\n'
+with open('CHANGES.rst') as f:
+    CHANGES = f.read()
 
-CHANGES = _docs_doc('CHANGES.rst')
+_BOUNDARY = '\n' + ('-' * 60) + '\n\n'
 
 setup(
     name='Products.GenericSetup',
@@ -40,7 +36,6 @@ setup(
         "Intended Audience :: Developers",
         "License :: OSI Approved :: Zope Public License",
         "Programming Language :: Python",
-        "Programming Language :: Python :: 2.6",
         "Programming Language :: Python :: 2.7",
         "Topic :: Software Development",
         "Topic :: System :: Archiving :: Packaging",
@@ -59,10 +54,11 @@ setup(
                     ],
     install_requires=[
         'setuptools',
-        'Zope2 >= 2.12.3',
+        'Zope2 >= 4.0a3',
         'five.localsitemanager',
-        # 'Products.MailHost', # BBB: disabled for Zope 2.12
-        # 'Products.PythonScripts', # BBB: disabled for Zope 2.12
+        'Products.MailHost',
+        'Products.PythonScripts',
+        'Products.ZCatalog',
         ],
     tests_require=[
         'zope.testrunner',

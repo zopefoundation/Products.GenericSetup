@@ -58,7 +58,7 @@ Other Documentation
    install
    handlers
    profiles
-   CHANGES
+   ../CHANGES
    CREDITS
    glossary
 
