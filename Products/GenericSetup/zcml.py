@@ -315,7 +315,8 @@ def upgradeStep(_context, title, profile, handler, description=None,
     step = UpgradeStep(title, profile, source, destination, description,
                        handler, checker, sortkey)
     _context.action(
-        discriminator=('upgradeStep', source, destination, handler, sortkey),
+        discriminator=(
+            'upgradeStep', profile, source, destination, handler, sortkey),
         callable=_registerUpgradeStep,
         args=(step,),
         )
@@ -329,8 +330,9 @@ def upgradeDepends(_context, title, profile, description=None,
                           import_profile, import_steps, run_deps, purge,
                           checker, sortkey)
     _context.action(
-        discriminator=('upgradeDepends', source, destination, import_profile,
-                       str(import_steps), checker, sortkey),
+        discriminator=(
+            'upgradeDepends', profile, source, destination, import_profile,
+                str(import_steps), checker, sortkey),
         callable=_registerUpgradeStep,
         args=(step,),
         )
@@ -359,8 +361,9 @@ class upgradeSteps(object):
             self.id = str(abs(hash('%s%s%s%s' % (title, self.source, self.dest,
                                                  self.sortkey))))
         _context.action(
-            discriminator=('upgradeStep', self.source, self.dest, handler,
-                           self.sortkey),
+            discriminator=(
+                'upgradeStep', self.profile, self.source, self.dest, handler,
+                self.sortkey),
             callable=_registerNestedUpgradeStep,
             args=(step, self.id),
             )
@@ -376,8 +379,9 @@ class upgradeSteps(object):
             self.id = str(abs(hash('%s%s%s%s' % (title, self.source, self.dest,
                                                  self.sortkey))))
         _context.action(
-            discriminator=('upgradeDepends', self.source, self.dest,
-                           import_profile, str(import_steps), self.sortkey),
+            discriminator=(
+                'upgradeDepends', self.profile, self.source, self.dest,
+                import_profile, str(import_steps), checker, self.sortkey),
             callable=_registerNestedUpgradeStep,
             args=(step, self.id)
             )
