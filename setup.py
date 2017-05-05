@@ -29,9 +29,7 @@ setup(
     classifiers=[
         "Development Status :: 5 - Production/Stable",
         "Framework :: Plone",
-        "Framework :: Plone :: 4.3",
-        "Framework :: Plone :: 5.0",
-        "Framework :: Plone :: 5.1",
+#       "Framework :: Plone :: 5.2",  # Zope4-compatible Plone
         "Framework :: Zope2",
         "Intended Audience :: Developers",
         "License :: OSI Approved :: Zope Public License",
