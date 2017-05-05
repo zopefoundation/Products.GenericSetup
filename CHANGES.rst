@@ -4,16 +4,9 @@ Changelog
 1.9.1 (unreleased)
 ------------------
 
-- TBD
-
-1.9.0 (2017-05-04)
-------------------
-
 Breaking changes:
 
-- Drop support for Python 2.6.
-
-- Require Zope 4.0a3 as minimun supported Zope version.
+- *add item here*
 
 New features:
 
@@ -23,6 +16,14 @@ Bug fixes:
 
 - *add item here*
 
+1.9.0 (2017-05-04)
+------------------
+
+Breaking changes:
+
+- Drop support for Python 2.6.
+
+- Require Zope 4.0a3 as minimun supported Zope version.
 
 1.8.7 (2017-03-26)
 ------------------
