@@ -434,9 +434,44 @@ class ExportStepTests(unittest.TestCase):
         self.assertEqual(data["id"], u"name")
 
 
+class UpgradeStepTests(unittest.TestCase):
+
+    def setUp(self):
+        import Products.GenericSetup
+        zcml.load_config('meta.zcml', Products.GenericSetup)
+
+    def tearDown(self):
+        cleanUp()
+
+    def testSimilarStepsForDifferentProfilesDoNotConflict(self):
+        from zope.configuration.config import ConfigurationConflictError
+        try:
+            zcml.load_string("""
+<configure xmlns="http://namespaces.zope.org/genericsetup"
+      i18n_domain="genericsetup">
+ <upgradeStep
+     profile="profile1"
+     title="title"
+     description="description"
+     source="1"
+     destination="2"
+     handler="Products.GenericSetup.tests.test_zcml.b_dummy_upgrade" />
+ <upgradeStep
+     profile="profile2"
+     title="title"
+     description="description"
+     source="1"
+     destination="2"
+     handler="Products.GenericSetup.tests.test_zcml.b_dummy_upgrade" />
+</configure>""")
+        except ConfigurationConflictError:
+            self.fail('Upgrade steps should not conflict')
+
+
 def test_suite():
     suite = unittest.TestSuite()
     suite.addTest(doctest.DocTestSuite(optionflags=ELLIPSIS))
     suite.addTest(unittest.makeSuite(ImportStepTests))
     suite.addTest(unittest.makeSuite(ExportStepTests))
+    suite.addTest(unittest.makeSuite(UpgradeStepTests))
     return suite
