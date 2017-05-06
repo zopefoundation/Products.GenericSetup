@@ -14,7 +14,12 @@ New features:
 
 Bug fixes:
 
-- *add item here*
+- Fixed ``upgradeStep`` discriminator so that similar steps
+  for different profiles will not conflict.
+
+- Fixed ``upgradeDepends`` discriminator so that steps inside
+  ``upgradeSteps`` will conflict with steps outside if they
+  have the same ``checker``.
 
 
 1.8.7 (2017-03-26)
