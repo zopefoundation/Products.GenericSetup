@@ -4,14 +4,6 @@ Changelog
 1.8.8 (unreleased)
 ------------------
 
-Breaking changes:
-
-- *add item here*
-
-New features:
-
-- *add item here*
-
 Bug fixes:
 
 - Fixed ``upgradeStep`` discriminator so that similar steps
