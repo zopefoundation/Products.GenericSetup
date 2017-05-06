@@ -19,7 +19,7 @@ import os
 from StringIO import StringIO
 
 from AccessControl.SecurityManagement import newSecurityManager
-from AccessControl.User import UnrestrictedUser
+from AccessControl.users import UnrestrictedUser
 from Acquisition import aq_base
 from OFS.Folder import Folder
 from zope.component import adapter

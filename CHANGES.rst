@@ -21,7 +21,7 @@ Bug fixes:
   ``upgradeSteps`` will conflict with steps outside if they
   have the same ``checker``.
 
-- *add item here*
+- Fix import of UnrestrictedUser.
 
 1.9.0 (2017-05-04)
 ------------------
@@ -30,7 +30,7 @@ Breaking changes:
 
 - Drop support for Python 2.6.
 
-- Require Zope 4.0a3 as minimun supported Zope version.
+- Require Zope 4.0a3 as minimum supported Zope version.
 
 1.8.7 (2017-03-26)
 ------------------
