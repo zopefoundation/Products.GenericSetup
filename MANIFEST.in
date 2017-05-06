@@ -1,4 +1,4 @@
-include *.txt
+include *.txt *rst
 
 recursive-include Products *
 recursive-include docs *
