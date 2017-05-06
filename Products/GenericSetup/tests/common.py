@@ -18,7 +18,7 @@ import shutil
 from tarfile import TarFile
 
 from AccessControl.SecurityManagement import newSecurityManager
-from AccessControl.User import UnrestrictedUser
+from AccessControl.users import UnrestrictedUser
 from Testing.ZopeTestCase import ZopeTestCase
 from zope.interface import implements
 
