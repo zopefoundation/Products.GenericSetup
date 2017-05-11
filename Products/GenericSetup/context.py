@@ -36,7 +36,7 @@ from OFS.Image import File
 from OFS.Image import Image
 from Products.PageTemplates.ZopePageTemplate import ZopePageTemplate
 from Products.PythonScripts.PythonScript import PythonScript
-from zope.interface import implements
+from zope.interface import implementer
 
 from Products.GenericSetup.interfaces import IChunkableExportContext
 from Products.GenericSetup.interfaces import IChunkableImportContext
@@ -49,9 +49,8 @@ from Products.GenericSetup.interfaces import SKIPPED_SUFFIXES
 from Products.GenericSetup.permissions import ManagePortal
 
 
+@implementer(IWriteLogger)
 class Logger:
-
-    implements(IWriteLogger)
 
     def __init__(self, id, messages):
         """Initialize the logger with a name and an optional level.
@@ -97,12 +96,11 @@ class Logger:
         self._logger.log(level, msg, *args, **kwargs)
 
 
+@implementer(ISetupEnviron)
 class SetupEnviron(Implicit):
 
     """Context for body im- and exporter.
     """
-
-    implements(ISetupEnviron)
 
     security = ClassSecurityInfo()
 
@@ -176,9 +174,8 @@ class BaseContext(SetupEnviron):
 InitializeClass(BaseContext)
 
 
+@implementer(IChunkableImportContext)
 class DirectoryImportContext( BaseContext ):
-
-    implements(IChunkableImportContext)
 
     security = ClassSecurityInfo()
 
@@ -266,9 +263,8 @@ class DirectoryImportContext( BaseContext ):
 InitializeClass(DirectoryImportContext)
 
 
+@implementer(IChunkableExportContext)
 class DirectoryExportContext( BaseContext ):
-
-    implements(IChunkableExportContext)
 
     security = ClassSecurityInfo()
 
@@ -310,9 +306,8 @@ class DirectoryExportContext( BaseContext ):
 InitializeClass(DirectoryExportContext)
 
 
+@implementer(IImportContext)
 class TarballImportContext( BaseContext ):
-
-    implements(IImportContext)
 
     security = ClassSecurityInfo()
 
@@ -403,9 +398,8 @@ class TarballImportContext( BaseContext ):
 InitializeClass(TarballImportContext)
 
 
+@implementer(IExportContext)
 class TarballExportContext( BaseContext ):
-
-    implements(IExportContext)
 
     security = ClassSecurityInfo()
 
@@ -474,9 +468,8 @@ class TarballExportContext( BaseContext ):
 InitializeClass(TarballExportContext)
 
 
+@implementer(IExportContext)
 class SnapshotExportContext( BaseContext ):
-
-    implements(IExportContext)
 
     security = ClassSecurityInfo()
 
@@ -581,9 +574,8 @@ class SnapshotExportContext( BaseContext ):
 InitializeClass(SnapshotExportContext)
 
 
+@implementer(IImportContext)
 class SnapshotImportContext( BaseContext ):
-
-    implements(IImportContext)
 
     security = ClassSecurityInfo()
 

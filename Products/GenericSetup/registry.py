@@ -20,7 +20,7 @@ from AccessControl.SecurityInfo import ClassSecurityInfo
 from Acquisition import Implicit
 from App.class_init import InitializeClass
 from Products.PageTemplates.PageTemplateFile import PageTemplateFile
-from zope.interface import implements
+from zope.interface import implementer
 from zope.component import getGlobalSiteManager
 
 from Products.GenericSetup.interfaces import BASE
@@ -342,13 +342,13 @@ class BaseStepRegistry(Implicit):
 InitializeClass(BaseStepRegistry)
 
 
+@implementer(IImportStepRegistry)
 class ImportStepRegistry(BaseStepRegistry):
 
     """ Manage knowledge about steps to create / configure site.
 
     o Steps are composed together to define a site profile.
     """
-    implements(IImportStepRegistry)
 
     security = ClassSecurityInfo()
     RegistryParser = _ImportStepRegistryParser
@@ -464,6 +464,7 @@ InitializeClass(ImportStepRegistry)
 _import_step_registry = ImportStepRegistry(GlobalRegistryStorage(IImportStep))
 
 
+@implementer(IExportStepRegistry)
 class ExportStepRegistry(BaseStepRegistry):
 
     """ Registry of known site-configuration export steps.
@@ -482,7 +483,6 @@ class ExportStepRegistry(BaseStepRegistry):
       - 'filename' is a suggested filename for use when downloading.
 
     """
-    implements(IExportStepRegistry)
 
     security = ClassSecurityInfo()
     RegistryParser = _ExportStepRegistryParser
@@ -536,11 +536,11 @@ InitializeClass(ExportStepRegistry)
 _export_step_registry = ExportStepRegistry(GlobalRegistryStorage(IExportStep))
 
 
+@implementer(IToolsetRegistry)
 class ToolsetRegistry(Implicit):
 
     """ Track required / forbidden tools.
     """
-    implements(IToolsetRegistry)
 
     security = ClassSecurityInfo()
     security.setDefaultAccess('allow')
@@ -640,11 +640,11 @@ class ToolsetRegistry(Implicit):
 InitializeClass(ToolsetRegistry)
 
 
+@implementer(IProfileRegistry)
 class ProfileRegistry(Implicit):
 
     """ Track registered profiles.
     """
-    implements(IProfileRegistry)
 
     security = ClassSecurityInfo()
     security.setDefaultAccess('allow')

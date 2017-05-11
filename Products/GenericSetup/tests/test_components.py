@@ -39,7 +39,7 @@ except ImportError:
     from zope.site.hooks import clearSite
     from zope.site.hooks import setHooks
     from zope.site.hooks import setSite
-from zope.interface import implements
+from zope.interface import implementer
 from zope.interface import Interface
 
 from Products.GenericSetup.interfaces import IBody
@@ -82,10 +82,9 @@ class IDummyInterface2(Interface):
         """Returns True."""
 
 
+@implementer(IDummyInterface)
 class DummyUtility(object):
     """A dummy utility."""
-
-    implements(IDummyInterface)
 
     def verify(self):
         return True
@@ -105,10 +104,9 @@ class IAnotherDummy2(Interface):
         """Returns True."""
 
 
+@implementer(IAnotherDummy)
 class DummyObject(object):
     """A dummy object to pass to the handler."""
-
-    implements(IAnotherDummy)
 
     handled = 0
 
@@ -116,10 +114,9 @@ class DummyObject(object):
         self.handled += 1
 
 
+@implementer(IAnotherDummy2)
 class DummyAdapter(object):
     """A dummy adapter."""
-
-    implements(IAnotherDummy2)
 
     def __init__(self, context):
         pass
@@ -134,9 +131,9 @@ def dummy_handler(context):
     context.inc()
 
 
+@implementer(IDummyInterface)
 class DummyTool(SimpleItem):
     """A dummy tool."""
-    implements(IDummyInterface)
 
     id = 'dummy_tool'
     meta_type = 'dummy tool'
@@ -150,9 +147,9 @@ class DummyTool(SimpleItem):
 InitializeClass(DummyTool)
 
 
+@implementer(IDummyInterface2)
 class DummyTool2(SimpleItem):
     """A second dummy tool."""
-    implements(IDummyInterface2)
 
     id = 'dummy_tool2'
     meta_type = 'dummy tool2'
@@ -166,10 +163,9 @@ class DummyTool2(SimpleItem):
 InitializeClass(DummyTool2)
 
 
+@implementer(IComponentsHandlerBlacklist)
 class DummyBlacklist(object):
     """A blacklist."""
-
-    implements(IComponentsHandlerBlacklist)
 
     def getExcludedInterfaces(self):
         return (IDummyInterface, )

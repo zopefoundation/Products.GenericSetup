@@ -19,7 +19,7 @@ from csv import writer
 from StringIO import StringIO
 
 from zope.component import queryAdapter
-from zope.interface import implements
+from zope.interface import implementer
 
 from Products.GenericSetup.interfaces import IContentFactory
 from Products.GenericSetup.interfaces import IContentFactoryName
@@ -46,6 +46,7 @@ def importSiteStructure(context):
 #
 #   Filesystem export/import adapters
 #
+@implementer(IFilesystemExporter, IFilesystemImporter)
 class FolderishExporterImporter(object):
     """ Tree-walking exporter / importer for "folderish" types.
 
@@ -62,8 +63,6 @@ class FolderishExporterImporter(object):
     Subobjects themselves are represented as individual files or
     subdirectories within the parent's directory.
     """
-
-    implements(IFilesystemExporter, IFilesystemImporter)
 
     def __init__(self, context):
         self.context = context
@@ -244,10 +243,10 @@ def _globtest(globpattern, namelist):
     return filter(compiled.match, namelist)
 
 
+@implementer(IFilesystemExporter, IFilesystemImporter)
 class CSVAwareFileAdapter(object):
     """ Adapter for content whose "natural" representation is CSV.
     """
-    implements(IFilesystemExporter, IFilesystemImporter)
 
     def __init__(self, context):
         self.context = context
@@ -279,11 +278,11 @@ class CSVAwareFileAdapter(object):
             self.context.put_csv(stream)
 
 
+@implementer(IFilesystemExporter, IFilesystemImporter)
 class INIAwareFileAdapter(object):
     """ Exporter/importer for content whose "natural" representation is an
         '.ini' file.
     """
-    implements(IFilesystemExporter, IFilesystemImporter)
 
     def __init__(self, context):
         self.context = context
@@ -314,10 +313,10 @@ class INIAwareFileAdapter(object):
             self.context.put_ini(data)
 
 
+@implementer(IINIAware)
 class SimpleINIAware(object):
     """ Exporter/importer for content which doesn't know from INI.
     """
-    implements(IINIAware,)
 
     def __init__(self, context):
         self.context = context
@@ -374,10 +373,10 @@ class FauxDAVResponse:
         pass  # stub this out to mollify webdav.Resource
 
 
+@implementer(IFilesystemExporter, IFilesystemImporter)
 class DAVAwareFileAdapter(object):
     """ Exporter/importer for content who handle their own FTP / DAV PUTs.
     """
-    implements(IFilesystemExporter, IFilesystemImporter)
 
     def __init__(self, context):
         self.context = context

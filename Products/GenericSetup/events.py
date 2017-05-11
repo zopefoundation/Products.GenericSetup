@@ -14,7 +14,7 @@
 """
 
 from zope.component import adapter
-from zope.interface import implements
+from zope.interface import implementer
 
 from Products.GenericSetup.interfaces import IBeforeProfileImportEvent
 from Products.GenericSetup.interfaces import IProfileImportedEvent
@@ -29,14 +29,14 @@ class BaseProfileImportEvent(object):
         self.full_import = full_import
 
 
+@implementer(IBeforeProfileImportEvent)
 class BeforeProfileImportEvent(BaseProfileImportEvent):
+    pass
 
-    implements(IBeforeProfileImportEvent)
 
-
+@implementer(IProfileImportedEvent)
 class ProfileImportedEvent(BaseProfileImportEvent):
-
-    implements(IProfileImportedEvent)
+    pass
 
 
 @adapter(IProfileImportedEvent)

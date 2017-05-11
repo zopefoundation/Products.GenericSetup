@@ -15,7 +15,7 @@
 
 from OFS.PropertyManager import PropertyManager
 from OFS.SimpleItem import SimpleItem
-from zope.interface import implements
+from zope.interface import implementer
 
 
 class TestSimpleItem(SimpleItem):
@@ -33,8 +33,8 @@ four,five,six
 from Products.GenericSetup.interfaces import ICSVAware
 
 
+@implementer(ICSVAware)
 class TestCSVAware(SimpleItem):
-    implements(ICSVAware)
     _was_put = None
     _csv = KNOWN_CSV
 
@@ -53,8 +53,8 @@ description = %s
 from Products.GenericSetup.interfaces import IINIAware
 
 
+@implementer(IINIAware)
 class TestINIAware(SimpleItem):
-    implements(IINIAware)
     _was_put = None
     title = 'INI title'
     description = 'INI description'
@@ -75,8 +75,8 @@ Description: %s
 from Products.GenericSetup.interfaces import IDAVAware
 
 
+@implementer(IDAVAware)
 class TestDAVAware(SimpleItem):
-    implements(IDAVAware)
     _was_put = None
     title = 'DAV title'
     description = 'DAV description'

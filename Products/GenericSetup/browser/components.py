@@ -20,7 +20,7 @@ from Products.Five.component.interfaces import IObjectManagerSite
 from zope.component import adapts
 from zope.component import getAdapter
 from zope.component import getMultiAdapter
-from zope.interface import implements
+from zope.interface import implementer
 from zope.interface import Interface
 from zope.schema import Text
 from ZPublisher import HTTPRequest
@@ -38,10 +38,10 @@ class IComponentsSetupSchema(Interface):
         title=u'Settings')
 
 
+@implementer(IComponentsSetupSchema)
 class ComponentsSetupSchemaAdapter(object):
 
     adapts(IObjectManagerSite)
-    implements(IComponentsSetupSchema)
 
     def __init__(self, context):
         self.context = context

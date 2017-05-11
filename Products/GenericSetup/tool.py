@@ -28,7 +28,7 @@ from OFS.Image import File
 from Products.PageTemplates.PageTemplateFile import PageTemplateFile
 from persistent.mapping import PersistentMapping
 from zope import event
-from zope.interface import implements
+from zope.interface import implementer
 
 from Products.GenericSetup.context import DirectoryImportContext
 from Products.GenericSetup.context import SnapshotExportContext
@@ -165,12 +165,11 @@ def exportToolset(context):
     logger.info('Toolset exported.')
 
 
+@implementer(ISetupTool)
 class SetupTool(Folder):
 
     """ Profile-based site configuration manager.
     """
-
-    implements(ISetupTool)
 
     meta_type = 'Generic Setup Tool'
 

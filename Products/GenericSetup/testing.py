@@ -19,7 +19,7 @@ from xml.dom.minidom import parseString
 
 from OFS.interfaces import IItem
 from zope.component import getMultiAdapter
-from zope.interface import implements
+from zope.interface import implementer
 from zope.interface.verify import verifyClass
 from zope.testing.cleanup import cleanUp
 
@@ -41,12 +41,11 @@ class DummyLogger:
         self._messages.append((30, self._id, msg))
 
 
+@implementer(ISetupEnviron)
 class DummySetupEnviron(object):
 
     """Context for body im- and exporter.
     """
-
-    implements(ISetupEnviron)
 
     def __init__(self):
         self._notes = []

@@ -20,7 +20,7 @@ from tarfile import TarFile
 from AccessControl.SecurityManagement import newSecurityManager
 from AccessControl.users import UnrestrictedUser
 from Testing.ZopeTestCase import ZopeTestCase
-from zope.interface import implements
+from zope.interface import implementer
 
 from Products.GenericSetup.interfaces import IExportContext
 from Products.GenericSetup.interfaces import IImportContext
@@ -146,9 +146,8 @@ class TarballTester(DOMComparator):
         self._compareDOM(found, data)
 
 
+@implementer(IExportContext)
 class DummyExportContext:
-
-    implements(IExportContext)
 
     def __init__(self, site, tool=None):
         self._site = site
@@ -171,9 +170,8 @@ class DummyExportContext:
         self._wrote.append((filename, text, content_type))
 
 
+@implementer(IImportContext)
 class DummyImportContext:
-
-    implements(IImportContext)
 
     def __init__(self, site, purge=True, encoding=None, tool=None):
         self._site = site

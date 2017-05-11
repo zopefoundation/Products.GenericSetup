@@ -33,8 +33,8 @@ from OFS.interfaces import IOrderedContainer
 from Products.Five.utilities.interfaces import IMarkerInterfaces
 from zope.component import queryMultiAdapter
 from zope.interface import directlyProvides
-from zope.interface import implements
-from zope.interface import implementsOnly
+from zope.interface import implementer
+from zope.interface import implementer_only
 from ZPublisher.HTTPRequest import default_encoding
 
 from Products.GenericSetup.exceptions import BadRequest
@@ -409,12 +409,11 @@ class PrettyDocument(Document):
             node.writexml(writer, indent, addindent, newl)
 
 
+@implementer(INode)
 class NodeAdapterBase(object):
 
     """Node im- and exporter base.
     """
-
-    implements(INode)
 
     _LOGGER_ID = ''
 
@@ -447,12 +446,11 @@ class NodeAdapterBase(object):
         return val.lower() in ('true', 'yes', '1')
 
 
+@implementer_only(IBody)
 class BodyAdapterBase(NodeAdapterBase):
 
     """Body im- and exporter base.
     """
-
-    implementsOnly(IBody)
 
     def _exportSimpleNode(self):
         """Export the object as a DOM node.
@@ -485,12 +483,11 @@ class BodyAdapterBase(NodeAdapterBase):
     suffix = ''
 
 
+@implementer_only(IBody)
 class XMLAdapterBase(BodyAdapterBase):
 
     """XML im- and exporter base.
     """
-
-    implementsOnly(IBody)
 
     def _exportBody(self):
         """Export the object as a file body.
