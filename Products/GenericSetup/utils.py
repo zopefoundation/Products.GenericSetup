@@ -505,7 +505,7 @@ class XMLAdapterBase(BodyAdapterBase):
         """
         try:
             dom = parseString(body)
-        except ExpatError, e:
+        except ExpatError as e:
             filename = (self.filename or
                         '/'.join(self.context.getPhysicalPath()))
             raise ExpatError('%s: %s' % (filename, e))

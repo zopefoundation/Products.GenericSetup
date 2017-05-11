@@ -1356,7 +1356,7 @@ class SetupTool(Folder):
         if profile_id is not None and not ignore_dependencies:
             try:
                 chain = self.getProfileDependencyChain(profile_id)
-            except KeyError, e:
+            except KeyError as e:
                 logger = logging.getLogger('GenericSetup')
                 logger.error('Unknown step in dependency chain: %s' % str(e))
                 raise
