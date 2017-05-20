@@ -10,7 +10,7 @@ Breaking changes:
 
 New features:
 
-- *add item here*
+- added ``tox`` testing configuration
 
 Bug fixes:
 
