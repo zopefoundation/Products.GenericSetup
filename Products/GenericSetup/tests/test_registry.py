@@ -342,8 +342,7 @@ class ImportStepRegistryTests(
                               dependencies=('four', ))
 
         incomplete = registry.checkComplete()
-        self.assertEqual(len(incomplete), 1)
-        self.failUnless(('two', 'four') in incomplete)
+        self.assertTrue(('two', 'four') in incomplete)
 
     def test_generateXML_empty(self):
 
