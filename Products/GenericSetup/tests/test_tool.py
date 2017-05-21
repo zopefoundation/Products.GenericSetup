@@ -886,10 +886,10 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
 
         result = tool.runAllExportSteps()
 
-        self.assertEqual(len(result['steps']), 4)
-        self.assertEqual(result['steps'][1], 'step_registries')
-        self.assertEqual(result['messages']['step_registries'], None
-                         )
+        self.assertEqual(
+            sorted(result['steps']),
+            ['componentregistry', 'rolemap', 'step_registries', 'toolset'])
+        self.assertEqual(result['messages']['step_registries'], None)
 
     def test_runAllExportSteps_default(self):
         site = self._makeSite()
@@ -902,8 +902,9 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
 
         result = tool.runAllExportSteps()
 
-        self.assertEqual(len(result['steps']), 4)
-        self.assertEqual(result['steps'][1], 'step_registries')
+        self.assertEqual(sorted(result['steps']),
+                         ['componentregistry', 'rolemap',
+                          'step_registries', 'toolset'])
         self.assertEqual(result['messages']['step_registries'], None
                          )
         fileish = StringIO(result['tarball'])
@@ -936,14 +937,13 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
         result = tool.runAllExportSteps()
 
         self.assertEqual(len(result['steps']), 5)
+        self.assertEqual(sorted(result['steps']),
+                         ['componentregistry', 'properties', 'rolemap',
+                          'step_registries', 'toolset'])
 
-        self.failUnless('properties' in result['steps'])
-        self.assertEqual(result['messages']['properties'], 'Exported properties'
-                         )
-
-        self.failUnless('step_registries' in result['steps'])
-        self.assertEqual(result['messages']['step_registries'], None
-                         )
+        self.assertEqual(result['messages']['properties'],
+                         'Exported properties')
+        self.assertEqual(result['messages']['step_registries'], None)
 
         fileish = StringIO(result['tarball'])
 
@@ -1018,25 +1018,29 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
         self.assertTrue('Manager' in site.valid_roles())
 
     def test_createSnapshot_default(self):
-        _EXPECTED = [('import_steps.xml', _DEFAULT_STEP_REGISTRIES_IMPORT_XML),
-                     ('export_steps.xml', _DEFAULT_STEP_REGISTRIES_EXPORT_XML),
-                     ('rolemap.xml', 'dummy'),
-                     ('toolset.xml', 'dummy')]
+        _EXPECTED = [
+            ('import_steps.xml', _DEFAULT_STEP_REGISTRIES_IMPORT_XML),
+            ('export_steps.xml', _DEFAULT_STEP_REGISTRIES_EXPORT_XML),
+            ('rolemap.xml', 'dummy'),
+            ('toolset.xml', 'dummy'),
+        ]
 
         site = self._makeSite()
         site.setup_tool = self._makeOne('setup_tool')
         tool = site.setup_tool
         tool._import_registry.registerStep('foo', handler='foo.bar')
-        tool._export_registry.registerStep('step_registries',
-                                           'Products.GenericSetup.tool.exportStepRegistries',
-                                           'Export import / export steps.')
+        tool._export_registry.registerStep(
+            'step_registries',
+            'Products.GenericSetup.tool.exportStepRegistries',
+            'Export import / export steps.')
 
         self.assertEqual(len(tool.listSnapshotInfo()), 0)
 
         result = tool.createSnapshot('default')
 
-        self.assertEqual(len(result['steps']), 4)
-        self.assertEqual(result['steps'][1], 'step_registries')
+        self.assertEqual(
+            sorted(result['steps']),
+            ['componentregistry', 'rolemap', 'step_registries', 'toolset'])
         self.assertEqual(result['messages']['step_registries'], None
                          )
 
