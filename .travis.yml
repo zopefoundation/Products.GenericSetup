@@ -7,7 +7,7 @@ python:
   - "3.6"
 install:
     - pip install zc.buildout
-    - bin/buildout
+    - buildout
 script:
     - bin/test -pvc
 notifications:
