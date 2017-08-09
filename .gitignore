@@ -16,6 +16,10 @@ eggs
 local.cfg
 parts
 var
+/include
+/lib*
+pip-selfcheck.json
+/src
 
 # VirtualEnv on Windows:
 Include/

@@ -202,10 +202,10 @@ class importStep:
 
 import zope.schema
 import zope.configuration
-from upgrade import UpgradeStep
-from upgrade import UpgradeDepends
-from upgrade import _registerUpgradeStep
-from upgrade import _registerNestedUpgradeStep
+from Products.GenericSetup.upgrade import UpgradeStep
+from Products.GenericSetup.upgrade import UpgradeDepends
+from Products.GenericSetup.upgrade import _registerUpgradeStep
+from Products.GenericSetup.upgrade import _registerNestedUpgradeStep
 
 
 class IUpgradeStepsDirective(Interface):

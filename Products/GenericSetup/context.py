@@ -18,7 +18,12 @@ Wrappers representing the state of an import / export operation.
 import logging
 import os
 import time
-from StringIO import StringIO
+try:
+    # Python 3
+    from io import StringIO
+except ImportError:
+    # Python 2
+    from StringIO import StringIO
 from tarfile import DIRTYPE
 from tarfile import TarFile
 from tarfile import TarInfo
@@ -430,7 +435,7 @@ class TarballExportContext( BaseContext ):
                 info = TarInfo(path)
                 info.type = DIRTYPE
                 # tarfile.filemode(0755) == '-rwxr-xr-x'
-                info.mode = 0755
+                info.mode = 0o0755
                 info.mtime = time.time()
                 self._archive.addfile(info)
             parents.pop()

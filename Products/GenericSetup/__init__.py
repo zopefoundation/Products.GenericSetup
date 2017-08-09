@@ -30,12 +30,10 @@ security.declareProtected(ManagePortal, 'profile_registry')
 
 def initialize(context):
 
-    import tool
+    from Products.GenericSetup.tool import addSetupTool
 
     context.registerClass(tool.SetupTool,
-                          constructors=(#tool.addSetupToolForm,
-                                        tool.addSetupTool,
-                                        ),
+                          constructors=(addSetupTool,),
                           permissions=(ManagePortal,),
                           interfaces=None,
                           icon='www/tool.png',
