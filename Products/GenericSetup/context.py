@@ -17,13 +17,9 @@ Wrappers representing the state of an import / export operation.
 
 import logging
 import os
+import six
 import time
-try:
-    # Python 3
-    from io import StringIO
-except ImportError:
-    # Python 2
-    from StringIO import StringIO
+from six import StringIO
 from tarfile import DIRTYPE
 from tarfile import TarFile
 from tarfile import TarInfo
@@ -300,7 +296,7 @@ class DirectoryExportContext( BaseContext ):
     def writeDataFile( self, filename, text, content_type, subdir=None ):
         """ See IExportContext.
         """
-        if isinstance(text, unicode):
+        if six.PY2 and isinstance(text, unicode):
             raise ValueError("Unicode text is not supported, even if it only "
                              "contains ascii. Please encode your data. See "
                              "GS 1.7.0 changes for more")
@@ -444,7 +440,7 @@ class TarballExportContext( BaseContext ):
         if isinstance(text, str):
             stream = StringIO(text)
             info.size = len(text)
-        elif isinstance(text, unicode):
+        elif six.PY2 and isinstance(text, unicode):
             raise ValueError("Unicode text is not supported, even if it only "
                              "contains ascii. Please encode your data. See "
                              "GS 1.7.0 changes for more")
@@ -495,7 +491,7 @@ class SnapshotExportContext( BaseContext ):
             subdir = filename[:sep]
             filename = filename[sep+1:]
 
-        if isinstance(text, unicode):
+        if six.PY2 and isinstance(text, unicode):
             raise ValueError("Unicode text is not supported, even if it only "
                              "contains ascii. Please encode your data. See "
                              "GS 1.7.0 changes for more")
@@ -524,12 +520,12 @@ class SnapshotExportContext( BaseContext ):
     security.declarePrivate( '_createObjectByType' )
     def _createObjectByType( self, name, body, content_type ):
 
-        if isinstance( body, unicode ):
+        if six.PY2 and isinstance(body, unicode):
             encoding = self.getEncoding()
             if encoding is None:
                 body = body.encode()
             else:
-                body = body.encode( encoding )
+                body = body.encode(encoding)
 
         if name.endswith('.py'):
 

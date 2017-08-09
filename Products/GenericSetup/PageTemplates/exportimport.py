@@ -20,6 +20,8 @@ from Products.GenericSetup.utils import BodyAdapterBase
 
 from interfaces import IZopePageTemplate
 
+import six
+
 
 class ZopePageTemplateBodyAdapter(BodyAdapterBase):
 
@@ -32,7 +34,7 @@ class ZopePageTemplateBodyAdapter(BodyAdapterBase):
         """Export the object as a file body.
         """
         text = self.context.read()
-        if isinstance(text, unicode):
+        if isinstance(text, six.text_type):
             return text.encode('utf-8')
         return text
 

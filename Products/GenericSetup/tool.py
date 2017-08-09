@@ -15,6 +15,7 @@
 
 import logging
 import os
+import six
 import time
 import types
 from cgi import escape
@@ -869,7 +870,7 @@ class SetupTool(Folder):
         prefix = 'profile-'
         if profile_id.startswith(prefix):
             profile_id = profile_id[len(prefix):]
-        if isinstance(version, basestring):
+        if isinstance(version, six.string_types):
             version = tuple(version.split('.'))
         if not isinstance(self._profile_upgrade_versions, PersistentMapping):
             # migrate to persistent
@@ -1081,7 +1082,7 @@ class SetupTool(Folder):
             return
         if dest is not None:
             # Upgrade to a specific destination version, if found.
-            if isinstance(dest, basestring):
+            if isinstance(dest, six.string_types):
                 dest = tuple(dest.split('.'))
             if self.getLastVersionForProfile(profile_id) == dest:
                 generic_logger.warn('Profile %s is already at wanted '
@@ -1491,11 +1492,11 @@ class SetupTool(Folder):
             lines.append('')
 
         report = '\n'.join(lines)
-        if isinstance(report, unicode):
+        if six.PY2 and isinstance(report, unicode):
             report = report.encode('latin-1')
 
         # BBB: ObjectManager won't allow unicode IDS
-        if isinstance(basename, unicode):
+        if six.PY2 and isinstance(basename, unicode):
             basename = basename.encode('UTF-8')
 
         name = basename

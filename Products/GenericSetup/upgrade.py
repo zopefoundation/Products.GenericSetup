@@ -20,6 +20,8 @@ from BTrees.OOBTree import OOBTree
 from Products.GenericSetup.interfaces import IUpgradeSteps
 from Products.GenericSetup.registry import GlobalRegistryStorage
 
+import six
+
 
 def normalize_version(version):
     if isinstance(version, tuple):
@@ -125,12 +127,12 @@ class UpgradeEntity(object):
         self.title = title
         if source == '*':
             source = None
-        elif isinstance(source, basestring):
+        elif isinstance(source, six.string_types):
             source = tuple(source.split('.'))
         self.source = source
         if dest == '*':
             dest = None
-        elif isinstance(dest, basestring):
+        elif isinstance(dest, six.string_types):
             dest = tuple(dest.split('.'))
         self.dest = dest
         self.description = desc

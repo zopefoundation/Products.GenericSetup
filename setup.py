@@ -52,6 +52,7 @@ setup(
                     ],
     install_requires=[
         'setuptools',
+        'six',
         'Zope2 >= 4.0a3',
         'five.localsitemanager',
         'Products.MailHost',

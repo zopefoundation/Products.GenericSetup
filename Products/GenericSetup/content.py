@@ -13,10 +13,10 @@
 """Filesystem exporter / importer adapters.
 """
 
-from ConfigParser import ConfigParser
 from csv import reader
 from csv import writer
-from StringIO import StringIO
+from six import StringIO
+from six.configparser import ConfigParser
 
 from zope.component import queryAdapter
 from zope.interface import implementer

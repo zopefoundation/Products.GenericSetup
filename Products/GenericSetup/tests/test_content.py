@@ -938,13 +938,13 @@ def _makeFolder(id):
 
 def _parseCSV(text):
     from csv import reader
-    from StringIO import StringIO
+    from six import StringIO
     return [x for x in reader(StringIO(text))]
 
 
 def _parseINI(text):
-    from ConfigParser import ConfigParser
-    from StringIO import StringIO
+    from six.configParser import ConfigParser
+    from six import StringIO
     parser = ConfigParser()
     parser.readfp(StringIO(text))
     return parser
