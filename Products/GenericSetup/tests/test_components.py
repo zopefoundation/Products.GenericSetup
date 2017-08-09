@@ -30,15 +30,9 @@ from zope.component import queryAdapter
 from zope.component import queryUtility
 from zope.component import subscribers
 from zope.component.globalregistry import base
-try:
-    from zope.component.hooks import clearSite
-    from zope.component.hooks import setHooks
-    from zope.component.hooks import setSite
-except ImportError:
-    # BBB: for Zope < 2.13 (zope.component < 3.8)
-    from zope.site.hooks import clearSite
-    from zope.site.hooks import setHooks
-    from zope.site.hooks import setSite
+from zope.component.hooks import clearSite
+from zope.component.hooks import setHooks
+from zope.component.hooks import setSite
 from zope.interface import implementer
 from zope.interface import Interface
 

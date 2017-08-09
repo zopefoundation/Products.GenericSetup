@@ -15,9 +15,9 @@
 
 import unittest
 
-from conformance import ConformsToIINIAware
-from conformance import ConformsToIFilesystemExporter
-from conformance import ConformsToIFilesystemImporter
+from Products.GenericSetup.tests.conformance import ConformsToIINIAware
+from Products.GenericSetup.tests.conformance import ConformsToIFilesystemExporter
+from Products.GenericSetup.tests.conformance import ConformsToIFilesystemImporter
 
 
 class SimpleINIAwareTests(unittest.TestCase, ConformsToIINIAware):

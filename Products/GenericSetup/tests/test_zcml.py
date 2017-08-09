@@ -322,7 +322,7 @@ def test_registerUpgradeSteps(self):
       'Bar Upgrade Step 2'
       >>> str(step3['step'].import_profile)
       'profile-Products.CMFDefault:default'
-      >>> [str(step) for step in step3['step'].import_profile]
+      >>> step3['step'].import_profile
       ['baz', 'bat']
       >>> step3['step'].run_deps
       True

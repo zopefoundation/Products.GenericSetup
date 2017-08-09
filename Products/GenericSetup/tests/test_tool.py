@@ -16,7 +16,12 @@
 import unittest
 
 import os
-from StringIO import StringIO
+try:
+    # Python 3
+    from io import StringIO
+except ImportError:
+    # Python 2
+    from StringIO import StringIO
 
 from AccessControl.SecurityManagement import newSecurityManager
 from AccessControl.users import UnrestrictedUser
