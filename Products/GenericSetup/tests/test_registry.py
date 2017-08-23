@@ -12,7 +12,7 @@
 ##############################################################################
 """ Registry unit tests.
 """
-
+from __future__ import absolute_import
 import unittest
 
 from OFS.Folder import Folder
@@ -21,11 +21,11 @@ from Products.GenericSetup.tests.common import BaseRegistryTests
 from Products.GenericSetup import EXTENSION
 from zope.interface import Interface
 
-from conformance import ConformsToIStepRegistry
-from conformance import ConformsToIImportStepRegistry
-from conformance import ConformsToIExportStepRegistry
-from conformance import ConformsToIToolsetRegistry
-from conformance import ConformsToIProfileRegistry
+from .conformance import ConformsToIStepRegistry
+from .conformance import ConformsToIImportStepRegistry
+from .conformance import ConformsToIExportStepRegistry
+from .conformance import ConformsToIToolsetRegistry
+from .conformance import ConformsToIProfileRegistry
 
 
 #==============================================================================

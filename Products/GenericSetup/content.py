@@ -16,7 +16,7 @@
 from csv import reader
 from csv import writer
 from six import StringIO
-from six.configparser import ConfigParser
+from six.moves.configparser import ConfigParser
 
 from zope.component import queryAdapter
 from zope.interface import implementer

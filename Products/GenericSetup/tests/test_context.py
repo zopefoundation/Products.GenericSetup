@@ -13,7 +13,7 @@
 ##############################################################################
 """ Unit tests for import / export contexts.
 """
-
+from __future__ import absolute_import
 import unittest
 from Testing.ZopeTestCase import ZopeTestCase
 
@@ -34,13 +34,13 @@ from DateTime.DateTime import DateTime
 from OFS.Folder import Folder
 from OFS.Image import File
 
-from common import FilesystemTestBase
-from common import TarballTester
-from conformance import ConformsToISetupContext
-from conformance import ConformsToIImportContext
-from conformance import ConformsToIExportContext
-from conformance import ConformsToIChunkableExportContext
-from conformance import ConformsToIChunkableImportContext
+from .common import FilesystemTestBase
+from .common import TarballTester
+from .conformance import ConformsToISetupContext
+from .conformance import ConformsToIImportContext
+from .conformance import ConformsToIExportContext
+from .conformance import ConformsToIChunkableExportContext
+from .conformance import ConformsToIChunkableImportContext
 
 
 class DummySite(Folder):

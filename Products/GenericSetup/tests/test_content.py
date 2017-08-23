@@ -943,7 +943,7 @@ def _parseCSV(text):
 
 
 def _parseINI(text):
-    from six.configParser import ConfigParser
+    from six.moves.configparser import ConfigParser
     from six import StringIO
     parser = ConfigParser()
     parser.readfp(StringIO(text))
