@@ -53,8 +53,7 @@ class DummyPdataStreamIterator:
     pass
 
 
-class DirectoryImportContextTests(FilesystemTestBase, ConformsToISetupContext, ConformsToIImportContext, ConformsToIChunkableImportContext
-                                  ):
+class DirectoryImportContextTests(FilesystemTestBase, ConformsToISetupContext, ConformsToIImportContext, ConformsToIChunkableImportContext):
 
     _PROFILE_PATH = '/tmp/ICTTexts'
 
@@ -1129,8 +1128,8 @@ class SnapshotImportContextTests(ZopeTestCase, ConformsToISetupContext,
 
         SNAPSHOT_ID = 'ctorparms'
         ENCODING = 'latin-1'
-        site, tool, ctx = self._makeOne(SNAPSHOT_ID, encoding=ENCODING, should_purge=True
-                                        )
+        site, tool, ctx = self._makeOne(SNAPSHOT_ID, encoding=ENCODING, 
+                                        should_purge=True)
 
         self.assertEqual(ctx.getEncoding(), ENCODING)
         self.assertEqual(ctx.shouldPurge(), True)
