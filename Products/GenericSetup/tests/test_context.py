@@ -702,7 +702,7 @@ class TarballImportContextTests(ZopeTestCase, ConformsToISetupContext,
 
     def test_listDirectory_multiple(self):
 
-        from string import printable, uppercase
+        from string import printable, ascii_uppercase
 
         SUBDIR = 'subdir'
         FILENAME1 = 'nested.txt'
@@ -710,8 +710,8 @@ class TarballImportContextTests(ZopeTestCase, ConformsToISetupContext,
         FILENAME2 = 'another.txt'
         PATH2 = '%s/%s' % (SUBDIR, FILENAME2)
 
-        site, tool, ctx = self._makeOne({PATH1: printable, PATH2: uppercase
-                                         })
+        site, tool, ctx = self._makeOne({PATH1: printable, 
+                                         PATH2: ascii_uppercase})
 
         names = ctx.listDirectory(SUBDIR)
         self.assertEqual(len(names), 2)
@@ -720,7 +720,7 @@ class TarballImportContextTests(ZopeTestCase, ConformsToISetupContext,
 
     def test_listDirectory_skip(self):
 
-        from string import printable, uppercase
+        from string import printable, ascii_uppercase
 
         SUBDIR = 'subdir'
         FILENAME1 = 'nested.txt'
@@ -730,8 +730,9 @@ class TarballImportContextTests(ZopeTestCase, ConformsToISetupContext,
         FILENAME3 = 'another.bak'
         PATH3 = '%s/%s' % (SUBDIR, FILENAME3)
 
-        site, tool, ctx = self._makeOne({PATH1: printable, PATH2: uppercase, PATH3: 'xyz'
-                                         })
+        site, tool, ctx = self._makeOne({PATH1: printable,
+                                         PATH2: ascii_uppercase,
+                                         PATH3: 'xyz'})
 
         names = ctx.listDirectory(SUBDIR, skip=(FILENAME1,),
                                   skip_suffixes=('.bak',))
@@ -1362,7 +1363,7 @@ class SnapshotImportContextTests(ZopeTestCase, ConformsToISetupContext,
 
     def test_listDirectory_multiple(self):
 
-        from string import printable, uppercase
+        from string import printable, ascii_uppercase
 
         SNAPSHOT_ID = 'listDirectory_nested'
         SUBDIR = 'subdir'
@@ -1371,7 +1372,8 @@ class SnapshotImportContextTests(ZopeTestCase, ConformsToISetupContext,
 
         site, tool, ctx = self._makeOne(SNAPSHOT_ID)
         self._makeFile(tool, SNAPSHOT_ID, FILENAME1, printable, subdir=SUBDIR)
-        self._makeFile(tool, SNAPSHOT_ID, FILENAME2, uppercase, subdir=SUBDIR)
+        self._makeFile(tool, SNAPSHOT_ID, FILENAME2, ascii_uppercase, 
+                       subdir=SUBDIR)
 
         names = ctx.listDirectory(SUBDIR)
         self.assertEqual(len(names), 2)
@@ -1380,7 +1382,7 @@ class SnapshotImportContextTests(ZopeTestCase, ConformsToISetupContext,
 
     def test_listDirectory_skip(self):
 
-        from string import printable, uppercase
+        from string import printable, ascii_uppercase
 
         SNAPSHOT_ID = 'listDirectory_nested'
         SUBDIR = 'subdir'
@@ -1390,7 +1392,8 @@ class SnapshotImportContextTests(ZopeTestCase, ConformsToISetupContext,
 
         site, tool, ctx = self._makeOne(SNAPSHOT_ID)
         self._makeFile(tool, SNAPSHOT_ID, FILENAME1, printable, subdir=SUBDIR)
-        self._makeFile(tool, SNAPSHOT_ID, FILENAME2, uppercase, subdir=SUBDIR)
+        self._makeFile(tool, SNAPSHOT_ID, FILENAME2, ascii_uppercase, 
+                       subdir=SUBDIR)
         self._makeFile(tool, SNAPSHOT_ID, FILENAME3, 'abc', subdir=SUBDIR)
 
         names = ctx.listDirectory(SUBDIR, skip=(FILENAME1,),
