@@ -15,6 +15,7 @@ downloads
 eggs
 local.cfg
 parts
+src
 var
 
 # VirtualEnv on Windows:
