@@ -37,6 +37,7 @@ from zope.component import queryMultiAdapter
 from zope.interface import directlyProvides
 from zope.interface import implementer
 from zope.interface import implementer_only
+from ZPublisher.Converters import type_converters
 from ZPublisher.HTTPRequest import default_encoding
 
 from Products.GenericSetup.exceptions import BadRequest
@@ -658,29 +659,32 @@ class PropertyManagerHelpers(object):
             prop = self.context.getProperty(prop_id)
             if isinstance(prop, (tuple, list)):
                 for value in prop:
-                    if isinstance(value, str):
+                    if isinstance(value, six.binary_type):
                         value = value.decode(self._encoding)
                     child = self._doc.createElement('element')
                     child.setAttribute('value', value)
                     node.appendChild(child)
             else:
                 if prop_map.get('type') == 'boolean':
-                    prop = unicode(bool(prop))
+                    prop = six.u(str(bool(prop)))
                 elif prop_map.get('type') == 'date':
                     if prop.timezoneNaive():
-                        prop = unicode(prop).rsplit(' ', 1)[0]
+                        prop = six.u(str(prop).rsplit(None, 1)[0])
                     else:
-                        prop = unicode(prop)
-                elif isinstance(prop, str):
+                        prop = six.u(str(prop))
+                elif isinstance(prop, six.binary_type):
                     prop = prop.decode(self._encoding)
+                elif isinstance(prop, (six.integer_types, float)):
+                    prop = six.u(str(prop))
                 elif not isinstance(prop, six.string_types):
-                    prop = unicode(prop)
+                    prop = prop.decode(self._encoding)
+
                 child = self._doc.createTextNode(prop)
                 node.appendChild(child)
 
             if 'd' in prop_map.get('mode', 'wd') and not prop_id == 'title':
                 prop_type = prop_map.get('type', 'string')
-                node.setAttribute('type', unicode(prop_type))
+                node.setAttribute('type', six.u(prop_type))
                 select_variable = prop_map.get('select_variable', None)
                 if select_variable is not None:
                     node.setAttribute('select_variable', select_variable)
@@ -780,6 +784,10 @@ class PropertyManagerHelpers(object):
                                             p not in remove_elements]) +
                                   tuple(prop_value))
 
+            if isinstance(prop_value, (six.binary_type, str)):
+                prop_type = obj.getPropertyType(prop_id) or 'string'
+                if prop_type in type_converters:
+                    prop_value = type_converters[prop_type](prop_value)
             obj._updateProperty(prop_id, prop_value)
 
 
