@@ -13,8 +13,10 @@
 """ Classes:  SetupTool
 """
 
+import functools
 import logging
 import os
+import six
 import time
 import types
 from cgi import escape
@@ -712,7 +714,8 @@ class SetupTool(Folder):
                 base.append(info)
             else:
                 ext.append(info)
-        ext.sort(lambda x, y: cmp(x['id'], y['id']))
+        sort_func = functools.cmp_to_key(lambda x, y: cmp(x['id'], y['id']))
+        ext.sort(key=sort_func)
         return base + ext
 
     security.declareProtected(ManagePortal, 'listContextInfos')

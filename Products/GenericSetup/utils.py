@@ -14,8 +14,10 @@
 """
 
 import os
+import six
 import sys
 from cgi import escape
+from functools import cmp_to_key
 from inspect import getdoc
 from logging import getLogger
 from xml.dom.minidom import _nssplit
@@ -528,7 +530,8 @@ class ObjectManagerHelpers(object):
         objects = self.context.objectValues()
         if not IOrderedContainer.providedBy(self.context):
             objects = list(objects)
-            objects.sort(lambda x, y: cmp(x.getId(), y.getId()))
+            sort_func = cmp_to_key(lambda x, y: cmp(x.getId(), y.getId()))
+            objects.sort(key=sort_func)
         for obj in objects:
             exporter = queryMultiAdapter((obj, self.environ), INode)
             if exporter:

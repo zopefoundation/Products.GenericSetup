@@ -13,6 +13,8 @@
 """ZCatalog export / import support.
 """
 
+from functools import cmp_to_key
+
 from zope.component import adapts
 from zope.component import queryMultiAdapter
 
@@ -73,7 +75,8 @@ class ZCatalogXMLAdapter(XMLAdapterBase, ObjectManagerHelpers,
     def _extractIndexes(self):
         fragment = self._doc.createDocumentFragment()
         indexes = self.context.getIndexObjects()[:]
-        indexes.sort(lambda x,y: cmp(x.getId(), y.getId()))
+        sort_func = cmp_to_key(lambda x, y: cmp(x.getId(), y.getId()))
+        indexes.sort(key=sort_func)
         for idx in indexes:
             exporter = queryMultiAdapter((idx, self.environ), INode)
             if exporter:
