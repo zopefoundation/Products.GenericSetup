@@ -17,8 +17,8 @@ Wrappers representing the state of an import / export operation.
 
 import logging
 import os
+from six.moves import cStringIO
 import time
-from StringIO import StringIO
 from tarfile import DIRTYPE
 from tarfile import TarFile
 from tarfile import TarInfo
@@ -314,7 +314,7 @@ class TarballImportContext( BaseContext ):
     def __init__( self, tool, archive_bits, encoding=None,
                   should_purge=False ):
         BaseContext.__init__( self, tool, encoding )
-        self._archive_stream = StringIO(archive_bits)
+        self._archive_stream = cStringIO(archive_bits)
         self._archive = TarFile.open( 'foo.bar', 'r:gz'
                                     , self._archive_stream )
         self._should_purge = bool( should_purge )
@@ -411,7 +411,7 @@ class TarballExportContext( BaseContext ):
         archive_name = ( 'setup_tool-%4d%02d%02d%02d%02d%02d.tar.gz'
                        % timestamp[:6] )
 
-        self._archive_stream = StringIO()
+        self._archive_stream = cStringIO()
         self._archive_filename = archive_name
         self._archive = TarFile.open( archive_name, 'w:gz'
                                     , self._archive_stream )
@@ -437,7 +437,7 @@ class TarballExportContext( BaseContext ):
 
         info = TarInfo(filename)
         if isinstance(text, str):
-            stream = StringIO(text)
+            stream = cStringIO(text)
             info.size = len(text)
         elif isinstance(text, unicode):
             raise ValueError("Unicode text is not supported, even if it only "

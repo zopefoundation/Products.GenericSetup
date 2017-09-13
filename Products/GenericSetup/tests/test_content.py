@@ -15,9 +15,9 @@
 
 import unittest
 
-from conformance import ConformsToIINIAware
-from conformance import ConformsToIFilesystemExporter
-from conformance import ConformsToIFilesystemImporter
+from .conformance import ConformsToIINIAware
+from .conformance import ConformsToIFilesystemExporter
+from .conformance import ConformsToIFilesystemImporter
 
 
 class SimpleINIAwareTests(unittest.TestCase, ConformsToIINIAware):
@@ -938,15 +938,15 @@ def _makeFolder(id):
 
 def _parseCSV(text):
     from csv import reader
-    from StringIO import StringIO
-    return [x for x in reader(StringIO(text))]
+    from six.moves import cStringIO
+    return [x for x in reader(cStringIO(text))]
 
 
 def _parseINI(text):
-    from ConfigParser import ConfigParser
-    from StringIO import StringIO
+    from six.moves.configparser import ConfigParser
+    from six.moves import cStringIO
     parser = ConfigParser()
-    parser.readfp(StringIO(text))
+    parser.readfp(cStringIO(text))
     return parser
 
 

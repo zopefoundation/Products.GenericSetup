@@ -19,9 +19,9 @@ from Testing.ZopeTestCase import ZopeTestCase
 
 import logging
 import os
+from six.moves import cStringIO
 import tempfile
 import time
-from StringIO import StringIO
 from tarfile import TarFile
 from tarfile import TarInfo
 
@@ -29,13 +29,13 @@ from DateTime.DateTime import DateTime
 from OFS.Folder import Folder
 from OFS.Image import File
 
-from common import FilesystemTestBase
-from common import TarballTester
-from conformance import ConformsToISetupContext
-from conformance import ConformsToIImportContext
-from conformance import ConformsToIExportContext
-from conformance import ConformsToIChunkableExportContext
-from conformance import ConformsToIChunkableImportContext
+from .common import FilesystemTestBase
+from .common import TarballTester
+from .conformance import ConformsToISetupContext
+from .conformance import ConformsToIImportContext
+from .conformance import ConformsToIExportContext
+from .conformance import ConformsToIChunkableExportContext
+from .conformance import ConformsToIChunkableImportContext
 
 
 class DummySite(Folder):
@@ -447,11 +447,11 @@ class TarballImportContextTests(ZopeTestCase, ConformsToISetupContext,
 
     def _makeOne(self, file_dict={}, mod_time=None, *args, **kw):
 
-        archive_stream = StringIO()
+        archive_stream = cStringIO()
         archive = TarFile.open('test.tar.gz', 'w:gz', archive_stream)
 
         def _addOneMember(path, data, modtime):
-            stream = StringIO(v)
+            stream = cStringIO(v)
             info = TarInfo(k)
             info.size = len(v)
             info.mtime = modtime
@@ -778,7 +778,7 @@ class TarballExportContextTests(ZopeTestCase, ConformsToISetupContext,
 
         ctx.writeDataFile('foo.txt', printable, 'text/plain')
 
-        fileish = StringIO(ctx.getArchive())
+        fileish = cStringIO(ctx.getArchive())
 
         self._verifyTarballContents(fileish, ['foo.txt'], now)
         self._verifyTarballEntry(fileish, 'foo.txt', printable)
@@ -807,7 +807,7 @@ class TarballExportContextTests(ZopeTestCase, ConformsToISetupContext,
         ctx.writeDataFile('foo.txt', printable, 'text/plain')
         ctx.writeDataFile('bar.txt', digits, 'text/plain')
 
-        fileish = StringIO(ctx.getArchive())
+        fileish = cStringIO(ctx.getArchive())
 
         self._verifyTarballContents(fileish, ['foo.txt', 'bar.txt'])
         self._verifyTarballEntry(fileish, 'foo.txt', printable)
@@ -828,7 +828,7 @@ class TarballExportContextTests(ZopeTestCase, ConformsToISetupContext,
         pData.size = len(printable)
         ctx.writeDataFile('foo.txt', pData, 'text/plain')
 
-        fileish = StringIO(ctx.getArchive())
+        fileish = cStringIO(ctx.getArchive())
 
         self._verifyTarballContents(fileish, ['foo.txt'])
         self._verifyTarballEntry(fileish, 'foo.txt', printable)
@@ -844,7 +844,7 @@ class TarballExportContextTests(ZopeTestCase, ConformsToISetupContext,
         ctx.writeDataFile('foo.txt', printable, 'text/plain')
         ctx.writeDataFile('bar/baz.txt', digits, 'text/plain')
 
-        fileish = StringIO(ctx.getArchive())
+        fileish = cStringIO(ctx.getArchive())
 
         self._verifyTarballContents(fileish,
                                     ['foo.txt', 'bar', 'bar/baz.txt'])

@@ -341,8 +341,7 @@ class _Element(Element):
 
         # move 'name', 'meta_type' and 'title' to the top, sort the rest
         attrs = self._get_attributes()
-        a_names = attrs.keys()
-        a_names.sort()
+        a_names = sorted(attrs.keys())
         if 'title' in a_names:
             a_names.remove('title')
             a_names.insert(0, 'title')

@@ -18,9 +18,9 @@ import unittest
 from OFS.Folder import Folder
 
 from Products.GenericSetup.testing import ExportImportZCMLLayer
-from common import BaseRegistryTests
-from common import DummyExportContext
-from common import DummyImportContext
+from .common import BaseRegistryTests
+from .common import DummyExportContext
+from .common import DummyImportContext
 
 
 class RolemapExportConfiguratorTests(BaseRegistryTests):

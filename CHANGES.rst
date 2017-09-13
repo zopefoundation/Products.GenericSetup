@@ -6,7 +6,7 @@ Changelog
 
 Breaking changes:
 
-- *add item here*
+- Require Zope 4.0a6 as minimum supported Zope version.
 
 New features:
 

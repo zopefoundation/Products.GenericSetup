@@ -52,16 +52,16 @@ class DOMComparator:
                         if zipped[i][0] != zipped[i][1]
                         ]
                 # Ugly, but it will do.
-                print 'Diff:'
-                print diff
-                print
+                print('Diff:')
+                print(diff)
+                print()
 
-            print 'Found:'
-            print fxml
-            print
-            print 'Expected:'
-            print exml
-            print
+            print('Found:')
+            print(fxml)
+            print()
+            print('Expected:')
+            print(exml)
+            print()
 
         self.assertEqual(found.toxml(), expected.toxml())
 
