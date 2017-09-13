@@ -131,7 +131,7 @@ class ZCatalogXMLAdapter(XMLAdapterBase, ObjectManagerHelpers,
         return fragment
 
     def _purgeColumns(self):
-        for col in self.context.schema()[:]:
+        for col in list(self.context.schema()):
             self.context.delColumn(col)
 
     def _initColumns(self, node):
@@ -141,8 +141,8 @@ class ZCatalogXMLAdapter(XMLAdapterBase, ObjectManagerHelpers,
             col = str(child.getAttribute('value'))
             if child.hasAttribute('remove'):
                 # Remove the column if it is there
-                if col in self.context.schema()[:]:
+                if col in list(self.context.schema()):
                     self.context.delColumn(col)
                 continue
-            if col not in self.context.schema()[:]:
+            if col not in list(self.context.schema()):
                 self.context.addColumn(col)

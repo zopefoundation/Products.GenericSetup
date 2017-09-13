@@ -67,7 +67,7 @@ def importRolemap( context ):
 
         if context.shouldPurge():
 
-            items = site.__dict__.items()
+            items = list(site.__dict__.items())
 
             for k, v in items: # XXX: WAAA
 
