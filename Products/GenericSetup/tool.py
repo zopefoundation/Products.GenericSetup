@@ -359,7 +359,7 @@ class SetupTool(Folder):
             message = self._doRunImportStep(step, context)
             messages[step] = message or ''
 
-        message_list = filter(None, [message])
+        message_list = list(filter(None, [message]))
         message_list.extend([ '%s: %s' % x[1:] for x in context.listNotes() ])
         messages[step_id] = '\n'.join(message_list)
 
@@ -1433,7 +1433,7 @@ class SetupTool(Folder):
                     message = 'step skipped'
                 else:
                     message = self._doRunImportStep(step, context)
-                message_list = filter(None, [message])
+                message_list = list(filter(None, [message]))
                 message_list.extend([ '%s: %s' % x[1:]
                                       for x in context.listNotes() ])
                 messages[step] = '\n'.join(message_list)
