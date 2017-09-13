@@ -28,9 +28,9 @@ BLANKS_REGEX = re.compile( r'^\s*$' )
 def unidiff( a
            , b
            , filename_a='original'
-           , timestamp_a=None
+           , timestamp_a=''
            , filename_b='modified'
-           , timestamp_b=None
+           , timestamp_b=''
            , ignore_blanks=False
            ):
     r"""Compare two sequences of lines; generate the resulting delta.
