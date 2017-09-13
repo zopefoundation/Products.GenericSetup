@@ -771,7 +771,7 @@ class TarballExportContextTests(ZopeTestCase, ConformsToISetupContext,
     def test_writeDataFile_simple(self):
 
         from string import printable
-        now = long(time.time())
+        now = int(time.time())
 
         site = DummySite('site').__of__(self.app)
         ctx = self._getTargetClass()(site)
