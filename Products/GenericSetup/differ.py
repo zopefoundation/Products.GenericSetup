@@ -15,6 +15,7 @@
 
 from difflib import unified_diff
 import re
+import six
 
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from App.class_init import InitializeClass
@@ -54,10 +55,10 @@ def unidiff( a
         header, as floating point values since the epoch.
 
     """
-    if isinstance( a, basestring ):
+    if isinstance( a, six.string_types ):
         a = a.splitlines()
 
-    if isinstance( b, basestring ):
+    if isinstance( b, six.string_types ):
         b = b.splitlines()
 
     if ignore_blanks:

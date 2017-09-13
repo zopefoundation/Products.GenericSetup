@@ -872,7 +872,7 @@ class SetupTool(Folder):
         prefix = 'profile-'
         if profile_id.startswith(prefix):
             profile_id = profile_id[len(prefix):]
-        if isinstance(version, basestring):
+        if isinstance(version, six.string_types):
             version = tuple(version.split('.'))
         if not isinstance(self._profile_upgrade_versions, PersistentMapping):
             # migrate to persistent
@@ -1084,7 +1084,7 @@ class SetupTool(Folder):
             return
         if dest is not None:
             # Upgrade to a specific destination version, if found.
-            if isinstance(dest, basestring):
+            if isinstance(dest, six.string_types):
                 dest = tuple(dest.split('.'))
             if self.getLastVersionForProfile(profile_id) == dest:
                 generic_logger.warn('Profile %s is already at wanted '

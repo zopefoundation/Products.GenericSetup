@@ -58,7 +58,7 @@ I18NURI = 'http://xml.zope.org/namespaces/i18n'
 
 def _getDottedName(named):
 
-    if isinstance(named, basestring):
+    if isinstance(named, six.string_types):
         return str(named)
 
     try:
@@ -218,7 +218,7 @@ class ImportConfiguratorBase(Implicit):
             key = v.get(KEY, k)
 
             if DEFAULT in v and not key in info:
-                if isinstance(v[DEFAULT], basestring):
+                if isinstance(v[DEFAULT], six.string_types):
                     info[key] = v[DEFAULT] % info
                 else:
                     info[key] = v[DEFAULT]
@@ -673,7 +673,7 @@ class PropertyManagerHelpers(object):
                         prop = unicode(prop)
                 elif isinstance(prop, str):
                     prop = prop.decode(self._encoding)
-                elif not isinstance(prop, basestring):
+                elif not isinstance(prop, six.string_types):
                     prop = unicode(prop)
                 child = self._doc.createTextNode(prop)
                 node.appendChild(child)
