@@ -1,6 +1,7 @@
 <configure
     xmlns="http://namespaces.zope.org/zope"
     xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
+    xmlns:meta="http://namespaces.zope.org/meta"
     xmlns:zcml="http://namespaces.zope.org/zcml"
     i18n_domain="genericsetup">
 
@@ -22,6 +23,7 @@
       zcml:condition="installed Products.MailHost"
       package="Products.MailHost"
       />
+  <meta:provides feature="moved_mailhost"/>
 
   <adapter
       factory=".content.CSVAwareFileAdapter"
