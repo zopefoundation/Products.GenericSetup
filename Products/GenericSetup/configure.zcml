@@ -6,8 +6,6 @@
 
   <include package=".browser"/>
 
-  <include package=".MailHost"/>
-
   <include package=".OFSP"/>
 
   <include package=".PluginIndexes"/>
@@ -19,6 +17,11 @@
   <include package=".ZCatalog"/>
 
   <include package=".ZCTextIndex"/>
+
+  <include
+      zcml:condition="installed Products.MailHost"
+      package="Products.MailHost"
+      />
 
   <adapter
       factory=".content.CSVAwareFileAdapter"
