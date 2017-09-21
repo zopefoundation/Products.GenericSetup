@@ -55,7 +55,6 @@ setup(
         'six',
         'Zope2 >= 4.0a6',
         'five.localsitemanager',
-        'Products.MailHost',
         'Products.PythonScripts',
         'Products.ZCatalog',
         ],
