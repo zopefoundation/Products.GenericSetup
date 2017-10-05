@@ -1,7 +1,7 @@
 ``Products.GenericSetup``
 =========================
 
-.. image:: https://travis-ci.org/zopefoundation/Products.GenericSetup.png?branch=master
+.. image:: https://travis-ci.org/zopefoundation/Products.GenericSetup.svg?branch=master
         :target: https://travis-ci.org/zopefoundation/Products.GenericSetup
 
 This product provides a mini-framework for expressing the configured
