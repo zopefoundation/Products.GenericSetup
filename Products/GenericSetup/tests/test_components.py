@@ -166,7 +166,7 @@ class DummyBlacklist(object):
 
 
 _COMPONENTS_BODY = """\
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="utf-8"?>
 <componentregistry>
  <adapters>
   <adapter factory="Products.GenericSetup.tests.test_components.DummyAdapter"
@@ -203,7 +203,7 @@ _COMPONENTS_BODY = """\
 """
 
 _REMOVE_IMPORT = """\
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="utf-8"?>
 <componentregistry>
  <adapters>
   <adapter factory="Products.GenericSetup.tests.test_components.DummyAdapter"

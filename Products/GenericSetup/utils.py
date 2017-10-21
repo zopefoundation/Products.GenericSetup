@@ -361,7 +361,7 @@ class _Element(Element):
             if a_value is None:
                 a_value = ""
             else:
-                a_value = escape(a_value.encode('utf-8'), quote=True)
+                a_value = escape(a_value, quote=True)
 
             wrapper.queue(' %s="%s"' % (a_name, a_value))
 
@@ -369,7 +369,7 @@ class _Element(Element):
             wrapper.queue('>')
             for node in self.childNodes:
                 if node.nodeType == Node.TEXT_NODE:
-                    data = escape(node.data.encode('utf-8'))
+                    data = escape(node.data)
                     textlines = data.splitlines()
                     if textlines:
                         wrapper.queue(textlines.pop(0))
@@ -409,6 +409,10 @@ class PrettyDocument(Document):
             writer.write('<?xml version="1.0" encoding="%s"?>\n' % encoding)
         for node in self.childNodes:
             node.writexml(writer, indent, addindent, newl)
+
+    def toprettyxml(self, indent='\t', newl='\n', encoding='utf-8'):
+        # `super` does not work here in python 2.7, yuck!
+        return Document.toprettyxml(self, indent, newl, encoding)
 
 
 @implementer(INode)

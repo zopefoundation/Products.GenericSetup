@@ -45,7 +45,7 @@ _TESTED_PROPERTIES = (
 )
 
 _EMPTY_PROPERTY_EXPORT = """\
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="utf-8"?>
 <dummy>
  <property name="foo_boolean" type="boolean">False</property>
  <property name="foo_date" type="date">1970/01/01 00:00:00 UTC</property>
@@ -70,7 +70,7 @@ _EMPTY_PROPERTY_EXPORT = """\
 """
 
 _NORMAL_PROPERTY_EXPORT = u"""\
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="utf-8"?>
 <dummy>
  <property name="foo_boolean" type="boolean">True</property>
  <property name="foo_date" type="date">2000/01/01 00:00:00 UTC</property>
@@ -106,7 +106,7 @@ _NORMAL_PROPERTY_EXPORT = u"""\
 """.encode('utf-8')
 
 _FIXED_PROPERTY_EXPORT = u"""\
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="utf-8"?>
 <dummy>
  <property name="foo_boolean">True</property>
  <property name="foo_date">2000/01/01 00:00:00 UTC</property>
@@ -140,7 +140,7 @@ _FIXED_PROPERTY_EXPORT = u"""\
 """.encode('utf-8')
 
 _SPECIAL_IMPORT = """\
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="utf-8"?>
 <dummy>
  <!-- ignore comment, import 0 as False -->
  <property name="foo_boolean0" type="boolean">0</property>
@@ -148,7 +148,7 @@ _SPECIAL_IMPORT = """\
 """
 
 _I18N_IMPORT = """\
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="utf-8"?>
 <dummy xmlns:i18n="http://xml.zope.org/namespaces/i18n"
    i18n:domain="dummy_domain">
  <property name="foo_string" i18n:translate="">Foo String</property>
@@ -156,7 +156,7 @@ _I18N_IMPORT = """\
 """
 
 _NOPURGE_IMPORT = """\
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="utf-8"?>
 <dummy>
  <property name="lines1">
   <element value="Foo"/>
@@ -173,7 +173,7 @@ _NOPURGE_IMPORT = """\
 </dummy>
 """
 _REMOVE_ELEMENT_IMPORT = """\
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="utf-8"?>
 <dummy>
  <property name="lines1" purge="False">
    <element value="Foo" remove="True" />
@@ -186,21 +186,21 @@ _REMOVE_ELEMENT_IMPORT = """\
 """
 
 _NORMAL_MARKER_EXPORT = """\
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="utf-8"?>
 <dummy>
  <marker name="Products.GenericSetup.testing.IDummyMarker"/>
 </dummy>
 """
 
 _ADD_IMPORT = """\
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="utf-8"?>
 <dummy>
  <object name="history" meta_type="Generic Setup Tool"/>
  <object name="future" meta_type="Generic Setup Tool"/>
 </dummy>
 """
 _REMOVE_IMPORT = """\
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="utf-8"?>
 <dummy>
  <object name="history" remove="True"/>
  <object name="future" remove="False"/>
@@ -208,7 +208,7 @@ _REMOVE_IMPORT = """\
 """
 
 _ADD_PROPERTY_IMPORT = """\
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="utf-8"?>
 <dummy>
  <property name="line1" type="string">Line 1</property>
  <property name="line2" type="string">Line 2</property>
@@ -216,7 +216,7 @@ _ADD_PROPERTY_IMPORT = """\
 """
 
 _REMOVE_PROPERTY_IMPORT = """\
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="utf-8"?>
 <dummy>
  <property name="line1" remove="True"/>
  <property name="line2" type="string" remove="False"/>
@@ -730,7 +730,7 @@ class PrettyDocumentTests(unittest.TestCase):
     def test_attr_quoting(self):
         from Products.GenericSetup.utils import PrettyDocument
         original = 'baz &nbsp;<bar>&"\''
-        expected = ('<?xml version="1.0"?>\n'
+        expected = ('<?xml version="1.0" encoding="utf-8"?>\n'
                     '<doc bar="" foo="baz '
                     '&amp;nbsp;&lt;bar&gt;&amp;&quot;\'"/>\n')
 
@@ -747,7 +747,7 @@ class PrettyDocumentTests(unittest.TestCase):
     def test_text_quoting(self):
         from Products.GenericSetup.utils import PrettyDocument
         original = 'goo &nbsp;<hmm>&"\''
-        expected = ('<?xml version="1.0"?>\n'
+        expected = ('<?xml version="1.0" encoding="utf-8"?>\n'
                     '<doc>goo &amp;nbsp;&lt;hmm&gt;&amp;"\'</doc>\n')
 
         doc = PrettyDocument()

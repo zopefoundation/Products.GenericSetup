@@ -32,7 +32,7 @@ class _extra:
 
 
 _CATALOG_BODY = """\
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="utf-8"?>
 <object name="foo_catalog" meta_type="ZCatalog">
  <property name="title"></property>
  <object name="foo_plexicon" meta_type="ZCTextIndex Lexicon">
@@ -67,7 +67,7 @@ _CATALOG_BODY = """\
 """
 
 _CATALOG_UPDATE_BODY = """\
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="utf-8"?>
 <object name="foo_catalog">
  <object name="old_plexicon" remove="True"/>
  <index name="foo_text" remove="True"/>
