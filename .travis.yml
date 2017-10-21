@@ -9,6 +9,8 @@ python:
   - "3.6"
 install:
     - pip install zc.buildout
+# six version should be the same as the one in Zope versions file
+    - pip install six==1.10.0
     - buildout
 script:
     - bin/test -pvc
