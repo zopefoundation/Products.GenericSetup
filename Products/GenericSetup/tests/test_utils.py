@@ -497,9 +497,9 @@ class PropertyManagerHelpersTests(unittest.TestCase):
         obj.manage_addProperty('lines3', ('Foo', 'Gee'), 'lines')
         helpers._initProperties(node)
 
-        self.assertEquals(obj.getProperty('lines1'), ('Foo', 'Bar'))
-        self.assertEquals(obj.getProperty('lines2'), ('Foo', 'Bar'))
-        self.assertEquals(obj.getProperty('lines3'), ('Gee', 'Foo', 'Bar'))
+        self.assertEquals(obj.getProperty('lines1'), (b'Foo', b'Bar'))
+        self.assertEquals(obj.getProperty('lines2'), (b'Foo', b'Bar'))
+        self.assertEquals(obj.getProperty('lines3'), (b'Gee', b'Foo', b'Bar'))
 
     def test__initProperties_nopurge_extension(self):
         helpers = self._makeOne()
@@ -512,9 +512,9 @@ class PropertyManagerHelpersTests(unittest.TestCase):
         obj.manage_addProperty('lines3', ('Foo', 'Gee'), 'lines')
         helpers._initProperties(node)
 
-        self.assertEquals(obj.getProperty('lines1'), ('Foo', 'Bar'))
-        self.assertEquals(obj.getProperty('lines2'), ('Foo', 'Bar'))
-        self.assertEquals(obj.getProperty('lines3'), ('Gee', 'Foo', 'Bar'))
+        self.assertEquals(obj.getProperty('lines1'), (b'Foo', b'Bar'))
+        self.assertEquals(obj.getProperty('lines2'), (b'Foo', b'Bar'))
+        self.assertEquals(obj.getProperty('lines3'), (b'Gee', b'Foo', b'Bar'))
 
     def test_initProperties_remove_elements(self):
         helpers = self._makeOne()
@@ -526,8 +526,8 @@ class PropertyManagerHelpersTests(unittest.TestCase):
         obj.manage_addProperty('lines2', ('Foo', 'Gee'), 'lines')
         helpers._initProperties(node)
 
-        self.assertEquals(obj.getProperty('lines1'), ('Gee', 'Bar'))
-        self.assertEquals(obj.getProperty('lines2'), ('Gee',))
+        self.assertEquals(obj.getProperty('lines1'), (b'Gee', b'Bar'))
+        self.assertEquals(obj.getProperty('lines2'), (b'Gee',))
 
     def test_initProperties_remove_properties(self):
         helpers = self._makeOne()
