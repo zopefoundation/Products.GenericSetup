@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 ##############################################################################
 #
 # Copyright (c) 2004 Zope Foundation and Contributors.
@@ -13,6 +15,7 @@
 """ GenericSetup.utils unit tests
 """
 
+import six
 import unittest
 
 from DateTime.DateTime import DateTime
@@ -354,8 +357,12 @@ class PropertyManagerHelpersTests(unittest.TestCase):
         obj._updateProperty('foo_date', '2000/01/01 00:00:00 UTC')
         obj._updateProperty('foo_float', '1.1')
         obj._updateProperty('foo_int', '1')
-        obj._updateProperty('foo_lines',
-                            u'Foo\nLines\n\xfcbrigens'.encode('utf-8'))
+        if six.PY2:
+            obj._updateProperty('foo_lines',
+                                u'Foo\nLines\n\xfcbrigens'.encode('utf-8'))
+        else:
+            obj._updateProperty('foo_lines',
+                                'Foo\nLines\nübrigens')
         obj._updateProperty('foo_long', '1')
         obj._updateProperty('foo_string', 'Foo String')
         obj._updateProperty('foo_text', 'Foo\nText')
