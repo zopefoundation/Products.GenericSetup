@@ -15,6 +15,7 @@
 
 from difflib import unified_diff
 import re
+import six
 
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from App.class_init import InitializeClass
@@ -27,9 +28,9 @@ BLANKS_REGEX = re.compile( r'^\s*$' )
 def unidiff( a
            , b
            , filename_a='original'
-           , timestamp_a=None
+           , timestamp_a=''
            , filename_b='modified'
-           , timestamp_b=None
+           , timestamp_b=''
            , ignore_blanks=False
            ):
     r"""Compare two sequences of lines; generate the resulting delta.
@@ -54,10 +55,10 @@ def unidiff( a
         header, as floating point values since the epoch.
 
     """
-    if isinstance( a, basestring ):
+    if isinstance( a, six.string_types ):
         a = a.splitlines()
 
-    if isinstance( b, basestring ):
+    if isinstance( b, six.string_types ):
         b = b.splitlines()
 
     if ignore_blanks:

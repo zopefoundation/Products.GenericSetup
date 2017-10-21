@@ -292,8 +292,7 @@ class BaseStepRegistry(Implicit):
 
         o Mappings will be ordered alphabetically.
         """
-        step_ids = self.listSteps()
-        step_ids.sort()
+        step_ids = sorted(self.listSteps())
         return [ self.getStepMetadata(x) for x in step_ids ]
 
     security.declareProtected(ManagePortal, 'generateXML')

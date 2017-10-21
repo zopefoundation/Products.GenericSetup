@@ -16,7 +16,7 @@
 import unittest
 
 import os
-from six import StringIO
+from six.moves import cStringIO
 
 from AccessControl.SecurityManagement import newSecurityManager
 from AccessControl.users import UnrestrictedUser
@@ -870,7 +870,7 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
         self.assertEqual(result['steps'][0], 'step_registries')
         self.assertEqual(result['messages']['step_registries'], None
                          )
-        fileish = StringIO(result['tarball'])
+        fileish = cStringIO(result['tarball'])
 
         self._verifyTarballContents(fileish, ['import_steps.xml', 'export_steps.xml'
                                               ])
@@ -907,7 +907,7 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
                           'step_registries', 'toolset'])
         self.assertEqual(result['messages']['step_registries'], None
                          )
-        fileish = StringIO(result['tarball'])
+        fileish = cStringIO(result['tarball'])
 
         self._verifyTarballContents(fileish, ['import_steps.xml', 'export_steps.xml', 'rolemap.xml', 'toolset.xml'
                                               ])
@@ -945,7 +945,7 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
                          'Exported properties')
         self.assertEqual(result['messages']['step_registries'], None)
 
-        fileish = StringIO(result['tarball'])
+        fileish = cStringIO(result['tarball'])
 
         self._verifyTarballContents(fileish, ['import_steps.xml', 'export_steps.xml', 'properties.ini', 'rolemap.xml', 'toolset.xml'
                                               ])

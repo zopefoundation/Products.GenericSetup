@@ -13,6 +13,8 @@
 """ZCatalog export / import support.
 """
 
+from functools import cmp_to_key
+
 from zope.component import adapts
 from zope.component import queryMultiAdapter
 
@@ -73,7 +75,8 @@ class ZCatalogXMLAdapter(XMLAdapterBase, ObjectManagerHelpers,
     def _extractIndexes(self):
         fragment = self._doc.createDocumentFragment()
         indexes = self.context.getIndexObjects()[:]
-        indexes.sort(lambda x,y: cmp(x.getId(), y.getId()))
+        sort_func = cmp_to_key(lambda x, y: cmp(x.getId(), y.getId()))
+        indexes.sort(key=sort_func)
         for idx in indexes:
             exporter = queryMultiAdapter((idx, self.environ), INode)
             if exporter:
@@ -120,8 +123,7 @@ class ZCatalogXMLAdapter(XMLAdapterBase, ObjectManagerHelpers,
 
     def _extractColumns(self):
         fragment = self._doc.createDocumentFragment()
-        schema = self.context.schema()[:]
-        schema.sort()
+        schema = sorted(self.context.schema())
         for col in schema:
             child = self._doc.createElement('column')
             child.setAttribute('value', col)
@@ -129,7 +131,7 @@ class ZCatalogXMLAdapter(XMLAdapterBase, ObjectManagerHelpers,
         return fragment
 
     def _purgeColumns(self):
-        for col in self.context.schema()[:]:
+        for col in list(self.context.schema()):
             self.context.delColumn(col)
 
     def _initColumns(self, node):
@@ -139,8 +141,8 @@ class ZCatalogXMLAdapter(XMLAdapterBase, ObjectManagerHelpers,
             col = str(child.getAttribute('value'))
             if child.hasAttribute('remove'):
                 # Remove the column if it is there
-                if col in self.context.schema()[:]:
+                if col in list(self.context.schema()):
                     self.context.delColumn(col)
                 continue
-            if col not in self.context.schema()[:]:
+            if col not in list(self.context.schema()):
                 self.context.addColumn(col)

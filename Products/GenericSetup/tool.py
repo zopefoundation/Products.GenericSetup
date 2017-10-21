@@ -13,6 +13,7 @@
 """ Classes:  SetupTool
 """
 
+import functools
 import logging
 import os
 import six
@@ -358,7 +359,7 @@ class SetupTool(Folder):
             message = self._doRunImportStep(step, context)
             messages[step] = message or ''
 
-        message_list = filter(None, [message])
+        message_list = list(filter(None, [message]))
         message_list.extend([ '%s: %s' % x[1:] for x in context.listNotes() ])
         messages[step_id] = '\n'.join(message_list)
 
@@ -713,7 +714,8 @@ class SetupTool(Folder):
                 base.append(info)
             else:
                 ext.append(info)
-        ext.sort(lambda x, y: cmp(x['id'], y['id']))
+        sort_func = functools.cmp_to_key(lambda x, y: cmp(x['id'], y['id']))
+        ext.sort(key=sort_func)
         return base + ext
 
     security.declareProtected(ManagePortal, 'listContextInfos')
@@ -1431,7 +1433,7 @@ class SetupTool(Folder):
                     message = 'step skipped'
                 else:
                     message = self._doRunImportStep(step, context)
-                message_list = filter(None, [message])
+                message_list = list(filter(None, [message]))
                 message_list.extend([ '%s: %s' % x[1:]
                                       for x in context.listNotes() ])
                 messages[step] = '\n'.join(message_list)

@@ -14,6 +14,7 @@
 """
 
 from pkg_resources import parse_version
+import six
 
 from BTrees.OOBTree import OOBTree
 

@@ -15,8 +15,8 @@
 
 from csv import reader
 from csv import writer
-from six import StringIO
 from six.moves.configparser import ConfigParser
+from six.moves import cStringIO
 
 from zope.component import queryAdapter
 from zope.interface import implementer
@@ -87,7 +87,7 @@ class FolderishExporterImporter(object):
 
         exportable = self.listExportableItems()
 
-        stream = StringIO()
+        stream = cStringIO()
         csv_writer = writer(stream)
 
         for object_id, object, adapter in exportable:
@@ -156,7 +156,7 @@ class FolderishExporterImporter(object):
             return
 
         dialect = 'excel'
-        stream = StringIO(objects)
+        stream = cStringIO(objects)
 
         rowiter = reader(stream, dialect)
         rows = filter(None, tuple(rowiter))
@@ -240,7 +240,7 @@ def _globtest(globpattern, namelist):
 
     compiled = re.compile(pattern)
 
-    return filter(compiled.match, namelist)
+    return list(filter(compiled.match, namelist))
 
 
 @implementer(IFilesystemExporter, IFilesystemImporter)
@@ -274,7 +274,7 @@ class CSVAwareFileAdapter(object):
             logger = import_context.getLogger('CSAFA')
             logger.info('no .csv file for %s/%s' % (subdir, cid))
         else:
-            stream = StringIO(data)
+            stream = cStringIO(data)
             self.context.put_csv(stream)
 
 
@@ -329,7 +329,7 @@ class SimpleINIAware(object):
         """
         context = self.context
         parser = ConfigParser()
-        stream = StringIO()
+        stream = cStringIO()
         for k, v in context.propertyItems():
             parser.set('DEFAULT', k, str(v))
         parser.write(stream)
@@ -340,7 +340,7 @@ class SimpleINIAware(object):
         """
         context = self.context
         parser = ConfigParser()
-        parser.readfp(StringIO(text))
+        parser.readfp(cStringIO(text))
         for option, value in parser.defaults().items():
             prop_type = context.getPropertyType(option)
             if prop_type is None:
@@ -409,6 +409,6 @@ class DAVAwareFileAdapter(object):
             logger = import_context.getLogger('SGAIFA')
             logger.info('no .ini file for %s/%s' % (subdir, cid))
         else:
-            request = FauxDAVRequest(BODY=data, BODYFILE=StringIO(data))
+            request = FauxDAVRequest(BODY=data, BODYFILE=cStringIO(data))
             response = FauxDAVResponse()
             self.context.PUT(request, response)

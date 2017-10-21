@@ -18,7 +18,7 @@ from zope.component import adapts
 from Products.GenericSetup.interfaces import ISetupEnviron
 from Products.GenericSetup.utils import BodyAdapterBase
 
-from interfaces import IZopePageTemplate
+from .interfaces import IZopePageTemplate
 
 import six
 

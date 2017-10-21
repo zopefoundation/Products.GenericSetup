@@ -18,8 +18,8 @@ Wrappers representing the state of an import / export operation.
 import logging
 import os
 import six
+from six.moves import cStringIO
 import time
-from six import StringIO
 from tarfile import DIRTYPE
 from tarfile import TarFile
 from tarfile import TarInfo
@@ -315,7 +315,7 @@ class TarballImportContext( BaseContext ):
     def __init__( self, tool, archive_bits, encoding=None,
                   should_purge=False ):
         BaseContext.__init__( self, tool, encoding )
-        self._archive_stream = StringIO(archive_bits)
+        self._archive_stream = cStringIO(archive_bits)
         self._archive = TarFile.open( 'foo.bar', 'r:gz'
                                     , self._archive_stream )
         self._should_purge = bool( should_purge )
@@ -412,7 +412,7 @@ class TarballExportContext( BaseContext ):
         archive_name = ( 'setup_tool-%4d%02d%02d%02d%02d%02d.tar.gz'
                        % timestamp[:6] )
 
-        self._archive_stream = StringIO()
+        self._archive_stream = cStringIO()
         self._archive_filename = archive_name
         self._archive = TarFile.open( archive_name, 'w:gz'
                                     , self._archive_stream )
@@ -430,15 +430,15 @@ class TarballExportContext( BaseContext ):
             if path not in self._archive.getnames():
                 info = TarInfo(path)
                 info.type = DIRTYPE
-                # tarfile.filemode(0755) == '-rwxr-xr-x'
-                info.mode = 0o0755
+                # tarfile.filemode(0o755) == '-rwxr-xr-x'
+                info.mode = 0o755
                 info.mtime = time.time()
                 self._archive.addfile(info)
             parents.pop()
 
         info = TarInfo(filename)
         if isinstance(text, str):
-            stream = StringIO(text)
+            stream = cStringIO(text)
             info.size = len(text)
         elif six.PY2 and isinstance(text, unicode):
             raise ValueError("Unicode text is not supported, even if it only "

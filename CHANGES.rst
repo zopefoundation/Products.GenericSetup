@@ -6,7 +6,10 @@ Changelog
 
 Breaking changes:
 
-- *add item here*
+- Require Zope 4.0a6 as minimum supported Zope version.
+
+- Moved support for MailHost import/export into the 
+  Products.MailHost package to cut the hard dependency.
 
 New features:
 

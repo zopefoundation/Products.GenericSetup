@@ -19,14 +19,9 @@ from Testing.ZopeTestCase import ZopeTestCase
 
 import logging
 import os
+from six.moves import cStringIO
 import tempfile
 import time
-try:
-    # Python 3
-    from io import StringIO
-except ImportError:
-    # Python 2
-    from StringIO import StringIO
 from tarfile import TarFile
 from tarfile import TarInfo
 
@@ -58,8 +53,7 @@ class DummyPdataStreamIterator:
     pass
 
 
-class DirectoryImportContextTests(FilesystemTestBase, ConformsToISetupContext, ConformsToIImportContext, ConformsToIChunkableImportContext
-                                  ):
+class DirectoryImportContextTests(FilesystemTestBase, ConformsToISetupContext, ConformsToIImportContext, ConformsToIChunkableImportContext):
 
     _PROFILE_PATH = '/tmp/ICTTexts'
 
@@ -452,11 +446,11 @@ class TarballImportContextTests(ZopeTestCase, ConformsToISetupContext,
 
     def _makeOne(self, file_dict={}, mod_time=None, *args, **kw):
 
-        archive_stream = StringIO()
+        archive_stream = cStringIO()
         archive = TarFile.open('test.tar.gz', 'w:gz', archive_stream)
 
         def _addOneMember(path, data, modtime):
-            stream = StringIO(v)
+            stream = cStringIO(v)
             info = TarInfo(k)
             info.size = len(v)
             info.mtime = modtime
@@ -707,7 +701,7 @@ class TarballImportContextTests(ZopeTestCase, ConformsToISetupContext,
 
     def test_listDirectory_multiple(self):
 
-        from string import printable, uppercase
+        from string import printable, ascii_uppercase
 
         SUBDIR = 'subdir'
         FILENAME1 = 'nested.txt'
@@ -715,8 +709,8 @@ class TarballImportContextTests(ZopeTestCase, ConformsToISetupContext,
         FILENAME2 = 'another.txt'
         PATH2 = '%s/%s' % (SUBDIR, FILENAME2)
 
-        site, tool, ctx = self._makeOne({PATH1: printable, PATH2: uppercase
-                                         })
+        site, tool, ctx = self._makeOne({PATH1: printable, 
+                                         PATH2: ascii_uppercase})
 
         names = ctx.listDirectory(SUBDIR)
         self.assertEqual(len(names), 2)
@@ -725,7 +719,7 @@ class TarballImportContextTests(ZopeTestCase, ConformsToISetupContext,
 
     def test_listDirectory_skip(self):
 
-        from string import printable, uppercase
+        from string import printable, ascii_uppercase
 
         SUBDIR = 'subdir'
         FILENAME1 = 'nested.txt'
@@ -735,8 +729,9 @@ class TarballImportContextTests(ZopeTestCase, ConformsToISetupContext,
         FILENAME3 = 'another.bak'
         PATH3 = '%s/%s' % (SUBDIR, FILENAME3)
 
-        site, tool, ctx = self._makeOne({PATH1: printable, PATH2: uppercase, PATH3: 'xyz'
-                                         })
+        site, tool, ctx = self._makeOne({PATH1: printable,
+                                         PATH2: ascii_uppercase,
+                                         PATH3: 'xyz'})
 
         names = ctx.listDirectory(SUBDIR, skip=(FILENAME1,),
                                   skip_suffixes=('.bak',))
@@ -776,14 +771,14 @@ class TarballExportContextTests(ZopeTestCase, ConformsToISetupContext,
     def test_writeDataFile_simple(self):
 
         from string import printable
-        now = long(time.time())
+        now = int(time.time())
 
         site = DummySite('site').__of__(self.app)
         ctx = self._getTargetClass()(site)
 
         ctx.writeDataFile('foo.txt', printable, 'text/plain')
 
-        fileish = StringIO(ctx.getArchive())
+        fileish = cStringIO(ctx.getArchive())
 
         self._verifyTarballContents(fileish, ['foo.txt'], now)
         self._verifyTarballEntry(fileish, 'foo.txt', printable)
@@ -812,7 +807,7 @@ class TarballExportContextTests(ZopeTestCase, ConformsToISetupContext,
         ctx.writeDataFile('foo.txt', printable, 'text/plain')
         ctx.writeDataFile('bar.txt', digits, 'text/plain')
 
-        fileish = StringIO(ctx.getArchive())
+        fileish = cStringIO(ctx.getArchive())
 
         self._verifyTarballContents(fileish, ['foo.txt', 'bar.txt'])
         self._verifyTarballEntry(fileish, 'foo.txt', printable)
@@ -833,7 +828,7 @@ class TarballExportContextTests(ZopeTestCase, ConformsToISetupContext,
         pData.size = len(printable)
         ctx.writeDataFile('foo.txt', pData, 'text/plain')
 
-        fileish = StringIO(ctx.getArchive())
+        fileish = cStringIO(ctx.getArchive())
 
         self._verifyTarballContents(fileish, ['foo.txt'])
         self._verifyTarballEntry(fileish, 'foo.txt', printable)
@@ -849,7 +844,7 @@ class TarballExportContextTests(ZopeTestCase, ConformsToISetupContext,
         ctx.writeDataFile('foo.txt', printable, 'text/plain')
         ctx.writeDataFile('bar/baz.txt', digits, 'text/plain')
 
-        fileish = StringIO(ctx.getArchive())
+        fileish = cStringIO(ctx.getArchive())
 
         self._verifyTarballContents(fileish,
                                     ['foo.txt', 'bar', 'bar/baz.txt'])
@@ -1133,8 +1128,8 @@ class SnapshotImportContextTests(ZopeTestCase, ConformsToISetupContext,
 
         SNAPSHOT_ID = 'ctorparms'
         ENCODING = 'latin-1'
-        site, tool, ctx = self._makeOne(SNAPSHOT_ID, encoding=ENCODING, should_purge=True
-                                        )
+        site, tool, ctx = self._makeOne(SNAPSHOT_ID, encoding=ENCODING, 
+                                        should_purge=True)
 
         self.assertEqual(ctx.getEncoding(), ENCODING)
         self.assertEqual(ctx.shouldPurge(), True)
@@ -1367,7 +1362,7 @@ class SnapshotImportContextTests(ZopeTestCase, ConformsToISetupContext,
 
     def test_listDirectory_multiple(self):
 
-        from string import printable, uppercase
+        from string import printable, ascii_uppercase
 
         SNAPSHOT_ID = 'listDirectory_nested'
         SUBDIR = 'subdir'
@@ -1376,7 +1371,8 @@ class SnapshotImportContextTests(ZopeTestCase, ConformsToISetupContext,
 
         site, tool, ctx = self._makeOne(SNAPSHOT_ID)
         self._makeFile(tool, SNAPSHOT_ID, FILENAME1, printable, subdir=SUBDIR)
-        self._makeFile(tool, SNAPSHOT_ID, FILENAME2, uppercase, subdir=SUBDIR)
+        self._makeFile(tool, SNAPSHOT_ID, FILENAME2, ascii_uppercase, 
+                       subdir=SUBDIR)
 
         names = ctx.listDirectory(SUBDIR)
         self.assertEqual(len(names), 2)
@@ -1385,7 +1381,7 @@ class SnapshotImportContextTests(ZopeTestCase, ConformsToISetupContext,
 
     def test_listDirectory_skip(self):
 
-        from string import printable, uppercase
+        from string import printable, ascii_uppercase
 
         SNAPSHOT_ID = 'listDirectory_nested'
         SUBDIR = 'subdir'
@@ -1395,7 +1391,8 @@ class SnapshotImportContextTests(ZopeTestCase, ConformsToISetupContext,
 
         site, tool, ctx = self._makeOne(SNAPSHOT_ID)
         self._makeFile(tool, SNAPSHOT_ID, FILENAME1, printable, subdir=SUBDIR)
-        self._makeFile(tool, SNAPSHOT_ID, FILENAME2, uppercase, subdir=SUBDIR)
+        self._makeFile(tool, SNAPSHOT_ID, FILENAME2, ascii_uppercase, 
+                       subdir=SUBDIR)
         self._makeFile(tool, SNAPSHOT_ID, FILENAME3, 'abc', subdir=SUBDIR)
 
         names = ctx.listDirectory(SUBDIR, skip=(FILENAME1,),
