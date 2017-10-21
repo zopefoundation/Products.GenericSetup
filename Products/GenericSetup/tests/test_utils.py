@@ -70,7 +70,7 @@ _EMPTY_PROPERTY_EXPORT = """\
  <property name="foo_float_nodel">0.0</property>
  <property name="foo_int_nodel">0</property>
 </dummy>
-"""
+""".encode('utf-8')
 
 _NORMAL_PROPERTY_EXPORT = u"""\
 <?xml version="1.0" encoding="utf-8"?>
@@ -148,7 +148,7 @@ _SPECIAL_IMPORT = """\
  <!-- ignore comment, import 0 as False -->
  <property name="foo_boolean0" type="boolean">0</property>
 </dummy>
-"""
+""".encode('utf-8')
 
 _I18N_IMPORT = """\
 <?xml version="1.0" encoding="utf-8"?>
@@ -156,7 +156,7 @@ _I18N_IMPORT = """\
    i18n:domain="dummy_domain">
  <property name="foo_string" i18n:translate="">Foo String</property>
 </dummy>
-"""
+""".encode('utf-8')
 
 _NOPURGE_IMPORT = """\
 <?xml version="1.0" encoding="utf-8"?>
@@ -174,7 +174,8 @@ _NOPURGE_IMPORT = """\
   <element value="Bar"/>
  </property>
 </dummy>
-"""
+""".encode('utf-8')
+
 _REMOVE_ELEMENT_IMPORT = """\
 <?xml version="1.0" encoding="utf-8"?>
 <dummy>
@@ -186,14 +187,14 @@ _REMOVE_ELEMENT_IMPORT = """\
    <element value="Foo" remove="True" />
   </property>
 </dummy>
-"""
+""".encode('utf-8')
 
 _NORMAL_MARKER_EXPORT = """\
 <?xml version="1.0" encoding="utf-8"?>
 <dummy>
  <marker name="Products.GenericSetup.testing.IDummyMarker"/>
 </dummy>
-"""
+""".encode('utf-8')
 
 _ADD_IMPORT = """\
 <?xml version="1.0" encoding="utf-8"?>
@@ -201,14 +202,15 @@ _ADD_IMPORT = """\
  <object name="history" meta_type="Generic Setup Tool"/>
  <object name="future" meta_type="Generic Setup Tool"/>
 </dummy>
-"""
+""".encode('utf-8')
+
 _REMOVE_IMPORT = """\
 <?xml version="1.0" encoding="utf-8"?>
 <dummy>
  <object name="history" remove="True"/>
  <object name="future" remove="False"/>
 </dummy>
-"""
+""".encode('utf-8')
 
 _ADD_PROPERTY_IMPORT = """\
 <?xml version="1.0" encoding="utf-8"?>
@@ -216,7 +218,7 @@ _ADD_PROPERTY_IMPORT = """\
  <property name="line1" type="string">Line 1</property>
  <property name="line2" type="string">Line 2</property>
 </dummy>
-"""
+""".encode('utf-8')
 
 _REMOVE_PROPERTY_IMPORT = """\
 <?xml version="1.0" encoding="utf-8"?>
@@ -224,7 +226,7 @@ _REMOVE_PROPERTY_IMPORT = """\
  <property name="line1" remove="True"/>
  <property name="line2" type="string" remove="False"/>
 </dummy>
-"""
+""".encode('utf-8')
 
 
 def _getDocumentElement(text):
