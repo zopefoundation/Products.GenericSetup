@@ -18,7 +18,7 @@ Wrappers representing the state of an import / export operation.
 import logging
 import os
 import six
-from six.moves import cStringIO
+from io import BytesIO
 import time
 from tarfile import DIRTYPE
 from tarfile import TarFile
@@ -315,7 +315,7 @@ class TarballImportContext( BaseContext ):
     def __init__( self, tool, archive_bits, encoding=None,
                   should_purge=False ):
         BaseContext.__init__( self, tool, encoding )
-        self._archive_stream = cStringIO(archive_bits)
+        self._archive_stream = BytesIO(archive_bits)
         self._archive = TarFile.open( 'foo.bar', 'r:gz'
                                     , self._archive_stream )
         self._should_purge = bool( should_purge )
@@ -412,7 +412,7 @@ class TarballExportContext( BaseContext ):
         archive_name = ( 'setup_tool-%4d%02d%02d%02d%02d%02d.tar.gz'
                        % timestamp[:6] )
 
-        self._archive_stream = cStringIO()
+        self._archive_stream = BytesIO()
         self._archive_filename = archive_name
         self._archive = TarFile.open( archive_name, 'w:gz'
                                     , self._archive_stream )
@@ -437,8 +437,12 @@ class TarballExportContext( BaseContext ):
             parents.pop()
 
         info = TarInfo(filename)
-        if isinstance(text, str):
-            stream = cStringIO(text)
+        if isinstance(text, six.binary_type):
+            stream = BytesIO(text)
+            info.size = len(text)
+        elif six.PY3 and isinstance(text, str):
+            text = text.encode()
+            stream = BytesIO(text)
             info.size = len(text)
         elif six.PY2 and isinstance(text, unicode):
             raise ValueError("Unicode text is not supported, even if it only "

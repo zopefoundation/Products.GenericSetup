@@ -134,7 +134,7 @@ class TarballTester(DOMComparator):
         fileish.seek(0)
         tarfile = TarFile.open('foo.tar.gz', fileobj=fileish, mode='r:gz')
         extract = tarfile.extractfile(entry_name)
-        found = extract.read()
+        found = extract.read().decode()
         self.assertEqual(found, data)
 
     def _verifyTarballEntryXML(self, fileish, entry_name, data):
@@ -142,7 +142,7 @@ class TarballTester(DOMComparator):
         fileish.seek(0)
         tarfile = TarFile.open('foo.tar.gz', fileobj=fileish, mode='r:gz')
         extract = tarfile.extractfile(entry_name)
-        found = extract.read()
+        found = extract.read().decode()
         self._compareDOM(found, data)
 
 

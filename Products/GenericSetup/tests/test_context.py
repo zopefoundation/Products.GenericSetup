@@ -19,7 +19,8 @@ from Testing.ZopeTestCase import ZopeTestCase
 
 import logging
 import os
-from six.moves import cStringIO
+from six import BytesIO
+from string import printable
 import tempfile
 import time
 from tarfile import TarFile
@@ -36,6 +37,9 @@ from .conformance import ConformsToIImportContext
 from .conformance import ConformsToIExportContext
 from .conformance import ConformsToIChunkableExportContext
 from .conformance import ConformsToIChunkableImportContext
+
+
+printable_bytes = printable.encode()
 
 
 class DummySite(Folder):
@@ -94,12 +98,12 @@ class DirectoryImportContextTests(FilesystemTestBase, ConformsToISetupContext, C
         from string import printable
 
         FILENAME = 'simple.txt'
-        self._makeFile(FILENAME, printable)
+        self._makeFile(FILENAME, printable_bytes)
 
         site = DummySite('site').__of__(self.app)
         ctx = self._makeOne(site, self._PROFILE_PATH)
 
-        self.assertEqual(ctx.readDataFile(FILENAME), printable)
+        self.assertEqual(ctx.readDataFile(FILENAME), printable_bytes)
 
     def test_readDataFile_subdir(self):
 
@@ -446,11 +450,11 @@ class TarballImportContextTests(ZopeTestCase, ConformsToISetupContext,
 
     def _makeOne(self, file_dict={}, mod_time=None, *args, **kw):
 
-        archive_stream = cStringIO()
+        archive_stream = BytesIO()
         archive = TarFile.open('test.tar.gz', 'w:gz', archive_stream)
 
         def _addOneMember(path, data, modtime):
-            stream = cStringIO(v)
+            stream = BytesIO(v)
             info = TarInfo(k)
             info.size = len(v)
             info.mtime = modtime
@@ -470,12 +474,14 @@ class TarballImportContextTests(ZopeTestCase, ConformsToISetupContext,
             _addOneMember(filename, data, modtime)
 
         file_items = file_dict.items() or [(
-            'dummy', '')]  # empty archive barfs
+            'dummy', b'')]  # empty archive barfs
 
         if mod_time is None:
             mod_time = time.time()
 
         for k, v in file_items:
+            if isinstance(v, str):
+                v = v.encode()
             _addMember(k, v, mod_time)
 
         archive.close()
@@ -545,7 +551,7 @@ class TarballImportContextTests(ZopeTestCase, ConformsToISetupContext,
 
         site, tool, ctx = self._makeOne({FILENAME: printable})
 
-        self.assertEqual(ctx.readDataFile(FILENAME), printable)
+        self.assertEqual(ctx.readDataFile(FILENAME), printable_bytes)
 
     def test_readDataFile_subdir(self):
 
@@ -555,9 +561,9 @@ class TarballImportContextTests(ZopeTestCase, ConformsToISetupContext,
         SUBDIR = 'subdir'
 
         site, tool, ctx = self._makeOne({'%s/%s' % (SUBDIR, FILENAME):
-                                         printable})
+                                         printable_bytes})
 
-        self.assertEqual(ctx.readDataFile(FILENAME, SUBDIR), printable)
+        self.assertEqual(ctx.readDataFile(FILENAME, SUBDIR), printable_bytes)
 
     def test_getLastModified_nonesuch(self):
         FILENAME = 'nonesuch.txt'
@@ -778,7 +784,7 @@ class TarballExportContextTests(ZopeTestCase, ConformsToISetupContext,
 
         ctx.writeDataFile('foo.txt', printable, 'text/plain')
 
-        fileish = cStringIO(ctx.getArchive())
+        fileish = BytesIO(ctx.getArchive())
 
         self._verifyTarballContents(fileish, ['foo.txt'], now)
         self._verifyTarballEntry(fileish, 'foo.txt', printable)
@@ -807,7 +813,7 @@ class TarballExportContextTests(ZopeTestCase, ConformsToISetupContext,
         ctx.writeDataFile('foo.txt', printable, 'text/plain')
         ctx.writeDataFile('bar.txt', digits, 'text/plain')
 
-        fileish = cStringIO(ctx.getArchive())
+        fileish = BytesIO(ctx.getArchive())
 
         self._verifyTarballContents(fileish, ['foo.txt', 'bar.txt'])
         self._verifyTarballEntry(fileish, 'foo.txt', printable)
@@ -821,14 +827,14 @@ class TarballExportContextTests(ZopeTestCase, ConformsToISetupContext,
         ctx = self._getTargetClass()(site)
 
         fp = tempfile.TemporaryFile()
-        fp.write(printable)
+        fp.write(printable_bytes)
         fp.seek(0)
         pData = DummyPdataStreamIterator()
         pData.file = fp
-        pData.size = len(printable)
+        pData.size = len(printable_bytes)
         ctx.writeDataFile('foo.txt', pData, 'text/plain')
 
-        fileish = cStringIO(ctx.getArchive())
+        fileish = BytesIO(ctx.getArchive())
 
         self._verifyTarballContents(fileish, ['foo.txt'])
         self._verifyTarballEntry(fileish, 'foo.txt', printable)
@@ -844,7 +850,7 @@ class TarballExportContextTests(ZopeTestCase, ConformsToISetupContext,
         ctx.writeDataFile('foo.txt', printable, 'text/plain')
         ctx.writeDataFile('bar/baz.txt', digits, 'text/plain')
 
-        fileish = cStringIO(ctx.getArchive())
+        fileish = BytesIO(ctx.getArchive())
 
         self._verifyTarballContents(fileish,
                                     ['foo.txt', 'bar', 'bar/baz.txt'])
