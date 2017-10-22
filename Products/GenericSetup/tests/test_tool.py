@@ -1211,7 +1211,7 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
         site.setup_tool = self._makeOne('setup_tool')
         tool = site.setup_tool
         filename = 'import-all-foo-20070315123456.log'
-        tool._setObject(filename, File(filename, '', ''))
+        tool._setObject(filename, File(filename, '', b''))
         self.assertEqual(tool.getProfileImportDate('foo'),
                          '2007-03-15T12:34:56Z')
 
@@ -1222,7 +1222,7 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
         site.setup_tool = self._makeOne('setup_tool')
         tool = site.setup_tool
         filename = 'import-all-foo_bar-20070315123456.log'
-        tool._setObject(filename, File(filename, '', ''))
+        tool._setObject(filename, File(filename, '', b''))
         self.assertEqual(tool.getProfileImportDate('foo:bar'),
                          '2007-03-15T12:34:56Z')
 
@@ -1236,9 +1236,9 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
         site.setup_tool = self._makeOne('setup_tool')
         tool = site.setup_tool
         filename = 'import-all-foo_bar-20070315123456.log'
-        tool._setObject(filename, File(filename, '', ''))
+        tool._setObject(filename, File(filename, '', b''))
         filename2 = 'import-all-foo_bar-boo-20070315123456.log'
-        tool._setObject(filename2, File(filename2, '', ''))
+        tool._setObject(filename2, File(filename2, '', b''))
         self.assertEqual(tool.getProfileImportDate('foo:bar'),
                          '2007-03-15T12:34:56Z')
 

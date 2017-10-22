@@ -95,7 +95,7 @@ def _makeTestFile(filename, root_path, contents):
     fqpath = os.path.join(subdir, filename)
 
     file = open(fqpath, 'wb')
-    file.write(contents)
+    file.write(contents.encode())
     file.close()
     return fqpath
 
