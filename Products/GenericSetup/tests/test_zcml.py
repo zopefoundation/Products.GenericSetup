@@ -65,14 +65,14 @@ def test_simpleRegisterProfile():
       >>> from Products.GenericSetup.registry import _profile_registry
       >>> profile_id = 'Products.GenericSetup:default'
       >>> info = _profile_registry.getProfileInfo(profile_id)
-      >>> info['id']
-      u'Products.GenericSetup:default'
-      >>> info['title']
-      u"Profile 'default' from 'Products.GenericSetup'"
-      >>> info['description']
-      u''
-      >>> info['path']
-      u'profiles/default'
+      >>> info['id'] == 'Products.GenericSetup:default'
+      True
+      >>> info['title'] == "Profile 'default' from 'Products.GenericSetup'"
+      True
+      >>> info['description'] == ''
+      True
+      >>> info['path'] == 'profiles/default'
+      True
       >>> info['product']
       'Products.GenericSetup'
       >>> from Products.GenericSetup.interfaces import EXTENSION
@@ -111,14 +111,14 @@ def test_registerProfile():
       >>> from Products.GenericSetup.registry import _profile_registry
       >>> profile_id = 'Products.GenericSetup:default'
       >>> info = _profile_registry.getProfileInfo(profile_id)
-      >>> info['id']
-      u'Products.GenericSetup:default'
-      >>> info['title']
-      u'Install Foo Extension'
-      >>> info['description']
-      u'Adds foo support.'
-      >>> info['path']
-      u'profiles/default'
+      >>> info['id'] == 'Products.GenericSetup:default'
+      True
+      >>> info['title'] == 'Install Foo Extension'
+      True
+      >>> info['description'] == 'Adds foo support.'
+      True
+      >>> info['path'] == 'profiles/default'
+      True
       >>> info['product']
       'Products.GenericSetup'
       >>> from Products.GenericSetup.interfaces import EXTENSION
@@ -303,8 +303,8 @@ def test_registerUpgradeSteps(self):
       >>> len(profile_steps)
       2
       >>> steps = profile_steps[0]
-      >>> type(steps)
-      <type 'list'>
+      >>> isinstance(steps, list)
+      True
       >>> len(steps)
       3
       >>> step1, step2, step3 = steps
@@ -322,7 +322,7 @@ def test_registerUpgradeSteps(self):
       'Bar Upgrade Step 2'
       >>> str(step3['step'].import_profile)
       'profile-Products.CMFDefault:default'
-      >>> map(str, step3['step'].import_steps)
+      >>> [str(step) for step in step3['step'].import_steps]
       ['baz', 'bat']
       >>> step3['step'].run_deps
       True
@@ -332,8 +332,8 @@ def test_registerUpgradeSteps(self):
     First one listed should be second in the registry due to sortkey:
 
       >>> steps = profile_steps[1]
-      >>> type(steps)
-      <type 'list'>
+      >>> isinstance(steps, list)
+      True
       >>> len(steps)
       2
       >>> step1, step2 = steps

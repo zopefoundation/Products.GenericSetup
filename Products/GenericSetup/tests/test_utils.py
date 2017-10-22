@@ -442,7 +442,7 @@ class PropertyManagerHelpersTests(unittest.TestCase):
         self.assertEqual(type(obj.foo_int), int)
         self.assertEqual(type(obj.foo_string), str)
         self.assertEqual(type(obj.foo_tokens), tuple)
-        self.assertEqual(type(obj.foo_tokens[0]), str)
+        self.assertEqual(type(obj.foo_tokens[0]), six.binary_type)
 
         doc = helpers._doc = PrettyDocument()
         node = doc.createElement('dummy')
