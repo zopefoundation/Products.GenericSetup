@@ -42,8 +42,8 @@ setup(
     keywords='web application server zope zope2 cmf',
     author="Zope Foundation and Contributors",
     author_email="zope-cmf@zope.org",
-    url="https://pypi.python.org/pypi/Products.GenericSetup",
-    license="ZPL 2.1 (http://www.zope.org/Resources/License/ZPL-2.1)",
+    url="https://github.com/zopefoundation/Products.GenericSetup",
+    license="ZPL 2.1",
     packages=find_packages(),
     include_package_data=True,
     namespace_packages=['Products'],
@@ -55,12 +55,19 @@ setup(
         'six',
         'Zope2 >= 4.0a6',
         'five.localsitemanager',
+        'AccessControl >= 4.0a4',
         'Products.PythonScripts',
         'Products.ZCatalog',
     ],
     tests_require=[
         'zope.testrunner',
     ],
+    extras_require=dict(
+        docs=[
+            'Sphinx',
+            'repoze.sphinx.autointerface',
+        ],
+    ),
     test_loader="zope.testrunner.eggsupport:SkipLayers",
     test_suite="Products.GenericSetup.tests",
     entry_points="""
