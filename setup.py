@@ -29,7 +29,7 @@ setup(
     classifiers=[
         "Development Status :: 5 - Production/Stable",
         "Framework :: Plone",
-#       "Framework :: Plone :: 5.2",  # Zope4-compatible Plone
+        # "Framework :: Plone :: 5.2",  # Zope4-compatible Plone
         "Framework :: Zope2",
         "Intended Audience :: Developers",
         "License :: OSI Approved :: Zope Public License",
@@ -57,10 +57,10 @@ setup(
         'five.localsitemanager',
         'Products.PythonScripts',
         'Products.ZCatalog',
-        ],
+    ],
     tests_require=[
         'zope.testrunner',
-        ],
+    ],
     test_loader="zope.testrunner.eggsupport:SkipLayers",
     test_suite="Products.GenericSetup.tests",
     entry_points="""
@@ -69,4 +69,4 @@ setup(
     [distutils.commands]
     ftest = zope.testing.testrunner.eggsupport:ftest
     """,
-    )
+)
