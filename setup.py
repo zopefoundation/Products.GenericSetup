@@ -55,7 +55,6 @@ setup(
         'six',
         'Zope2 >= 4.0a6',
         'five.localsitemanager',
-        'AccessControl >= 4.0a4',
         'Products.PythonScripts',
         'Products.ZCatalog',
     ],
