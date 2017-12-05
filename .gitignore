@@ -21,6 +21,7 @@ local.cfg
 parts
 src
 var
+docs/_build/
 
 # VirtualEnv on Windows:
 Include/
