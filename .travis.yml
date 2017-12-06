@@ -1,12 +1,14 @@
 sudo: false
-dist: trusty
 language: python
 python:
   - "2.7"
 install:
+    - pip install -U coverage coveralls
     - python bootstrap.py
     - bin/buildout
 script:
-    - bin/test -pvc
+    - coverage run bin/test -pvc
+after_success:
+    - coveralls
 notifications:
     email: tseaver@palladion.com
