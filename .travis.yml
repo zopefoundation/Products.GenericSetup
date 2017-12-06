@@ -8,7 +8,7 @@ install:
     - python bootstrap.py
     - bin/buildout
 script:
-    - coverage run bin/test -pvc
+    - coverage run bin/test -vvc
 after_success:
     - coveralls
 notifications:
