@@ -4,7 +4,7 @@ python:
   - "2.7"
 install:
     - pip install -U coverage coveralls
-    - pip install -U six==1.10.0
+    - pip install -U six==$(curl $(awk '$1 ==  "extends" {print $3}' buildout.cfg) 2>/dev/null | awk '$1 == "six" {print $3}')
     - python bootstrap.py
     - bin/buildout
 script:
