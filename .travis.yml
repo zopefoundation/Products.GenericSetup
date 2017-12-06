@@ -14,6 +14,6 @@ after_success:
 notifications:
     email: tseaver@palladion.com
 cache:
-    pip: true
-    directories:
+    - pip: true
+    - directories:
       - eggs/
