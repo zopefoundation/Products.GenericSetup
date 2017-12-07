@@ -1,4 +1,8 @@
 include *.txt *.rst
+include .coveragerc
+include tox.ini
+
+prune docs/_build
 
 recursive-include Products *
 recursive-include docs *
