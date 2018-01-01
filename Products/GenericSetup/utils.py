@@ -17,7 +17,6 @@ import os
 import six
 import sys
 from cgi import escape
-from functools import cmp_to_key
 from inspect import getdoc
 from logging import getLogger
 from xml.dom.minidom import _nssplit
@@ -165,7 +164,7 @@ class ImportConfiguratorBase(Implicit):
     def __init__(self, site, encoding='utf-8'):
 
         self._site = site
-        self._encoding = encoding
+        self._encoding = encoding if six.PY2 else None
 
     security.declareProtected(ManagePortal, 'parseXML')
     def parseXML(self, xml):
@@ -175,6 +174,10 @@ class ImportConfiguratorBase(Implicit):
 
         if reader is not None:
             xml = reader()
+
+        if six.PY3:
+            if isinstance(xml, bytes):
+                xml = xml.decode('utf-8')
 
         dom = parseString(xml)
         root = dom.documentElement
@@ -285,7 +288,7 @@ class ExportConfiguratorBase(Implicit):
     def generateXML(self, **kw):
         """ Pseudo API.
         """
-        if self._encoding:
+        if six.PY2 and self._encoding:
             return self._template(**kw).encode(self._encoding)
         else:
             return self._template(**kw)
@@ -474,7 +477,7 @@ class BodyAdapterBase(NodeAdapterBase):
     def _exportBody(self):
         """Export the object as a file body.
         """
-        return ''
+        return b''
 
     def _importBody(self, body):
         """Import the object from the file body.
@@ -499,7 +502,7 @@ class XMLAdapterBase(BodyAdapterBase):
         """Export the object as a file body.
         """
         self._doc.appendChild(self._exportNode())
-        xml = self._doc.toprettyxml(' ')
+        xml = self._doc.toprettyxml(' ', encoding='utf-8')
         self._doc.unlink()
         return xml
 
@@ -535,8 +538,7 @@ class ObjectManagerHelpers(object):
         objects = self.context.objectValues()
         if not IOrderedContainer.providedBy(self.context):
             objects = list(objects)
-            sort_func = cmp_to_key(lambda x, y: cmp(x.getId(), y.getId()))
-            objects.sort(key=sort_func)
+            objects.sort(key=lambda x: x.getId())
         for obj in objects:
             exporter = queryMultiAdapter((obj, self.environ), INode)
             if exporter:

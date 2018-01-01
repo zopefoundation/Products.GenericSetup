@@ -165,7 +165,7 @@ class DummyBlacklist(object):
         return (IDummyInterface, )
 
 
-_COMPONENTS_BODY = """\
+_COMPONENTS_BODY = b"""\
 <?xml version="1.0" encoding="utf-8"?>
 <componentregistry>
  <adapters>
@@ -202,7 +202,7 @@ _COMPONENTS_BODY = """\
 </componentregistry>
 """
 
-_REMOVE_IMPORT = """\
+_REMOVE_IMPORT = b"""\
 <?xml version="1.0" encoding="utf-8"?>
 <componentregistry>
  <adapters>
@@ -347,8 +347,8 @@ class ComponentRegistryXMLAdapterTests(BodyAdapterTestCase, unittest.TestCase):
         adapted = getMultiAdapter((obj, context), IBody)
 
         body = adapted.body
-        self.failIf('IComponentsHandlerBlacklist' in body)
-        self.failIf('test_components.IDummyInterface"' in body)
+        self.failIf(b'IComponentsHandlerBlacklist' in body)
+        self.failIf(b'test_components.IDummyInterface"' in body)
 
     def test_blacklist_set(self):
         obj = self._obj

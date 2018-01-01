@@ -13,6 +13,7 @@
 """ Registry unit tests.
 """
 from __future__ import absolute_import
+import six
 import unittest
 
 from OFS.Folder import Folder
@@ -426,7 +427,7 @@ _SINGLE_IMPORT_XML = """\
   One small step
  </import-step>
 </import-steps>
-""" % ( ONE_FUNC_NAME, )
+""" % ONE_FUNC_NAME
 
 _ORDERED_IMPORT_XML = """\
 <?xml version="1.0"?>
@@ -642,7 +643,7 @@ _SINGLE_EXPORT_XML = """\
   One small step
  </export-step>
 </export-steps>
-""" % ( ONE_FUNC_NAME, )
+""" % ONE_FUNC_NAME
 
 _ORDERED_EXPORT_XML = """\
 <?xml version="1.0"?>
@@ -664,6 +665,7 @@ _ORDERED_EXPORT_XML = """\
  </export-step>
 </export-steps>
 """ % ( ONE_FUNC_NAME, THREE_FUNC_NAME, TWO_FUNC_NAME )
+
 
 #==============================================================================
 #   ToolsetRegistry tests

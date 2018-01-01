@@ -18,7 +18,7 @@ import unittest
 from Products.GenericSetup.testing import BodyAdapterTestCase
 from Products.GenericSetup.testing import ExportImportZCMLLayer
 
-_FOLDER_BODY = """\
+_FOLDER_BODY = b"""\
 <?xml version="1.0" encoding="utf-8"?>
 <object name="foo_folder" meta_type="Folder">
  <property name="title">Foo</property>

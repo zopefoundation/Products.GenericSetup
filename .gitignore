@@ -8,6 +8,7 @@
 .eggs
 .installed.cfg
 .mr.developer.cfg
+.Python
 .tox
 bin
 build

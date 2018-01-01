@@ -13,6 +13,8 @@
 """Local component registry export / import handler.
 """
 
+import six
+
 from operator import itemgetter
 
 from Acquisition import aq_base
@@ -168,7 +170,7 @@ class ComponentRegistryXMLAdapter(XMLAdapterBase):
                 continue
 
             provided = _resolveDottedName(provided)
-            name = unicode(str(child.getAttribute('name')))
+            name = six.text_type(child.getAttribute('name'))
 
             for_ = child.getAttribute('for') or child.getAttribute('for_') #BBB
             required = []
@@ -290,7 +292,7 @@ class ComponentRegistryXMLAdapter(XMLAdapterBase):
                 continue
 
             provided = _resolveDottedName(provided)
-            name = unicode(str(child.getAttribute('name')))
+            name = six.text_type(child.getAttribute('name'))
 
             component = child.getAttribute('component')
             component = component and _resolveDottedName(component) or None

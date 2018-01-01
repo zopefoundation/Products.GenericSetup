@@ -13,12 +13,13 @@
 """PythonScript export / import support unit tests.
 """
 
+import six
 import unittest
 
 from Products.GenericSetup.testing import BodyAdapterTestCase
 from Products.GenericSetup.testing import ExportImportZCMLLayer
 
-_PYTHONSCRIPT_BODY = """\
+_PYTHONSCRIPT_BODY = b"""\
 ## Script (Python) "foo_script"
 ##bind container=container
 ##bind context=context
@@ -46,6 +47,13 @@ class PythonScriptBodyAdapterTests(BodyAdapterTestCase, unittest.TestCase):
 
         self._obj = PythonScript('foo_script')
         self._BODY = _PYTHONSCRIPT_BODY
+
+    def _verifyImport(self, obj):
+        # Imported script body should be a native string
+        expected = _PYTHONSCRIPT_BODY
+        if six.PY3:
+            expected = _PYTHONSCRIPT_BODY.decode('utf-8')
+        self.assertEqual(obj.read(), expected)
 
 
 def test_suite():

@@ -20,7 +20,9 @@ from Testing.ZopeTestCase import ZopeTestCase
 import logging
 import os
 from six import BytesIO
+from string import digits
 from string import printable
+import six
 import tempfile
 import time
 from tarfile import TarFile
@@ -40,6 +42,7 @@ from .conformance import ConformsToIChunkableImportContext
 
 
 printable_bytes = printable.encode()
+digits_bytes = digits.encode()
 
 
 class DummySite(Folder):
@@ -95,8 +98,6 @@ class DirectoryImportContextTests(FilesystemTestBase, ConformsToISetupContext, C
 
     def test_readDataFile_simple(self):
 
-        from string import printable
-
         FILENAME = 'simple.txt'
         self._makeFile(FILENAME, printable_bytes)
 
@@ -107,15 +108,13 @@ class DirectoryImportContextTests(FilesystemTestBase, ConformsToISetupContext, C
 
     def test_readDataFile_subdir(self):
 
-        from string import printable
-
         FILENAME = 'subdir/nested.txt'
-        self._makeFile(FILENAME, printable)
+        self._makeFile(FILENAME, printable_bytes)
 
         site = DummySite('site').__of__(self.app)
         ctx = self._makeOne(site, self._PROFILE_PATH)
 
-        self.assertEqual(ctx.readDataFile(FILENAME), printable)
+        self.assertEqual(ctx.readDataFile(FILENAME), printable_bytes)
 
     def test_getLastModified_nonesuch(self):
         FILENAME = 'nonesuch.txt'
@@ -125,10 +124,9 @@ class DirectoryImportContextTests(FilesystemTestBase, ConformsToISetupContext, C
         self.assertEqual(ctx.getLastModified(FILENAME), None)
 
     def test_getLastModified_simple(self):
-        from string import printable
 
         FILENAME = 'simple.txt'
-        fqpath = self._makeFile(FILENAME, printable)
+        fqpath = self._makeFile(FILENAME, printable_bytes)
         WHEN = os.path.getmtime(fqpath)
         site = DummySite('site').__of__(self.app)
         ctx = self._makeOne(site, self._PROFILE_PATH)
@@ -138,12 +136,11 @@ class DirectoryImportContextTests(FilesystemTestBase, ConformsToISetupContext, C
         self.assertEqual(lm, DateTime(WHEN))
 
     def test_getLastModified_subdir(self):
-        from string import printable
 
         FILENAME = 'subdir.txt'
         SUBDIR = 'subdir'
         PATH = os.path.join(SUBDIR, FILENAME)
-        fqpath = self._makeFile(PATH, printable)
+        fqpath = self._makeFile(PATH, printable_bytes)
         WHEN = os.path.getmtime(fqpath)
         site = DummySite('site').__of__(self.app)
         ctx = self._makeOne(site, self._PROFILE_PATH)
@@ -153,12 +150,11 @@ class DirectoryImportContextTests(FilesystemTestBase, ConformsToISetupContext, C
         self.assertEqual(lm, DateTime(WHEN))
 
     def test_getLastModified_directory(self):
-        from string import printable
 
         FILENAME = 'subdir.txt'
         SUBDIR = 'subdir'
         PATH = os.path.join(SUBDIR, FILENAME)
-        fqpath = self._makeFile(PATH, printable)
+        fqpath = self._makeFile(PATH, printable_bytes)
         path, file = os.path.split(fqpath)
         WHEN = os.path.getmtime(path)
         site = DummySite('site').__of__(self.app)
@@ -179,10 +175,8 @@ class DirectoryImportContextTests(FilesystemTestBase, ConformsToISetupContext, C
 
     def test_isDirectory_simple(self):
 
-        from string import printable
-
         FILENAME = 'simple.txt'
-        self._makeFile(FILENAME, printable)
+        self._makeFile(FILENAME, printable_bytes)
 
         site = DummySite('site').__of__(self.app)
         ctx = self._makeOne(site, self._PROFILE_PATH)
@@ -191,11 +185,9 @@ class DirectoryImportContextTests(FilesystemTestBase, ConformsToISetupContext, C
 
     def test_isDirectory_nested(self):
 
-        from string import printable
-
         SUBDIR = 'subdir'
         FILENAME = os.path.join(SUBDIR, 'nested.txt')
-        self._makeFile(FILENAME, printable)
+        self._makeFile(FILENAME, printable_bytes)
 
         site = DummySite('site').__of__(self.app)
         ctx = self._makeOne(site, self._PROFILE_PATH)
@@ -204,11 +196,9 @@ class DirectoryImportContextTests(FilesystemTestBase, ConformsToISetupContext, C
 
     def test_isDirectory_directory(self):
 
-        from string import printable
-
         SUBDIR = 'subdir'
         FILENAME = os.path.join(SUBDIR, 'nested.txt')
-        self._makeFile(FILENAME, printable)
+        self._makeFile(FILENAME, printable_bytes)
 
         site = DummySite('site').__of__(self.app)
         ctx = self._makeOne(site, self._PROFILE_PATH)
@@ -226,23 +216,19 @@ class DirectoryImportContextTests(FilesystemTestBase, ConformsToISetupContext, C
 
     def test_listDirectory_root(self):
 
-        from string import printable
-
         site = DummySite('site').__of__(self.app)
         ctx = self._makeOne(site, self._PROFILE_PATH)
 
         FILENAME = 'simple.txt'
-        self._makeFile(FILENAME, printable)
+        self._makeFile(FILENAME, printable_bytes)
 
         self.assertEqual(len(ctx.listDirectory(None)), 1)
         self.failUnless(FILENAME in ctx.listDirectory(None))
 
     def test_listDirectory_simple(self):
 
-        from string import printable
-
         FILENAME = 'simple.txt'
-        self._makeFile(FILENAME, printable)
+        self._makeFile(FILENAME, printable_bytes)
 
         site = DummySite('site').__of__(self.app)
         ctx = self._makeOne(site, self._PROFILE_PATH)
@@ -251,11 +237,9 @@ class DirectoryImportContextTests(FilesystemTestBase, ConformsToISetupContext, C
 
     def test_listDirectory_nested(self):
 
-        from string import printable
-
         SUBDIR = 'subdir'
         FILENAME = os.path.join(SUBDIR, 'nested.txt')
-        self._makeFile(FILENAME, printable)
+        self._makeFile(FILENAME, printable_bytes)
 
         site = DummySite('site').__of__(self.app)
         ctx = self._makeOne(site, self._PROFILE_PATH)
@@ -264,11 +248,9 @@ class DirectoryImportContextTests(FilesystemTestBase, ConformsToISetupContext, C
 
     def test_listDirectory_single(self):
 
-        from string import printable
-
         SUBDIR = 'subdir'
         FILENAME = os.path.join(SUBDIR, 'nested.txt')
-        self._makeFile(FILENAME, printable)
+        self._makeFile(FILENAME, printable_bytes)
 
         site = DummySite('site').__of__(self.app)
         ctx = self._makeOne(site, self._PROFILE_PATH)
@@ -279,11 +261,10 @@ class DirectoryImportContextTests(FilesystemTestBase, ConformsToISetupContext, C
 
     def test_listDirectory_multiple(self):
 
-        from string import printable
         SUBDIR = 'subdir'
         FILENAME = os.path.join(SUBDIR, 'nested.txt')
-        self._makeFile(FILENAME, printable)
-        self._makeFile(os.path.join(SUBDIR, 'another.txt'), 'ABC')
+        self._makeFile(FILENAME, printable_bytes)
+        self._makeFile(os.path.join(SUBDIR, 'another.txt'), b'ABC')
 
         site = DummySite('site').__of__(self.app)
         ctx = self._makeOne(site, self._PROFILE_PATH)
@@ -295,14 +276,13 @@ class DirectoryImportContextTests(FilesystemTestBase, ConformsToISetupContext, C
 
     def test_listDirectory_skip_implicit(self):
 
-        from string import printable
         SUBDIR = 'subdir'
         FILENAME = os.path.join(SUBDIR, 'nested.txt')
-        self._makeFile(FILENAME, printable)
-        self._makeFile(os.path.join(SUBDIR, 'another.txt'), 'ABC')
-        self._makeFile(os.path.join(SUBDIR, 'another.txt~'), '123')
-        self._makeFile(os.path.join(SUBDIR, 'CVS/skip.txt'), 'DEF')
-        self._makeFile(os.path.join(SUBDIR, '.svn/skip.txt'), 'GHI')
+        self._makeFile(FILENAME, printable_bytes)
+        self._makeFile(os.path.join(SUBDIR, 'another.txt'), b'ABC')
+        self._makeFile(os.path.join(SUBDIR, 'another.txt~'), b'123')
+        self._makeFile(os.path.join(SUBDIR, 'CVS/skip.txt'), b'DEF')
+        self._makeFile(os.path.join(SUBDIR, '.svn/skip.txt'), b'GHI')
 
         site = DummySite('site').__of__(self.app)
         ctx = self._makeOne(site, self._PROFILE_PATH)
@@ -317,14 +297,13 @@ class DirectoryImportContextTests(FilesystemTestBase, ConformsToISetupContext, C
 
     def test_listDirectory_skip_explicit(self):
 
-        from string import printable
         SUBDIR = 'subdir'
         FILENAME = os.path.join(SUBDIR, 'nested.txt')
-        self._makeFile(FILENAME, printable)
-        self._makeFile(os.path.join(SUBDIR, 'another.txt'), 'ABC')
-        self._makeFile(os.path.join(SUBDIR, 'another.bak'), '123')
-        self._makeFile(os.path.join(SUBDIR, 'CVS/skip.txt'), 'DEF')
-        self._makeFile(os.path.join(SUBDIR, '.svn/skip.txt'), 'GHI')
+        self._makeFile(FILENAME, printable_bytes)
+        self._makeFile(os.path.join(SUBDIR, 'another.txt'), b'ABC')
+        self._makeFile(os.path.join(SUBDIR, 'another.bak'), b'123')
+        self._makeFile(os.path.join(SUBDIR, 'CVS/skip.txt'), b'DEF')
+        self._makeFile(os.path.join(SUBDIR, '.svn/skip.txt'), b'GHI')
 
         site = DummySite('site').__of__(self.app)
         ctx = self._makeOne(site, self._PROFILE_PATH)
@@ -369,23 +348,21 @@ class DirectoryExportContextTests(FilesystemTestBase, ConformsToISetupContext, C
 
     def test_writeDataFile_simple(self):
 
-        from string import printable, digits
         FILENAME = 'simple.txt'
-        fqname = self._makeFile(FILENAME, printable)
+        fqname = self._makeFile(FILENAME, printable_bytes)
 
         site = DummySite('site').__of__(self.app)
         ctx = self._makeOne(site, self._PROFILE_PATH)
 
-        ctx.writeDataFile(FILENAME, digits, 'text/plain')
+        ctx.writeDataFile(FILENAME, digits_bytes, 'text/plain')
 
-        self.assertEqual(open(fqname, 'rb').read(), digits)
+        self.assertEqual(open(fqname, 'rb').read(), digits_bytes)
 
     def test_writeDataFile_unicode(self):
 
-        from string import printable
         text = u'Kein Weltraum links vom Gerät'
         FILENAME = 'unicode.txt'
-        self._makeFile(FILENAME, printable)
+        self._makeFile(FILENAME, printable_bytes)
 
         site = DummySite('site').__of__(self.app)
         ctx = self._makeOne(site, self._PROFILE_PATH)
@@ -397,7 +374,6 @@ class DirectoryExportContextTests(FilesystemTestBase, ConformsToISetupContext, C
                           FILENAME, text, 'text/plain')
 
     def test_writeDataFile_new_subdir(self):
-        from string import digits
 
         SUBDIR = 'subdir'
         FILENAME = 'nested.txt'
@@ -406,38 +382,36 @@ class DirectoryExportContextTests(FilesystemTestBase, ConformsToISetupContext, C
         site = DummySite('site').__of__(self.app)
         ctx = self._makeOne(site, self._PROFILE_PATH)
 
-        ctx.writeDataFile(FILENAME, digits, 'text/plain', SUBDIR)
+        ctx.writeDataFile(FILENAME, digits_bytes, 'text/plain', SUBDIR)
 
-        self.assertEqual(open(fqname, 'rb').read(), digits)
+        self.assertEqual(open(fqname, 'rb').read(), digits_bytes)
 
     def test_writeDataFile_overwrite(self):
 
-        from string import printable, digits
         SUBDIR = 'subdir'
         FILENAME = 'nested.txt'
-        fqname = self._makeFile(os.path.join(SUBDIR, FILENAME), printable)
+        fqname = self._makeFile(os.path.join(SUBDIR, FILENAME), printable_bytes)
 
         site = DummySite('site').__of__(self.app)
         ctx = self._makeOne(site, self._PROFILE_PATH)
 
-        ctx.writeDataFile(FILENAME, digits, 'text/plain', SUBDIR)
+        ctx.writeDataFile(FILENAME, digits_bytes, 'text/plain', SUBDIR)
 
-        self.assertEqual(open(fqname, 'rb').read(), digits)
+        self.assertEqual(open(fqname, 'rb').read(), digits_bytes)
 
     def test_writeDataFile_existing_subdir(self):
 
-        from string import printable, digits
         SUBDIR = 'subdir'
         FILENAME = 'nested.txt'
-        self._makeFile(os.path.join(SUBDIR, 'another.txt'), printable)
+        self._makeFile(os.path.join(SUBDIR, 'another.txt'), printable_bytes)
         fqname = os.path.join(self._PROFILE_PATH, SUBDIR, FILENAME)
 
         site = DummySite('site').__of__(self.app)
         ctx = self._makeOne(site, self._PROFILE_PATH)
 
-        ctx.writeDataFile(FILENAME, digits, 'text/plain', SUBDIR)
+        ctx.writeDataFile(FILENAME, digits_bytes, 'text/plain', SUBDIR)
 
-        self.assertEqual(open(fqname, 'rb').read(), digits)
+        self.assertEqual(open(fqname, 'rb').read(), digits_bytes)
 
 
 class TarballImportContextTests(ZopeTestCase, ConformsToISetupContext,
@@ -545,17 +519,13 @@ class TarballImportContextTests(ZopeTestCase, ConformsToISetupContext,
 
     def test_readDataFile_simple(self):
 
-        from string import printable
-
         FILENAME = 'simple.txt'
 
-        site, tool, ctx = self._makeOne({FILENAME: printable})
+        site, tool, ctx = self._makeOne({FILENAME: printable_bytes})
 
         self.assertEqual(ctx.readDataFile(FILENAME), printable_bytes)
 
     def test_readDataFile_subdir(self):
-
-        from string import printable
 
         FILENAME = 'subdir.txt'
         SUBDIR = 'subdir'
@@ -572,37 +542,34 @@ class TarballImportContextTests(ZopeTestCase, ConformsToISetupContext,
         self.assertEqual(ctx.getLastModified(FILENAME), None)
 
     def test_getLastModified_simple(self):
-        from string import printable
 
         FILENAME = 'simple.txt'
         WHEN = 999999999.0
-        ctx = self._makeOne({FILENAME: printable}, mod_time=WHEN)[2]
+        ctx = self._makeOne({FILENAME: printable_bytes}, mod_time=WHEN)[2]
 
         lm = ctx.getLastModified(FILENAME)
         self.assertTrue(isinstance(lm, DateTime))
         self.assertEqual(lm, DateTime(WHEN))
 
     def test_getLastModified_subdir(self):
-        from string import printable
 
         FILENAME = 'subdir.txt'
         SUBDIR = 'subdir'
         PATH = '%s/%s' % (SUBDIR, FILENAME)
         WHEN = 999999999.0
-        ctx = self._makeOne({PATH: printable}, mod_time=WHEN)[2]
+        ctx = self._makeOne({PATH: printable_bytes}, mod_time=WHEN)[2]
 
         lm = ctx.getLastModified(PATH)
         self.assertTrue(isinstance(lm, DateTime))
         self.assertEqual(lm, DateTime(WHEN))
 
     def test_getLastModified_directory(self):
-        from string import printable
 
         FILENAME = 'subdir.txt'
         SUBDIR = 'subdir'
         PATH = '%s/%s' % (SUBDIR, FILENAME)
         WHEN = 999999999.0
-        ctx = self._makeOne({PATH: printable}, mod_time=WHEN)[2]
+        ctx = self._makeOne({PATH: printable_bytes}, mod_time=WHEN)[2]
 
         lm = ctx.getLastModified(SUBDIR)
         self.assertTrue(isinstance(lm, DateTime))
@@ -618,35 +585,29 @@ class TarballImportContextTests(ZopeTestCase, ConformsToISetupContext,
 
     def test_isDirectory_simple(self):
 
-        from string import printable
-
         FILENAME = 'simple.txt'
 
-        site, tool, ctx = self._makeOne({FILENAME: printable})
+        site, tool, ctx = self._makeOne({FILENAME: printable_bytes})
 
         self.assertEqual(ctx.isDirectory(FILENAME), False)
 
     def test_isDirectory_nested(self):
 
-        from string import printable
-
         SUBDIR = 'subdir'
         FILENAME = 'nested.txt'
         PATH = '%s/%s' % (SUBDIR, FILENAME)
 
-        site, tool, ctx = self._makeOne({PATH: printable})
+        site, tool, ctx = self._makeOne({PATH: printable_bytes})
 
         self.assertEqual(ctx.isDirectory(PATH), False)
 
     def test_isDirectory_subdir(self):
 
-        from string import printable
-
         SUBDIR = 'subdir'
         FILENAME = 'nested.txt'
         PATH = '%s/%s' % (SUBDIR, FILENAME)
 
-        site, tool, ctx = self._makeOne({PATH: printable})
+        site, tool, ctx = self._makeOne({PATH: printable_bytes})
 
         self.assertEqual(ctx.isDirectory(SUBDIR), True)
 
@@ -660,46 +621,38 @@ class TarballImportContextTests(ZopeTestCase, ConformsToISetupContext,
 
     def test_listDirectory_root(self):
 
-        from string import printable
-
         FILENAME = 'simple.txt'
 
-        site, tool, ctx = self._makeOne({FILENAME: printable})
+        site, tool, ctx = self._makeOne({FILENAME: printable_bytes})
 
         self.assertEqual(len(ctx.listDirectory(None)), 1)
         self.failUnless(FILENAME in ctx.listDirectory(None))
 
     def test_listDirectory_simple(self):
 
-        from string import printable
-
         FILENAME = 'simple.txt'
 
-        site, tool, ctx = self._makeOne({FILENAME: printable})
+        site, tool, ctx = self._makeOne({FILENAME: printable_bytes})
 
         self.assertEqual(ctx.listDirectory(FILENAME), None)
 
     def test_listDirectory_nested(self):
 
-        from string import printable
-
         SUBDIR = 'subdir'
         FILENAME = 'nested.txt'
         PATH = '%s/%s' % (SUBDIR, FILENAME)
 
-        site, tool, ctx = self._makeOne({PATH: printable})
+        site, tool, ctx = self._makeOne({PATH: printable_bytes})
 
         self.assertEqual(ctx.listDirectory(PATH), None)
 
     def test_listDirectory_single(self):
 
-        from string import printable
-
         SUBDIR = 'subdir'
         FILENAME = 'nested.txt'
         PATH = '%s/%s' % (SUBDIR, FILENAME)
 
-        site, tool, ctx = self._makeOne({PATH: printable})
+        site, tool, ctx = self._makeOne({PATH: printable_bytes})
 
         names = ctx.listDirectory(SUBDIR)
         self.assertEqual(len(names), 1)
@@ -707,7 +660,7 @@ class TarballImportContextTests(ZopeTestCase, ConformsToISetupContext,
 
     def test_listDirectory_multiple(self):
 
-        from string import printable, ascii_uppercase
+        from string import ascii_uppercase
 
         SUBDIR = 'subdir'
         FILENAME1 = 'nested.txt'
@@ -715,7 +668,7 @@ class TarballImportContextTests(ZopeTestCase, ConformsToISetupContext,
         FILENAME2 = 'another.txt'
         PATH2 = '%s/%s' % (SUBDIR, FILENAME2)
 
-        site, tool, ctx = self._makeOne({PATH1: printable, 
+        site, tool, ctx = self._makeOne({PATH1: printable_bytes,
                                          PATH2: ascii_uppercase})
 
         names = ctx.listDirectory(SUBDIR)
@@ -725,7 +678,7 @@ class TarballImportContextTests(ZopeTestCase, ConformsToISetupContext,
 
     def test_listDirectory_skip(self):
 
-        from string import printable, ascii_uppercase
+        from string import ascii_uppercase
 
         SUBDIR = 'subdir'
         FILENAME1 = 'nested.txt'
@@ -735,7 +688,7 @@ class TarballImportContextTests(ZopeTestCase, ConformsToISetupContext,
         FILENAME3 = 'another.bak'
         PATH3 = '%s/%s' % (SUBDIR, FILENAME3)
 
-        site, tool, ctx = self._makeOne({PATH1: printable,
+        site, tool, ctx = self._makeOne({PATH1: printable_bytes,
                                          PATH2: ascii_uppercase,
                                          PATH3: 'xyz'})
 
@@ -776,20 +729,19 @@ class TarballExportContextTests(ZopeTestCase, ConformsToISetupContext,
 
     def test_writeDataFile_simple(self):
 
-        from string import printable
         now = int(time.time())
 
         site = DummySite('site').__of__(self.app)
         ctx = self._getTargetClass()(site)
 
-        ctx.writeDataFile('foo.txt', printable, 'text/plain')
+        ctx.writeDataFile('foo.txt', printable_bytes, 'text/plain')
 
         fileish = BytesIO(ctx.getArchive())
 
         self._verifyTarballContents(fileish, ['foo.txt'], now)
-        self._verifyTarballEntry(fileish, 'foo.txt', printable)
+        self._verifyTarballEntry(fileish, 'foo.txt', printable_bytes)
 
-    def test_writeDataFile_umluats(self):
+    def test_writeDataFile_umlauts(self):
 
         text = u'Kein Weltraum links vom Gerät'
 
@@ -804,24 +756,19 @@ class TarballExportContextTests(ZopeTestCase, ConformsToISetupContext,
 
     def test_writeDataFile_multiple(self):
 
-        from string import printable
-        from string import digits
-
         site = DummySite('site').__of__(self.app)
         ctx = self._getTargetClass()(site)
 
-        ctx.writeDataFile('foo.txt', printable, 'text/plain')
-        ctx.writeDataFile('bar.txt', digits, 'text/plain')
+        ctx.writeDataFile('foo.txt', printable_bytes, 'text/plain')
+        ctx.writeDataFile('bar.txt', digits_bytes, 'text/plain')
 
         fileish = BytesIO(ctx.getArchive())
 
         self._verifyTarballContents(fileish, ['foo.txt', 'bar.txt'])
-        self._verifyTarballEntry(fileish, 'foo.txt', printable)
-        self._verifyTarballEntry(fileish, 'bar.txt', digits)
+        self._verifyTarballEntry(fileish, 'foo.txt', printable_bytes)
+        self._verifyTarballEntry(fileish, 'bar.txt', digits_bytes)
 
     def test_writeDataFile_PdataStreamIterator(self):
-
-        from string import printable
 
         site = DummySite('site').__of__(self.app)
         ctx = self._getTargetClass()(site)
@@ -837,25 +784,22 @@ class TarballExportContextTests(ZopeTestCase, ConformsToISetupContext,
         fileish = BytesIO(ctx.getArchive())
 
         self._verifyTarballContents(fileish, ['foo.txt'])
-        self._verifyTarballEntry(fileish, 'foo.txt', printable)
+        self._verifyTarballEntry(fileish, 'foo.txt', printable_bytes)
 
     def test_writeDataFile_subdir(self):
-
-        from string import printable
-        from string import digits
 
         site = DummySite('site').__of__(self.app)
         ctx = self._getTargetClass()(site)
 
-        ctx.writeDataFile('foo.txt', printable, 'text/plain')
-        ctx.writeDataFile('bar/baz.txt', digits, 'text/plain')
+        ctx.writeDataFile('foo.txt', printable_bytes, 'text/plain')
+        ctx.writeDataFile('bar/baz.txt', digits_bytes, 'text/plain')
 
         fileish = BytesIO(ctx.getArchive())
 
         self._verifyTarballContents(fileish,
                                     ['foo.txt', 'bar', 'bar/baz.txt'])
-        self._verifyTarballEntry(fileish, 'foo.txt', printable)
-        self._verifyTarballEntry(fileish, 'bar/baz.txt', digits)
+        self._verifyTarballEntry(fileish, 'foo.txt', printable_bytes)
+        self._verifyTarballEntry(fileish, 'bar/baz.txt', digits_bytes)
 
 
 class SnapshotExportContextTests(ZopeTestCase, ConformsToISetupContext,
@@ -922,7 +866,6 @@ class SnapshotExportContextTests(ZopeTestCase, ConformsToISetupContext,
 
     def test_writeDataFile_simple_plain_text(self):
 
-        from string import digits
         FILENAME = 'simple.txt'
         CONTENT_TYPE = 'text/plain'
 
@@ -931,7 +874,7 @@ class SnapshotExportContextTests(ZopeTestCase, ConformsToISetupContext,
         tool = site.setup_tool
         ctx = self._makeOne(tool, 'simple')
 
-        ctx.writeDataFile(FILENAME, digits, CONTENT_TYPE)
+        ctx.writeDataFile(FILENAME, digits_bytes, CONTENT_TYPE)
 
         snapshot = tool.snapshots._getOb('simple')
 
@@ -943,12 +886,12 @@ class SnapshotExportContextTests(ZopeTestCase, ConformsToISetupContext,
         self.assertEqual(fileobj.getId(), FILENAME)
         self.assertEqual(fileobj.meta_type, File.meta_type)
         self.assertEqual(fileobj.getContentType(), CONTENT_TYPE)
-        self.assertEqual(str(fileobj), digits)
+        self.assertEqual(fileobj.data, digits_bytes)
 
     def test_writeDataFile_simple_plain_text_unicode(self):
         FILENAME = 'simple.txt'
         CONTENT_TYPE = 'text/plain'
-        CONTENT = u'Unicode, with non-ASCII: %s.' % unichr(150)
+        CONTENT = u'Unicode, with non-ASCII: %s.' % six.unichr(150)
 
         site = DummySite('site').__of__(self.app)
         site.setup_tool = DummyTool('setup_tool')
@@ -1046,16 +989,13 @@ class SnapshotExportContextTests(ZopeTestCase, ConformsToISetupContext,
 
     def test_writeDataFile_multiple(self):
 
-        from string import printable
-        from string import digits
-
         site = DummySite('site').__of__(self.app)
         site.setup_tool = DummyTool('setup_tool')
         tool = site.setup_tool
         ctx = self._makeOne(tool, 'multiple')
 
-        ctx.writeDataFile('foo.txt', printable, 'text/plain')
-        ctx.writeDataFile('bar.txt', digits, 'text/plain')
+        ctx.writeDataFile('foo.txt', printable_bytes, 'text/plain')
+        ctx.writeDataFile('bar.txt', digits_bytes, 'text/plain')
 
         snapshot = tool.snapshots._getOb('multiple')
 
@@ -1166,43 +1106,38 @@ class SnapshotImportContextTests(ZopeTestCase, ConformsToISetupContext,
 
     def test_readDataFile_simple(self):
 
-        from string import printable
-
         SNAPSHOT_ID = 'readDataFile_simple'
         FILENAME = 'simple.txt'
 
         site, tool, ctx = self._makeOne(SNAPSHOT_ID)
-        self._makeFile(tool, SNAPSHOT_ID, FILENAME, printable)
+        self._makeFile(tool, SNAPSHOT_ID, FILENAME, printable_bytes)
 
-        self.assertEqual(ctx.readDataFile(FILENAME), printable)
+        self.assertEqual(ctx.readDataFile(FILENAME), printable_bytes)
 
     def test_readDataFile_Pdata(self):
 
-        from string import printable
         from OFS.Image import Pdata
 
         SNAPSHOT_ID = 'readDataFile_Pdata'
         FILENAME = 'pdata.txt'
 
         site, tool, ctx = self._makeOne(SNAPSHOT_ID)
-        self._makeFile(tool, SNAPSHOT_ID, FILENAME, Pdata(printable))
+        self._makeFile(tool, SNAPSHOT_ID, FILENAME, Pdata(printable_bytes))
 
-        self.assertEqual(ctx.readDataFile(FILENAME), printable)
+        self.assertEqual(ctx.readDataFile(FILENAME), printable_bytes)
 
     def test_readDataFile_subdir(self):
-
-        from string import printable
 
         SNAPSHOT_ID = 'readDataFile_subdir'
         FILENAME = 'subdir.txt'
         SUBDIR = 'subdir'
 
         site, tool, ctx = self._makeOne(SNAPSHOT_ID)
-        self._makeFile(tool, SNAPSHOT_ID, FILENAME, printable, subdir=SUBDIR)
+        self._makeFile(tool, SNAPSHOT_ID, FILENAME, printable_bytes, subdir=SUBDIR)
 
-        self.assertEqual(ctx.readDataFile(FILENAME, SUBDIR), printable)
+        self.assertEqual(ctx.readDataFile(FILENAME, SUBDIR), printable_bytes)
         self.assertEqual(ctx.readDataFile('%s/%s' % (SUBDIR, FILENAME)),
-                         printable)
+                         printable_bytes)
 
     def test_getLastModified_nonesuch(self):
         FILENAME = 'nonesuch.txt'
@@ -1212,20 +1147,18 @@ class SnapshotImportContextTests(ZopeTestCase, ConformsToISetupContext,
         self.assertEqual(ctx.getLastModified(FILENAME), None)
 
     def test_getLastModified_simple(self):
-        from string import printable
 
         FILENAME = 'simple.txt'
         WHEN = 999999999.0
         SNAPSHOT_ID = 'getLastModified_simple'
         tool, ctx = self._makeOne(SNAPSHOT_ID)[1:]
-        self._makeFile(tool, SNAPSHOT_ID, FILENAME, printable, mod_time=WHEN)
+        self._makeFile(tool, SNAPSHOT_ID, FILENAME, printable_bytes, mod_time=WHEN)
 
         lm = ctx.getLastModified(FILENAME)
         self.assertTrue(isinstance(lm, DateTime))
         self.assertEqual(lm, DateTime(WHEN))
 
     def test_getLastModified_subdir(self):
-        from string import printable
 
         FILENAME = 'subdir.txt'
         SUBDIR = 'subdir'
@@ -1233,7 +1166,7 @@ class SnapshotImportContextTests(ZopeTestCase, ConformsToISetupContext,
         WHEN = 999999999.0
         SNAPSHOT_ID = 'getLastModified_subdir'
         tool, ctx = self._makeOne(SNAPSHOT_ID)[1:]
-        self._makeFile(tool, SNAPSHOT_ID, FILENAME, printable, mod_time=WHEN,
+        self._makeFile(tool, SNAPSHOT_ID, FILENAME, printable_bytes, mod_time=WHEN,
                        subdir=SUBDIR)
 
         lm = ctx.getLastModified(PATH)
@@ -1241,14 +1174,13 @@ class SnapshotImportContextTests(ZopeTestCase, ConformsToISetupContext,
         self.assertEqual(lm, DateTime(WHEN))
 
     def test_getLastModified_directory(self):
-        from string import printable
 
         FILENAME = 'subdir.txt'
         SUBDIR = 'subdir'
         WHEN = 999999999.0
         SNAPSHOT_ID = 'getLastModified_directory'
         tool, ctx = self._makeOne(SNAPSHOT_ID)[1:]
-        self._makeFile(tool, SNAPSHOT_ID, FILENAME, printable, mod_time=WHEN,
+        self._makeFile(tool, SNAPSHOT_ID, FILENAME, printable_bytes, mod_time=WHEN,
                        subdir=SUBDIR)
 
         lm = ctx.getLastModified(SUBDIR)
@@ -1266,19 +1198,15 @@ class SnapshotImportContextTests(ZopeTestCase, ConformsToISetupContext,
 
     def test_isDirectory_simple(self):
 
-        from string import printable
-
         SNAPSHOT_ID = 'isDirectory_simple'
         FILENAME = 'simple.txt'
 
         site, tool, ctx = self._makeOne(SNAPSHOT_ID)
-        self._makeFile(tool, SNAPSHOT_ID, FILENAME, printable)
+        self._makeFile(tool, SNAPSHOT_ID, FILENAME, printable_bytes)
 
         self.assertEqual(ctx.isDirectory(FILENAME), False)
 
     def test_isDirectory_nested(self):
-
-        from string import printable
 
         SNAPSHOT_ID = 'isDirectory_nested'
         SUBDIR = 'subdir'
@@ -1286,20 +1214,18 @@ class SnapshotImportContextTests(ZopeTestCase, ConformsToISetupContext,
         PATH = '%s/%s' % (SUBDIR, FILENAME)
 
         site, tool, ctx = self._makeOne(SNAPSHOT_ID)
-        self._makeFile(tool, SNAPSHOT_ID, FILENAME, printable, subdir=SUBDIR)
+        self._makeFile(tool, SNAPSHOT_ID, FILENAME, printable_bytes, subdir=SUBDIR)
 
         self.assertEqual(ctx.isDirectory(PATH), False)
 
     def test_isDirectory_subdir(self):
-
-        from string import printable
 
         SNAPSHOT_ID = 'isDirectory_subdir'
         SUBDIR = 'subdir'
         FILENAME = 'nested.txt'
 
         site, tool, ctx = self._makeOne(SNAPSHOT_ID)
-        self._makeFile(tool, SNAPSHOT_ID, FILENAME, printable, subdir=SUBDIR)
+        self._makeFile(tool, SNAPSHOT_ID, FILENAME, printable_bytes, subdir=SUBDIR)
 
         self.assertEqual(ctx.isDirectory(SUBDIR), True)
 
@@ -1314,32 +1240,26 @@ class SnapshotImportContextTests(ZopeTestCase, ConformsToISetupContext,
 
     def test_listDirectory_root(self):
 
-        from string import printable
-
         SNAPSHOT_ID = 'listDirectory_root'
         FILENAME = 'simple.txt'
 
         site, tool, ctx = self._makeOne(SNAPSHOT_ID)
-        self._makeFile(tool, SNAPSHOT_ID, FILENAME, printable)
+        self._makeFile(tool, SNAPSHOT_ID, FILENAME, printable_bytes)
 
         self.assertEqual(len(ctx.listDirectory(None)), 1)
         self.failUnless(FILENAME in ctx.listDirectory(None))
 
     def test_listDirectory_simple(self):
 
-        from string import printable
-
         SNAPSHOT_ID = 'listDirectory_simple'
         FILENAME = 'simple.txt'
 
         site, tool, ctx = self._makeOne(SNAPSHOT_ID)
-        self._makeFile(tool, SNAPSHOT_ID, FILENAME, printable)
+        self._makeFile(tool, SNAPSHOT_ID, FILENAME, printable_bytes)
 
         self.assertEqual(ctx.listDirectory(FILENAME), None)
 
     def test_listDirectory_nested(self):
-
-        from string import printable
 
         SNAPSHOT_ID = 'listDirectory_nested'
         SUBDIR = 'subdir'
@@ -1347,20 +1267,18 @@ class SnapshotImportContextTests(ZopeTestCase, ConformsToISetupContext,
         PATH = '%s/%s' % (SUBDIR, FILENAME)
 
         site, tool, ctx = self._makeOne(SNAPSHOT_ID)
-        self._makeFile(tool, SNAPSHOT_ID, FILENAME, printable, subdir=SUBDIR)
+        self._makeFile(tool, SNAPSHOT_ID, FILENAME, printable_bytes, subdir=SUBDIR)
 
         self.assertEqual(ctx.listDirectory(PATH), None)
 
     def test_listDirectory_single(self):
-
-        from string import printable
 
         SNAPSHOT_ID = 'listDirectory_nested'
         SUBDIR = 'subdir'
         FILENAME = 'nested.txt'
 
         site, tool, ctx = self._makeOne(SNAPSHOT_ID)
-        self._makeFile(tool, SNAPSHOT_ID, FILENAME, printable, subdir=SUBDIR)
+        self._makeFile(tool, SNAPSHOT_ID, FILENAME, printable_bytes, subdir=SUBDIR)
 
         names = ctx.listDirectory(SUBDIR)
         self.assertEqual(len(names), 1)
@@ -1368,7 +1286,7 @@ class SnapshotImportContextTests(ZopeTestCase, ConformsToISetupContext,
 
     def test_listDirectory_multiple(self):
 
-        from string import printable, ascii_uppercase
+        from string import ascii_uppercase
 
         SNAPSHOT_ID = 'listDirectory_nested'
         SUBDIR = 'subdir'
@@ -1376,8 +1294,8 @@ class SnapshotImportContextTests(ZopeTestCase, ConformsToISetupContext,
         FILENAME2 = 'another.txt'
 
         site, tool, ctx = self._makeOne(SNAPSHOT_ID)
-        self._makeFile(tool, SNAPSHOT_ID, FILENAME1, printable, subdir=SUBDIR)
-        self._makeFile(tool, SNAPSHOT_ID, FILENAME2, ascii_uppercase, 
+        self._makeFile(tool, SNAPSHOT_ID, FILENAME1, printable_bytes, subdir=SUBDIR)
+        self._makeFile(tool, SNAPSHOT_ID, FILENAME2, ascii_uppercase.encode(), 
                        subdir=SUBDIR)
 
         names = ctx.listDirectory(SUBDIR)
@@ -1387,7 +1305,7 @@ class SnapshotImportContextTests(ZopeTestCase, ConformsToISetupContext,
 
     def test_listDirectory_skip(self):
 
-        from string import printable, ascii_uppercase
+        from string import ascii_uppercase
 
         SNAPSHOT_ID = 'listDirectory_nested'
         SUBDIR = 'subdir'
@@ -1396,10 +1314,10 @@ class SnapshotImportContextTests(ZopeTestCase, ConformsToISetupContext,
         FILENAME3 = 'another.bak'
 
         site, tool, ctx = self._makeOne(SNAPSHOT_ID)
-        self._makeFile(tool, SNAPSHOT_ID, FILENAME1, printable, subdir=SUBDIR)
-        self._makeFile(tool, SNAPSHOT_ID, FILENAME2, ascii_uppercase, 
+        self._makeFile(tool, SNAPSHOT_ID, FILENAME1, printable_bytes, subdir=SUBDIR)
+        self._makeFile(tool, SNAPSHOT_ID, FILENAME2, ascii_uppercase.encode(), 
                        subdir=SUBDIR)
-        self._makeFile(tool, SNAPSHOT_ID, FILENAME3, 'abc', subdir=SUBDIR)
+        self._makeFile(tool, SNAPSHOT_ID, FILENAME3, b'abc', subdir=SUBDIR)
 
         names = ctx.listDirectory(SUBDIR, skip=(FILENAME1,),
                                   skip_suffixes=('.bak',))

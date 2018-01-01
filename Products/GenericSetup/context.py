@@ -25,6 +25,7 @@ from tarfile import TarFile
 from tarfile import TarInfo
 
 from AccessControl.SecurityInfo import ClassSecurityInfo
+from Acquisition import aq_base
 from Acquisition import aq_inner
 from Acquisition import aq_parent
 from Acquisition import aq_self
@@ -288,15 +289,13 @@ class DirectoryExportContext( BaseContext ):
         if not os.path.exists( prefix ):
             os.makedirs( prefix )
 
-        mode = content_type.startswith( 'text/' ) and 'w' or 'wb'
-
-        return open( full_path, mode )
+        return open( full_path, 'wb' )
 
     security.declareProtected( ManagePortal, 'writeDataFile' )
     def writeDataFile( self, filename, text, content_type, subdir=None ):
         """ See IExportContext.
         """
-        if six.PY2 and isinstance(text, unicode):
+        if isinstance(text, six.text_type):
             raise ValueError("Unicode text is not supported, even if it only "
                              "contains ascii. Please encode your data. See "
                              "GS 1.7.0 changes for more")
@@ -440,11 +439,7 @@ class TarballExportContext( BaseContext ):
         if isinstance(text, six.binary_type):
             stream = BytesIO(text)
             info.size = len(text)
-        elif six.PY3 and isinstance(text, str):
-            text = text.encode()
-            stream = BytesIO(text)
-            info.size = len(text)
-        elif six.PY2 and isinstance(text, unicode):
+        elif isinstance(text, six.text_type):
             raise ValueError("Unicode text is not supported, even if it only "
                              "contains ascii. Please encode your data. See "
                              "GS 1.7.0 changes for more")
@@ -617,10 +612,10 @@ class SnapshotImportContext( BaseContext ):
             # OFS File Object have only one way to access the raw
             # data directly, __str__. The code explicitly forbids
             # to store unicode, so str() is safe here
-            data = str(object)
+            data = six.binary_type(aq_base(object.data))
         else:
             data = object.read()
-        if isinstance(data, unicode):
+        if isinstance(data, six.text_type):
             data = data.encode('utf-8')
         return data
 

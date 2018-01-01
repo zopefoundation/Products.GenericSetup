@@ -13,9 +13,9 @@
 """ Unit tests for GenericSetup tool.
 """
 
-import unittest
-
 import os
+import six
+import unittest
 from six import BytesIO
 
 from AccessControl.SecurityManagement import newSecurityManager
@@ -472,7 +472,7 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
 
         tool.runAllImportStepsFromProfile(PROFILE_ID)
 
-        prefix = ('import-all-%s' % PROFILE_ID).encode('UTF-8')
+        prefix = str('import-all-%s' % PROFILE_ID)
         logged = [x for x in tool.objectIds('File') if x.startswith(prefix)]
         self.assertEqual(len(logged), 1)
 
@@ -954,7 +954,7 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
         self._verifyTarballEntryXML(
             fileish, 'export_steps.xml', _EXTRAS_STEP_REGISTRIES_EXPORT_XML)
         self._verifyTarballEntry(
-            fileish, 'properties.ini', _PROPERTIES_INI % site.title)
+            fileish, 'properties.ini', (_PROPERTIES_INI % site.title).encode('utf-8'))
 
     def test_manage_importTarball(self):
         # Tests for importing a tarball with GenericSetup files.
@@ -979,8 +979,10 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
             # Create a tarball archive with rolemap.xml containing 'name' as
             # role.
             context = TarballExportContext(tool)
-            context.writeDataFile(
-                'rolemap.xml', ROLEMAP_XML % name, 'text/xml')
+            contents = ROLEMAP_XML % name
+            if isinstance(contents, six.text_type):
+                contents = contents.encode('utf-8')
+            context.writeDataFile('rolemap.xml', contents, 'text/xml')
             return context.getArchive()
 
         # Import first role.
@@ -1813,7 +1815,7 @@ def _exportPropertiesINI(context):
     site = context.getSite()
     text = _PROPERTIES_INI % site.title
 
-    context.writeDataFile('properties.ini', text, 'text/plain')
+    context.writeDataFile('properties.ini', text.encode('utf-8'), 'text/plain')
 
     return 'Exported properties'
 
@@ -1847,7 +1849,7 @@ class Test_exportToolset(_ToolsetSetup):
         self.assertEqual(len(context._wrote), 1)
         filename, text, content_type = context._wrote[0]
         self.assertEqual(filename, TOOLSET_XML)
-        self._compareDOM(text, _EMPTY_TOOLSET_XML)
+        self._compareDOM(text.decode('utf-8'), _EMPTY_TOOLSET_XML)
         self.assertEqual(content_type, 'text/xml')
 
     def test_normal(self):
@@ -1867,7 +1869,7 @@ class Test_exportToolset(_ToolsetSetup):
         self.assertEqual(len(context._wrote), 1)
         filename, text, content_type = context._wrote[0]
         self.assertEqual(filename, TOOLSET_XML)
-        self._compareDOM(text, _NORMAL_TOOLSET_XML)
+        self._compareDOM(text.decode('utf-8'), _NORMAL_TOOLSET_XML)
         self.assertEqual(content_type, 'text/xml')
 
 

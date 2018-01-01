@@ -18,7 +18,7 @@ import unittest
 from Products.GenericSetup.testing import BodyAdapterTestCase
 from Products.GenericSetup.testing import ExportImportZCMLLayer
 
-_PAGETEMPLATE_BODY = """\
+_PAGETEMPLATE_BODY = b"""\
 <html>
   <div>Foo</div>
 </html>

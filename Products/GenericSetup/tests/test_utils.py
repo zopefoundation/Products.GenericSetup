@@ -739,9 +739,9 @@ class PrettyDocumentTests(unittest.TestCase):
     def test_attr_quoting(self):
         from Products.GenericSetup.utils import PrettyDocument
         original = 'baz &nbsp;<bar>&"\''
-        expected = ('<?xml version="1.0" encoding="utf-8"?>\n'
-                    '<doc bar="" foo="baz '
-                    '&amp;nbsp;&lt;bar&gt;&amp;&quot;\'"/>\n')
+        expected = (b'<?xml version="1.0" encoding="utf-8"?>\n'
+                    b'<doc bar="" foo="baz '
+                    b'&amp;nbsp;&lt;bar&gt;&amp;&quot;\'"/>\n')
 
         doc = PrettyDocument()
         node = doc.createElement('doc')
@@ -756,8 +756,8 @@ class PrettyDocumentTests(unittest.TestCase):
     def test_text_quoting(self):
         from Products.GenericSetup.utils import PrettyDocument
         original = 'goo &nbsp;<hmm>&"\''
-        expected = ('<?xml version="1.0" encoding="utf-8"?>\n'
-                    '<doc>goo &amp;nbsp;&lt;hmm&gt;&amp;"\'</doc>\n')
+        expected = (b'<?xml version="1.0" encoding="utf-8"?>\n'
+                    b'<doc>goo &amp;nbsp;&lt;hmm&gt;&amp;"\'</doc>\n')
 
         doc = PrettyDocument()
         node = doc.createElement('doc')
