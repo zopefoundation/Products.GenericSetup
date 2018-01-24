@@ -1,24 +1,27 @@
 Changelog
 =========
 
-1.9.2 (unreleased)
-------------------
+1.10.1 (unreleased)
+-------------------
+
+- Nothing changed yet.
+
+
+1.10.0 (2017-12-07)
+-------------------
 
 Breaking changes:
 
 - Require Zope 4.0a6 as minimum supported Zope version.
 
-- Moved support for MailHost import/export into the 
-  Products.MailHost package to cut the hard dependency.
+- Moved support for `MailHost` import/export into the
+  ``Products.MailHost`` package to cut the hard dependency.
 
 New features:
 
-- added ``tox`` testing configuration
+- Added ``tox`` testing configuration.
 
-Bug fixes:
-
-- *add item here*
-
+- Pushed documentation to RTD: https://productsgenericsetup.readthedocs.io/.
 
 1.9.1 (2017-05-06)
 ------------------

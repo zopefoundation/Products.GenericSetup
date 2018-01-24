@@ -58,7 +58,8 @@ Other Documentation
    install
    handlers
    profiles
-   ../CHANGES
+   CHANGES
+   HISTORY
    CREDITS
    glossary
 

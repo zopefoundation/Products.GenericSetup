@@ -26,6 +26,7 @@ var
 /lib*
 pip-selfcheck.json
 /src
+docs/_build/
 
 # VirtualEnv on Windows:
 Include/

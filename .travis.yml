@@ -1,5 +1,4 @@
 sudo: false
-dist: trusty
 language: python
 cache:
     directories:
@@ -8,11 +7,17 @@ python:
   - "2.7"
   - "3.6"
 install:
-    - pip install zc.buildout
-# six version should be the same as the one in Zope versions file
-    - pip install six==1.10.0
-    - buildout
+    - pip install -U coverage coveralls
+    - pip install -U six==$(curl $(awk '$1 ==  "extends" {print $3}' buildout.cfg) 2>/dev/null | awk '$1 == "six" {print $3}')
+    - python bootstrap.py
+    - bin/buildout
 script:
-    - bin/test -pvc
+    - coverage run bin/test -vvc
+after_success:
+    - coveralls
 notifications:
     email: tseaver@palladion.com
+cache:
+    - pip: true
+    - directories:
+      - eggs/

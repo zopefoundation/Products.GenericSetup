@@ -29,7 +29,7 @@ setup(
     classifiers=[
         "Development Status :: 5 - Production/Stable",
         "Framework :: Plone",
-#       "Framework :: Plone :: 5.2",  # Zope4-compatible Plone
+        # "Framework :: Plone :: 5.2",  # Zope4-compatible Plone
         "Framework :: Zope2",
         "Intended Audience :: Developers",
         "License :: OSI Approved :: Zope Public License",
@@ -42,8 +42,8 @@ setup(
     keywords='web application server zope zope2 cmf',
     author="Zope Foundation and Contributors",
     author_email="zope-cmf@zope.org",
-    url="https://pypi.python.org/pypi/Products.GenericSetup",
-    license="ZPL 2.1 (http://www.zope.org/Resources/License/ZPL-2.1)",
+    url="https://github.com/zopefoundation/Products.GenericSetup",
+    license="ZPL 2.1",
     packages=find_packages(),
     include_package_data=True,
     namespace_packages=['Products'],
@@ -57,10 +57,16 @@ setup(
         'five.localsitemanager',
         'Products.PythonScripts',
         'Products.ZCatalog',
-        ],
+    ],
     tests_require=[
         'zope.testrunner',
+    ],
+    extras_require=dict(
+        docs=[
+            'Sphinx',
+            'repoze.sphinx.autointerface',
         ],
+    ),
     test_loader="zope.testrunner.eggsupport:SkipLayers",
     test_suite="Products.GenericSetup.tests",
     entry_points="""
@@ -69,4 +75,4 @@ setup(
     [distutils.commands]
     ftest = zope.testing.testrunner.eggsupport:ftest
     """,
-    )
+)
