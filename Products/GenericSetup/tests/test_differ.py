@@ -385,7 +385,7 @@ Index: sub/again.txt
 
 
 def _DateTime_as_bytes(dt):
-    return six.text_type(dt).encode()
+    return six.text_type(dt).encode('utf-8')
 
 
 def test_suite():

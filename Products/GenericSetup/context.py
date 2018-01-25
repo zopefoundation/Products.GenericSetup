@@ -490,7 +490,7 @@ class SnapshotExportContext( BaseContext ):
             subdir = filename[:sep]
             filename = filename[sep+1:]
 
-        if six.PY2 and isinstance(text, unicode):
+        if six.PY2 and isinstance(text, six.text_type):
             raise ValueError("Unicode text is not supported, even if it only "
                              "contains ascii. Please encode your data. See "
                              "GS 1.7.0 changes for more")
@@ -519,10 +519,10 @@ class SnapshotExportContext( BaseContext ):
     security.declarePrivate( '_createObjectByType' )
     def _createObjectByType( self, name, body, content_type ):
 
-        if six.PY2 and isinstance(body, unicode):
+        if six.PY2 and isinstance(body, six.text_type):
             encoding = self.getEncoding()
             if encoding is None:
-                body = body.encode()
+                body = body.encode('utf-8')
             else:
                 body = body.encode(encoding)
 

@@ -21,8 +21,6 @@ from BTrees.OOBTree import OOBTree
 from Products.GenericSetup.interfaces import IUpgradeSteps
 from Products.GenericSetup.registry import GlobalRegistryStorage
 
-import six
-
 
 def normalize_version(version):
     if isinstance(version, tuple):

@@ -163,7 +163,7 @@ class _ImportStepRegistryParser(_HandlerBase):
             deps = tuple(self._pending['dependencies'])
             self._pending['dependencies'] = deps
 
-            desc = str().join(self._pending['description'])
+            desc = ''.join(self._pending['description'])
             self._pending['description'] = desc
 
             self._parsed.append(self._pending)
@@ -214,7 +214,7 @@ class _ExportStepRegistryParser(_HandlerBase):
             if self._pending is None:
                 raise ValueError('No pending step!')
 
-            desc = str().join(self._pending['description'])
+            desc = ''.join(self._pending['description'])
             self._pending['description'] = desc
 
             self._parsed.append(self._pending)

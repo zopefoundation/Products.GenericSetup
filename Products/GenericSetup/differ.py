@@ -62,16 +62,16 @@ def unidiff( a
         b = b.splitlines()
 
     if isinstance(filename_a, six.text_type):
-        filename_a = filename_a.encode()
+        filename_a = filename_a.encode('utf-8')
 
     if isinstance(filename_b, six.text_type):
-        filename_b = filename_b.encode()
+        filename_b = filename_b.encode('utf-8')
 
     if not isinstance(timestamp_a, six.binary_type):
-        timestamp_a = six.text_type(timestamp_a).encode()
+        timestamp_a = six.text_type(timestamp_a).encode('utf-8')
 
     if not isinstance(timestamp_b, six.binary_type):
-        timestamp_b = six.text_type(timestamp_b).encode()
+        timestamp_b = six.text_type(timestamp_b).encode('utf-8')
 
     if ignore_blanks:
         a = [ x for x in a if not BLANKS_REGEX.match( x ) ]
@@ -138,18 +138,18 @@ class ConfigDiff:
             if not self._missing_as_empty and filename in removed:
 
                 if isDirectory:
-                    result.append( b'** Directory %s removed\n' % pathname.encode() )
+                    result.append( b'** Directory %s removed\n' % pathname.encode('utf-8') )
                     result.extend( self.compareDirectories( pathname ) )
                 else:
-                    result.append( b'** File %s removed\n' % pathname.encode() )
+                    result.append( b'** File %s removed\n' % pathname.encode('utf-8') )
 
             elif not self._missing_as_empty and filename in added:
 
                 if isDirectory:
-                    result.append( b'** Directory %s added\n' % pathname.encode() )
+                    result.append( b'** Directory %s added\n' % pathname.encode('utf-8') )
                     result.extend( self.compareDirectories( pathname ) )
                 else:
-                    result.append( b'** File %s added\n' % pathname.encode() )
+                    result.append( b'** File %s added\n' % pathname.encode('utf-8') )
 
             elif isDirectory:
 
@@ -219,7 +219,7 @@ class ConfigDiff:
         if len( diff_lines ) == 0: # No *real* difference found
             return []
 
-        diff_lines.insert( 0, b'Index: %s' % path.encode() )
+        diff_lines.insert( 0, b'Index: %s' % path.encode('utf-8') )
         diff_lines.insert( 1, b'=' * 67 )
 
         return diff_lines

@@ -41,8 +41,8 @@ from .conformance import ConformsToIChunkableExportContext
 from .conformance import ConformsToIChunkableImportContext
 
 
-printable_bytes = printable.encode()
-digits_bytes = digits.encode()
+printable_bytes = printable.encode('utf-8')
+digits_bytes = digits.encode('utf-8')
 
 
 class DummySite(Folder):
@@ -455,7 +455,7 @@ class TarballImportContextTests(ZopeTestCase, ConformsToISetupContext,
 
         for k, v in file_items:
             if isinstance(v, str):
-                v = v.encode()
+                v = v.encode('utf-8')
             _addMember(k, v, mod_time)
 
         archive.close()
@@ -1295,7 +1295,7 @@ class SnapshotImportContextTests(ZopeTestCase, ConformsToISetupContext,
 
         site, tool, ctx = self._makeOne(SNAPSHOT_ID)
         self._makeFile(tool, SNAPSHOT_ID, FILENAME1, printable_bytes, subdir=SUBDIR)
-        self._makeFile(tool, SNAPSHOT_ID, FILENAME2, ascii_uppercase.encode(), 
+        self._makeFile(tool, SNAPSHOT_ID, FILENAME2, ascii_uppercase.encode('utf-8'), 
                        subdir=SUBDIR)
 
         names = ctx.listDirectory(SUBDIR)
@@ -1315,7 +1315,7 @@ class SnapshotImportContextTests(ZopeTestCase, ConformsToISetupContext,
 
         site, tool, ctx = self._makeOne(SNAPSHOT_ID)
         self._makeFile(tool, SNAPSHOT_ID, FILENAME1, printable_bytes, subdir=SUBDIR)
-        self._makeFile(tool, SNAPSHOT_ID, FILENAME2, ascii_uppercase.encode(), 
+        self._makeFile(tool, SNAPSHOT_ID, FILENAME2, ascii_uppercase.encode('utf-8'), 
                        subdir=SUBDIR)
         self._makeFile(tool, SNAPSHOT_ID, FILENAME3, b'abc', subdir=SUBDIR)
 

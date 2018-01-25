@@ -15,8 +15,11 @@
 
 import unittest
 
+from Products.GenericSetup.interfaces import IBody
 from Products.GenericSetup.testing import BodyAdapterTestCase
 from Products.GenericSetup.testing import ExportImportZCMLLayer
+from Products.GenericSetup.testing import DummySetupEnviron
+from zope.component import getMultiAdapter
 
 _FOLDER_BODY = b"""\
 <?xml version="1.0" encoding="utf-8"?>
@@ -47,6 +50,13 @@ class FolderXMLAdapterTests(BodyAdapterTestCase, unittest.TestCase):
 
         self._obj = Folder('foo_folder')
         self._BODY = _FOLDER_BODY
+
+    def test_body_set_without_encoding(self):
+        context = DummySetupEnviron()
+        adapted = getMultiAdapter((self._obj, context), IBody)
+        adapted.body = self._BODY.replace(b'encoding="utf-8"', b'')
+        self._verifyImport(self._obj)
+        self.assertEqual(adapted.body, self._BODY)
 
 
 def test_suite():
