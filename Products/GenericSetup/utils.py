@@ -657,6 +657,8 @@ class PropertyManagerHelpers(object):
             node.setAttribute('name', prop_id)
 
             prop = self.context.getProperty(prop_id)
+            if prop is None:
+                continue
             if isinstance(prop, (tuple, list)):
                 for value in prop:
                     if isinstance(value, six.binary_type):
