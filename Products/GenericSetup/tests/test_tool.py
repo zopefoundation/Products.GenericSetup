@@ -1056,8 +1056,7 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
         def normalize_xml(xml):
             # using this might mask a real problem on windows, but so far the
             # different newlines just caused problems in this test
-            lines = filter(None,
-                           [line.strip() for line in xml.splitlines() if line])
+            lines = [line.strip() for line in xml.splitlines() if line.strip()]
             return ' '.join(lines)
 
         fileobj = snapshot._getOb('import_steps.xml')

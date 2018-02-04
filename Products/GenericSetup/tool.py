@@ -358,7 +358,7 @@ class SetupTool(Folder):
             message = self._doRunImportStep(step, context)
             messages[step] = message or ''
 
-        message_list = list(filter(None, [message]))
+        message_list = [i for i in [message] if i]
         message_list.extend([ '%s: %s' % x[1:] for x in context.listNotes() ])
         messages[step_id] = '\n'.join(message_list)
 
@@ -1431,7 +1431,7 @@ class SetupTool(Folder):
                     message = 'step skipped'
                 else:
                     message = self._doRunImportStep(step, context)
-                message_list = list(filter(None, [message]))
+                message_list = [i for i in [message] if i]
                 message_list.extend([ '%s: %s' % x[1:]
                                       for x in context.listNotes() ])
                 messages[step] = '\n'.join(message_list)
@@ -1496,7 +1496,7 @@ class SetupTool(Folder):
             report = report.encode('latin-1')
 
         # BBB: ObjectManager won't allow unicode IDS
-        if six.PY2 and isinstance(basename, unicode):
+        if isinstance(basename, six.text_type):
             basename = basename.encode('UTF-8')
 
         name = basename
