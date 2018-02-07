@@ -4,7 +4,8 @@ Changelog
 1.10.1 (unreleased)
 -------------------
 
-- Nothing changed yet.
+- Prevent AttributeError 'NoneType' object has no attribute 'decode'.
+  [maurits]
 
 
 1.10.0 (2017-12-07)
