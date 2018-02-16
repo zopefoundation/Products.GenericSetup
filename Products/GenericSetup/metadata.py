@@ -14,6 +14,7 @@
 """
 
 import os
+from xml.parsers.expat import ExpatError
 
 from Products.GenericSetup.utils import _getProductPath
 from Products.GenericSetup.utils import CONVERTER
@@ -53,7 +54,10 @@ class ProfileMetadata( ImportConfiguratorBase ):
             return {}
 
         file = open( full_path, 'r' )
-        return self.parseXML( file.read() )
+        try:
+            return self.parseXML( file.read() )
+        except ExpatError as e:
+            raise ExpatError('%s: %s' % (full_path, e))
 
     def _getImportMapping( self ):
 
