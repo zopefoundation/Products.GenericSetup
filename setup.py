@@ -56,7 +56,7 @@ setup(
     install_requires=[
         'setuptools',
         'Zope2 >= 2.12.3',
-        'five.localsitemanager',
+        'five.localsitemanager < 3',
         # 'Products.MailHost', # BBB: disabled for Zope 2.12
         # 'Products.PythonScripts', # BBB: disabled for Zope 2.12
         ],
