@@ -15,6 +15,7 @@
 
 import os
 import shutil
+import six
 from tarfile import TarFile
 
 from AccessControl.SecurityManagement import newSecurityManager
@@ -85,6 +86,9 @@ def _clearTestDirectory(root_path):
 
 def _makeTestFile(filename, root_path, contents):
 
+    if isinstance(contents, six.text_type):
+        contents = contents.encode('utf-8')
+
     path, filename = os.path.split(filename)
 
     subdir = os.path.join(root_path, path)
@@ -143,7 +147,7 @@ class TarballTester(DOMComparator):
         tarfile = TarFile.open('foo.tar.gz', fileobj=fileish, mode='r:gz')
         extract = tarfile.extractfile(entry_name)
         found = extract.read()
-        self._compareDOM(found, data)
+        self._compareDOM(found.decode('utf-8'), data)
 
 
 @implementer(IExportContext)

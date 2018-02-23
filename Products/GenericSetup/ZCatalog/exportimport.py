@@ -75,8 +75,7 @@ class ZCatalogXMLAdapter(XMLAdapterBase, ObjectManagerHelpers,
     def _extractIndexes(self):
         fragment = self._doc.createDocumentFragment()
         indexes = self.context.getIndexObjects()[:]
-        sort_func = cmp_to_key(lambda x, y: cmp(x.getId(), y.getId()))
-        indexes.sort(key=sort_func)
+        indexes.sort(key=lambda x: x.getId())
         for idx in indexes:
             exporter = queryMultiAdapter((idx, self.environ), INode)
             if exporter:

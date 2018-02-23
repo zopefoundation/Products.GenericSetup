@@ -17,13 +17,15 @@ Wrappers representing the state of an import / export operation.
 
 import logging
 import os
-from six.moves import cStringIO
+import six
+from io import BytesIO
 import time
 from tarfile import DIRTYPE
 from tarfile import TarFile
 from tarfile import TarInfo
 
 from AccessControl.SecurityInfo import ClassSecurityInfo
+from Acquisition import aq_base
 from Acquisition import aq_inner
 from Acquisition import aq_parent
 from Acquisition import aq_self
@@ -287,15 +289,13 @@ class DirectoryExportContext( BaseContext ):
         if not os.path.exists( prefix ):
             os.makedirs( prefix )
 
-        mode = content_type.startswith( 'text/' ) and 'w' or 'wb'
-
-        return open( full_path, mode )
+        return open( full_path, 'wb' )
 
     security.declareProtected( ManagePortal, 'writeDataFile' )
     def writeDataFile( self, filename, text, content_type, subdir=None ):
         """ See IExportContext.
         """
-        if isinstance(text, unicode):
+        if isinstance(text, six.text_type):
             raise ValueError("Unicode text is not supported, even if it only "
                              "contains ascii. Please encode your data. See "
                              "GS 1.7.0 changes for more")
@@ -314,7 +314,7 @@ class TarballImportContext( BaseContext ):
     def __init__( self, tool, archive_bits, encoding=None,
                   should_purge=False ):
         BaseContext.__init__( self, tool, encoding )
-        self._archive_stream = cStringIO(archive_bits)
+        self._archive_stream = BytesIO(archive_bits)
         self._archive = TarFile.open( 'foo.bar', 'r:gz'
                                     , self._archive_stream )
         self._should_purge = bool( should_purge )
@@ -411,7 +411,7 @@ class TarballExportContext( BaseContext ):
         archive_name = ( 'setup_tool-%4d%02d%02d%02d%02d%02d.tar.gz'
                        % timestamp[:6] )
 
-        self._archive_stream = cStringIO()
+        self._archive_stream = BytesIO()
         self._archive_filename = archive_name
         self._archive = TarFile.open( archive_name, 'w:gz'
                                     , self._archive_stream )
@@ -436,10 +436,10 @@ class TarballExportContext( BaseContext ):
             parents.pop()
 
         info = TarInfo(filename)
-        if isinstance(text, str):
-            stream = cStringIO(text)
+        if isinstance(text, six.binary_type):
+            stream = BytesIO(text)
             info.size = len(text)
-        elif isinstance(text, unicode):
+        elif isinstance(text, six.text_type):
             raise ValueError("Unicode text is not supported, even if it only "
                              "contains ascii. Please encode your data. See "
                              "GS 1.7.0 changes for more")
@@ -490,7 +490,7 @@ class SnapshotExportContext( BaseContext ):
             subdir = filename[:sep]
             filename = filename[sep+1:]
 
-        if isinstance(text, unicode):
+        if six.PY2 and isinstance(text, six.text_type):
             raise ValueError("Unicode text is not supported, even if it only "
                              "contains ascii. Please encode your data. See "
                              "GS 1.7.0 changes for more")
@@ -519,12 +519,12 @@ class SnapshotExportContext( BaseContext ):
     security.declarePrivate( '_createObjectByType' )
     def _createObjectByType( self, name, body, content_type ):
 
-        if isinstance( body, unicode ):
+        if six.PY2 and isinstance(body, six.text_type):
             encoding = self.getEncoding()
             if encoding is None:
-                body = body.encode()
+                body = body.encode('utf-8')
             else:
-                body = body.encode( encoding )
+                body = body.encode(encoding)
 
         if name.endswith('.py'):
 
@@ -612,10 +612,10 @@ class SnapshotImportContext( BaseContext ):
             # OFS File Object have only one way to access the raw
             # data directly, __str__. The code explicitly forbids
             # to store unicode, so str() is safe here
-            data = str(object)
+            data = six.binary_type(aq_base(object.data))
         else:
             data = object.read()
-        if isinstance(data, unicode):
+        if isinstance(data, six.text_type):
             data = data.encode('utf-8')
         return data
 

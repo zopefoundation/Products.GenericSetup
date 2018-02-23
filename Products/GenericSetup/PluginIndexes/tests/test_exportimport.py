@@ -18,43 +18,43 @@ import unittest
 from Products.GenericSetup.testing import NodeAdapterTestCase
 from Products.GenericSetup.testing import ExportImportZCMLLayer
 
-_DATE_XML = """\
+_DATE_XML = b"""\
 <index name="foo_date" meta_type="DateIndex">
  <property name="index_naive_time_as_local">True</property>
 </index>
 """
 
-_DATERANGE_XML = """\
+_DATERANGE_XML = b"""\
 <index name="foo_daterange" meta_type="DateRangeIndex" since_field="bar"
    until_field="baz"/>
 """
 
-_FIELD_XML = """\
+_FIELD_XML = b"""\
 <index name="foo_field" meta_type="FieldIndex">
  <indexed_attr value="bar"/>
 </index>
 """
 
-_KEYWORD_XML = """\
+_KEYWORD_XML = b"""\
 <index name="foo_keyword" meta_type="KeywordIndex">
  <indexed_attr value="bar"/>
 </index>
 """
 
-_ODDBALL_XML = """\
+_ODDBALL_XML = b"""\
 <index name="foo_keyword" meta_type="OddballIndex">
 </index>
 """
 
-_PATH_XML = """\
+_PATH_XML = b"""\
 <index name="foo_path" meta_type="PathIndex"/>
 """
 
-_SET_XML = """\
+_SET_XML = b"""\
 <filtered_set name="bar" meta_type="PythonFilteredSet" expression="True"/>
 """
 
-_TOPIC_XML = """\
+_TOPIC_XML = b"""\
 <index name="foo_topic" meta_type="TopicIndex">
  <filtered_set name="bar" meta_type="PythonFilteredSet" expression="True"/>
  <filtered_set name="baz" meta_type="PythonFilteredSet" expression="False"/>
@@ -76,6 +76,9 @@ class DateIndexNodeAdapterTests(NodeAdapterTestCase, unittest.TestCase):
         self._obj = DateIndex('foo_date')
         self._XML = _DATE_XML
 
+    def _verifyImport(self, obj):
+        self.assertEqual(obj.id, 'foo_date')
+
 
 class DateRangeIndexNodeAdapterTests(NodeAdapterTestCase, unittest.TestCase):
 
@@ -95,6 +98,11 @@ class DateRangeIndexNodeAdapterTests(NodeAdapterTestCase, unittest.TestCase):
         self._obj = DateRangeIndex('foo_daterange')
         self._XML = _DATERANGE_XML
 
+    def _verifyImport(self, obj):
+        self.assertEqual(obj.id, 'foo_daterange')
+        self.assertEqual(obj._since_field, 'bar')
+        self.assertEqual(obj._until_field, 'baz')
+
 
 class FieldIndexNodeAdapterTests(NodeAdapterTestCase, unittest.TestCase):
 
@@ -112,6 +120,10 @@ class FieldIndexNodeAdapterTests(NodeAdapterTestCase, unittest.TestCase):
         from Products.PluginIndexes.FieldIndex.FieldIndex import FieldIndex
         self._obj = FieldIndex('foo_field')
         self._XML = _FIELD_XML
+
+    def _verifyImport(self, obj):
+        self.assertEqual(obj.id, 'foo_field')
+        self.assertEqual(obj.indexed_attrs, ['bar'])
 
 
 class KeywordIndexNodeAdapterTests(NodeAdapterTestCase, unittest.TestCase):
@@ -132,6 +144,10 @@ class KeywordIndexNodeAdapterTests(NodeAdapterTestCase, unittest.TestCase):
         self._obj = KeywordIndex('foo_keyword')
         self._XML = _KEYWORD_XML
 
+    def _verifyImport(self, obj):
+        self.assertEqual(obj.id, 'foo_keyword')
+        self.assertEqual(obj.indexed_attrs, ['bar'])
+
 
 class PathIndexNodeAdapterTests(NodeAdapterTestCase, unittest.TestCase):
 
@@ -146,6 +162,9 @@ class PathIndexNodeAdapterTests(NodeAdapterTestCase, unittest.TestCase):
         from Products.PluginIndexes.PathIndex.PathIndex import PathIndex
         self._obj = PathIndex('foo_path')
         self._XML = _PATH_XML
+
+    def _verifyImport(self, obj):
+        self.assertEqual(obj.id, 'foo_path')
 
 
 class FilteredSetNodeAdapterTests(NodeAdapterTestCase, unittest.TestCase):
@@ -166,6 +185,10 @@ class FilteredSetNodeAdapterTests(NodeAdapterTestCase, unittest.TestCase):
         self._obj = PythonFilteredSet('bar', '')
         self._XML = _SET_XML
 
+    def _verifyImport(self, obj):
+        self.assertEqual(obj.id, 'bar')
+        self.assertEqual(obj.getExpression(), 'True')
+
 
 class TopicIndexNodeAdapterTests(NodeAdapterTestCase, unittest.TestCase):
 
@@ -184,6 +207,10 @@ class TopicIndexNodeAdapterTests(NodeAdapterTestCase, unittest.TestCase):
         from Products.PluginIndexes.TopicIndex.TopicIndex import TopicIndex
         self._obj = TopicIndex('foo_topic')
         self._XML = _TOPIC_XML
+
+    def _verifyImport(self, obj):
+        self.assertEqual(obj.id, 'foo_topic')
+        self.assertEqual(len(obj.filteredSets), 2)
 
 
 class UnchangedTests(unittest.TestCase):

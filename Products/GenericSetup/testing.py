@@ -13,6 +13,8 @@
 """Node adapter testing utils.
 """
 
+import six
+
 from Testing.ZopeTestCase.layer import ZopeLite
 
 from xml.dom.minidom import parseString
@@ -82,7 +84,7 @@ class BodyAdapterTestCase(_AdapterTestCaseBase):
         context = DummySetupEnviron()
         adapted = getMultiAdapter((self._obj, context), IBody)
         self.assertEqual(adapted.body, self._BODY)
-        self.assertTrue(isinstance(adapted.body, str))
+        self.assertTrue(isinstance(adapted.body, six.binary_type))
 
     def test_body_set(self):
         context = DummySetupEnviron()
@@ -114,27 +116,27 @@ class NodeAdapterTestCase(_AdapterTestCaseBase):
         self._populate(self._obj)
         context = DummySetupEnviron()
         adapted = getMultiAdapter((self._obj, context), INode)
-        self.assertEqual(adapted.node.toprettyxml(' '), self._XML)
+        self.assertEqual(adapted.node.toprettyxml(' ', encoding='utf-8'), self._XML)
 
     def test_node_set(self):
         context = DummySetupEnviron()
         adapted = getMultiAdapter((self._obj, context), INode)
         adapted.node = parseString(self._XML).documentElement
         self._verifyImport(self._obj)
-        self.assertEqual(adapted.node.toprettyxml(' '), self._XML)
+        self.assertEqual(adapted.node.toprettyxml(' ', encoding='utf-8'), self._XML)
 
         # now in update mode
         context._should_purge = False
         adapted = getMultiAdapter((self._obj, context), INode)
         adapted.node = parseString(self._XML).documentElement
         self._verifyImport(self._obj)
-        self.assertEqual(adapted.node.toprettyxml(' '), self._XML)
+        self.assertEqual(adapted.node.toprettyxml(' ', encoding='utf-8'), self._XML)
 
         # and again in update mode
         adapted = getMultiAdapter((self._obj, context), INode)
         adapted.node = parseString(self._XML).documentElement
         self._verifyImport(self._obj)
-        self.assertEqual(adapted.node.toprettyxml(' '), self._XML)
+        self.assertEqual(adapted.node.toprettyxml(' ', encoding='utf-8'), self._XML)
 
 
 class ExportImportZCMLLayer(ZopeLite):
@@ -146,30 +148,14 @@ class ExportImportZCMLLayer(ZopeLite):
         import Products.Five
         import Products.GenericSetup
         import zope.traversing
+        from Zope2.App import zcml
 
-        # BBB for Zope 2.12
-        try:
-            from Zope2.App import zcml
-        except ImportError:
-            from Products.Five import zcml
-
-        try:
-            zcml.load_config('meta.zcml', Zope2.App)
-        except IOError:  # Zope <= 2.12.x
-            pass
-
+        zcml.load_config('meta.zcml', Zope2.App)
         zcml.load_config('meta.zcml', Products.Five)
         zcml.load_config('meta.zcml', Products.GenericSetup)
-
-        try:
-            zcml.load_config('permissions.zcml', AccessControl)
-        except IOError:  # Zope <= 2.12.x
-            pass
-
+        zcml.load_config('permissions.zcml', AccessControl)
         zcml.load_config('configure.zcml', zope.traversing)
-
         zcml.load_config('permissions.zcml', Products.Five)
-
         zcml.load_config('configure.zcml', Products.GenericSetup)
 
     @classmethod

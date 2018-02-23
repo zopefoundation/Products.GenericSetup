@@ -8,6 +8,7 @@
 .eggs
 .installed.cfg
 .mr.developer.cfg
+.Python
 .tox
 bin
 build
@@ -21,6 +22,10 @@ local.cfg
 parts
 src
 var
+/include
+/lib*
+pip-selfcheck.json
+/src
 docs/_build/
 
 # VirtualEnv on Windows:
