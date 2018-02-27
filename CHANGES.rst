@@ -14,7 +14,8 @@ New features:
 
 Bug fixes:
 
-- *add item here*
+- Require five.localsitemanager less than version 3.
+  Version 3 requires a too new Zope2 version.
 
 
 1.8.8 (2017-05-06)
