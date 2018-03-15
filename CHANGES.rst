@@ -4,6 +4,9 @@ Changelog
 1.10.1 (unreleased)
 -------------------
 
+- When ``metadata.xml`` parsing fails, show the filename in the ``ExpatError``.
+  Fixes `Plone issue 2303 <https://github.com/plone/Products.CMFPlone/issues/2303>`_.
+
 - Prevent AttributeError 'NoneType' object has no attribute 'decode'.
   [maurits]
 
