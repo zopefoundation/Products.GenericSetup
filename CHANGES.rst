@@ -14,6 +14,9 @@ New features:
 
 Bug fixes:
 
+- When ``metadata.xml`` parsing fails, show the filename in the ``ExpatError``.
+  Fixes `Plone issue 2303 <https://github.com/plone/Products.CMFPlone/issues/2303>`_.
+
 - Require five.localsitemanager less than version 3.
   Version 3 requires a too new Zope2 version.
 
