@@ -665,7 +665,7 @@ class PropertyManagerHelpers(object):
             prop = self.context.getProperty(prop_id)
             if isinstance(prop, (tuple, list)):
                 for value in prop:
-                    if isinstance(value, six.binary_type):
+                    if isinstance(value, six.binary_type) and self._encoding:
                         value = value.decode(self._encoding)
                     child = self._doc.createElement('element')
                     child.setAttribute('value', value)
@@ -678,11 +678,11 @@ class PropertyManagerHelpers(object):
                         prop = six.u(str(prop).rsplit(None, 1)[0])
                     else:
                         prop = six.u(str(prop))
-                elif isinstance(prop, six.binary_type):
+                elif isinstance(prop, six.binary_type) and self._encoding:
                     prop = prop.decode(self._encoding)
                 elif isinstance(prop, (six.integer_types, float)):
                     prop = six.u(str(prop))
-                elif not isinstance(prop, six.string_types):
+                elif not isinstance(prop, six.string_types) and self._encoding:
                     prop = prop.decode(self._encoding)
                 child = self._doc.createTextNode(prop)
                 node.appendChild(child)
@@ -758,7 +758,9 @@ class PropertyManagerHelpers(object):
             remove_elements = []
             for sub in child.childNodes:
                 if sub.nodeName == 'element':
-                    value = sub.getAttribute('value').encode(self._encoding)
+                    value = sub.getAttribute('value')
+                    if six.PY2:
+                        value = value.encode(self._encoding)
                     if self._convertToBoolean(sub.getAttribute('remove')
                                           or 'False'):
                         remove_elements.append(value)
@@ -777,7 +779,9 @@ class PropertyManagerHelpers(object):
             else:
                 # if we pass a *string* to _updateProperty, all other values
                 # are converted to the right type
-                prop_value = self._getNodeText(child).encode(self._encoding)
+                prop_value = self._getNodeText(child)
+                if six.PY2:
+                    prop_value = prop_value.encode(self._encoding)
 
             if not self._convertToBoolean(child.getAttribute('purge')
                                           or 'True'):
