@@ -9,7 +9,7 @@ python:
 env:
 matrix:
     allow_failures:
-    - python: 3.6
+    - python: "3.6"
 install:
     - pip install -U coverage coveralls
     - pip install -U six==$(curl $(awk '$1 ==  "extends" {print $3}' buildout.cfg) 2>/dev/null | awk '$1 == "six" {print $3}')
