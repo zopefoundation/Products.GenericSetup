@@ -13,7 +13,6 @@
 """ Classes:  SetupTool
 """
 
-import functools
 import logging
 import os
 import six
@@ -83,7 +82,7 @@ def exportStepRegistries(context):
 
     import_step_registry = setup_tool.getImportStepRegistry()
     if len(import_step_registry.listSteps()) > 0:
-        import_steps_xml = import_step_registry.generateXML()
+        import_steps_xml = import_step_registry.generateXML().encode('utf-8')
         context.writeDataFile('import_steps.xml', import_steps_xml, 'text/xml')
         logger.info('Local import steps exported.')
     else:
@@ -91,7 +90,7 @@ def exportStepRegistries(context):
 
     export_step_registry = setup_tool.getExportStepRegistry()
     if len(export_step_registry.listSteps()) > 0:
-        export_steps_xml = export_step_registry.generateXML()
+        export_steps_xml = export_step_registry.generateXML().encode('utf-8')
         context.writeDataFile('export_steps.xml', export_steps_xml, 'text/xml')
         logger.info('Local export steps exported.')
     else:
@@ -161,7 +160,7 @@ def exportToolset(context):
     toolset = setup_tool.getToolsetRegistry()
     logger = context.getLogger('toolset')
 
-    xml = toolset.generateXML()
+    xml = toolset.generateXML().encode('utf-8')
     context.writeDataFile(TOOLSET_XML, xml, 'text/xml')
 
     logger.info('Toolset exported.')
@@ -359,7 +358,7 @@ class SetupTool(Folder):
             message = self._doRunImportStep(step, context)
             messages[step] = message or ''
 
-        message_list = list(filter(None, [message]))
+        message_list = [i for i in [message] if i]
         message_list.extend([ '%s: %s' % x[1:] for x in context.listNotes() ])
         messages[step_id] = '\n'.join(message_list)
 
@@ -714,8 +713,7 @@ class SetupTool(Folder):
                 base.append(info)
             else:
                 ext.append(info)
-        sort_func = functools.cmp_to_key(lambda x, y: cmp(x['id'], y['id']))
-        ext.sort(key=sort_func)
+        ext.sort(key=lambda x: x['id'])
         return base + ext
 
     security.declareProtected(ManagePortal, 'listContextInfos')
@@ -1433,7 +1431,7 @@ class SetupTool(Folder):
                     message = 'step skipped'
                 else:
                     message = self._doRunImportStep(step, context)
-                message_list = list(filter(None, [message]))
+                message_list = [i for i in [message] if i]
                 message_list.extend([ '%s: %s' % x[1:]
                                       for x in context.listNotes() ])
                 messages[step] = '\n'.join(message_list)
@@ -1494,11 +1492,11 @@ class SetupTool(Folder):
             lines.append('')
 
         report = '\n'.join(lines)
-        if isinstance(report, unicode):
+        if isinstance(report, six.text_type):
             report = report.encode('latin-1')
 
         # BBB: ObjectManager won't allow unicode IDS
-        if isinstance(basename, unicode):
+        if isinstance(basename, six.text_type) and six.PY2:
             basename = basename.encode('UTF-8')
 
         name = basename

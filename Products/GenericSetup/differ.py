@@ -13,7 +13,7 @@
 """ Diff utilities for comparing configurations.
 """
 
-from difflib import unified_diff
+import difflib
 import re
 import six
 
@@ -22,15 +22,15 @@ from App.class_init import InitializeClass
 
 from Products.GenericSetup.interfaces import SKIPPED_FILES
 
-BLANKS_REGEX = re.compile( r'^\s*$' )
+BLANKS_REGEX = re.compile(b'^\\s*$')
 
 
 def unidiff( a
            , b
-           , filename_a='original'
-           , timestamp_a=''
-           , filename_b='modified'
-           , timestamp_b=''
+           , filename_a=b'original'
+           , timestamp_a=b''
+           , filename_b=b'modified'
+           , timestamp_b=b''
            , ignore_blanks=False
            ):
     r"""Compare two sequences of lines; generate the resulting delta.
@@ -55,24 +55,37 @@ def unidiff( a
         header, as floating point values since the epoch.
 
     """
-    if isinstance( a, six.string_types ):
+    if isinstance(a, six.binary_type):
         a = a.splitlines()
 
-    if isinstance( b, six.string_types ):
+    if isinstance(b, six.binary_type):
         b = b.splitlines()
+
+    if isinstance(filename_a, six.text_type):
+        filename_a = filename_a.encode('utf-8')
+
+    if isinstance(filename_b, six.text_type):
+        filename_b = filename_b.encode('utf-8')
+
+    if not isinstance(timestamp_a, six.binary_type):
+        timestamp_a = six.text_type(timestamp_a).encode('utf-8')
+
+    if not isinstance(timestamp_b, six.binary_type):
+        timestamp_b = six.text_type(timestamp_b).encode('utf-8')
 
     if ignore_blanks:
         a = [ x for x in a if not BLANKS_REGEX.match( x ) ]
         b = [ x for x in b if not BLANKS_REGEX.match( x ) ]
 
-    return unified_diff( a
-                       , b
-                       , filename_a
-                       , filename_b
-                       , timestamp_a
-                       , timestamp_b
-                       , lineterm=""
-                       )
+    if six.PY2:
+        return difflib.unified_diff(
+            a, b, filename_a, filename_b, timestamp_a, timestamp_b, lineterm=b""
+        )
+    else:
+        return difflib.diff_bytes(
+            difflib.unified_diff,
+            a, b, filename_a, filename_b, timestamp_a, timestamp_b, lineterm=b""
+        )
 
 
 class ConfigDiff:
@@ -125,18 +138,18 @@ class ConfigDiff:
             if not self._missing_as_empty and filename in removed:
 
                 if isDirectory:
-                    result.append( '** Directory %s removed\n' % pathname )
+                    result.append( b'** Directory %s removed\n' % pathname.encode('utf-8') )
                     result.extend( self.compareDirectories( pathname ) )
                 else:
-                    result.append( '** File %s removed\n' % pathname )
+                    result.append( b'** File %s removed\n' % pathname.encode('utf-8') )
 
             elif not self._missing_as_empty and filename in added:
 
                 if isDirectory:
-                    result.append( '** Directory %s added\n' % pathname )
+                    result.append( b'** Directory %s added\n' % pathname.encode('utf-8') )
                     result.extend( self.compareDirectories( pathname ) )
                 else:
-                    result.append( '** File %s added\n' % pathname )
+                    result.append( b'** File %s added\n' % pathname.encode('utf-8') )
 
             elif isDirectory:
 
@@ -145,8 +158,8 @@ class ConfigDiff:
                 if ( filename not in added + removed and
                     not self._rhs.isDirectory( pathname ) ):
 
-                    result.append( '** Directory %s replaced with a file of '
-                                   'the same name\n' % pathname )
+                    result.append( b'** Directory %s replaced with a file of '
+                                   b'the same name\n' % pathname )
 
                     if self._missing_as_empty:
                         result.extend( self.compareFiles( filename, subdir ) )
@@ -154,8 +167,8 @@ class ConfigDiff:
                 if ( filename not in added + removed and
                      self._rhs.isDirectory( pathname ) ):
 
-                    result.append( '** File %s replaced with a directory of '
-                                   'the same name\n' % pathname )
+                    result.append( b'** File %s replaced with a directory of '
+                                   b'the same name\n' % pathname )
 
                     if self._missing_as_empty:
                         result.extend( self.compareFiles( filename, subdir ) )
@@ -179,16 +192,16 @@ class ConfigDiff:
 
         if lhs_file is None:
             assert self._missing_as_empty
-            lhs_file = ''
-            lhs_time = 0
+            lhs_file = b''
+            lhs_time = b''
 
         rhs_file = self._rhs.readDataFile( filename, subdir )
         rhs_time = self._rhs.getLastModified( path )
 
         if rhs_file is None:
             assert self._missing_as_empty
-            rhs_file = ''
-            rhs_time = 0
+            rhs_file = b''
+            rhs_time = b''
 
         if lhs_file == rhs_file:
             diff_lines = []
@@ -206,13 +219,13 @@ class ConfigDiff:
         if len( diff_lines ) == 0: # No *real* difference found
             return []
 
-        diff_lines.insert( 0, 'Index: %s' % path )
-        diff_lines.insert( 1, '=' * 67 )
+        diff_lines.insert( 0, b'Index: %s' % path.encode('utf-8') )
+        diff_lines.insert( 1, b'=' * 67 )
 
         return diff_lines
 
     security.declarePrivate( 'compare' )
     def compare( self ):
-        return '\n'.join( [str(line) for line in self.compareDirectories()] )
+        return b'\n'.join(self.compareDirectories())
 
 InitializeClass( ConfigDiff )

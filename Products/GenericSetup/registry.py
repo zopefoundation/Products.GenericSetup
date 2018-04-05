@@ -40,6 +40,7 @@ from Products.GenericSetup.utils import _extractDocstring
 from Products.GenericSetup.utils import _computeTopologicalSort
 
 import logging
+import six
 import types
 
 
@@ -301,7 +302,10 @@ class BaseStepRegistry(Implicit):
 
         o 'handler' values are serialized using their dotted names.
         """
-        return self._exportTemplate().encode('utf-8')
+        xml = self._exportTemplate()
+        if six.PY2:
+            xml = xml.encode('utf-8')
+        return xml
 
     security.declarePrivate('getStep')
     def getStep(self, key, default=None):
@@ -332,6 +336,11 @@ class BaseStepRegistry(Implicit):
 
         if reader is not None:
             text = reader()
+
+        if not six.PY2:
+            if isinstance(text, bytes):
+                text = text.decode('utf-8')
+            encoding = None
 
         parser = self.RegistryParser(encoding)
         parseString(text, parser)
@@ -604,7 +613,10 @@ class ToolsetRegistry(Implicit):
     def generateXML(self, encoding='utf-8'):
         """ Pseudo API.
         """
-        return self._toolsetConfig().encode('utf-8')
+        xml = self._toolsetConfig()
+        if six.PY2:
+            xml = xml.encode('utf-8')
+        return xml
 
     security.declareProtected(ManagePortal, 'parseXML')
     def parseXML(self, text, encoding='utf-8'):
@@ -614,6 +626,11 @@ class ToolsetRegistry(Implicit):
 
         if reader is not None:
             text = reader()
+
+        if not six.PY2:
+            if isinstance(text, bytes):
+                text = text.decode('utf-8')
+            encoding = None
 
         parser = _ToolsetParser(encoding)
         parseString(text, parser)

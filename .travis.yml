@@ -2,6 +2,11 @@ sudo: false
 language: python
 python:
   - "2.7"
+  - "3.6"
+env:
+matrix:
+    allow_failures:
+    - python: "3.6"
 install:
     - pip install -U coverage coveralls
     - pip install -U six==$(curl $(awk '$1 ==  "extends" {print $3}' buildout.cfg) 2>/dev/null | awk '$1 == "six" {print $3}')
@@ -11,9 +16,4 @@ script:
     - coverage run bin/test -vvc
 after_success:
     - coveralls
-notifications:
-    email: tseaver@palladion.com
-cache:
-    - pip: true
-    - directories:
-      - eggs/
+

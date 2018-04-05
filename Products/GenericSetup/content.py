@@ -159,7 +159,7 @@ class FolderishExporterImporter(object):
         stream = cStringIO(objects)
 
         rowiter = reader(stream, dialect)
-        rows = filter(None, tuple(rowiter))
+        rows = tuple([i for i in rowiter if i])
 
         existing = context.objectIds()
 
@@ -220,7 +220,7 @@ class FolderishExporterImporter(object):
             return None
 
         if context._getOb(instance_id, None) is None:
-            context._setObject(instance_id, instance) 
+            context._setObject(instance_id, instance)
 
         return context._getOb(instance_id)
 

@@ -13,6 +13,7 @@
 """ Unit tests for differ module.
 """
 
+import six
 import unittest
 from Testing.ZopeTestCase import ZopeTestCase
 
@@ -33,7 +34,7 @@ class Test_unidiff(unittest.TestCase):
         from Products.GenericSetup.differ import unidiff
 
         diff_lines = unidiff(ONE_FOUR, ZERO_FOUR)
-        diff_text = '\n'.join(diff_lines)
+        diff_text = b'\n'.join(diff_lines)
         self.assertEqual(diff_text, DIFF_TEXT)
 
     def test_unidiff_both_lines(self):
@@ -41,7 +42,7 @@ class Test_unidiff(unittest.TestCase):
         from Products.GenericSetup.differ import unidiff
 
         diff_lines = unidiff(ONE_FOUR.splitlines(), ZERO_FOUR.splitlines())
-        diff_text = '\n'.join(diff_lines)
+        diff_text = b'\n'.join(diff_lines)
         self.assertEqual(diff_text, DIFF_TEXT)
 
     def test_unidiff_mixed(self):
@@ -49,35 +50,35 @@ class Test_unidiff(unittest.TestCase):
         from Products.GenericSetup.differ import unidiff
 
         diff_lines = unidiff(ONE_FOUR, ZERO_FOUR.splitlines())
-        diff_text = '\n'.join(diff_lines)
+        diff_text = b'\n'.join(diff_lines)
         self.assertEqual(diff_text, DIFF_TEXT)
 
     def test_unidiff_ignore_blanks(self):
 
         from Products.GenericSetup.differ import unidiff
 
-        double_spaced = ONE_FOUR.replace('\n', '\n\n')
+        double_spaced = ONE_FOUR.replace(b'\n', b'\n\n')
         diff_lines = unidiff(double_spaced, ZERO_FOUR.splitlines(), ignore_blanks=True
                              )
 
-        diff_text = '\n'.join(diff_lines)
+        diff_text = b'\n'.join(diff_lines)
         self.assertEqual(diff_text, DIFF_TEXT)
 
-ZERO_FOUR = """\
+ZERO_FOUR = b"""\
 zero
 one
 tree
 four
 """
 
-ONE_FOUR = """\
+ONE_FOUR = b"""\
 one
 two
 three
 four
 """
 
-DIFF_TEXT = """\
+DIFF_TEXT = b"""\
 --- original
 +++ modified
 @@ -1,4 +1,4 @@
@@ -172,23 +173,23 @@ class ConfigDiffTests(ZopeTestCase):
 
         diffs = cd.compare()
 
-        self.assertEqual(diffs, '')
+        self.assertEqual(diffs, b'')
 
     def test_compare_identical(self):
 
         lhs = self._makeContext('lhs')
         rhs = self._makeContext('rhs')
 
-        self._makeFile('lhs', 'test.txt', 'ABCDEF')
-        self._makeFile('lhs', 'again.txt', 'GHIJKL', subdir='sub')
-        self._makeFile('rhs', 'test.txt', 'ABCDEF')
-        self._makeFile('rhs', 'again.txt', 'GHIJKL', subdir='sub')
+        self._makeFile('lhs', 'test.txt', b'ABCDEF')
+        self._makeFile('lhs', 'again.txt', b'GHIJKL', subdir='sub')
+        self._makeFile('rhs', 'test.txt', b'ABCDEF')
+        self._makeFile('rhs', 'again.txt', b'GHIJKL', subdir='sub')
 
         cd = self._makeOne(lhs, rhs)
 
         diffs = cd.compare()
 
-        self.assertEqual(diffs, '')
+        self.assertEqual(diffs, b'')
 
     def test_compare_changed_file(self):
 
@@ -198,16 +199,19 @@ class ConfigDiffTests(ZopeTestCase):
         lhs = self._makeContext('lhs')
         rhs = self._makeContext('rhs')
 
-        self._makeFile('lhs', 'test.txt', 'ABCDEF\nWXYZ', mod_time=BEFORE)
-        self._makeFile('lhs', 'again.txt', 'GHIJKL', subdir='sub')
-        self._makeFile('rhs', 'test.txt', 'ABCDEF\nQRST', mod_time=AFTER)
-        self._makeFile('rhs', 'again.txt', 'GHIJKL', subdir='sub')
+        self._makeFile('lhs', 'test.txt', b'ABCDEF\nWXYZ', mod_time=BEFORE)
+        self._makeFile('lhs', 'again.txt', b'GHIJKL', subdir='sub')
+        self._makeFile('rhs', 'test.txt', b'ABCDEF\nQRST', mod_time=AFTER)
+        self._makeFile('rhs', 'again.txt', b'GHIJKL', subdir='sub')
 
         cd = self._makeOne(lhs, rhs)
 
         diffs = cd.compare()
 
-        self.assertEqual(diffs, TEST_TXT_DIFFS % (BEFORE, AFTER))
+        self.assertEqual(diffs, TEST_TXT_DIFFS % (
+            _DateTime_as_bytes(BEFORE),
+            _DateTime_as_bytes(AFTER),
+        ))
 
     def test_compare_changed_file_ignore_blanks(self):
 
@@ -217,14 +221,14 @@ class ConfigDiffTests(ZopeTestCase):
         lhs = self._makeContext('lhs')
         rhs = self._makeContext('rhs')
 
-        self._makeFile('lhs', 'test.txt', 'ABCDEF\nWXYZ', mod_time=BEFORE)
-        self._makeFile('rhs', 'test.txt', 'ABCDEF\n\n\nWXYZ', mod_time=AFTER)
+        self._makeFile('lhs', 'test.txt', b'ABCDEF\nWXYZ', mod_time=BEFORE)
+        self._makeFile('rhs', 'test.txt', b'ABCDEF\n\n\nWXYZ', mod_time=AFTER)
 
         cd = self._makeOne(lhs, rhs, ignore_blanks=True)
 
         diffs = cd.compare()
 
-        self.assertEqual(diffs, '')
+        self.assertEqual(diffs, b'')
 
     def test_compare_changed_file_explicit_skip(self):
 
@@ -234,18 +238,18 @@ class ConfigDiffTests(ZopeTestCase):
         lhs = self._makeContext('lhs')
         rhs = self._makeContext('rhs')
 
-        self._makeFile('lhs', 'test.txt', 'ABCDEF\nWXYZ',
+        self._makeFile('lhs', 'test.txt', b'ABCDEF\nWXYZ',
                        subdir='skipme', mod_time=BEFORE)
-        self._makeFile('lhs', 'again.txt', 'GHIJKL', subdir='sub')
-        self._makeFile('rhs', 'test.txt', 'ABCDEF\nQRST',
+        self._makeFile('lhs', 'again.txt', b'GHIJKL', subdir='sub')
+        self._makeFile('rhs', 'test.txt', b'ABCDEF\nQRST',
                        subdir='skipme', mod_time=AFTER)
-        self._makeFile('rhs', 'again.txt', 'GHIJKL', subdir='sub')
+        self._makeFile('rhs', 'again.txt', b'GHIJKL', subdir='sub')
 
         cd = self._makeOne(lhs, rhs, skip=['skipme'])
 
         diffs = cd.compare()
 
-        self.assertEqual(diffs, '')
+        self.assertEqual(diffs, b'')
 
     def test_compare_changed_file_implicit_skip(self):
 
@@ -255,31 +259,31 @@ class ConfigDiffTests(ZopeTestCase):
         lhs = self._makeContext('lhs')
         rhs = self._makeContext('rhs')
 
-        self._makeFile('lhs', 'test.txt', 'ABCDEF\nWXYZ',
+        self._makeFile('lhs', 'test.txt', b'ABCDEF\nWXYZ',
                        subdir='CVS', mod_time=BEFORE)
-        self._makeFile('lhs', 'again.txt', 'GHIJKL',
+        self._makeFile('lhs', 'again.txt', b'GHIJKL',
                        subdir='.svn', mod_time=BEFORE)
 
-        self._makeFile('rhs', 'test.txt', 'ABCDEF\nQRST',
+        self._makeFile('rhs', 'test.txt', b'ABCDEF\nQRST',
                        subdir='CVS', mod_time=AFTER)
-        self._makeFile('rhs', 'again.txt', 'MNOPQR',
+        self._makeFile('rhs', 'again.txt', b'MNOPQR',
                        subdir='.svn', mod_time=AFTER)
 
         cd = self._makeOne(lhs, rhs)
 
         diffs = cd.compare()
 
-        self.assertEqual(diffs, '')
+        self.assertEqual(diffs, b'')
 
     def test_compare_added_file_no_missing_as_empty(self):
 
         lhs = self._makeContext('lhs')
         rhs = self._makeContext('rhs')
 
-        self._makeFile('lhs', 'test.txt', 'ABCDEF\nWXYZ')
+        self._makeFile('lhs', 'test.txt', b'ABCDEF\nWXYZ')
         self._makeDirectory('lhs', subdir='sub')
-        self._makeFile('rhs', 'test.txt', 'ABCDEF\nWXYZ')
-        self._makeFile('rhs', 'again.txt', 'GHIJKL', subdir='sub')
+        self._makeFile('rhs', 'test.txt', b'ABCDEF\nWXYZ')
+        self._makeFile('rhs', 'again.txt', b'GHIJKL', subdir='sub')
 
         cd = self._makeOne(lhs, rhs)
 
@@ -293,26 +297,27 @@ class ConfigDiffTests(ZopeTestCase):
         lhs = self._makeContext('lhs')
         rhs = self._makeContext('rhs')
 
-        self._makeFile('lhs', 'test.txt', 'ABCDEF\nWXYZ')
+        self._makeFile('lhs', 'test.txt', b'ABCDEF\nWXYZ')
         self._makeDirectory('lhs', subdir='sub')
-        self._makeFile('rhs', 'test.txt', 'ABCDEF\nWXYZ')
-        self._makeFile('rhs', 'again.txt', 'GHIJKL',
+        self._makeFile('rhs', 'test.txt', b'ABCDEF\nWXYZ')
+        self._makeFile('rhs', 'again.txt', b'GHIJKL',
                        subdir='sub', mod_time=AFTER)
 
         cd = self._makeOne(lhs, rhs, missing_as_empty=True)
 
         diffs = cd.compare()
 
-        self.assertEqual(diffs, ADDED_FILE_DIFFS_MAE % AFTER)
+        self.assertEqual(
+            diffs, ADDED_FILE_DIFFS_MAE % _DateTime_as_bytes(AFTER))
 
     def test_compare_removed_file_no_missing_as_empty(self):
 
         lhs = self._makeContext('lhs')
         rhs = self._makeContext('rhs')
 
-        self._makeFile('lhs', 'test.txt', 'ABCDEF\nWXYZ')
-        self._makeFile('lhs', 'again.txt', 'GHIJKL', subdir='sub')
-        self._makeFile('rhs', 'test.txt', 'ABCDEF\nWXYZ')
+        self._makeFile('lhs', 'test.txt', b'ABCDEF\nWXYZ')
+        self._makeFile('lhs', 'again.txt', b'GHIJKL', subdir='sub')
+        self._makeFile('rhs', 'test.txt', b'ABCDEF\nWXYZ')
         self._makeDirectory('rhs', subdir='sub')
 
         cd = self._makeOne(lhs, rhs)
@@ -327,20 +332,21 @@ class ConfigDiffTests(ZopeTestCase):
         lhs = self._makeContext('lhs')
         rhs = self._makeContext('rhs')
 
-        self._makeFile('lhs', 'test.txt', 'ABCDEF\nWXYZ')
-        self._makeFile('lhs', 'again.txt', 'GHIJKL',
+        self._makeFile('lhs', 'test.txt', b'ABCDEF\nWXYZ')
+        self._makeFile('lhs', 'again.txt', b'GHIJKL',
                        subdir='sub', mod_time=BEFORE)
-        self._makeFile('rhs', 'test.txt', 'ABCDEF\nWXYZ')
+        self._makeFile('rhs', 'test.txt', b'ABCDEF\nWXYZ')
         self._makeDirectory('rhs', subdir='sub')
 
         cd = self._makeOne(lhs, rhs, missing_as_empty=True)
 
         diffs = cd.compare()
 
-        self.assertEqual(diffs, REMOVED_FILE_DIFFS_MAE % BEFORE)
+        self.assertEqual(
+            diffs, REMOVED_FILE_DIFFS_MAE % _DateTime_as_bytes(BEFORE))
 
 
-TEST_TXT_DIFFS = """\
+TEST_TXT_DIFFS = b"""\
 Index: test.txt
 ===================================================================
 --- test.txt\t%s
@@ -351,11 +357,11 @@ Index: test.txt
 +QRST\
 """
 
-ADDED_FILE_DIFFS_NO_MAE = """\
+ADDED_FILE_DIFFS_NO_MAE = b"""\
 ** File sub/again.txt added
 """
 
-ADDED_FILE_DIFFS_MAE = """\
+ADDED_FILE_DIFFS_MAE = b"""\
 Index: sub/again.txt
 ===================================================================
 --- sub/again.txt
@@ -364,11 +370,11 @@ Index: sub/again.txt
 +GHIJKL\
 """
 
-REMOVED_FILE_DIFFS_NO_MAE = """\
+REMOVED_FILE_DIFFS_NO_MAE = b"""\
 ** File sub/again.txt removed
 """
 
-REMOVED_FILE_DIFFS_MAE = """\
+REMOVED_FILE_DIFFS_MAE = b"""\
 Index: sub/again.txt
 ===================================================================
 --- sub/again.txt\t%s
@@ -376,6 +382,10 @@ Index: sub/again.txt
 @@ -1 +0,0 @@
 -GHIJKL\
 """
+
+
+def _DateTime_as_bytes(dt):
+    return six.text_type(dt).encode('utf-8')
 
 
 def test_suite():

@@ -21,11 +21,7 @@ from zope.testing.cleanup import cleanUp
 from Products.GenericSetup.registry import _import_step_registry
 from Products.GenericSetup.registry import _export_step_registry
 
-# BBB for Zope 2.12
-try:
-    from Zope2.App import zcml
-except ImportError:
-    from Products.Five import zcml
+from Zope2.App import zcml
 
 
 def dummy_importstep(context):
@@ -69,14 +65,14 @@ def test_simpleRegisterProfile():
       >>> from Products.GenericSetup.registry import _profile_registry
       >>> profile_id = 'Products.GenericSetup:default'
       >>> info = _profile_registry.getProfileInfo(profile_id)
-      >>> info['id']
-      u'Products.GenericSetup:default'
-      >>> info['title']
-      u"Profile 'default' from 'Products.GenericSetup'"
-      >>> info['description']
-      u''
-      >>> info['path']
-      u'profiles/default'
+      >>> info['id'] == 'Products.GenericSetup:default'
+      True
+      >>> info['title'] == "Profile 'default' from 'Products.GenericSetup'"
+      True
+      >>> info['description'] == ''
+      True
+      >>> info['path'] == 'profiles/default'
+      True
       >>> info['product']
       'Products.GenericSetup'
       >>> from Products.GenericSetup.interfaces import EXTENSION
@@ -115,14 +111,14 @@ def test_registerProfile():
       >>> from Products.GenericSetup.registry import _profile_registry
       >>> profile_id = 'Products.GenericSetup:default'
       >>> info = _profile_registry.getProfileInfo(profile_id)
-      >>> info['id']
-      u'Products.GenericSetup:default'
-      >>> info['title']
-      u'Install Foo Extension'
-      >>> info['description']
-      u'Adds foo support.'
-      >>> info['path']
-      u'profiles/default'
+      >>> info['id'] == 'Products.GenericSetup:default'
+      True
+      >>> info['title'] == 'Install Foo Extension'
+      True
+      >>> info['description'] == 'Adds foo support.'
+      True
+      >>> info['path'] == 'profiles/default'
+      True
       >>> info['product']
       'Products.GenericSetup'
       >>> from Products.GenericSetup.interfaces import EXTENSION
@@ -307,8 +303,8 @@ def test_registerUpgradeSteps(self):
       >>> len(profile_steps)
       2
       >>> steps = profile_steps[0]
-      >>> type(steps)
-      <type 'list'>
+      >>> isinstance(steps, list)
+      True
       >>> len(steps)
       3
       >>> step1, step2, step3 = steps
@@ -318,16 +314,16 @@ def test_registerUpgradeSteps(self):
       True
       >>> step1['step'].handler
       <function b_dummy_upgrade at ...>
-      >>> step1['title']
-      u'Bar Upgrade Step 1'
+      >>> str(step1['title'])
+      'Bar Upgrade Step 1'
       >>> step2['step'].handler
       <function c_dummy_upgrade at ...>
-      >>> step2['title']
-      u'Bar Upgrade Step 2'
-      >>> step3['step'].import_profile
-      u'profile-Products.CMFDefault:default'
-      >>> step3['step'].import_steps
-      [u'baz', u'bat']
+      >>> str(step2['title'])
+      'Bar Upgrade Step 2'
+      >>> str(step3['step'].import_profile)
+      'profile-Products.CMFDefault:default'
+      >>> [str(step) for step in step3['step'].import_steps]
+      ['baz', 'bat']
       >>> step3['step'].run_deps
       True
       >>> step3['step'].purge
@@ -336,8 +332,8 @@ def test_registerUpgradeSteps(self):
     First one listed should be second in the registry due to sortkey:
 
       >>> steps = profile_steps[1]
-      >>> type(steps)
-      <type 'list'>
+      >>> isinstance(steps, list)
+      True
       >>> len(steps)
       2
       >>> step1, step2 = steps
@@ -347,12 +343,12 @@ def test_registerUpgradeSteps(self):
       True
       >>> step1['step'].handler
       <function b_dummy_upgrade at ...>
-      >>> step1['title']
-      u'Foo Upgrade Step 1'
+      >>> str(step1['title'])
+      'Foo Upgrade Step 1'
       >>> step2['step'].handler
       <function c_dummy_upgrade at ...>
-      >>> step2['title']
-      u'Foo Upgrade Step 2'
+      >>> str(step2['title'])
+      'Foo Upgrade Step 2'
 
     Clean up and make sure the cleanup works::
 
@@ -380,7 +376,7 @@ class ImportStepTests(unittest.TestCase):
              handler="Products.GenericSetup.tests.test_zcml.dummy_importstep">
          </genericsetup:importStep>
         </configure>""")
-        self.assertEqual(_import_step_registry.listSteps(), [u'name'])
+        self.assertEqual(_import_step_registry.listSteps(), ['name'])
         data = _import_step_registry.getStepMetadata(u'name')
         self.assertEqual(data["handler"],
                          'Products.GenericSetup.tests.test_zcml.dummy_importstep')

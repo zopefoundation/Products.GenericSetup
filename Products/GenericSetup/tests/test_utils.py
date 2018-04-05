@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 ##############################################################################
 #
 # Copyright (c) 2004 Zope Foundation and Contributors.
@@ -13,6 +15,7 @@
 """ GenericSetup.utils unit tests
 """
 
+import six
 import unittest
 
 from DateTime.DateTime import DateTime
@@ -45,7 +48,7 @@ _TESTED_PROPERTIES = (
 )
 
 _EMPTY_PROPERTY_EXPORT = """\
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="utf-8"?>
 <dummy>
  <property name="foo_boolean" type="boolean">False</property>
  <property name="foo_date" type="date">1970/01/01 00:00:00 UTC</property>
@@ -67,7 +70,7 @@ _EMPTY_PROPERTY_EXPORT = """\
  <property name="foo_float_nodel">0.0</property>
  <property name="foo_int_nodel">0</property>
 </dummy>
-"""
+""".encode('utf-8')
 
 _NONE_PROPERTY_EXPORT = """\
 <?xml version="1.0"?>
@@ -94,7 +97,7 @@ _NONE_PROPERTY_EXPORT = """\
 """
 
 _NORMAL_PROPERTY_EXPORT = u"""\
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="utf-8"?>
 <dummy>
  <property name="foo_boolean" type="boolean">True</property>
  <property name="foo_date" type="date">2000/01/01 00:00:00 UTC</property>
@@ -130,7 +133,7 @@ _NORMAL_PROPERTY_EXPORT = u"""\
 """.encode('utf-8')
 
 _FIXED_PROPERTY_EXPORT = u"""\
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="utf-8"?>
 <dummy>
  <property name="foo_boolean">True</property>
  <property name="foo_date">2000/01/01 00:00:00 UTC</property>
@@ -164,23 +167,23 @@ _FIXED_PROPERTY_EXPORT = u"""\
 """.encode('utf-8')
 
 _SPECIAL_IMPORT = """\
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="utf-8"?>
 <dummy>
  <!-- ignore comment, import 0 as False -->
  <property name="foo_boolean0" type="boolean">0</property>
 </dummy>
-"""
+""".encode('utf-8')
 
 _I18N_IMPORT = """\
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="utf-8"?>
 <dummy xmlns:i18n="http://xml.zope.org/namespaces/i18n"
    i18n:domain="dummy_domain">
  <property name="foo_string" i18n:translate="">Foo String</property>
 </dummy>
-"""
+""".encode('utf-8')
 
 _NOPURGE_IMPORT = """\
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="utf-8"?>
 <dummy>
  <property name="lines1">
   <element value="Foo"/>
@@ -195,9 +198,10 @@ _NOPURGE_IMPORT = """\
   <element value="Bar"/>
  </property>
 </dummy>
-"""
+""".encode('utf-8')
+
 _REMOVE_ELEMENT_IMPORT = """\
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="utf-8"?>
 <dummy>
  <property name="lines1" purge="False">
    <element value="Foo" remove="True" />
@@ -207,45 +211,46 @@ _REMOVE_ELEMENT_IMPORT = """\
    <element value="Foo" remove="True" />
   </property>
 </dummy>
-"""
+""".encode('utf-8')
 
 _NORMAL_MARKER_EXPORT = """\
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="utf-8"?>
 <dummy>
  <marker name="Products.GenericSetup.testing.IDummyMarker"/>
 </dummy>
-"""
+""".encode('utf-8')
 
 _ADD_IMPORT = """\
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="utf-8"?>
 <dummy>
  <object name="history" meta_type="Generic Setup Tool"/>
  <object name="future" meta_type="Generic Setup Tool"/>
 </dummy>
-"""
+""".encode('utf-8')
+
 _REMOVE_IMPORT = """\
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="utf-8"?>
 <dummy>
  <object name="history" remove="True"/>
  <object name="future" remove="False"/>
 </dummy>
-"""
+""".encode('utf-8')
 
 _ADD_PROPERTY_IMPORT = """\
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="utf-8"?>
 <dummy>
  <property name="line1" type="string">Line 1</property>
  <property name="line2" type="string">Line 2</property>
 </dummy>
-"""
+""".encode('utf-8')
 
 _REMOVE_PROPERTY_IMPORT = """\
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="utf-8"?>
 <dummy>
  <property name="line1" remove="True"/>
  <property name="line2" type="string" remove="False"/>
 </dummy>
-"""
+""".encode('utf-8')
 
 
 def _getDocumentElement(text):
@@ -378,8 +383,12 @@ class PropertyManagerHelpersTests(unittest.TestCase):
         obj._updateProperty('foo_date', '2000/01/01 00:00:00 UTC')
         obj._updateProperty('foo_float', '1.1')
         obj._updateProperty('foo_int', '1')
-        obj._updateProperty('foo_lines',
-                            u'Foo\nLines\n\xfcbrigens'.encode('utf-8'))
+        if six.PY2:
+            obj._updateProperty('foo_lines',
+                                u'Foo\nLines\n\xfcbrigens'.encode('utf-8'))
+        else:
+            obj._updateProperty('foo_lines',
+                                'Foo\nLines\nübrigens')
         obj._updateProperty('foo_long', '1')
         obj._updateProperty('foo_string', 'Foo String')
         obj._updateProperty('foo_text', 'Foo\nText')
@@ -471,7 +480,7 @@ class PropertyManagerHelpersTests(unittest.TestCase):
         self.assertEqual(type(obj.foo_int), int)
         self.assertEqual(type(obj.foo_string), str)
         self.assertEqual(type(obj.foo_tokens), tuple)
-        self.assertEqual(type(obj.foo_tokens[0]), str)
+        self.assertEqual(type(obj.foo_tokens[0]), six.binary_type)
 
         doc = helpers._doc = PrettyDocument()
         node = doc.createElement('dummy')
@@ -526,9 +535,9 @@ class PropertyManagerHelpersTests(unittest.TestCase):
         obj.manage_addProperty('lines3', ('Foo', 'Gee'), 'lines')
         helpers._initProperties(node)
 
-        self.assertEquals(obj.getProperty('lines1'), ('Foo', 'Bar'))
-        self.assertEquals(obj.getProperty('lines2'), ('Foo', 'Bar'))
-        self.assertEquals(obj.getProperty('lines3'), ('Gee', 'Foo', 'Bar'))
+        self.assertEquals(obj.getProperty('lines1'), (b'Foo', b'Bar'))
+        self.assertEquals(obj.getProperty('lines2'), (b'Foo', b'Bar'))
+        self.assertEquals(obj.getProperty('lines3'), (b'Gee', b'Foo', b'Bar'))
 
     def test__initProperties_nopurge_extension(self):
         helpers = self._makeOne()
@@ -541,9 +550,9 @@ class PropertyManagerHelpersTests(unittest.TestCase):
         obj.manage_addProperty('lines3', ('Foo', 'Gee'), 'lines')
         helpers._initProperties(node)
 
-        self.assertEquals(obj.getProperty('lines1'), ('Foo', 'Bar'))
-        self.assertEquals(obj.getProperty('lines2'), ('Foo', 'Bar'))
-        self.assertEquals(obj.getProperty('lines3'), ('Gee', 'Foo', 'Bar'))
+        self.assertEquals(obj.getProperty('lines1'), (b'Foo', b'Bar'))
+        self.assertEquals(obj.getProperty('lines2'), (b'Foo', b'Bar'))
+        self.assertEquals(obj.getProperty('lines3'), (b'Gee', b'Foo', b'Bar'))
 
     def test_initProperties_remove_elements(self):
         helpers = self._makeOne()
@@ -555,8 +564,8 @@ class PropertyManagerHelpersTests(unittest.TestCase):
         obj.manage_addProperty('lines2', ('Foo', 'Gee'), 'lines')
         helpers._initProperties(node)
 
-        self.assertEquals(obj.getProperty('lines1'), ('Gee', 'Bar'))
-        self.assertEquals(obj.getProperty('lines2'), ('Gee',))
+        self.assertEquals(obj.getProperty('lines1'), (b'Gee', b'Bar'))
+        self.assertEquals(obj.getProperty('lines2'), (b'Gee',))
 
     def test_initProperties_remove_properties(self):
         helpers = self._makeOne()
@@ -768,9 +777,9 @@ class PrettyDocumentTests(unittest.TestCase):
     def test_attr_quoting(self):
         from Products.GenericSetup.utils import PrettyDocument
         original = 'baz &nbsp;<bar>&"\''
-        expected = ('<?xml version="1.0"?>\n'
-                    '<doc bar="" foo="baz '
-                    '&amp;nbsp;&lt;bar&gt;&amp;&quot;\'"/>\n')
+        expected = (b'<?xml version="1.0" encoding="utf-8"?>\n'
+                    b'<doc bar="" foo="baz '
+                    b'&amp;nbsp;&lt;bar&gt;&amp;&quot;\'"/>\n')
 
         doc = PrettyDocument()
         node = doc.createElement('doc')
@@ -785,8 +794,8 @@ class PrettyDocumentTests(unittest.TestCase):
     def test_text_quoting(self):
         from Products.GenericSetup.utils import PrettyDocument
         original = 'goo &nbsp;<hmm>&"\''
-        expected = ('<?xml version="1.0"?>\n'
-                    '<doc>goo &amp;nbsp;&lt;hmm&gt;&amp;"\'</doc>\n')
+        expected = (b'<?xml version="1.0" encoding="utf-8"?>\n'
+                    b'<doc>goo &amp;nbsp;&lt;hmm&gt;&amp;"\'</doc>\n')
 
         doc = PrettyDocument()
         node = doc.createElement('doc')
