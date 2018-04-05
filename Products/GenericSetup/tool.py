@@ -1496,7 +1496,7 @@ class SetupTool(Folder):
             report = report.encode('latin-1')
 
         # BBB: ObjectManager won't allow unicode IDS
-        if isinstance(basename, six.text_type) and six.PY2:
+        if isinstance(basename, six.text_type):
             basename = basename.encode('UTF-8')
 
         name = basename
