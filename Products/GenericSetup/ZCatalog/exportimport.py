@@ -83,7 +83,8 @@ class ZCatalogXMLAdapter(XMLAdapterBase, ObjectManagerHelpers,
         return fragment
 
     def _purgeIndexes(self):
-        for idx_id in self.context.indexes():
+        indexes = set(self.context.indexes())
+        for idx_id in indexes:
             self.context.delIndex(idx_id)
 
     def _initIndexes(self, node):
