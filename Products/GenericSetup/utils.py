@@ -423,7 +423,7 @@ class NodeAdapterBase(object):
 
     """Node im- and exporter base.
     """
-
+    _encoding = 'utf-8'
     _LOGGER_ID = ''
 
     def __init__(self, context, environ):
@@ -502,7 +502,7 @@ class XMLAdapterBase(BodyAdapterBase):
         """Export the object as a file body.
         """
         self._doc.appendChild(self._exportNode())
-        xml = self._doc.toprettyxml(' ', encoding='utf-8')
+        xml = self._doc.toprettyxml(' ', encoding=self._encoding)
         self._doc.unlink()
         return xml
 
@@ -789,7 +789,13 @@ class PropertyManagerHelpers(object):
                                             p not in remove_elements]) +
                                   tuple(prop_value))
 
-            if isinstance(prop_value, (six.binary_type, str)):
+            if (
+                isinstance(prop_value, six.binary_type) and
+                self._encoding.lower() not in ('utf8', 'utf-8')
+            ):
+                prop_value = prop_value.decode(self._encoding).encode('utf8')
+
+            if isinstance(prop_value, six.text_type):
                 prop_type = obj.getPropertyType(prop_id) or 'string'
                 if prop_type in type_converters:
                     prop_value = type_converters[prop_type](prop_value)
