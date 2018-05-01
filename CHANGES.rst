@@ -4,6 +4,8 @@ Changelog
 1.10.1 (unreleased)
 -------------------
 
+- Fixed tests with ``Products.ZCatalog 4.1``.  [maurits]
+
 - When ``metadata.xml`` parsing fails, show the filename in the ``ExpatError``.
   Fixes `Plone issue 2303 <https://github.com/plone/Products.CMFPlone/issues/2303>`_.
 

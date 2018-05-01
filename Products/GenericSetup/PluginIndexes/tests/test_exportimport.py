@@ -21,6 +21,7 @@ from Products.GenericSetup.testing import ExportImportZCMLLayer
 _DATE_XML = """\
 <index name="foo_date" meta_type="DateIndex">
  <property name="index_naive_time_as_local">True</property>
+ <property name="precision">1</property>
 </index>
 """
 
