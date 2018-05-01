@@ -791,7 +791,11 @@ class PropertyManagerHelpers(object):
                                          if p not in prop_value and
                                             p not in remove_elements]) +
                                   tuple(prop_value))
-
+            if not six.PY2:
+                if isinstance(prop_value, six.binary_type):
+                    prop_type = obj.getPropertyType(prop_id) or 'string'
+                    if prop_type == 'string':
+                        prop_value = prop_value.decode(self._encoding)
             if isinstance(prop_value, six.text_type):
                 prop_type = obj.getPropertyType(prop_id) or 'string'
                 if prop_type in type_converters:
