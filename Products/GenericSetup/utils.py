@@ -515,6 +515,8 @@ class XMLAdapterBase(BodyAdapterBase):
             filename = (self.filename or
                         '/'.join(self.context.getPhysicalPath()))
             raise ExpatError('%s: %s' % (filename, e))
+        # Replace the encoding with the one from the XML
+        self._encoding = dom.encoding or 'utf-8'
         self._importNode(dom.documentElement)
 
     body = property(_exportBody, _importBody)
