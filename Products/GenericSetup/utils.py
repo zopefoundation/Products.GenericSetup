@@ -502,6 +502,7 @@ class XMLAdapterBase(BodyAdapterBase):
         """Export the object as a file body.
         """
         self._doc.appendChild(self._exportNode())
+        # Specifying the encoding parameter forces xml to be bytes
         xml = self._doc.toprettyxml(' ', encoding=self._encoding)
         self._doc.unlink()
         return xml
@@ -790,12 +791,6 @@ class PropertyManagerHelpers(object):
                                          if p not in prop_value and
                                             p not in remove_elements]) +
                                   tuple(prop_value))
-
-            if (
-                isinstance(prop_value, six.binary_type) and
-                self._encoding.lower() not in ('utf8', 'utf-8')
-            ):
-                prop_value = prop_value.decode(self._encoding).encode('utf8')
 
             if isinstance(prop_value, six.text_type):
                 prop_type = obj.getPropertyType(prop_id) or 'string'
