@@ -32,6 +32,12 @@ class DOMComparator:
 
     def _compareDOM(self, found_text, expected_text, debug=False):
 
+        if six.PY3:
+            if isinstance(found_text, bytes):
+                found_text = found_text.decode('utf8')
+            if isinstance(expected_text, bytes):
+                expected_text = expected_text.decode('utf8')
+
         found_lines = [x.strip() for x in found_text.splitlines()]
         found_text = '\n'.join([i for i in found_lines if i])
 

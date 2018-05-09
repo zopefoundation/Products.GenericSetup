@@ -423,7 +423,7 @@ class NodeAdapterBase(object):
 
     """Node im- and exporter base.
     """
-
+    _encoding = 'utf-8'
     _LOGGER_ID = ''
 
     def __init__(self, context, environ):
@@ -502,7 +502,8 @@ class XMLAdapterBase(BodyAdapterBase):
         """Export the object as a file body.
         """
         self._doc.appendChild(self._exportNode())
-        xml = self._doc.toprettyxml(' ', encoding='utf-8')
+        # Specifying the encoding parameter forces xml to be bytes
+        xml = self._doc.toprettyxml(' ', encoding=self._encoding)
         self._doc.unlink()
         return xml
 
@@ -515,6 +516,8 @@ class XMLAdapterBase(BodyAdapterBase):
             filename = (self.filename or
                         '/'.join(self.context.getPhysicalPath()))
             raise ExpatError('%s: %s' % (filename, e))
+        # Replace the encoding with the one from the XML
+        self._encoding = dom.encoding or 'utf-8'
         self._importNode(dom.documentElement)
 
     body = property(_exportBody, _importBody)
@@ -758,7 +761,9 @@ class PropertyManagerHelpers(object):
             remove_elements = []
             for sub in child.childNodes:
                 if sub.nodeName == 'element':
-                    value = sub.getAttribute('value').encode(self._encoding)
+                    value = sub.getAttribute('value')
+                    if six.PY2 and isinstance(value, six.text_type):
+                        value = value.encode(self._encoding)
                     if self._convertToBoolean(sub.getAttribute('remove')
                                           or 'False'):
                         remove_elements.append(value)
@@ -769,7 +774,7 @@ class PropertyManagerHelpers(object):
                         if value in remove_elements:
                             remove_elements.remove(value)
 
-            if prop_map.get('type') in ('lines', 'tokens',
+            if prop_map.get('type') in ('lines', 'tokens', 'ulines',
                                         'multiple selection'):
                 prop_value = tuple(new_elements) or ()
             elif prop_map.get('type') == 'boolean':
@@ -777,7 +782,9 @@ class PropertyManagerHelpers(object):
             else:
                 # if we pass a *string* to _updateProperty, all other values
                 # are converted to the right type
-                prop_value = self._getNodeText(child).encode(self._encoding)
+                prop_value = self._getNodeText(child)
+                if six.PY2 and isinstance(prop_value, six.text_type):
+                    prop_value = prop_value.encode(self._encoding)
 
             if not self._convertToBoolean(child.getAttribute('purge')
                                           or 'True'):
@@ -788,8 +795,12 @@ class PropertyManagerHelpers(object):
                                          if p not in prop_value and
                                             p not in remove_elements]) +
                                   tuple(prop_value))
-
-            if isinstance(prop_value, (six.binary_type, str)):
+            if not six.PY2:
+                if isinstance(prop_value, six.binary_type):
+                    prop_type = obj.getPropertyType(prop_id) or 'string'
+                    if prop_type == 'string':
+                        prop_value = prop_value.decode(self._encoding)
+            if isinstance(prop_value, six.text_type):
                 prop_type = obj.getPropertyType(prop_id) or 'string'
                 if prop_type in type_converters:
                     prop_value = type_converters[prop_type](prop_value)

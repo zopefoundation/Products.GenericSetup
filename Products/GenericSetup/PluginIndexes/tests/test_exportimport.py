@@ -21,6 +21,7 @@ from Products.GenericSetup.testing import ExportImportZCMLLayer
 _DATE_XML = b"""\
 <index name="foo_date" meta_type="DateIndex">
  <property name="index_naive_time_as_local">True</property>
+ <property name="precision">1</property>
 </index>
 """
 
@@ -228,7 +229,7 @@ class UnchangedTests(unittest.TestCase):
             raise AssertionError("Don't clear me!")
         index = FieldIndex('foo_field')
         index.indexed_attrs = ['bar']
-        index.clear = _no_clear 
+        index.clear = _no_clear
         adapted = PluggableIndexNodeAdapter(index, environ)
         adapted.node = parseString(_FIELD_XML).documentElement # no raise
 
@@ -244,7 +245,7 @@ class UnchangedTests(unittest.TestCase):
             raise AssertionError("Don't clear me!")
         index = KeywordIndex('foo_keyword')
         index.indexed_attrs = ['bar']
-        index.clear = _no_clear 
+        index.clear = _no_clear
         adapted = PluggableIndexNodeAdapter(index, environ)
         adapted.node = parseString(_KEYWORD_XML).documentElement # no raise
 
@@ -274,7 +275,7 @@ class UnchangedTests(unittest.TestCase):
             raise AssertionError("Don't clear me!")
         index = DateIndex('foo_date')
         index._setPropValue('index_naive_time_as_local', True)
-        index.clear = _no_clear 
+        index.clear = _no_clear
         adapted = DateIndexNodeAdapter(index, environ)
         adapted.node = parseString(_DATE_XML).documentElement # no raise
 
@@ -291,7 +292,7 @@ class UnchangedTests(unittest.TestCase):
         index = DateRangeIndex('foo_daterange')
         index._since_field = 'bar'
         index._until_field = 'baz'
-        index.clear = _no_clear 
+        index.clear = _no_clear
         adapted = DateRangeIndexNodeAdapter(index, environ)
         adapted.node = parseString(_DATERANGE_XML).documentElement # no raise
 
@@ -306,7 +307,7 @@ class UnchangedTests(unittest.TestCase):
         def _no_clear(*a):
             raise AssertionError("Don't clear me!")
         index = PythonFilteredSet('bar', 'True')
-        index.clear = _no_clear 
+        index.clear = _no_clear
         adapted = FilteredSetNodeAdapter(index, environ)
         adapted.node = parseString(_SET_XML).documentElement # no raise
 
@@ -324,7 +325,7 @@ class UnchangedTests(unittest.TestCase):
         index.addFilteredSet('baz', 'PythonFilteredSet', 'False')
         bar = index.filteredSets['bar']
         baz = index.filteredSets['baz']
-        bar.clear = baz.clear = _no_clear 
+        bar.clear = baz.clear = _no_clear
         adapted = TopicIndexNodeAdapter(index, environ)
         adapted.node = parseString(_SET_XML).documentElement # no raise
 
