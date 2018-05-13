@@ -54,7 +54,7 @@ setup(
     install_requires=[
         'setuptools',
         'six',
-        'Zope2 >= 4.0a6',
+        'Zope2 >= 4.0b4',
         'five.localsitemanager',
         'Products.PythonScripts',
         'Products.ZCatalog',
