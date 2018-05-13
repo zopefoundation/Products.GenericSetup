@@ -72,8 +72,8 @@ _EMPTY_PROPERTY_EXPORT = """\
 </dummy>
 """.encode('utf-8')
 
-_NONE_PROPERTY_EXPORT = """\
-<?xml version="1.0"?>
+_NONE_PROPERTY_EXPORT = u"""\
+<?xml version="1.0" encoding="utf-8"?>
 <dummy>
  <property name="foo_boolean" type="boolean">False</property>
  <property name="foo_date" type="date">1970/01/01 00:00:00 UTC</property>
@@ -94,7 +94,7 @@ _NONE_PROPERTY_EXPORT = """\
  <property name="foo_float_nodel">0.0</property>
  <property name="foo_int_nodel">0</property>
 </dummy>
-"""
+""".encode('utf-8')
 
 _NORMAL_PROPERTY_EXPORT = u"""\
 <?xml version="1.0" encoding="utf-8"?>
