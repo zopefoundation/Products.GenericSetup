@@ -4,8 +4,15 @@ Changelog
 1.10.1 (unreleased)
 -------------------
 
-- Nothing changed yet.
+Breaking changes:
 
+- Require Zope 4.0b4 as minimum supported Zope version
+
+- Drop Python 3.4 support
+
+New features:
+
+- Finished compatibility with Python 3.5 and 3.6
 
 1.10.0 (2017-12-07)
 -------------------
