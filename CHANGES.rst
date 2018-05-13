@@ -12,6 +12,14 @@ Breaking changes:
 
 New features:
 
+- Fixed tests with ``Products.ZCatalog 4.1``.  [maurits]
+
+- When ``metadata.xml`` parsing fails, show the filename in the ``ExpatError``.
+  Fixes `Plone issue 2303 <https://github.com/plone/Products.CMFPlone/issues/2303>`_.
+
+- Prevent AttributeError 'NoneType' object has no attribute 'decode'.
+  [maurits]
+
 - Finished compatibility with Python 3.5 and 3.6
 
 1.10.0 (2017-12-07)

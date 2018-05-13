@@ -72,6 +72,30 @@ _EMPTY_PROPERTY_EXPORT = """\
 </dummy>
 """.encode('utf-8')
 
+_NONE_PROPERTY_EXPORT = """\
+<?xml version="1.0"?>
+<dummy>
+ <property name="foo_boolean" type="boolean">False</property>
+ <property name="foo_date" type="date">1970/01/01 00:00:00 UTC</property>
+ <property name="foo_float" type="float">0.0</property>
+ <property name="foo_int" type="int">0</property>
+ <property name="foo_lines" type="lines"/>
+ <property name="foo_long" type="long">0</property>
+ <property name="foo_string" type="string"></property>
+ <property name="foo_tokens" type="tokens"/>
+ <property name="foo_selection" select_variable="foobarbaz"
+    type="selection"></property>
+ <property name="foo_mselection" select_variable="foobarbaz"
+    type="multiple selection"/>
+ <property name="foo_boolean0" type="boolean">False</property>
+ <property name="foo_date_naive" type="date">1970/01/01 00:00:00</property>
+ <property name="foo_boolean_nodel">False</property>
+ <property name="foo_date_nodel">1970/01/01 00:00:00 UTC</property>
+ <property name="foo_float_nodel">0.0</property>
+ <property name="foo_int_nodel">0</property>
+</dummy>
+"""
+
 _NORMAL_PROPERTY_EXPORT = u"""\
 <?xml version="1.0" encoding="utf-8"?>
 <dummy>
@@ -388,6 +412,20 @@ class PropertyManagerHelpersTests(unittest.TestCase):
         doc.appendChild(node)
 
         self.assertEqual(doc.toprettyxml(' '), _EMPTY_PROPERTY_EXPORT)
+
+    def test__extractProperties_none(self):
+        from Products.GenericSetup.utils import PrettyDocument
+        context = self._makeContext()
+        # When a text property is None, in 1.10.0 you get an AttributeError:
+        # 'NoneType' object has no attribute 'decode'
+        context.foo_text = None
+        helpers = self._makeOne(context=context)
+        doc = helpers._doc = PrettyDocument()
+        node = doc.createElement('dummy')
+        node.appendChild(helpers._extractProperties())
+        doc.appendChild(node)
+
+        self.assertEqual(doc.toprettyxml(' '), _NONE_PROPERTY_EXPORT)
 
     def test__extractProperties_normal(self):
         from Products.GenericSetup.utils import PrettyDocument
