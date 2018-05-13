@@ -21,6 +21,7 @@ from Products.GenericSetup.testing import ExportImportZCMLLayer
 _DATE_XML = b"""\
 <index name="foo_date" meta_type="DateIndex">
  <property name="index_naive_time_as_local">True</property>
+ <property name="precision">0</property>
 </index>
 """
 
@@ -74,6 +75,7 @@ class DateIndexNodeAdapterTests(NodeAdapterTestCase, unittest.TestCase):
     def setUp(self):
         from Products.PluginIndexes.DateIndex.DateIndex import DateIndex
         self._obj = DateIndex('foo_date')
+        self._obj._setPropValue('precision', 0)
         self._XML = _DATE_XML
 
     def _verifyImport(self, obj):
@@ -274,6 +276,7 @@ class UnchangedTests(unittest.TestCase):
             raise AssertionError("Don't clear me!")
         index = DateIndex('foo_date')
         index._setPropValue('index_naive_time_as_local', True)
+        index._setPropValue('precision', 0)
         index.clear = _no_clear 
         adapted = DateIndexNodeAdapter(index, environ)
         adapted.node = parseString(_DATE_XML).documentElement # no raise
