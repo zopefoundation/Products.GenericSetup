@@ -4,14 +4,6 @@ Changelog
 1.8.9 (unreleased)
 ------------------
 
-Breaking changes:
-
-- *add item here*
-
-New features:
-
-- *add item here*
-
 Bug fixes:
 
 - When ``metadata.xml`` parsing fails, show the filename in the ``ExpatError``.
