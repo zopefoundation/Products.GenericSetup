@@ -11,4 +11,4 @@ settings for each "tool" in the site , and supporting scripts / templates,
 in their "canonical" filesystem representations.
 
 See ``docs/index.rst`` for full documentation.  This documentation can
-also be found online:  http://packages.python.org/Products.GenericSetup/
+also be found online:  http://productsgenericsetup.readthedocs.io/
