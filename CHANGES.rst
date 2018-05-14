@@ -6,7 +6,8 @@ Changelog
 
 Breaking changes:
 
-- Require Zope 4.0b4 as minimum supported Zope version
+- Require Zope 4.0b4 as minimum supported Zope version and drop
+  explicity ``Zope2`` egg dependency
 
 - Drop Python 3.4 support
 
