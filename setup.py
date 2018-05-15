@@ -30,7 +30,7 @@ setup(
         "Development Status :: 5 - Production/Stable",
         "Framework :: Plone",
         # "Framework :: Plone :: 5.2",  # Zope4-compatible Plone
-        "Framework :: Zope2",
+        "Framework :: Zope :: 4",
         "Intended Audience :: Developers",
         "License :: OSI Approved :: Zope Public License",
         "Programming Language :: Python",
@@ -41,7 +41,7 @@ setup(
         "Topic :: System :: Archiving :: Packaging",
         "Topic :: System :: Installation/Setup",
     ],
-    keywords='web application server zope zope2 cmf',
+    keywords='web application server zope zope4 cmf',
     author="Zope Foundation and Contributors",
     author_email="zope-cmf@zope.org",
     url="https://github.com/zopefoundation/Products.GenericSetup",

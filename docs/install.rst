@@ -21,5 +21,5 @@ Manual Installation
 To install this package manually, without using :mod:`setuptools`,
 simply untar the package file downloaded from the PyPI site and look for
 the folder named ``GenericSetup`` underneath the ``Products`` folder at the
-root of the extracted tarball. Copy or link this ``GenericSetup`` 
-folder into the ``Products`` folder of your Zope2 instance and restart Zope.
+root of the extracted tarball. Copy or link this ``GenericSetup``
+folder into the ``Products`` folder of your Zope instance and restart Zope.
