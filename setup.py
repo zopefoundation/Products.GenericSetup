@@ -28,8 +28,7 @@ setup(
     long_description=README + _BOUNDARY + CHANGES,
     classifiers=[
         "Development Status :: 5 - Production/Stable",
-        "Framework :: Plone",
-        # "Framework :: Plone :: 5.2",  # Zope4-compatible Plone
+        "Framework :: Plone :: 5.2",
         "Framework :: Zope :: 4",
         "Intended Audience :: Developers",
         "License :: OSI Approved :: Zope Public License",
@@ -37,6 +36,7 @@ setup(
         "Programming Language :: Python :: 2.7",
         "Programming Language :: Python :: 3.5",
         "Programming Language :: Python :: 3.6",
+        "Programming Language :: Python :: Implementation :: CPython",
         "Topic :: Software Development",
         "Topic :: System :: Archiving :: Packaging",
         "Topic :: System :: Installation/Setup",

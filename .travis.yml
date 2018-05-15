@@ -5,6 +5,7 @@ cache:
         - $TRAVIS_BUILD_DIR/eggs
 python:
   - "2.7"
+  - "3.5"
   - "3.6"
 install:
     - pip install -U coverage coveralls

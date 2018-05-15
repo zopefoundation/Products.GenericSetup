@@ -1,13 +1,13 @@
 Changelog
 =========
 
-1.10.1 (unreleased)
--------------------
+2.0 (unreleased)
+----------------
 
 Breaking changes:
 
 - Require Zope 4.0b4 as minimum supported Zope version and drop
-  explicity ``Zope2`` egg dependency
+  explicit ``Zope2`` egg dependency.
 
 - Drop Python 3.4 support
 
