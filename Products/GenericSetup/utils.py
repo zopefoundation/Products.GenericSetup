@@ -424,6 +424,7 @@ class NodeAdapterBase(object):
     """Node im- and exporter base.
     """
 
+    _encoding = 'utf-8'
     _LOGGER_ID = ''
 
     def __init__(self, context, environ):
@@ -502,7 +503,7 @@ class XMLAdapterBase(BodyAdapterBase):
         """Export the object as a file body.
         """
         self._doc.appendChild(self._exportNode())
-        xml = self._doc.toprettyxml(' ', encoding='utf-8')
+        xml = self._doc.toprettyxml(' ', encoding=self._encoding)
         self._doc.unlink()
         return xml
 
@@ -515,6 +516,9 @@ class XMLAdapterBase(BodyAdapterBase):
             filename = (self.filename or
                         '/'.join(self.context.getPhysicalPath()))
             raise ExpatError('%s: %s' % (filename, e))
+
+        # Replace the encoding with the one from the XML
+        self._encoding = dom.encoding or self._encoding
         self._importNode(dom.documentElement)
 
     body = property(_exportBody, _importBody)
