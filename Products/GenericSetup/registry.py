@@ -304,7 +304,7 @@ class BaseStepRegistry(Implicit):
         """
         xml = self._exportTemplate()
         if six.PY2:
-            xml = xml.encode('utf-8')
+            xml = xml.encode(encoding)
         return xml
 
     security.declarePrivate('getStep')
@@ -615,7 +615,7 @@ class ToolsetRegistry(Implicit):
         """
         xml = self._toolsetConfig()
         if six.PY2:
-            xml = xml.encode('utf-8')
+            xml = xml.encode(encoding)
         return xml
 
     security.declareProtected(ManagePortal, 'parseXML')
