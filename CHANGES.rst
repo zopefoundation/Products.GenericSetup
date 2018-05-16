@@ -1,8 +1,17 @@
 Changelog
 =========
 
-1.10.1 (unreleased)
--------------------
+2.0 (unreleased)
+----------------
+
+Breaking changes:
+
+- Require Zope 4.0b4 as minimum supported Zope version and drop
+  explicit ``Zope2`` egg dependency.
+
+- Drop Python 3.4 support
+
+New features:
 
 - Fixed tests with ``Products.ZCatalog 4.1``.  [maurits]
 
@@ -12,6 +21,7 @@ Changelog
 - Prevent AttributeError 'NoneType' object has no attribute 'decode'.
   [maurits]
 
+- Finished compatibility with Python 3.5 and 3.6
 
 1.10.0 (2017-12-07)
 -------------------

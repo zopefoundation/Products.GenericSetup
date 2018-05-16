@@ -20,7 +20,7 @@ from Acquisition import Implicit
 from Products.GenericSetup.testing import NodeAdapterTestCase
 from Products.GenericSetup.testing import ExportImportZCMLLayer
 
-_PLEXICON_XML = """\
+_PLEXICON_XML = b"""\
 <object name="foo_plexicon" meta_type="ZCTextIndex Lexicon">
  <element name="Whitespace splitter" group="Word Splitter"/>
  <element name="Case Normalizer" group="Case Normalizer"/>
@@ -28,7 +28,7 @@ _PLEXICON_XML = """\
 </object>
 """
 
-_ZCTEXT_XML = """\
+_ZCTEXT_XML = b"""\
 <index name="foo_zctext" meta_type="ZCTextIndex">
  <indexed_attr value="foo_zctext"/>
  <indexed_attr value="baz_zctext"/>
@@ -109,7 +109,7 @@ class UnchangedTests(unittest.TestCase):
         from Products.GenericSetup.ZCTextIndex.exportimport \
                 import ZCLexiconNodeAdapter
 
-        _XML = """\
+        _XML = b"""\
         <object name="foo_plexicon" meta_type="ZCTextIndex Lexicon">
         <element name="foo" group="gs"/>
         <element name="bar" group="gs"/>
@@ -140,7 +140,7 @@ class UnchangedTests(unittest.TestCase):
         from Products.GenericSetup.testing import DummySetupEnviron
         from Products.GenericSetup.ZCTextIndex.exportimport \
                 import ZCTextIndexNodeAdapter
-        _XML = """\
+        _XML = b"""\
         <index name="foo_zctext" meta_type="ZCTextIndex">
         <indexed_attr value="bar"/>
         <extra name="index_type" value="Okapi BM25 Rank"/>

@@ -31,8 +31,8 @@ class _extra:
     pass
 
 
-_CATALOG_BODY = """\
-<?xml version="1.0"?>
+_CATALOG_BODY = b"""\
+<?xml version="1.0" encoding="utf-8"?>
 <object name="foo_catalog" meta_type="ZCatalog">
  <property name="title"></property>
  <object name="foo_plexicon" meta_type="ZCTextIndex Lexicon">
@@ -67,8 +67,8 @@ _CATALOG_BODY = """\
 </object>
 """
 
-_CATALOG_UPDATE_BODY = """\
-<?xml version="1.0"?>
+_CATALOG_UPDATE_BODY = b"""\
+<?xml version="1.0" encoding="utf-8"?>
 <object name="foo_catalog">
  <object name="old_plexicon" remove="True"/>
  <index name="foo_text" remove="True"/>
@@ -88,11 +88,11 @@ _CATALOG_UPDATE_BODY = """\
 # The catalog starts out as the _CATALOG_BODY above with the following
 # xml snippets inserted.
 
-_LEXICON_XML = """\
+_LEXICON_XML = b"""\
  <object name="old_plexicon" meta_type="ZCTextIndex Lexicon"/>
 """
 
-_TEXT_XML = """\
+_TEXT_XML = b"""\
  <index name="foo_text" meta_type="ZCTextIndex">
   <indexed_attr value="foo_text"/>
   <extra name="index_type" value="Cosine Measure"/>
@@ -100,7 +100,7 @@ _TEXT_XML = """\
  </index>
 """
 
-_COLUMN_XML = """\
+_COLUMN_XML = b"""\
  <column value="bacon"/>
 """
 
@@ -109,7 +109,7 @@ _COLUMN_XML = """\
 # The catalog ends as the _CATALOG_BODY above with the following
 # xml snippets and some empty strings inserted.
 
-_ZCTEXT_XML = """\
+_ZCTEXT_XML = b"""\
  <index name="foo_text" meta_type="ZCTextIndex">
   <indexed_attr value="foo_text"/>
   <extra name="index_type" value="Okapi BM25 Rank"/>
@@ -184,7 +184,7 @@ class ZCatalogXMLAdapterTests(BodyAdapterTestCase, unittest.TestCase):
         from Products.ZCatalog.ZCatalog import ZCatalog
 
         self._obj = ZCatalog('foo_catalog')
-        self._BODY = _CATALOG_BODY % ('', '', '')
+        self._BODY = _CATALOG_BODY % (b'', b'', b'')
 
     def test_body_get_special(self):
         # Assert that the catalog starts out the way we expect it to.
@@ -201,7 +201,7 @@ class ZCatalogXMLAdapterTests(BodyAdapterTestCase, unittest.TestCase):
         context._should_purge = False
         adapted = getMultiAdapter((self._obj, context), IBody)
         adapted.body = _CATALOG_UPDATE_BODY
-        self.assertEqual(adapted.body, _CATALOG_BODY % ('', _ZCTEXT_XML, ''))
+        self.assertEqual(adapted.body, _CATALOG_BODY % (b'', _ZCTEXT_XML, b''))
 
 
 def test_suite():

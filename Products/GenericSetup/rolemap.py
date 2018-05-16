@@ -133,7 +133,7 @@ def exportRolemap( context ):
     logger = context.getLogger('rolemap')
 
     rc = RolemapExportConfigurator(site).__of__(site)
-    text = rc.generateXML()
+    text = rc.generateXML().encode('utf-8')
 
     context.writeDataFile( _FILENAME, text, 'text/xml' )
 

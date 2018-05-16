@@ -375,7 +375,7 @@ class Test_exportRolemap(BaseRegistryTests):
         self.assertEqual(len(context._wrote), 1)
         filename, text, content_type = context._wrote[0]
         self.assertEqual(filename, 'rolemap.xml')
-        self._compareDOM(text, _EMPTY_EXPORT)
+        self._compareDOM(text.decode('utf-8'), _EMPTY_EXPORT)
         self.assertEqual(content_type, 'text/xml')
 
     def test_added_role(self):
@@ -394,7 +394,7 @@ class Test_exportRolemap(BaseRegistryTests):
         self.assertEqual(len(context._wrote), 1)
         filename, text, content_type = context._wrote[0]
         self.assertEqual(filename, 'rolemap.xml')
-        self._compareDOM(text, _ADDED_ROLE_EXPORT)
+        self._compareDOM(text.decode('utf-8'), _ADDED_ROLE_EXPORT)
         self.assertEqual(content_type, 'text/xml')
 
     def test_acquired_perm(self):
@@ -414,7 +414,7 @@ class Test_exportRolemap(BaseRegistryTests):
         self.assertEqual(len(context._wrote), 1)
         filename, text, content_type = context._wrote[0]
         self.assertEqual(filename, 'rolemap.xml')
-        self._compareDOM(text, _ACQUIRED_EXPORT)
+        self._compareDOM(text.decode('utf-8'), _ACQUIRED_EXPORT)
         self.assertEqual(content_type, 'text/xml')
 
     def test_unacquired_perm(self):
@@ -437,7 +437,7 @@ class Test_exportRolemap(BaseRegistryTests):
         self.assertEqual(len(context._wrote), 1)
         filename, text, content_type = context._wrote[0]
         self.assertEqual(filename, 'rolemap.xml')
-        self._compareDOM(text, _COMBINED_EXPORT)
+        self._compareDOM(text.decode('utf-8'), _COMBINED_EXPORT)
         self.assertEqual(content_type, 'text/xml')
 
     def test_unacquired_perm_added_role(self):
@@ -457,7 +457,7 @@ class Test_exportRolemap(BaseRegistryTests):
         self.assertEqual(len(context._wrote), 1)
         filename, text, content_type = context._wrote[0]
         self.assertEqual(filename, 'rolemap.xml')
-        self._compareDOM(text, _UNACQUIRED_EXPORT)
+        self._compareDOM(text.decode('utf-8'), _UNACQUIRED_EXPORT)
         self.assertEqual(content_type, 'text/xml')
 
 

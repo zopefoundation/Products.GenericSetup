@@ -15,6 +15,7 @@
 
 import os
 import shutil
+import six
 from tarfile import TarFile
 
 from AccessControl.SecurityManagement import newSecurityManager
@@ -32,10 +33,10 @@ class DOMComparator:
     def _compareDOM(self, found_text, expected_text, debug=False):
 
         found_lines = [x.strip() for x in found_text.splitlines()]
-        found_text = '\n'.join(filter(None, found_lines))
+        found_text = '\n'.join([i for i in found_lines if i])
 
         expected_lines = [x.strip() for x in expected_text.splitlines()]
-        expected_text = '\n'.join(filter(None, expected_lines))
+        expected_text = '\n'.join([i for i in found_lines if i])
 
         from xml.dom.minidom import parseString
         found = parseString(found_text)
@@ -84,6 +85,9 @@ def _clearTestDirectory(root_path):
 
 
 def _makeTestFile(filename, root_path, contents):
+
+    if isinstance(contents, six.text_type):
+        contents = contents.encode('utf-8')
 
     path, filename = os.path.split(filename)
 
@@ -143,7 +147,7 @@ class TarballTester(DOMComparator):
         tarfile = TarFile.open('foo.tar.gz', fileobj=fileish, mode='r:gz')
         extract = tarfile.extractfile(entry_name)
         found = extract.read()
-        self._compareDOM(found, data)
+        self._compareDOM(found.decode('utf-8'), data)
 
 
 @implementer(IExportContext)

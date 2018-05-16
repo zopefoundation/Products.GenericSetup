@@ -13,6 +13,8 @@
 """Local component registry export / import handler.
 """
 
+import six
+
 from operator import itemgetter
 
 from Acquisition import aq_base
@@ -22,11 +24,7 @@ from zope.component import getUtilitiesFor
 from zope.component import queryMultiAdapter
 from zope.component.interfaces import ComponentLookupError
 from zope.component.interfaces import IComponentRegistry
-try:
-    from zope.component.interfaces import IPossibleSite
-except ImportError:
-    # BBB: for Zope < 2.13 (zope.component < 3.8)
-    from zope.location.interfaces import IPossibleSite
+from zope.component.interfaces import IPossibleSite
 
 from Products.GenericSetup.interfaces import IBody
 from Products.GenericSetup.interfaces import IComponentsHandlerBlacklist
@@ -172,7 +170,7 @@ class ComponentRegistryXMLAdapter(XMLAdapterBase):
                 continue
 
             provided = _resolveDottedName(provided)
-            name = unicode(str(child.getAttribute('name')))
+            name = six.text_type(child.getAttribute('name'))
 
             for_ = child.getAttribute('for') or child.getAttribute('for_') #BBB
             required = []
@@ -294,7 +292,7 @@ class ComponentRegistryXMLAdapter(XMLAdapterBase):
                 continue
 
             provided = _resolveDottedName(provided)
-            name = unicode(str(child.getAttribute('name')))
+            name = six.text_type(child.getAttribute('name'))
 
             component = child.getAttribute('component')
             component = component and _resolveDottedName(component) or None

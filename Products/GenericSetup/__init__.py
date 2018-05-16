@@ -33,9 +33,7 @@ def initialize(context):
     from . import tool
 
     context.registerClass(tool.SetupTool,
-                          constructors=(#tool.addSetupToolForm,
-                                        tool.addSetupTool,
-                                        ),
+                          constructors=(tool.addSetupTool,),
                           permissions=(ManagePortal,),
                           interfaces=None,
                           icon='www/tool.png',

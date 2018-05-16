@@ -16,11 +16,11 @@ Registering Profiles
 --------------------
 
 By convention profiles are stored in a ``profiles`` directory within a
-Zope2 product. They have to be registered explicitly using either the
+Zope product. They have to be registered explicitly using either the
 :meth:`Products.GenericSetup.profile_registry.registerProfile` API or the
 equivalent ``genericsetup:registerProfile`` ZCML directive.
 
-Here is example ZCML for a Zope2 product, ``MyProduct``, which extends
+Here is example ZCML for a Zope product, ``MyProduct``, which extends
 another product, ``BaseProduct``::
 
   <genericsetup:registerProfile
