@@ -946,7 +946,10 @@ def _parseINI(text):
     from six.moves.configparser import ConfigParser
     from six.moves import cStringIO
     parser = ConfigParser()
-    parser.readfp(cStringIO(text))
+    try:
+        parser.read_file(cStringIO(text))
+    except AttributeError:  # Python 2
+        parser.readfp(cStringIO(text))
     return parser
 
 

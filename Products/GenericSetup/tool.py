@@ -13,12 +13,15 @@
 """ Classes:  SetupTool
 """
 
+try:
+    from html import escape
+except ImportError:
+    from cgi import escape
 import logging
 import os
 import six
 import time
 import types
-from cgi import escape
 from operator import itemgetter
 
 from AccessControl.class_init import InitializeClass

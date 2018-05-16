@@ -794,6 +794,8 @@ class TarballExportContextTests(ZopeTestCase, ConformsToISetupContext,
         self._verifyTarballContents(fileish, ['foo.txt'])
         self._verifyTarballEntry(fileish, 'foo.txt', printable_bytes)
 
+        fp.close()  # Prevent unclosed file warning
+
     def test_writeDataFile_subdir(self):
 
         site = DummySite('site').__of__(self.app)

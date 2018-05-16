@@ -337,7 +337,10 @@ class SimpleINIAware(object):
         """
         context = self.context
         parser = ConfigParser()
-        parser.readfp(cStringIO(text))
+        try:
+            parser.read_file(cStringIO(text))
+        except AttributeError:  # Python 2
+            parser.readfp(cStringIO(text))
         for option, value in parser.defaults().items():
             prop_type = context.getPropertyType(option)
             if prop_type is None:
