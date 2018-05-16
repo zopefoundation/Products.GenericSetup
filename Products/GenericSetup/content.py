@@ -72,9 +72,9 @@ class FolderishExporterImporter(object):
         """
         exportable = self.context.objectItems()
         exportable = [x for x in exportable
-                        if not ISetupTool.providedBy(x[1])]
+                      if not ISetupTool.providedBy(x[1])]
         exportable = [x + (IFilesystemExporter(x[1], None),)
-                        for x in exportable]
+                      for x in exportable]
         return exportable
 
     def export(self, export_context, subdir, root=False):
@@ -100,11 +100,11 @@ class FolderishExporterImporter(object):
 
             csv_writer.writerow((object_id, factory_name))
 
+        c_type = 'text/comma-separated-values'
         export_context.writeDataFile('.objects',
-                                    text=stream.getvalue(),
-                                    content_type='text/comma-separated-values',
-                                    subdir=subdir,
-                                   )
+                                     text=stream.getvalue(),
+                                     content_type=c_type,
+                                     subdir=subdir)
 
         prop_adapter = IINIAware(context, None)
 
@@ -112,8 +112,7 @@ class FolderishExporterImporter(object):
             export_context.writeDataFile('.properties',
                                          text=prop_adapter.as_ini(),
                                          content_type='text/plain',
-                                         subdir=subdir,
-                                        )
+                                         subdir=subdir)
 
         for object_id, object, adapter in exportable:
             if adapter is not None:
@@ -130,8 +129,7 @@ class FolderishExporterImporter(object):
 
         if prop_adapter is not None:
             prop_text = import_context.readDataFile('.properties',
-                                                    subdir=subdir,
-                                                   )
+                                                    subdir=subdir)
             if prop_text is not None:
                 prop_adapter.put_ini(prop_text)
 
@@ -183,6 +181,7 @@ class FolderishExporterImporter(object):
     def _makeInstance(self, instance_id, type_name, subdir, import_context):
 
         context = self.context
+
         class _OldStyleClass:
             pass
 
@@ -216,7 +215,7 @@ class FolderishExporterImporter(object):
 
         try:
             instance = factory(instance_id)
-        except ValueError: # invalid type
+        except ValueError:  # invalid type
             return None
 
         if context._getOb(instance_id, None) is None:
@@ -226,7 +225,7 @@ class FolderishExporterImporter(object):
 
     def _mustPreserve(self):
         return [x for x in self.context.objectItems()
-                        if ISetupTool.providedBy(x[1])]
+                if ISetupTool.providedBy(x[1])]
 
 
 def _globtest(globpattern, namelist):
@@ -257,8 +256,7 @@ class CSVAwareFileAdapter(object):
         export_context.writeDataFile('%s.csv' % self.context.getId(),
                                      self.context.as_csv(),
                                      'text/comma-separated-values',
-                                     subdir,
-                                    )
+                                     subdir)
 
     def listExportableItems(self):
         """ See IFilesystemExporter.
@@ -293,8 +291,7 @@ class INIAwareFileAdapter(object):
         export_context.writeDataFile('%s.ini' % self.context.getId(),
                                      self.context.as_ini(),
                                      'text/plain',
-                                     subdir,
-                                    )
+                                     subdir)
 
     def listExportableItems(self):
         """ See IFilesystemExporter.
@@ -367,8 +364,10 @@ class FauxDAVRequest:
 
 
 class FauxDAVResponse:
+
     def setHeader(self, key, value, lock=False):
         pass  # stub this out to mollify webdav.Resource
+
     def setStatus(self, value, reason=None):
         pass  # stub this out to mollify webdav.Resource
 
@@ -392,8 +391,7 @@ class DAVAwareFileAdapter(object):
         export_context.writeDataFile(self._getFileName(),
                                      self.context.manage_FTPget(),
                                      'text/plain',
-                                     subdir,
-                                    )
+                                     subdir)
 
     def listExportableItems(self):
         """ See IFilesystemExporter.

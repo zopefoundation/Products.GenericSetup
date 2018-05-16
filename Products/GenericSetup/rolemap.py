@@ -31,7 +31,7 @@ from Products.GenericSetup.utils import CONVERTER, DEFAULT, KEY
 _FILENAME = 'rolemap.xml'
 
 
-def importRolemap( context ):
+def importRolemap(context):
     """ Import roles / permission map from an XML file.
 
     o 'context' must implement IImportContext.
@@ -39,14 +39,10 @@ def importRolemap( context ):
     o Register via Python:
 
       registry = site.setup_tool.setup_steps
-      registry.registerStep( 'importRolemap'
-                           , '20040518-01'
-                           , Products.GenericSetup.rolemap.importRolemap
-                           , ()
-                           , 'Role / Permission import'
-                           , 'Import additional roles, and map '
-                           'roles to permissions'
-                           )
+      registry.registerStep('importRolemap', '20040518-01',
+                            Products.GenericSetup.rolemap.importRolemap,
+                            (), 'Role / Permission import',
+                            'Import roles and map roles to permissions')
 
     o Register via XML:
 
@@ -61,7 +57,7 @@ def importRolemap( context ):
     encoding = context.getEncoding()
     logger = context.getLogger('rolemap')
 
-    text = context.readDataFile( _FILENAME )
+    text = context.readDataFile(_FILENAME)
 
     if text is not None:
 
@@ -69,43 +65,42 @@ def importRolemap( context ):
 
             items = list(site.__dict__.items())
 
-            for k, v in items: # XXX: WAAA
+            for k, v in items:  # XXX: WAAA
 
                 if k == '__ac_roles__':
-                    delattr( site, k )
+                    delattr(site, k)
 
-                if k.startswith( '_' ) and k.endswith( '_Permission' ):
-                    delattr( site, k )
+                if k.startswith('_') and k.endswith('_Permission'):
+                    delattr(site, k)
 
         rc = RolemapImportConfigurator(site, encoding)
-        rolemap_info = rc.parseXML( text )
+        rolemap_info = rc.parseXML(text)
 
-        immediate_roles = list( getattr(site, '__ac_roles__', []) )
+        immediate_roles = list(getattr(site, '__ac_roles__', []))
         already = {}
 
         for role in site.valid_roles():
-            already[ role ] = 1
+            already[role] = 1
 
-        for role in rolemap_info[ 'roles' ]:
+        for role in rolemap_info['roles']:
 
-            if already.get( role ) is None:
-                immediate_roles.append( role )
-                already[ role ] = 1
+            if already.get(role) is None:
+                immediate_roles.append(role)
+                already[role] = 1
 
         immediate_roles.sort()
-        site.__ac_roles__ = tuple( immediate_roles )
+        site.__ac_roles__ = tuple(immediate_roles)
 
-        for permission in rolemap_info[ 'permissions' ]:
+        for permission in rolemap_info['permissions']:
 
-            site.manage_permission( permission[ 'name' ]
-                                  , permission.get('roles', [])
-                                  , permission[ 'acquire' ]
-                                  )
+            site.manage_permission(permission['name'],
+                                   permission.get('roles', []),
+                                   permission['acquire'])
 
     logger.info('Role / permission map imported.')
 
 
-def exportRolemap( context ):
+def exportRolemap(context):
     """ Export roles / permission map as an XML file
 
     o 'context' must implement IExportContext.
@@ -113,12 +108,10 @@ def exportRolemap( context ):
     o Register via Python:
 
       registry = site.setup_tool.export_steps
-      registry.registerStep( 'exportRolemap'
-                           , Products.GenericSetup.rolemap.exportRolemap
-                           , 'Role / Permission export'
-                           , 'Export additional roles, and '
-                             'role / permission map '
-                           )
+      registry.registerStep('exportRolemap',
+                            Products.GenericSetup.rolemap.exportRolemap
+                            'Role / Permission export',
+                            'Export roles and role / permission map')
 
     o Register via XML:
 
@@ -135,7 +128,7 @@ def exportRolemap( context ):
     rc = RolemapExportConfigurator(site).__of__(site)
     text = rc.generateXML().encode('utf-8')
 
-    context.writeDataFile( _FILENAME, text, 'text/xml' )
+    context.writeDataFile(_FILENAME, text, 'text/xml')
 
     logger.info('Role / permission map exported.')
 
@@ -146,14 +139,14 @@ class RolemapExportConfigurator(ExportConfiguratorBase):
     """
     security = ClassSecurityInfo()
 
-    security.declareProtected( ManagePortal, 'listRoles' )
-    def listRoles( self ):
+    @security.protected(ManagePortal)
+    def listRoles(self):
         """ List the valid role IDs for our site.
         """
         return self._site.valid_roles()
 
-    security.declareProtected( ManagePortal, 'listPermissions' )
-    def listPermissions( self ):
+    @security.protected(ManagePortal)
+    def listPermissions(self):
         """ List permissions for export.
 
         o Returns a sqeuence of mappings describing locally-modified
@@ -172,26 +165,25 @@ class RolemapExportConfigurator(ExportConfiguratorBase):
         permissions = []
         valid_roles = self.listRoles()
 
-        for perm in self._site.ac_inherited_permissions( 1 ):
+        for perm in self._site.ac_inherited_permissions(1):
 
-            name = perm[ 0 ]
-            p = Permission( name, perm[ 1 ], self._site )
-            roles = p.getRoles( default=[] )
-            acquire = isinstance( roles, list )  # tuple means don't acquire
-            roles = [ r for r in roles if r in valid_roles ]
+            name = perm[0]
+            p = Permission(name, perm[1], self._site)
+            roles = p.getRoles(default=[])
+            acquire = isinstance(roles, list)  # tuple means don't acquire
+            roles = [r for r in roles if r in valid_roles]
             roles.sort()
 
             if roles or not acquire:
-                permissions.append( { 'name'    : name
-                                    , 'acquire' : acquire
-                                    , 'roles'   : roles
-                                    } )
+                permissions.append({'name': name, 'acquire': acquire,
+                                    'roles': roles})
 
         return permissions
 
     def _getExportTemplate(self):
 
         return PageTemplateFile('rmeExport.xml', _xmldir)
+
 
 InitializeClass(RolemapExportConfigurator)
 
@@ -205,18 +197,14 @@ class RolemapImportConfigurator(ImportConfiguratorBase):
     def _getImportMapping(self):
 
         return {
-          'rolemap':
-            { 'roles':       {CONVERTER: self._convertToUnique, DEFAULT: ()},
-              'permissions': {CONVERTER: self._convertToUnique} },
-          'roles':
-            { 'role':        {KEY: None} },
-          'role':
-            { 'name':        {KEY: None} },
-          'permissions':
-            { 'permission':  {KEY: None, DEFAULT: ()} },
-          'permission':
-            { 'name':        {},
-              'role':        {KEY: 'roles'},
-              'acquire':     {CONVERTER: self._convertToBoolean} } }
+          'rolemap': {'roles': {CONVERTER: self._convertToUnique, DEFAULT: ()},
+                      'permissions': {CONVERTER: self._convertToUnique}},
+          'roles': {'role': {KEY: None}},
+          'role': {'name': {KEY: None}},
+          'permissions': {'permission': {KEY: None, DEFAULT: ()}},
+          'permission': {'name': {},
+                         'role': {KEY: 'roles'},
+                         'acquire': {CONVERTER: self._convertToBoolean}}}
+
 
 InitializeClass(RolemapImportConfigurator)

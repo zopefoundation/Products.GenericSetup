@@ -35,7 +35,6 @@ class DOMComparator:
         found_lines = [x.strip() for x in found_text.splitlines()]
         found_text = '\n'.join([i for i in found_lines if i])
 
-        expected_lines = [x.strip() for x in expected_text.splitlines()]
         expected_text = '\n'.join([i for i in found_lines if i])
 
         from xml.dom.minidom import parseString

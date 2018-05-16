@@ -378,8 +378,8 @@ class ImportStepTests(unittest.TestCase):
         </configure>""")
         self.assertEqual(_import_step_registry.listSteps(), ['name'])
         data = _import_step_registry.getStepMetadata(u'name')
-        self.assertEqual(data["handler"],
-                         'Products.GenericSetup.tests.test_zcml.dummy_importstep')
+        expected = 'Products.GenericSetup.tests.test_zcml.dummy_importstep'
+        self.assertEqual(data["handler"], expected)
         self.assertEqual(data["description"], u"description")
         self.assertEqual(data["title"], u"title")
         self.assertEqual(data["dependencies"], ())
@@ -423,8 +423,8 @@ class ExportStepTests(unittest.TestCase):
         </configure>""")
         self.assertEqual(_export_step_registry.listSteps(), [u'name'])
         data = _export_step_registry.getStepMetadata(u'name')
-        self.assertEqual(data["handler"],
-                         'Products.GenericSetup.tests.test_zcml.dummy_exportstep')
+        expected = 'Products.GenericSetup.tests.test_zcml.dummy_exportstep'
+        self.assertEqual(data["handler"], expected)
         self.assertEqual(data["description"], u"description")
         self.assertEqual(data["title"], u"title")
         self.assertEqual(data["id"], u"name")

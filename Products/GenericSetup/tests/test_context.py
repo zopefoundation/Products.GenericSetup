@@ -60,7 +60,9 @@ class DummyPdataStreamIterator:
     pass
 
 
-class DirectoryImportContextTests(FilesystemTestBase, ConformsToISetupContext, ConformsToIImportContext, ConformsToIChunkableImportContext):
+class DirectoryImportContextTests(FilesystemTestBase, ConformsToISetupContext,
+                                  ConformsToIImportContext,
+                                  ConformsToIChunkableImportContext):
 
     _PROFILE_PATH = '/tmp/ICTTexts'
 
@@ -318,8 +320,9 @@ class DirectoryImportContextTests(FilesystemTestBase, ConformsToISetupContext, C
         self.assertTrue('.svn' in names)
 
 
-class DirectoryExportContextTests(FilesystemTestBase, ConformsToISetupContext, ConformsToIExportContext, ConformsToIChunkableExportContext
-                                  ):
+class DirectoryExportContextTests(FilesystemTestBase, ConformsToISetupContext,
+                                  ConformsToIExportContext,
+                                  ConformsToIChunkableExportContext):
 
     _PROFILE_PATH = '/tmp/ECTTexts'
 
@@ -392,7 +395,8 @@ class DirectoryExportContextTests(FilesystemTestBase, ConformsToISetupContext, C
 
         SUBDIR = 'subdir'
         FILENAME = 'nested.txt'
-        fqname = self._makeFile(os.path.join(SUBDIR, FILENAME), printable_bytes)
+        fqname = self._makeFile(os.path.join(SUBDIR, FILENAME),
+                                printable_bytes)
 
         site = DummySite('site').__of__(self.app)
         ctx = self._makeOne(site, self._PROFILE_PATH)
@@ -1030,8 +1034,8 @@ class SnapshotImportContextTests(ZopeTestCase, ConformsToISetupContext,
 
         return site, tool, ctx.__of__(tool)
 
-    def _makeFile(self, tool, snapshot_id, filename, contents, content_type='text/plain', mod_time=None, subdir=None
-                  ):
+    def _makeFile(self, tool, snapshot_id, filename, contents,
+                  content_type='text/plain', mod_time=None, subdir=None):
 
         snapshots = tool._getOb('snapshots')
         folder = snapshots._getOb(snapshot_id)
@@ -1078,7 +1082,7 @@ class SnapshotImportContextTests(ZopeTestCase, ConformsToISetupContext,
 
         SNAPSHOT_ID = 'ctorparms'
         ENCODING = 'latin-1'
-        site, tool, ctx = self._makeOne(SNAPSHOT_ID, encoding=ENCODING, 
+        site, tool, ctx = self._makeOne(SNAPSHOT_ID, encoding=ENCODING,
                                         should_purge=True)
 
         self.assertEqual(ctx.getEncoding(), ENCODING)
@@ -1137,7 +1141,8 @@ class SnapshotImportContextTests(ZopeTestCase, ConformsToISetupContext,
         SUBDIR = 'subdir'
 
         site, tool, ctx = self._makeOne(SNAPSHOT_ID)
-        self._makeFile(tool, SNAPSHOT_ID, FILENAME, printable_bytes, subdir=SUBDIR)
+        self._makeFile(tool, SNAPSHOT_ID, FILENAME, printable_bytes,
+                       subdir=SUBDIR)
 
         self.assertEqual(ctx.readDataFile(FILENAME, SUBDIR), printable_bytes)
         self.assertEqual(ctx.readDataFile('%s/%s' % (SUBDIR, FILENAME)),
@@ -1156,7 +1161,8 @@ class SnapshotImportContextTests(ZopeTestCase, ConformsToISetupContext,
         WHEN = 999999999.0
         SNAPSHOT_ID = 'getLastModified_simple'
         tool, ctx = self._makeOne(SNAPSHOT_ID)[1:]
-        self._makeFile(tool, SNAPSHOT_ID, FILENAME, printable_bytes, mod_time=WHEN)
+        self._makeFile(tool, SNAPSHOT_ID, FILENAME, printable_bytes,
+                       mod_time=WHEN)
 
         lm = ctx.getLastModified(FILENAME)
         self.assertTrue(isinstance(lm, DateTime))
@@ -1170,8 +1176,8 @@ class SnapshotImportContextTests(ZopeTestCase, ConformsToISetupContext,
         WHEN = 999999999.0
         SNAPSHOT_ID = 'getLastModified_subdir'
         tool, ctx = self._makeOne(SNAPSHOT_ID)[1:]
-        self._makeFile(tool, SNAPSHOT_ID, FILENAME, printable_bytes, mod_time=WHEN,
-                       subdir=SUBDIR)
+        self._makeFile(tool, SNAPSHOT_ID, FILENAME, printable_bytes,
+                       mod_time=WHEN, subdir=SUBDIR)
 
         lm = ctx.getLastModified(PATH)
         self.assertTrue(isinstance(lm, DateTime))
@@ -1184,8 +1190,8 @@ class SnapshotImportContextTests(ZopeTestCase, ConformsToISetupContext,
         WHEN = 999999999.0
         SNAPSHOT_ID = 'getLastModified_directory'
         tool, ctx = self._makeOne(SNAPSHOT_ID)[1:]
-        self._makeFile(tool, SNAPSHOT_ID, FILENAME, printable_bytes, mod_time=WHEN,
-                       subdir=SUBDIR)
+        self._makeFile(tool, SNAPSHOT_ID, FILENAME, printable_bytes,
+                       mod_time=WHEN, subdir=SUBDIR)
 
         lm = ctx.getLastModified(SUBDIR)
         self.assertTrue(isinstance(lm, DateTime))
@@ -1218,7 +1224,8 @@ class SnapshotImportContextTests(ZopeTestCase, ConformsToISetupContext,
         PATH = '%s/%s' % (SUBDIR, FILENAME)
 
         site, tool, ctx = self._makeOne(SNAPSHOT_ID)
-        self._makeFile(tool, SNAPSHOT_ID, FILENAME, printable_bytes, subdir=SUBDIR)
+        self._makeFile(tool, SNAPSHOT_ID, FILENAME, printable_bytes,
+                       subdir=SUBDIR)
 
         self.assertEqual(ctx.isDirectory(PATH), False)
 
@@ -1229,7 +1236,8 @@ class SnapshotImportContextTests(ZopeTestCase, ConformsToISetupContext,
         FILENAME = 'nested.txt'
 
         site, tool, ctx = self._makeOne(SNAPSHOT_ID)
-        self._makeFile(tool, SNAPSHOT_ID, FILENAME, printable_bytes, subdir=SUBDIR)
+        self._makeFile(tool, SNAPSHOT_ID, FILENAME, printable_bytes,
+                       subdir=SUBDIR)
 
         self.assertEqual(ctx.isDirectory(SUBDIR), True)
 
@@ -1271,7 +1279,8 @@ class SnapshotImportContextTests(ZopeTestCase, ConformsToISetupContext,
         PATH = '%s/%s' % (SUBDIR, FILENAME)
 
         site, tool, ctx = self._makeOne(SNAPSHOT_ID)
-        self._makeFile(tool, SNAPSHOT_ID, FILENAME, printable_bytes, subdir=SUBDIR)
+        self._makeFile(tool, SNAPSHOT_ID, FILENAME, printable_bytes,
+                       subdir=SUBDIR)
 
         self.assertEqual(ctx.listDirectory(PATH), None)
 
@@ -1282,7 +1291,8 @@ class SnapshotImportContextTests(ZopeTestCase, ConformsToISetupContext,
         FILENAME = 'nested.txt'
 
         site, tool, ctx = self._makeOne(SNAPSHOT_ID)
-        self._makeFile(tool, SNAPSHOT_ID, FILENAME, printable_bytes, subdir=SUBDIR)
+        self._makeFile(tool, SNAPSHOT_ID, FILENAME, printable_bytes,
+                       subdir=SUBDIR)
 
         names = ctx.listDirectory(SUBDIR)
         self.assertEqual(len(names), 1)
@@ -1298,9 +1308,10 @@ class SnapshotImportContextTests(ZopeTestCase, ConformsToISetupContext,
         FILENAME2 = 'another.txt'
 
         site, tool, ctx = self._makeOne(SNAPSHOT_ID)
-        self._makeFile(tool, SNAPSHOT_ID, FILENAME1, printable_bytes, subdir=SUBDIR)
-        self._makeFile(tool, SNAPSHOT_ID, FILENAME2, ascii_uppercase.encode('utf-8'), 
+        self._makeFile(tool, SNAPSHOT_ID, FILENAME1, printable_bytes,
                        subdir=SUBDIR)
+        self._makeFile(tool, SNAPSHOT_ID, FILENAME2,
+                       ascii_uppercase.encode('utf-8'), subdir=SUBDIR)
 
         names = ctx.listDirectory(SUBDIR)
         self.assertEqual(len(names), 2)
@@ -1318,9 +1329,10 @@ class SnapshotImportContextTests(ZopeTestCase, ConformsToISetupContext,
         FILENAME3 = 'another.bak'
 
         site, tool, ctx = self._makeOne(SNAPSHOT_ID)
-        self._makeFile(tool, SNAPSHOT_ID, FILENAME1, printable_bytes, subdir=SUBDIR)
-        self._makeFile(tool, SNAPSHOT_ID, FILENAME2, ascii_uppercase.encode('utf-8'), 
+        self._makeFile(tool, SNAPSHOT_ID, FILENAME1, printable_bytes,
                        subdir=SUBDIR)
+        self._makeFile(tool, SNAPSHOT_ID, FILENAME2,
+                       ascii_uppercase.encode('utf-8'), subdir=SUBDIR)
         self._makeFile(tool, SNAPSHOT_ID, FILENAME3, b'abc', subdir=SUBDIR)
 
         names = ctx.listDirectory(SUBDIR, skip=(FILENAME1,),

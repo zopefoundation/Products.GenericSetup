@@ -15,15 +15,15 @@
 
 import unittest
 from Testing import ZopeTestCase
-ZopeTestCase.installProduct('ZCTextIndex', 1)
-ZopeTestCase.installProduct('PluginIndexes', 1)
-
 from zope.component import getMultiAdapter
 
 from Products.GenericSetup.interfaces import IBody
 from Products.GenericSetup.testing import BodyAdapterTestCase
 from Products.GenericSetup.testing import DummySetupEnviron
 from Products.GenericSetup.testing import ExportImportZCMLLayer
+
+ZopeTestCase.installProduct('ZCTextIndex', 1)
+ZopeTestCase.installProduct('PluginIndexes', 1)
 
 
 class _extra:
@@ -191,8 +191,8 @@ class ZCatalogXMLAdapterTests(BodyAdapterTestCase, unittest.TestCase):
         self._populate_special(self._obj)
         context = DummySetupEnviron()
         adapted = getMultiAdapter((self._obj, context), IBody)
-        self.assertEqual(adapted.body,
-                       _CATALOG_BODY % (_LEXICON_XML, _TEXT_XML, _COLUMN_XML))
+        expected = _CATALOG_BODY % (_LEXICON_XML, _TEXT_XML, _COLUMN_XML)
+        self.assertEqual(adapted.body, expected)
 
     def test_body_set_update(self):
         # Assert that the catalog ends up the way we expect it to.

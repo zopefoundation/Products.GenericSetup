@@ -61,12 +61,14 @@ _before_import_events = []
 def handleBeforeProfileImportEvent(event):
     _before_import_events.append(event)
 
+
 _after_import_events = []
 
 
 @adapter(IProfileImportedEvent)
 def handleProfileImportedEvent(event):
     _after_import_events.append(event)
+
 
 _METADATA_XML = """<?xml version="1.0"?>
 <metadata>
@@ -205,8 +207,8 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
         self.assertEqual(info['title'], 'One Step')
         self.assertEqual(info['version'], '1')
         self.assertTrue('One small step' in info['description'])
-        self.assertEqual(
-            info['handler'], 'Products.GenericSetup.tests.test_registry.ONE_FUNC')
+        self.assertEqual(info['handler'],
+                         'Products.GenericSetup.tests.test_registry.ONE_FUNC')
 
         self.assertEqual(import_registry.getStep('one'), ONE_FUNC)
 
@@ -217,8 +219,8 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
         self.assertEqual(info['id'], 'one')
         self.assertEqual(info['title'], 'One Step')
         self.assertTrue('One small step' in info['description'])
-        self.assertEqual(
-            info['handler'], 'Products.GenericSetup.tests.test_registry.ONE_FUNC')
+        self.assertEqual(info['handler'],
+                         'Products.GenericSetup.tests.test_registry.ONE_FUNC')
 
         self.assertEqual(export_registry.getStep('one'), ONE_FUNC)
 
@@ -807,7 +809,7 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
             'foo', 'Foo', '', self._PROFILE_PATH,
             post_handler='Products.GenericSetup.tests.test_tool.foo_handler')
 
-    def test_runAllImportStepsFromProfile_with_pre_post_handlers_dotted_names(self):
+    def test_runAllImportStepsFromProfile_pre_post_handlers_dotted_names(self):
         site = self._makeSite()
         tool = self._makeOne('setup_tool').__of__(site)
         profile_registry.registerProfile(
@@ -821,7 +823,7 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
         self.assertEqual(tool.pre_handler_called, 2)
         self.assertEqual(tool.post_handler_called, 2)
 
-    def test_runAllImportStepsFromProfile_with_pre_post_handlers_functions(self):
+    def test_runAllImportStepsFromProfile_pre_post_handlers_functions(self):
         # When you register a profile with pre/post handlers in zcml, you do
         # not get dotted names (strings) but an actual function.
         site = self._makeSite()
@@ -860,8 +862,8 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
         site.setup_tool = self._makeOne('setup_tool')
         tool = site.setup_tool
         tool._import_registry.registerStep('foo', handler='foo.bar')
-        tool._export_registry.registerStep('step_registries',
-                                           'Products.GenericSetup.tool.exportStepRegistries',
+        steps = 'Products.GenericSetup.tool.exportStepRegistries'
+        tool._export_registry.registerStep('step_registries', steps,
                                            'Export import / export steps.')
 
         result = tool.runExportStep('step_registries')
@@ -872,8 +874,8 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
                          )
         fileish = BytesIO(result['tarball'])
 
-        self._verifyTarballContents(fileish, ['import_steps.xml', 'export_steps.xml'
-                                              ])
+        self._verifyTarballContents(fileish,
+                                    ['import_steps.xml', 'export_steps.xml'])
         self._verifyTarballEntryXML(
             fileish, 'import_steps.xml', _DEFAULT_STEP_REGISTRIES_IMPORT_XML)
         self._verifyTarballEntryXML(
@@ -896,8 +898,8 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
         site.setup_tool = self._makeOne('setup_tool')
         tool = site.setup_tool
         tool._import_registry.registerStep('foo', handler='foo.bar')
-        tool._export_registry.registerStep('step_registries',
-                                           'Products.GenericSetup.tool.exportStepRegistries',
+        steps = 'Products.GenericSetup.tool.exportStepRegistries'
+        tool._export_registry.registerStep('step_registries', steps,
                                            'Export import / export steps.')
 
         result = tool.runAllExportSteps()
@@ -909,8 +911,9 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
                          )
         fileish = BytesIO(result['tarball'])
 
-        self._verifyTarballContents(fileish, ['import_steps.xml', 'export_steps.xml', 'rolemap.xml', 'toolset.xml'
-                                              ])
+        self._verifyTarballContents(fileish,
+                                    ['import_steps.xml', 'export_steps.xml',
+                                     'rolemap.xml', 'toolset.xml'])
         self._verifyTarballEntryXML(
             fileish, 'import_steps.xml', _DEFAULT_STEP_REGISTRIES_IMPORT_XML)
         self._verifyTarballEntryXML(
@@ -920,8 +923,8 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
         site = self._makeSite()
         site.setup_tool = self._makeOne('setup_tool')
         tool = site.setup_tool
-        tool._export_registry.registerStep('step_registries',
-                                           'Products.GenericSetup.tool.exportStepRegistries',
+        steps = 'Products.GenericSetup.tool.exportStepRegistries'
+        tool._export_registry.registerStep('step_registries', steps,
                                            'Export import / export steps.')
 
         import_reg = tool.getImportStepRegistry()
@@ -947,14 +950,17 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
 
         fileish = BytesIO(result['tarball'])
 
-        self._verifyTarballContents(fileish, ['import_steps.xml', 'export_steps.xml', 'properties.ini', 'rolemap.xml', 'toolset.xml'
-                                              ])
+        self._verifyTarballContents(fileish,
+                                    ['import_steps.xml', 'export_steps.xml',
+                                     'properties.ini', 'rolemap.xml',
+                                     'toolset.xml'])
         self._verifyTarballEntryXML(
             fileish, 'import_steps.xml', _EXTRAS_STEP_REGISTRIES_IMPORT_XML)
         self._verifyTarballEntryXML(
             fileish, 'export_steps.xml', _EXTRAS_STEP_REGISTRIES_EXPORT_XML)
-        self._verifyTarballEntry(
-            fileish, 'properties.ini', (_PROPERTIES_INI % site.title).encode('utf-8'))
+        ini_string = _PROPERTIES_INI % site.title
+        self._verifyTarballEntry(fileish, 'properties.ini',
+                                 ini_string.encode('utf-8'))
 
     def test_manage_importTarball(self):
         # Tests for importing a tarball with GenericSetup files.
@@ -1510,8 +1516,9 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
         self.assertEqual(tool._profile_upgrade_versions, {})
 
     def test_manage_doUpgrades_upgrade_w_no_target_version(self):
-        step = UpgradeStep('TITLE', 'foo', '*', '*', 'DESC',
-                           lambda tool: None)
+        def notool():
+            return None
+        step = UpgradeStep('TITLE', 'foo', '*', '*', 'DESC', notool)
         _registerUpgradeStep(step)
         site = self._makeSite()
         site.setup_tool = self._makeOne('setup_tool')
@@ -1565,7 +1572,8 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
         self.assertEqual(self._makeOne('t')._profile_upgrade_versions, {})
 
     def test_upgradeProfile(self):
-        dummy_handler = lambda tool: None
+        def dummy_handler(tool):
+            return None
 
         def step3_handler(tool):
             tool._step3_applied = 'just a marker'

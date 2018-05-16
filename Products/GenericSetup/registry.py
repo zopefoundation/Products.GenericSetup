@@ -106,6 +106,7 @@ class _ToolsetParser(_HandlerBase):
         else:
             raise ValueError('Unknown element %s' % name)
 
+
 InitializeClass(_ToolsetParser)
 
 
@@ -132,8 +133,8 @@ class _ImportStepRegistryParser(_HandlerBase):
             if self._pending is not None:
                 raise ValueError('Cannot nest setup-step elements')
 
-            self._pending = dict([ (k, self._extract(attrs, k))
-                                   for k in attrs.keys() ])
+            self._pending = dict([(k, self._extract(attrs, k))
+                                  for k in attrs.keys()])
 
             self._pending['dependencies'] = []
 
@@ -169,6 +170,7 @@ class _ImportStepRegistryParser(_HandlerBase):
             self._parsed.append(self._pending)
             self._pending = None
 
+
 InitializeClass(_ImportStepRegistryParser)
 
 
@@ -195,8 +197,8 @@ class _ExportStepRegistryParser(_HandlerBase):
             if self._pending is not None:
                 raise ValueError('Cannot nest export-step elements')
 
-            self._pending = dict([ (k, self._extract(attrs, k))
-                                   for k in attrs.keys() ])
+            self._pending = dict([(k, self._extract(attrs, k))
+                                  for k in attrs.keys()])
 
         else:
             raise ValueError('Unknown element %s' % name)
@@ -220,6 +222,7 @@ class _ExportStepRegistryParser(_HandlerBase):
             self._parsed.append(self._pending)
             self._pending = None
 
+
 InitializeClass(_ExportStepRegistryParser)
 
 
@@ -230,11 +233,11 @@ class GlobalRegistryStorage(object):
 
     def keys(self):
         sm = getGlobalSiteManager()
-        return [ n for n, _i in sm.getUtilitiesFor(self.interfaceClass) ]
+        return [n for n, _i in sm.getUtilitiesFor(self.interfaceClass)]
 
     def values(self):
         sm = getGlobalSiteManager()
-        return [ i for _n, i in sm.getUtilitiesFor(self.interfaceClass) ]
+        return [i for _n, i in sm.getUtilitiesFor(self.interfaceClass)]
 
     def get(self, key):
         sm = getGlobalSiteManager()
@@ -263,13 +266,13 @@ class BaseStepRegistry(Implicit):
         self._registered = store
         self.clear()
 
-    security.declareProtected(ManagePortal, 'listSteps')
+    @security.protected(ManagePortal)
     def listSteps(self):
         """ Return a list of registered step IDs.
         """
         return self._registered.keys()
 
-    security.declareProtected(ManagePortal, 'getStepMetadata')
+    @security.protected(ManagePortal)
     def getStepMetadata(self, key, default=None):
         """ Return a mapping of metadata for the step identified by 'key'.
 
@@ -287,16 +290,16 @@ class BaseStepRegistry(Implicit):
 
         return result
 
-    security.declareProtected(ManagePortal, 'listStepMetadata')
+    @security.protected(ManagePortal)
     def listStepMetadata(self):
         """ Return a sequence of mappings describing registered steps.
 
         o Mappings will be ordered alphabetically.
         """
         step_ids = sorted(self.listSteps())
-        return [ self.getStepMetadata(x) for x in step_ids ]
+        return [self.getStepMetadata(x) for x in step_ids]
 
-    security.declareProtected(ManagePortal, 'generateXML')
+    @security.protected(ManagePortal)
     def generateXML(self, encoding='utf-8'):
         """ Return a round-trippable XML representation of the registry.
 
@@ -307,7 +310,7 @@ class BaseStepRegistry(Implicit):
             xml = xml.encode(encoding)
         return xml
 
-    security.declarePrivate('getStep')
+    @security.private
     def getStep(self, key, default=None):
         """ Return the I(Export|Import)Plugin registered for 'key'.
 
@@ -320,15 +323,15 @@ class BaseStepRegistry(Implicit):
 
         return _resolveDottedName(info['handler'])
 
-    security.declarePrivate('unregisterStep')
+    @security.private
     def unregisterStep(self, id):
         del self._registered[id]
 
-    security.declarePrivate('clear')
+    @security.private
     def clear(self):
         self._registered.clear()
 
-    security.declarePrivate('parseXML')
+    @security.private
     def parseXML(self, text, encoding='utf-8'):
         """ Parse 'text'.
         """
@@ -347,6 +350,7 @@ class BaseStepRegistry(Implicit):
 
         return parser._parsed
 
+
 InitializeClass(BaseStepRegistry)
 
 
@@ -361,7 +365,7 @@ class ImportStepRegistry(BaseStepRegistry):
     security = ClassSecurityInfo()
     RegistryParser = _ImportStepRegistryParser
 
-    security.declareProtected(ManagePortal, 'sortSteps')
+    @security.protected(ManagePortal)
     def sortSteps(self):
         """ Return a sequence of registered step IDs
 
@@ -370,7 +374,7 @@ class ImportStepRegistry(BaseStepRegistry):
         """
         return self._computeTopologicalSort()
 
-    security.declareProtected(ManagePortal, 'checkComplete')
+    @security.protected(ManagePortal)
     def checkComplete(self):
         """ Return a sequence of ( node, edge ) tuples for unsatisifed deps.
         """
@@ -392,7 +396,7 @@ class ImportStepRegistry(BaseStepRegistry):
 
         return result
 
-    security.declarePrivate('registerStep')
+    @security.private
     def registerStep(self, id, version=None, handler=None, dependencies=(),
                      title=None, description=None):
         """ Register a setup step.
@@ -460,12 +464,13 @@ class ImportStepRegistry(BaseStepRegistry):
     #
     #   Helper methods
     #
-    security.declarePrivate('_computeTopologicalSort')
+    @security.private
     def _computeTopologicalSort(self):
         return _computeTopologicalSort(self._registered.values())
 
     security.declarePrivate('_exportTemplate')
     _exportTemplate = PageTemplateFile('isrExport.xml', _xmldir)
+
 
 InitializeClass(ImportStepRegistry)
 
@@ -495,7 +500,7 @@ class ExportStepRegistry(BaseStepRegistry):
     security = ClassSecurityInfo()
     RegistryParser = _ExportStepRegistryParser
 
-    security.declarePrivate('registerStep')
+    @security.private
     def registerStep(self, id, handler, title=None, description=None):
         """ Register an export step.
 
@@ -539,6 +544,7 @@ class ExportStepRegistry(BaseStepRegistry):
     security.declarePrivate('_exportTemplate')
     _exportTemplate = PageTemplateFile('esrExport.xml', _xmldir)
 
+
 InitializeClass(ExportStepRegistry)
 
 _export_step_registry = ExportStepRegistry(GlobalRegistryStorage(IExportStep))
@@ -559,7 +565,7 @@ class ToolsetRegistry(Implicit):
     #
     #   Toolset API
     #
-    security.declareProtected(ManagePortal, 'listForbiddenTools')
+    @security.protected(ManagePortal)
     def listForbiddenTools(self):
         """ See IToolsetRegistry.
         """
@@ -567,7 +573,7 @@ class ToolsetRegistry(Implicit):
         result.sort()
         return result
 
-    security.declareProtected(ManagePortal, 'addForbiddenTool')
+    @security.protected(ManagePortal)
     def addForbiddenTool(self, tool_id):
         """ See IToolsetRegistry.
         """
@@ -579,7 +585,7 @@ class ToolsetRegistry(Implicit):
 
         self._forbidden.append(tool_id)
 
-    security.declareProtected(ManagePortal, 'listRequiredTools')
+    @security.protected(ManagePortal)
     def listRequiredTools(self):
         """ See IToolsetRegistry.
         """
@@ -587,20 +593,20 @@ class ToolsetRegistry(Implicit):
         result.sort()
         return result
 
-    security.declareProtected(ManagePortal, 'getRequiredToolInfo')
+    @security.protected(ManagePortal)
     def getRequiredToolInfo(self, tool_id):
         """ See IToolsetRegistry.
         """
         return self._required[tool_id]
 
-    security.declareProtected(ManagePortal, 'listRequiredToolInfo')
+    @security.protected(ManagePortal)
     def listRequiredToolInfo(self):
         """ See IToolsetRegistry.
         """
-        return [ self.getRequiredToolInfo(x)
-                 for x in self.listRequiredTools() ]
+        return [self.getRequiredToolInfo(x)
+                for x in self.listRequiredTools()]
 
-    security.declareProtected(ManagePortal, 'addRequiredTool')
+    @security.protected(ManagePortal)
     def addRequiredTool(self, tool_id, dotted_name):
         """ See IToolsetRegistry.
         """
@@ -609,7 +615,7 @@ class ToolsetRegistry(Implicit):
 
         self._required[tool_id] = {'id': tool_id, 'class': dotted_name}
 
-    security.declareProtected(ManagePortal, 'generateXML')
+    @security.protected(ManagePortal)
     def generateXML(self, encoding='utf-8'):
         """ Pseudo API.
         """
@@ -618,7 +624,7 @@ class ToolsetRegistry(Implicit):
             xml = xml.encode(encoding)
         return xml
 
-    security.declareProtected(ManagePortal, 'parseXML')
+    @security.protected(ManagePortal)
     def parseXML(self, text, encoding='utf-8'):
         """ Pseudo-API
         """
@@ -641,7 +647,7 @@ class ToolsetRegistry(Implicit):
         for tool_id, dotted_name in parser._required.items():
             self.addRequiredTool(tool_id, dotted_name)
 
-    security.declarePrivate('clear')
+    @security.private
     def clear(self):
         self._forbidden = []
         self._required = {}
@@ -652,6 +658,7 @@ class ToolsetRegistry(Implicit):
     security.declarePrivate('_toolsetConfig')
     _toolsetConfig = PageTemplateFile('tscExport.xml', _xmldir,
                                       __name__='toolsetConfig')
+
 
 InitializeClass(ToolsetRegistry)
 
@@ -669,7 +676,7 @@ class ProfileRegistry(Implicit):
         self._registered = GlobalRegistryStorage(IProfile)
         self.clear()
 
-    security.declareProtected(ManagePortal, 'getProfileInfo')
+    @security.protected(ManagePortal)
     def getProfileInfo(self, profile_id, for_=None):
         """ See IProfileRegistry.
         """
@@ -697,7 +704,7 @@ class ProfileRegistry(Implicit):
                 raise KeyError(profile_id)
         return result.copy()
 
-    security.declareProtected(ManagePortal, 'listProfiles')
+    @security.protected(ManagePortal)
     def listProfiles(self, for_=None):
         """ See IProfileRegistry.
         """
@@ -708,16 +715,16 @@ class ProfileRegistry(Implicit):
                 result.append(profile_id)
         return tuple(result)
 
-    security.declareProtected(ManagePortal, 'listProfileInfo')
+    @security.protected(ManagePortal)
     def listProfileInfo(self, for_=None):
         """ See IProfileRegistry.
         """
-        candidates = [ self.getProfileInfo(id)
-                       for id in self.listProfiles() ]
-        return [ x for x in candidates if for_ is None or x['for'] is None or
-                 issubclass(for_, x['for']) ]
+        candidates = [self.getProfileInfo(id)
+                      for id in self.listProfiles()]
+        return [x for x in candidates if for_ is None or x['for'] is None or
+                issubclass(for_, x['for'])]
 
-    security.declareProtected(ManagePortal, 'registerProfile')
+    @security.protected(ManagePortal)
     def registerProfile(self, name, title, description, path, product=None,
                         profile_type=BASE, for_=None, pre_handler=None,
                         post_handler=None):
@@ -758,8 +765,8 @@ class ProfileRegistry(Implicit):
             # If it is the same, we can safely accept it.
             # This may happen during tests.
             if info == existing_info:
-                logger.warning('Duplicate profile ID with same info ignored: %s'
-                               % profile_id)
+                msg = 'Duplicate profile ID with same info ignored: %s'
+                logger.warning(msg % profile_id)
                 return
             raise KeyError('Duplicate profile ID: %s' % profile_id)
 
@@ -769,12 +776,12 @@ class ProfileRegistry(Implicit):
         profile_id = '%s:%s' % (product or 'other', name)
         return profile_id
 
-    security.declareProtected(ManagePortal, 'unregisterProfile')
+    @security.protected(ManagePortal)
     def unregisterProfile(self, name, product=None):
         profile_id = self._computeProfileId(name, product)
         del self._registered[profile_id]
 
-    security.declarePrivate('clear')
+    @security.private
     def clear(self):
         self._registered.clear()
 

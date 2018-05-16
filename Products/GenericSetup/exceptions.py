@@ -14,8 +14,8 @@
 """
 
 from AccessControl.SecurityInfo import ModuleSecurityInfo
-security = ModuleSecurityInfo('Products.GenericSetup.exceptions')
-
-security.declarePublic('BadRequest')
 from zExceptions import BadRequest
+
+security = ModuleSecurityInfo('Products.GenericSetup.exceptions')
+security.declarePublic('BadRequest')
 BadRequest  # pyflakes

@@ -92,7 +92,7 @@ class ZCTextIndexNodeAdapterTests(NodeAdapterTestCase, unittest.TestCase):
         catalog.foo_plexicon = PLexicon('foo_plexicon')
         extra = _extra()
         extra.lexicon_id = 'foo_plexicon'
-        extra.index_type='Okapi BM25 Rank'
+        extra.index_type = 'Okapi BM25 Rank'
         self._obj = ZCTextIndex('foo_zctext', extra=extra,
                                 caller=catalog).__of__(catalog)
         self._XML = _ZCTEXT_XML
@@ -107,7 +107,7 @@ class UnchangedTests(unittest.TestCase):
         from Products.GenericSetup.testing import DummySetupEnviron
         from Products.ZCTextIndex.PipelineFactory import element_factory
         from Products.GenericSetup.ZCTextIndex.exportimport \
-                import ZCLexiconNodeAdapter
+            import ZCLexiconNodeAdapter
 
         _XML = b"""\
         <object name="foo_plexicon" meta_type="ZCTextIndex Lexicon">
@@ -117,16 +117,17 @@ class UnchangedTests(unittest.TestCase):
         """
         environ = DummySetupEnviron()
         _before = object(), object(), object()
+
         class DummyLexicon(object):
             _wids, _words, length = _before
+
         lex = DummyLexicon()
         lex._pipeline = foo, bar = object(), object()
         adapted = ZCLexiconNodeAdapter(lex, environ)
         element_factory._groups['gs'] = {'foo': lambda: foo,
-                                         'bar': lambda: bar,
-                                        }
+                                         'bar': lambda: bar}
         try:
-            adapted.node = parseString(_XML).documentElement # no raise
+            adapted.node = parseString(_XML).documentElement  # no raise
         finally:
             del element_factory._groups['gs']
         self.assertTrue(lex._wids is _before[0])
@@ -139,7 +140,7 @@ class UnchangedTests(unittest.TestCase):
         from Products.ZCTextIndex.ZCTextIndex import ZCTextIndex
         from Products.GenericSetup.testing import DummySetupEnviron
         from Products.GenericSetup.ZCTextIndex.exportimport \
-                import ZCTextIndexNodeAdapter
+            import ZCTextIndexNodeAdapter
         _XML = b"""\
         <index name="foo_zctext" meta_type="ZCTextIndex">
         <indexed_attr value="bar"/>
@@ -148,18 +149,20 @@ class UnchangedTests(unittest.TestCase):
         </index>
         """
         environ = DummySetupEnviron()
+
         def _no_clear(*a):
             raise AssertionError("Don't clear me!")
+
         catalog = DummyCatalog()
         catalog.foo_plexicon = PLexicon('foo_plexicon')
         extra = _extra()
         extra.lexicon_id = 'foo_plexicon'
-        extra.index_type='Okapi BM25 Rank'
+        extra.index_type = 'Okapi BM25 Rank'
         index = ZCTextIndex('foo_field', extra=extra, field_name='bar',
                             caller=catalog).__of__(catalog)
-        index.clear = _no_clear 
+        index.clear = _no_clear
         adapted = ZCTextIndexNodeAdapter(index, environ)
-        adapted.node = parseString(_XML).documentElement # no raise
+        adapted.node = parseString(_XML).documentElement  # no raise
 
 
 def test_suite():

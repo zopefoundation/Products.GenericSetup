@@ -25,14 +25,8 @@ from Products.GenericSetup.interfaces import SKIPPED_FILES
 BLANKS_REGEX = re.compile(b'^\\s*$')
 
 
-def unidiff( a
-           , b
-           , filename_a=b'original'
-           , timestamp_a=b''
-           , filename_b=b'modified'
-           , timestamp_b=b''
-           , ignore_blanks=False
-           ):
+def unidiff(a, b, filename_a=b'original', timestamp_a=b'',
+            filename_b=b'modified', timestamp_b=b'', ignore_blanks=False):
     r"""Compare two sequences of lines; generate the resulting delta.
 
     Each sequence must contain individual single-line strings
@@ -74,50 +68,43 @@ def unidiff( a
         timestamp_b = six.text_type(timestamp_b).encode('utf-8')
 
     if ignore_blanks:
-        a = [ x for x in a if not BLANKS_REGEX.match( x ) ]
-        b = [ x for x in b if not BLANKS_REGEX.match( x ) ]
+        a = [x for x in a if not BLANKS_REGEX.match(x)]
+        b = [x for x in b if not BLANKS_REGEX.match(x)]
 
     if six.PY2:
-        return difflib.unified_diff(
-            a, b, filename_a, filename_b, timestamp_a, timestamp_b, lineterm=b""
-        )
+        return difflib.unified_diff(a, b, filename_a, filename_b, timestamp_a,
+                                    timestamp_b, lineterm=b"")
     else:
-        return difflib.diff_bytes(
-            difflib.unified_diff,
-            a, b, filename_a, filename_b, timestamp_a, timestamp_b, lineterm=b""
-        )
+        return difflib.diff_bytes(difflib.unified_diff, a, b, filename_a,
+                                  filename_b, timestamp_a, timestamp_b,
+                                  lineterm=b"")
 
 
 class ConfigDiff:
 
     security = ClassSecurityInfo()
 
-    def __init__( self
-                , lhs
-                , rhs
-                , missing_as_empty=False
-                , ignore_blanks=False
-                , skip=SKIPPED_FILES
-                ):
+    def __init__(self, lhs, rhs, missing_as_empty=False, ignore_blanks=False,
+                 skip=SKIPPED_FILES):
         self._lhs = lhs
         self._rhs = rhs
         self._missing_as_empty = missing_as_empty
-        self._ignore_blanks=ignore_blanks
+        self._ignore_blanks = ignore_blanks
         self._skip = skip
 
-    security.declarePrivate( 'compareDirectories' )
-    def compareDirectories( self, subdir=None ):
+    @security.private
+    def compareDirectories(self, subdir=None):
 
-        lhs_files = self._lhs.listDirectory( subdir, self._skip )
+        lhs_files = self._lhs.listDirectory(subdir, self._skip)
         if lhs_files is None:
             lhs_files = []
 
-        rhs_files = self._rhs.listDirectory( subdir, self._skip )
+        rhs_files = self._rhs.listDirectory(subdir, self._skip)
         if rhs_files is None:
             rhs_files = []
 
-        added = [ f for f in rhs_files if f not in lhs_files ]
-        removed = [ f for f in lhs_files if f not in rhs_files ]
+        added = [f for f in rhs_files if f not in lhs_files]
+        removed = [f for f in lhs_files if f not in rhs_files]
         all_files = lhs_files + added
         all_files.sort()
 
@@ -128,75 +115,79 @@ class ConfigDiff:
             if subdir is None:
                 pathname = filename
             else:
-                pathname = '%s/%s' % ( subdir, filename )
+                pathname = '%s/%s' % (subdir, filename)
 
             if filename not in added:
-                isDirectory = self._lhs.isDirectory( pathname )
+                isDirectory = self._lhs.isDirectory(pathname)
             else:
-                isDirectory = self._rhs.isDirectory( pathname )
+                isDirectory = self._rhs.isDirectory(pathname)
 
             if not self._missing_as_empty and filename in removed:
 
                 if isDirectory:
-                    result.append( b'** Directory %s removed\n' % pathname.encode('utf-8') )
-                    result.extend( self.compareDirectories( pathname ) )
+                    result.append(b'** Directory %s removed\n' %
+                                  pathname.encode('utf-8'))
+                    result.extend(self.compareDirectories(pathname))
                 else:
-                    result.append( b'** File %s removed\n' % pathname.encode('utf-8') )
+                    result.append(b'** File %s removed\n' %
+                                  pathname.encode('utf-8'))
 
             elif not self._missing_as_empty and filename in added:
 
                 if isDirectory:
-                    result.append( b'** Directory %s added\n' % pathname.encode('utf-8') )
-                    result.extend( self.compareDirectories( pathname ) )
+                    result.append(b'** Directory %s added\n' %
+                                  pathname.encode('utf-8'))
+                    result.extend(self.compareDirectories(pathname))
                 else:
-                    result.append( b'** File %s added\n' % pathname.encode('utf-8') )
+                    result.append(b'** File %s added\n' %
+                                  pathname.encode('utf-8'))
 
             elif isDirectory:
 
-                result.extend( self.compareDirectories( pathname ) )
+                result.extend(self.compareDirectories(pathname))
 
-                if ( filename not in added + removed and
-                    not self._rhs.isDirectory( pathname ) ):
+                if (filename not in added + removed and
+                        not self._rhs.isDirectory(pathname)):
 
-                    result.append( b'** Directory %s replaced with a file of '
-                                   b'the same name\n' % pathname )
+                    result.append(b'** Directory %s replaced with a file of '
+                                  b'the same name\n' % pathname)
 
                     if self._missing_as_empty:
-                        result.extend( self.compareFiles( filename, subdir ) )
+                        result.extend(self.compareFiles(filename, subdir))
             else:
-                if ( filename not in added + removed and
-                     self._rhs.isDirectory( pathname ) ):
+                if (filename not in added + removed and
+                        self._rhs.isDirectory(pathname)):
 
-                    result.append( b'** File %s replaced with a directory of '
-                                   b'the same name\n' % pathname )
+                    result.append(b'** File %s replaced with a directory of '
+                                  b'the same name\n' % pathname)
 
                     if self._missing_as_empty:
-                        result.extend( self.compareFiles( filename, subdir ) )
+                        result.extend(self.compareFiles(filename, subdir))
 
-                    result.extend( self.compareDirectories( pathname ) )
+                    result.extend(self.compareDirectories(pathname))
                 else:
-                    result.extend( self.compareFiles( filename, subdir ) )
+                    result.extend(self.compareFiles(filename, subdir))
 
         return result
 
-    security.declarePrivate( 'compareFiles' )
-    def compareFiles( self, filename, subdir=None ):
+    @security.private
+    def compareFiles(self, filename, subdir=None):
 
         if subdir is None:
             path = filename
         else:
-            path = '%s/%s' % ( subdir, filename )
+            path = '%s/%s' % (subdir, filename)
 
-        lhs_file = self._lhs.readDataFile( filename, subdir )
-        lhs_time = self._lhs.getLastModified( path )
+        lhs_file = self._lhs.readDataFile(filename, subdir)
+        lhs_time = self._lhs.getLastModified(path)
 
         if lhs_file is None:
             assert self._missing_as_empty
             lhs_file = b''
             lhs_time = b''
 
-        rhs_file = self._rhs.readDataFile( filename, subdir )
-        rhs_time = self._rhs.getLastModified( path )
+        rhs_file = self._rhs.readDataFile(filename, subdir)
+        rhs_time = self._rhs.getLastModified(path)
 
         if rhs_file is None:
             assert self._missing_as_empty
@@ -206,26 +197,23 @@ class ConfigDiff:
         if lhs_file == rhs_file:
             diff_lines = []
         else:
-            diff_lines = unidiff( lhs_file
-                                , rhs_file
-                                , filename_a=path
-                                , timestamp_a=lhs_time
-                                , filename_b=path
-                                , timestamp_b=rhs_time
-                                , ignore_blanks=self._ignore_blanks
-                                )
-            diff_lines = list( diff_lines ) # generator
+            diff_lines = unidiff(lhs_file, rhs_file, filename_a=path,
+                                 timestamp_a=lhs_time, filename_b=path,
+                                 timestamp_b=rhs_time,
+                                 ignore_blanks=self._ignore_blanks)
+            diff_lines = list(diff_lines)  # generator
 
-        if len( diff_lines ) == 0: # No *real* difference found
+        if len(diff_lines) == 0:  # No *real* difference found
             return []
 
-        diff_lines.insert( 0, b'Index: %s' % path.encode('utf-8') )
-        diff_lines.insert( 1, b'=' * 67 )
+        diff_lines.insert(0, b'Index: %s' % path.encode('utf-8'))
+        diff_lines.insert(1, b'=' * 67)
 
         return diff_lines
 
-    security.declarePrivate( 'compare' )
-    def compare( self ):
+    @security.private
+    def compare(self):
         return b'\n'.join(self.compareDirectories())
 
-InitializeClass( ConfigDiff )
+
+InitializeClass(ConfigDiff)

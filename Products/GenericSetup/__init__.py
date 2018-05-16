@@ -36,5 +36,4 @@ def initialize(context):
                           constructors=(tool.addSetupTool,),
                           permissions=(ManagePortal,),
                           interfaces=None,
-                          icon='www/tool.png',
-                         )
+                          icon='www/tool.png')

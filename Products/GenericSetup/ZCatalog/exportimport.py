@@ -13,8 +13,6 @@
 """ZCatalog export / import support.
 """
 
-from functools import cmp_to_key
-
 from zope.component import adapts
 from zope.component import queryMultiAdapter
 

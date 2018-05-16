@@ -25,12 +25,12 @@ from Products.GenericSetup.utils import KEY
 METADATA_XML = 'metadata.xml'
 
 
-class ProfileMetadata( ImportConfiguratorBase ):
+class ProfileMetadata(ImportConfiguratorBase):
 
     """ Extracts profile metadata from metadata.xml file.
     """
 
-    def __init__( self, path, encoding=None, product=None ):
+    def __init__(self, path, encoding=None, product=None):
 
         # don't call the base class __init__ b/c we don't have (or need)
         # a site
@@ -47,35 +47,26 @@ class ProfileMetadata( ImportConfiguratorBase ):
 
         self._encoding = encoding
 
-    def __call__( self ):
+    def __call__(self):
 
-        full_path = os.path.join( self._path, METADATA_XML )
-        if not os.path.exists( full_path ):
+        full_path = os.path.join(self._path, METADATA_XML)
+        if not os.path.exists(full_path):
             return {}
 
         with open(full_path, 'r') as fp:
             try:
-                return self.parseXML( fp.read() )
+                return self.parseXML(fp.read())
             except ExpatError as e:
                 raise ExpatError('%s: %s' % (full_path, e))
 
-    def _getImportMapping( self ):
+    def _getImportMapping(self):
 
         return {
             'metadata':
-            {'description': { CONVERTER: self._convertToUnique },
-             'version': { CONVERTER: self._convertToUnique },
-             'dependencies': { CONVERTER: self._convertToUnique },
-             },
-            'description':
-            { '#text': { KEY: None, DEFAULT: '' },
-              },
-            'version':
-            { '#text': { KEY: None },
-              },
-            'dependencies':
-            {'dependency': { KEY: None, DEFAULT: () },},
-            'dependency':
-            { '#text': { KEY: None },
-              },
-            }
+                {'description': {CONVERTER: self._convertToUnique},
+                 'version': {CONVERTER: self._convertToUnique},
+                 'dependencies': {CONVERTER: self._convertToUnique}},
+            'description': {'#text': {KEY: None, DEFAULT: ''}},
+            'version': {'#text': {KEY: None}},
+            'dependencies': {'dependency': {KEY: None, DEFAULT: ()}},
+            'dependency': {'#text': {KEY: None}}}

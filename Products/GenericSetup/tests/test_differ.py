@@ -58,11 +58,12 @@ class Test_unidiff(unittest.TestCase):
         from Products.GenericSetup.differ import unidiff
 
         double_spaced = ONE_FOUR.replace(b'\n', b'\n\n')
-        diff_lines = unidiff(double_spaced, ZERO_FOUR.splitlines(), ignore_blanks=True
-                             )
+        diff_lines = unidiff(double_spaced, ZERO_FOUR.splitlines(),
+                             ignore_blanks=True)
 
         diff_text = b'\n'.join(diff_lines)
         self.assertEqual(diff_text, DIFF_TEXT)
+
 
 ZERO_FOUR = b"""\
 zero
@@ -144,8 +145,8 @@ class ConfigDiffTests(ZopeTestCase):
 
         return folder
 
-    def _makeFile(self, snapshot_id, filename, contents, content_type='text/plain', mod_time=None, subdir=None
-                  ):
+    def _makeFile(self, snapshot_id, filename, contents,
+                  content_type='text/plain', mod_time=None, subdir=None):
 
         self._makeSite()
         snapshots = self.tool.snapshots

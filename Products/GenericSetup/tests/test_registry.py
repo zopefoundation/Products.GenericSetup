@@ -13,7 +13,6 @@
 """ Registry unit tests.
 """
 from __future__ import absolute_import
-import six
 import unittest
 
 from OFS.Folder import Folder
@@ -29,9 +28,9 @@ from .conformance import ConformsToIToolsetRegistry
 from .conformance import ConformsToIProfileRegistry
 
 
-#==============================================================================
+###############################
 #   Dummy handlers
-#==============================================================================
+###############################
 def ONE_FUNC(context): pass
 
 
@@ -50,21 +49,20 @@ def DOC_FUNC(site):
     This is the second line.
     """
 
+
 ONE_FUNC_NAME = '%s.%s' % (__name__, ONE_FUNC.__name__)
 TWO_FUNC_NAME = '%s.%s' % (__name__, TWO_FUNC.__name__)
 THREE_FUNC_NAME = '%s.%s' % (__name__, THREE_FUNC.__name__)
 FOUR_FUNC_NAME = '%s.%s' % (__name__, FOUR_FUNC.__name__)
 DOC_FUNC_NAME = '%s.%s' % (__name__, DOC_FUNC.__name__)
 
-#==============================================================================
+###############################
 #   SSR tests
-#==============================================================================
+###############################
 
 
-class ImportStepRegistryTests(
-    BaseRegistryTests,
-    ConformsToIStepRegistry,
-    ConformsToIImportStepRegistry):
+class ImportStepRegistryTests(BaseRegistryTests, ConformsToIStepRegistry,
+                              ConformsToIImportStepRegistry):
 
     layer = ExportImportZCMLLayer
 
@@ -212,7 +210,7 @@ class ImportStepRegistryTests(
         registry = self._makeOne()
 
         registry.registerStep(id='one', version='1', handler=ONE_FUNC,
-                              dependencies=('two', ))
+                              dependencies=('two',))
 
         registry.registerStep(id='two', version='2', handler=TWO_FUNC,
                               dependencies=())
@@ -229,10 +227,10 @@ class ImportStepRegistryTests(
         registry = self._makeOne()
 
         registry.registerStep(id='one', version='1', handler=ONE_FUNC,
-                              dependencies=('three', ), title='One small step')
+                              dependencies=('three',), title='One small step')
 
         registry.registerStep(id='two', version='2', handler=TWO_FUNC,
-                              dependencies=('one', ), title='Texas two step')
+                              dependencies=('one',), title='Texas two step')
 
         registry.registerStep(id='three', version='3', handler=THREE_FUNC,
                               dependencies=(), title='Gimme three steps')
@@ -250,13 +248,13 @@ class ImportStepRegistryTests(
         registry = self._makeOne()
 
         registry.registerStep(id='one', version='1', handler=ONE_FUNC,
-                              dependencies=('two', ), title='One small step')
+                              dependencies=('two',), title='One small step')
 
         registry.registerStep(id='two', version='2', handler=TWO_FUNC,
-                              dependencies=('four', ), title='Texas two step')
+                              dependencies=('four',), title='Texas two step')
 
         registry.registerStep(id='three', version='3', handler=THREE_FUNC,
-                              dependencies=('four', ),
+                              dependencies=('four',),
                               title='Gimme three steps')
 
         registry.registerStep(id='four', version='4', handler=FOUR_FUNC,
@@ -281,10 +279,10 @@ class ImportStepRegistryTests(
                               title='One small step')
 
         registry.registerStep(id='two', version='2', handler=TWO_FUNC,
-                              dependencies=('four', ), title='Texas two step')
+                              dependencies=('four',), title='Texas two step')
 
         registry.registerStep(id='three', version='3', handler=THREE_FUNC,
-                              dependencies=('four', ),
+                              dependencies=('four',),
                               title='Gimme three steps')
 
         registry.registerStep(id='four', version='4', handler=FOUR_FUNC,
@@ -305,7 +303,7 @@ class ImportStepRegistryTests(
         registry = self._makeOne()
 
         registry.registerStep(id='one', version='1', handler=ONE_FUNC,
-                              dependencies=('two', ))
+                              dependencies=('two',))
 
         incomplete = registry.checkComplete()
         self.assertEqual(len(incomplete), 1)
@@ -340,7 +338,7 @@ class ImportStepRegistryTests(
         self.assertEqual(list(registry.checkComplete()), [])
 
         registry.registerStep(id='two', version='2.1', handler=TWO_FUNC,
-                              dependencies=('four', ))
+                              dependencies=('four',))
 
         incomplete = registry.checkComplete()
         self.assertTrue(('two', 'four') in incomplete)
@@ -366,11 +364,11 @@ class ImportStepRegistryTests(
         registry = self._makeOne().__of__(self.app)
 
         registry.registerStep(id='one', version='1', handler=ONE_FUNC,
-                              dependencies=('two', ), title='One Step',
+                              dependencies=('two',), title='One Step',
                               description='One small step')
 
         registry.registerStep(id='two', version='2', handler=TWO_FUNC,
-                              dependencies=('three', ), title='Two Steps',
+                              dependencies=('three',), title='Two Steps',
                               description='Texas two step')
 
         registry.registerStep(id='three', version='3', handler=THREE_FUNC,
@@ -453,17 +451,15 @@ _ORDERED_IMPORT_XML = """\
   Texas two step
  </import-step>
 </import-steps>
-""" % ( ONE_FUNC_NAME, THREE_FUNC_NAME, TWO_FUNC_NAME )
+""" % (ONE_FUNC_NAME, THREE_FUNC_NAME, TWO_FUNC_NAME)
 
-#==============================================================================
+###############################
 #   ESR tests
-#==============================================================================
+###############################
 
 
-class ExportStepRegistryTests(
-    BaseRegistryTests,
-    ConformsToIStepRegistry,
-    ConformsToIExportStepRegistry):
+class ExportStepRegistryTests(BaseRegistryTests, ConformsToIStepRegistry,
+                              ConformsToIExportStepRegistry):
 
     layer = ExportImportZCMLLayer
 
@@ -488,9 +484,10 @@ class ExportStepRegistryTests(
         self.assertEqual(registry.getStep('nonesuch'), None)
 
     def test_getStep_defaulted(self):
+        def default(x):
+            return False
 
         registry = self._makeOne()
-        default = lambda x: False
         self.assertEqual(registry.getStep('nonesuch', default), default)
 
     def test_getStepMetadata_nonesuch(self):
@@ -664,16 +661,15 @@ _ORDERED_EXPORT_XML = """\
   Texas two step
  </export-step>
 </export-steps>
-""" % ( ONE_FUNC_NAME, THREE_FUNC_NAME, TWO_FUNC_NAME )
+""" % (ONE_FUNC_NAME, THREE_FUNC_NAME, TWO_FUNC_NAME)
 
 
-#==============================================================================
+###############################
 #   ToolsetRegistry tests
-#==============================================================================
+###############################
 
 
-class ToolsetRegistryTests(BaseRegistryTests, ConformsToIToolsetRegistry
-                           ):
+class ToolsetRegistryTests(BaseRegistryTests, ConformsToIToolsetRegistry):
 
     layer = ExportImportZCMLLayer
 
@@ -902,8 +898,7 @@ class IAnotherSite(Interface):
     pass
 
 
-class ProfileRegistryTests(BaseRegistryTests, ConformsToIProfileRegistry
-                           ):
+class ProfileRegistryTests(BaseRegistryTests, ConformsToIProfileRegistry):
 
     def _getTargetClass(self):
 

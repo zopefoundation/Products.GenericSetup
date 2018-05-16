@@ -138,6 +138,7 @@ class DummyTool(SimpleItem):
     def verify(self):
         return True
 
+
 InitializeClass(DummyTool)
 
 
@@ -153,6 +154,7 @@ class DummyTool2(SimpleItem):
 
     def verify(self):
         return True
+
 
 InitializeClass(DummyTool2)
 

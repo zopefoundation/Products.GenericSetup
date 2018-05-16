@@ -23,6 +23,8 @@ New features:
 
 - Finished compatibility with Python 3.5 and 3.6
 
+- Made the code PEP-8 compliant
+
 1.10.0 (2017-12-07)
 -------------------
 

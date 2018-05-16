@@ -116,27 +116,31 @@ class NodeAdapterTestCase(_AdapterTestCaseBase):
         self._populate(self._obj)
         context = DummySetupEnviron()
         adapted = getMultiAdapter((self._obj, context), INode)
-        self.assertEqual(adapted.node.toprettyxml(' ', encoding='utf-8'), self._XML)
+        self.assertEqual(adapted.node.toprettyxml(' ', encoding='utf-8'),
+                         self._XML)
 
     def test_node_set(self):
         context = DummySetupEnviron()
         adapted = getMultiAdapter((self._obj, context), INode)
         adapted.node = parseString(self._XML).documentElement
         self._verifyImport(self._obj)
-        self.assertEqual(adapted.node.toprettyxml(' ', encoding='utf-8'), self._XML)
+        self.assertEqual(adapted.node.toprettyxml(' ', encoding='utf-8'),
+                         self._XML)
 
         # now in update mode
         context._should_purge = False
         adapted = getMultiAdapter((self._obj, context), INode)
         adapted.node = parseString(self._XML).documentElement
         self._verifyImport(self._obj)
-        self.assertEqual(adapted.node.toprettyxml(' ', encoding='utf-8'), self._XML)
+        self.assertEqual(adapted.node.toprettyxml(' ', encoding='utf-8'),
+                         self._XML)
 
         # and again in update mode
         adapted = getMultiAdapter((self._obj, context), INode)
         adapted.node = parseString(self._XML).documentElement
         self._verifyImport(self._obj)
-        self.assertEqual(adapted.node.toprettyxml(' ', encoding='utf-8'), self._XML)
+        self.assertEqual(adapted.node.toprettyxml(' ', encoding='utf-8'),
+                         self._XML)
 
 
 class ExportImportZCMLLayer(ZopeLite):

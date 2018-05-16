@@ -25,7 +25,7 @@ SKIPPED_FILES = ('CVS', '.svn', '_svn', '_darcs')
 SKIPPED_SUFFIXES = ('~',)
 
 
-class IPseudoInterface( Interface ):
+class IPseudoInterface(Interface):
 
     """ API documentation;  not testable / enforceable.
     """
@@ -74,9 +74,9 @@ class ISetupContext(ISetupEnviron):
         """
 
 
-class IImportContext( ISetupContext ):
+class IImportContext(ISetupContext):
 
-    def readDataFile( filename, subdir=None ):
+    def readDataFile(filename, subdir=None):
         """ Search the current configuration for the requested file.
 
         o 'filename' is the name (without path elements) of the file.
@@ -88,7 +88,7 @@ class IImportContext( ISetupContext ):
           file cannot be found.
         """
 
-    def getLastModified( path ):
+    def getLastModified(path):
         """ Return the modification timestamp of the item at 'path'.
 
         o Result will be a DateTime instance.
@@ -104,7 +104,7 @@ class IImportContext( ISetupContext ):
         o Return None if 'path' does not point to any object.
         """
 
-    def isDirectory( path ):
+    def isDirectory(path):
         """ Test whether path points to a directory / folder.
 
         o If the context is filesystem based, check that 'path' points to
@@ -117,7 +117,7 @@ class IImportContext( ISetupContext ):
           bool.
         """
 
-    def listDirectory( path, skip=SKIPPED_FILES ):
+    def listDirectory(path, skip=SKIPPED_FILES):
         """ List IDs of the contents of a  directory / folder.
 
         o Omit names in 'skip'.
@@ -126,9 +126,9 @@ class IImportContext( ISetupContext ):
         """
 
 
-class IChunkableImportContext( IImportContext ):
+class IChunkableImportContext(IImportContext):
 
-    def openDataFile( filename, subdir=None ):
+    def openDataFile(filename, subdir=None):
         """ Open a datafile for reading from the specified location.
 
         o 'filename' is the unqualified name of the file.
@@ -142,11 +142,11 @@ class IChunkableImportContext( IImportContext ):
         """
 
 
-class IImportPlugin( IPseudoInterface ):
+class IImportPlugin(IPseudoInterface):
 
     """ Signature for callables used to import portions of site configuration.
     """
-    def __call__( context ):
+    def __call__(context):
         """ Perform the setup step.
 
         o Return a message describing the work done.
@@ -155,9 +155,9 @@ class IImportPlugin( IPseudoInterface ):
         """
 
 
-class IExportContext( ISetupContext ):
+class IExportContext(ISetupContext):
 
-    def writeDataFile( filename, text, content_type, subdir=None ):
+    def writeDataFile(filename, text, content_type, subdir=None):
         """ Write data into the specified location.
 
         o 'filename' is the unqualified name of the file.
@@ -172,9 +172,9 @@ class IExportContext( ISetupContext ):
         """
 
 
-class IChunkableExportContext( IExportContext ):
+class IChunkableExportContext(IExportContext):
 
-    def openDataFile( filename, content_type, subdir=None ):
+    def openDataFile(filename, content_type, subdir=None):
         """ Open a datafile for writing into the specified location.
 
         o 'filename' is the unqualified name of the file.
@@ -190,11 +190,11 @@ class IChunkableExportContext( IExportContext ):
         """
 
 
-class IExportPlugin( IPseudoInterface ):
+class IExportPlugin(IPseudoInterface):
 
     """ Signature for callables used to export portions of site configuration.
     """
-    def __call__( context ):
+    def __call__(context):
         """ Write export data for the site wrapped by context.
 
         o Return a message describing the work done.
@@ -204,7 +204,7 @@ class IExportPlugin( IPseudoInterface ):
         """
 
 
-class IStepRegistry( Interface ):
+class IStepRegistry(Interface):
 
     """ Base interface for step registries.
     """
@@ -220,7 +220,7 @@ class IStepRegistry( Interface ):
         o Mappings will be ordered alphabetically.
         """
 
-    def getStepMetadata( key, default=None ):
+    def getStepMetadata(key, default=None):
         """ Return a mapping of metadata for the step identified by 'key'.
 
         o Return 'default' if no such step is registered.
@@ -234,12 +234,12 @@ class IStepRegistry( Interface ):
         o 'handler' values are serialized using their dotted names.
         """
 
-    def parseXML( text ):
+    def parseXML(text):
         """ Parse 'text'.
         """
 
 
-class IImportStepRegistry( IStepRegistry ):
+class IImportStepRegistry(IStepRegistry):
 
     """ API for import step registry.
     """
@@ -251,22 +251,17 @@ class IImportStepRegistry( IStepRegistry ):
         """
 
     def checkComplete():
-        """ Return a sequence of ( node, edge ) tuples for unsatisifed deps.
+        """ Return a sequence of (node, edge) tuples for unsatisifed deps.
         """
 
-    def getStep( key, default=None ):
+    def getStep(key, default=None):
         """ Return the IImportPlugin registered for 'key'.
 
         o Return 'default' if no such step is registered.
         """
 
-    def registerStep( id
-                    , version=None
-                    , handler=None
-                    , dependencies=()
-                    , title=None
-                    , description=None
-                    ):
+    def registerStep(id, version=None, handler=None, dependencies=(),
+                     title=None, description=None):
         """ Register a setup step.
 
         o 'id' is a unique name for this step,
@@ -300,17 +295,17 @@ class IImportStepRegistry( IStepRegistry ):
         """
 
 
-class IExportStepRegistry( IStepRegistry ):
+class IExportStepRegistry(IStepRegistry):
 
     """ API for export step registry.
     """
-    def getStep( key, default=None ):
+    def getStep(key, default=None):
         """ Return the IExportPlugin registered for 'key'.
 
         o Return 'default' if no such step is registered.
         """
 
-    def registerStep( id, handler, title=None, description=None ):
+    def registerStep(id, handler, title=None, description=None):
         """ Register an export step.
 
         o 'id' is the unique identifier for this step
@@ -327,7 +322,7 @@ class IExportStepRegistry( IStepRegistry ):
         """
 
 
-class IToolsetRegistry( Interface ):
+class IToolsetRegistry(Interface):
 
     """ API for toolset registry.
     """
@@ -335,7 +330,7 @@ class IToolsetRegistry( Interface ):
         """ Return a list of IDs of tools which must be removed, if present.
         """
 
-    def addForbiddenTool(tool_id ):
+    def addForbiddenTool(tool_id):
         """ Add 'tool_id' to the list of forbidden tools.
 
         o Raise KeyError if 'tool_id' is already in the list.
@@ -347,7 +342,7 @@ class IToolsetRegistry( Interface ):
         """ Return a list of IDs of tools which must be present.
         """
 
-    def getRequiredToolInfo( tool_id ):
+    def getRequiredToolInfo(tool_id):
         """ Return a mapping describing a partiuclar required tool.
 
         o Keys include:
@@ -363,7 +358,7 @@ class IToolsetRegistry( Interface ):
         """ Return a list of IDs of tools which must be present.
         """
 
-    def addRequiredTool( tool_id, dotted_name ):
+    def addRequiredTool(tool_id, dotted_name):
         """ Add a tool to our "required" list.
 
         o 'tool_id' is the tool's ID.
@@ -376,11 +371,11 @@ class IToolsetRegistry( Interface ):
         """
 
 
-class IProfileRegistry( Interface ):
+class IProfileRegistry(Interface):
 
     """ API for profile registry.
     """
-    def getProfileInfo( profile_id, for_=None ):
+    def getProfileInfo(profile_id, for_=None):
         """ Return a mapping describing a registered filesystem profile.
 
         o Keys include:
@@ -405,7 +400,7 @@ class IProfileRegistry( Interface ):
             If 'None', list all profiles.
         """
 
-    def listProfiles( for_=None ):
+    def listProfiles(for_=None):
         """ Return a list of IDs for registered profiles.
 
         o 'for_', if passed, should be the interface specifying the "site
@@ -415,7 +410,7 @@ class IProfileRegistry( Interface ):
             If 'None', list all profiles.
         """
 
-    def listProfileInfo( for_=None ):
+    def listProfileInfo(for_=None):
         """ Return a list of mappings describing registered profiles.
 
         o See 'getProfileInfo' for a description of the mappings' keys.
@@ -427,14 +422,8 @@ class IProfileRegistry( Interface ):
             If 'None', list all profiles.
         """
 
-    def registerProfile( name
-                       , title
-                       , description
-                       , path
-                       , product=None
-                       , profile_type=BASE
-                       , for_=None
-                       ):
+    def registerProfile(name, title, description, path, product=None,
+                        profile_type=BASE, for_=None):
         """ Add a new profile to the registry.
 
         o If an existing profile is already registered for 'product:name',
@@ -451,7 +440,7 @@ class IProfileRegistry( Interface ):
         """
 
 
-class ISetupTool( Interface ):
+class ISetupTool(Interface):
 
     """ API for SetupTool.
     """
@@ -466,7 +455,7 @@ class ISetupTool( Interface ):
         """ Get the ID of the base profile for this configuration.
         """
 
-    def setBaselineContext( context_id, encoding=None):
+    def setBaselineContext(context_id, encoding=None):
         """ Specify the base profile for this configuration.
         """
 
@@ -480,7 +469,7 @@ class ISetupTool( Interface ):
         'value' must be a boolean.
         """
 
-    def applyContext( context, encoding=None ):
+    def applyContext(context, encoding=None):
         """ Update the tool from the supplied context, without modifying its
             "permanent" ID.
         """
@@ -497,7 +486,7 @@ class ISetupTool( Interface ):
         """ Return the IToolsetRegistry for the tool.
         """
 
-    def getProfileDependencyChain( profile_id ):
+    def getProfileDependencyChain(profile_id):
         """Return a list of dependencies for a profile.
 
         The list is ordered by install order, with the requested profile as
@@ -543,8 +532,8 @@ class ISetupTool( Interface ):
         o Unless 'ignore_dependencies' is true this will also import
           all profiles this profile depends on.
 
-        o 'blacklisted_steps' can be a list of step-names that won't be executed.
-          Use with special care and only for special cases.
+        o 'blacklisted_steps' can be a list of step-names that won't be
+          executed. Use with special care and only for special cases.
 
 
         o Return a mapping, with keys:
@@ -555,7 +544,7 @@ class ISetupTool( Interface ):
             step
         """
 
-    def runExportStep( step_id ):
+    def runExportStep(step_id):
         """ Generate a tarball containing artifacts from one export step.
 
         o 'step_id' identifies the export step.
@@ -583,17 +572,14 @@ class ISetupTool( Interface ):
           'tarball' -- the stringified tar-gz data.
         """
 
-    def createSnapshot( snapshot_id ):
+    def createSnapshot(snapshot_id):
         """ Create a snapshot folder using all steps.
 
         o 'snapshot_id' is the ID of the new folder.
         """
 
-    def compareConfigurations( lhs_context
-                             , rhs_context
-                             , missing_as_empty=False
-                             , ignore_whitespace=False
-                             ):
+    def compareConfigurations(lhs_context, rhs_context,
+                              missing_as_empty=False, ignore_whitespace=False):
         """ Compare two configurations.
 
         o 'lhs_context' and 'rhs_context' must implement IImportContext.

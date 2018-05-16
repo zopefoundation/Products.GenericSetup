@@ -199,60 +199,60 @@ class SetupTool(Folder):
     #
     #   ISetupTool API
     #
-    security.declareProtected(ManagePortal, 'getEncoding')
+    @security.protected(ManagePortal)
     def getEncoding(self):
         """ See ISetupTool.
         """
         return 'utf-8'
 
-    security.declareProtected(ManagePortal, 'getBaselineContextID')
+    @security.protected(ManagePortal)
     def getBaselineContextID(self):
         """ See ISetupTool.
         """
         return self._baseline_context_id
 
-    security.declareProtected(ManagePortal, 'setBaselineContext')
+    @security.protected(ManagePortal)
     def setBaselineContext(self, context_id, encoding=None):
         """ See ISetupTool.
         """
         self._baseline_context_id = context_id
         self.applyContextById(context_id, encoding)
 
-    security.declareProtected(ManagePortal, 'getExcludeGlobalSteps')
+    @security.protected(ManagePortal)
     def getExcludeGlobalSteps(self):
         """ See ISetupTool.
         """
         return self._exclude_global_steps
 
-    security.declareProtected(ManagePortal, 'setExcludeGlobalSteps')
+    @security.protected(ManagePortal)
     def setExcludeGlobalSteps(self, value):
         """ See ISetupTool.
         """
         self._exclude_global_steps = value
 
-    security.declareProtected(ManagePortal, 'applyContextById')
+    @security.protected(ManagePortal)
     def applyContextById(self, context_id, encoding=None):
         context = self._getImportContext(context_id)
         self.applyContext(context, encoding)
 
-    security.declareProtected(ManagePortal, 'applyContext')
+    @security.protected(ManagePortal)
     def applyContext(self, context, encoding=None):
         self._updateImportStepsRegistry(context, encoding)
         self._updateExportStepsRegistry(context, encoding)
 
-    security.declareProtected(ManagePortal, 'getImportStepRegistry')
+    @security.protected(ManagePortal)
     def getImportStepRegistry(self):
         """ See ISetupTool.
         """
         return self._import_registry
 
-    security.declareProtected(ManagePortal, 'getExportStepRegistry')
+    @security.protected(ManagePortal)
     def getExportStepRegistry(self):
         """ See ISetupTool.
         """
         return self._export_registry
 
-    security.declareProtected(ManagePortal, 'getImportStep')
+    @security.protected(ManagePortal)
     def getImportStep(self, step, default=None):
         """Simple wrapper to query both the global and local step registry."""
         res = self._import_registry.getStep(step, self)
@@ -262,7 +262,7 @@ class SetupTool(Folder):
             return res
         return default
 
-    security.declareProtected(ManagePortal, 'getSortedImportSteps')
+    @security.protected(ManagePortal)
     def getSortedImportSteps(self):
         if self._exclude_global_steps:
             steps = set()
@@ -272,7 +272,7 @@ class SetupTool(Folder):
         step_infos = [self.getImportStepMetadata(step) for step in steps]
         return tuple(_computeTopologicalSort(step_infos))
 
-    security.declareProtected(ManagePortal, 'getImportStepMetadata')
+    @security.protected(ManagePortal)
     def getImportStepMetadata(self, step, default=None):
         """Simple wrapper to query both the global and local step registry."""
         res = self._import_registry.getStepMetadata(step, self)
@@ -282,7 +282,7 @@ class SetupTool(Folder):
             return res
         return default
 
-    security.declareProtected(ManagePortal, 'getExportStep')
+    @security.protected(ManagePortal)
     def getExportStep(self, step, default=None):
         """Simple wrapper to query both the global and local step registry."""
         res = self._export_registry.getStep(step, self)
@@ -292,21 +292,21 @@ class SetupTool(Folder):
             return res
         return default
 
-    security.declareProtected(ManagePortal, 'listExportSteps')
+    @security.protected(ManagePortal)
     def listExportSteps(self):
         steps = set(self._export_registry.listSteps())
         if not self._exclude_global_steps:
             steps.update(set(_export_step_registry.listSteps()))
         return tuple(steps)
 
-    security.declareProtected(ManagePortal, 'listImportSteps')
+    @security.protected(ManagePortal)
     def listImportSteps(self):
         steps = set(self._import_registry.listSteps())
         if not self._exclude_global_steps:
             steps.update(set(_import_step_registry.listSteps()))
         return tuple(steps)
 
-    security.declareProtected(ManagePortal, 'getExportStepMetadata')
+    @security.protected(ManagePortal)
     def getExportStepMetadata(self, step, default=None):
         """Simple wrapper to query both the global and local step registry."""
         res = self._export_registry.getStepMetadata(step, self)
@@ -316,13 +316,13 @@ class SetupTool(Folder):
             return res
         return default
 
-    security.declareProtected(ManagePortal, 'getToolsetRegistry')
+    @security.protected(ManagePortal)
     def getToolsetRegistry(self):
         """ See ISetupTool.
         """
         return self._toolset_registry
 
-    security.declareProtected(ManagePortal, 'runImportStepFromProfile')
+    @security.protected(ManagePortal)
     def runImportStepFromProfile(self, profile_id, step_id,
                                  run_dependencies=True, purge_old=None):
         """ See ISetupTool.
@@ -359,7 +359,7 @@ class SetupTool(Folder):
             messages[step] = message or ''
 
         message_list = [i for i in [message] if i]
-        message_list.extend([ '%s: %s' % x[1:] for x in context.listNotes() ])
+        message_list.extend(['%s: %s' % x[1:] for x in context.listNotes()])
         messages[step_id] = '\n'.join(message_list)
 
         event.notify(
@@ -367,7 +367,7 @@ class SetupTool(Folder):
 
         return {'steps': steps, 'messages': messages}
 
-    security.declareProtected(ManagePortal, 'runAllImportStepsFromProfile')
+    @security.protected(ManagePortal)
     def runAllImportStepsFromProfile(self,
                                      profile_id,
                                      purge_old=None,
@@ -395,19 +395,19 @@ class SetupTool(Folder):
 
         return result
 
-    security.declareProtected(ManagePortal, 'runExportStep')
+    @security.protected(ManagePortal)
     def runExportStep(self, step_id):
         """ See ISetupTool.
         """
         return self._doRunExportSteps([step_id])
 
-    security.declareProtected(ManagePortal, 'runAllExportSteps')
+    @security.protected(ManagePortal)
     def runAllExportSteps(self):
         """ See ISetupTool.
         """
         return self._doRunExportSteps(self.listExportSteps())
 
-    security.declareProtected(ManagePortal, 'createSnapshot')
+    @security.protected(ManagePortal)
     def createSnapshot(self, snapshot_id):
         """ See ISetupTool.
         """
@@ -431,26 +431,24 @@ class SetupTool(Folder):
                 'url': context.getSnapshotURL(),
                 'snapshot': context.getSnapshotFolder()}
 
-    security.declareProtected(ManagePortal, 'compareConfigurations')
+    @security.protected(ManagePortal)
     def compareConfigurations(self,
                               lhs_context,
                               rhs_context,
                               missing_as_empty=False,
                               ignore_blanks=False,
-                              skip=SKIPPED_FILES,
-                             ):
+                              skip=SKIPPED_FILES):
         """ See ISetupTool.
         """
         differ = ConfigDiff(lhs_context,
                             rhs_context,
                             missing_as_empty,
                             ignore_blanks,
-                            skip,
-                           )
+                            skip)
 
         return differ.compare()
 
-    security.declareProtected(ManagePortal, 'markupComparison')
+    @security.protected(ManagePortal)
     def markupComparison(self, lines):
         """ See ISetupTool.
         """
@@ -495,7 +493,7 @@ class SetupTool(Folder):
 
         return '<pre>\n%s\n</pre>' % (
             '\n'.join([('<span class="%s">%s</span>' % (cl, escape(l)))
-                                  for cl, l in result]))
+                       for cl, l in result]))
 
     #
     #   ZMI
@@ -511,23 +509,23 @@ class SetupTool(Folder):
          {'label': 'Snapshots', 'action': 'manage_snapshots'},
          {'label': 'Comparison', 'action': 'manage_showDiff'},
          {'label': 'Manage', 'action': 'manage_stepRegistry'}) +
-        Folder.manage_options[3:]) # skip "View", "Properties"
+        Folder.manage_options[3:])  # skip "View", "Properties"
 
     security.declareProtected(ManagePortal, 'manage_tool')
     manage_tool = PageTemplateFile('sutProperties', _wwwdir)
 
-    security.declareProtected(ManagePortal, 'manage_updateToolProperties')
+    @security.protected(ManagePortal)
     def manage_updateToolProperties(self, context_id,
-                                          exclude_global_steps=False,
-                                          RESPONSE=None):
+                                    exclude_global_steps=False,
+                                    RESPONSE=None):
         """ Update the tool's settings.
         """
         self.setExcludeGlobalSteps(exclude_global_steps)
         self.setBaselineContext(context_id)
 
         if RESPONSE is not None:
-            RESPONSE.redirect('%s/manage_tool?manage_tabs_message=%s'
-                            % (self.absolute_url(), 'Properties+updated.'))
+            RESPONSE.redirect('%s/manage_tool?manage_tabs_message=%s' %
+                              (self.absolute_url(), 'Properties+updated.'))
 
     security.declareProtected(ManagePortal, 'manage_importSteps')
     manage_importSteps = PageTemplateFile('sutImportSteps', _wwwdir)
@@ -540,7 +538,7 @@ class SetupTool(Folder):
     manage_tarballImport = PageTemplateFile(
         'sutTarballImport', _wwwdir)
 
-    security.declareProtected(ManagePortal, 'manage_importSelectedSteps')
+    @security.protected(ManagePortal)
     def manage_importSelectedSteps(self, ids, run_dependencies,
                                    context_id=None):
         """ Import the steps selected by the user.
@@ -568,7 +566,7 @@ class SetupTool(Folder):
         return self.manage_importSteps(manage_tabs_message=summary,
                                        messages=messages)
 
-    security.declareProtected(ManagePortal, 'manage_importAllSteps')
+    @security.protected(ManagePortal)
     def manage_importAllSteps(self, context_id=None, dependency_strategy=None):
         """ Import all steps.
         """
@@ -583,7 +581,7 @@ class SetupTool(Folder):
         return self.manage_fullImport(manage_tabs_message=steps_run,
                                       messages=result['messages'])
 
-    security.declareProtected(ManagePortal, 'manage_importExtensions')
+    @security.protected(ManagePortal)
     def manage_importExtensions(self, RESPONSE, profile_ids=()):
         """ Import all steps for the selected extension profiles.
         """
@@ -591,7 +589,7 @@ class SetupTool(Folder):
         if len(profile_ids) == 0:
             message = 'Please select one or more extension profiles.'
             RESPONSE.redirect('%s/manage_tool?manage_tabs_message=%s'
-                                  % (self.absolute_url(), message))
+                              % (self.absolute_url(), message))
         else:
             message = 'Imported profiles: %s' % ', '.join(profile_ids)
 
@@ -605,7 +603,7 @@ class SetupTool(Folder):
             return self.manage_fullImport(manage_tabs_message=message,
                                           messages=detail)
 
-    security.declareProtected(ManagePortal, 'manage_importTarball')
+    @security.protected(ManagePortal)
     def manage_importTarball(self, tarball, submitted=None, purge_old=None):
         """ Import steps from the uploaded tarball.
         """
@@ -634,13 +632,13 @@ class SetupTool(Folder):
     security.declareProtected(ManagePortal, 'manage_exportSteps')
     manage_exportSteps = PageTemplateFile('sutExportSteps', _wwwdir)
 
-    security.declareProtected(ManagePortal, 'manage_exportSelectedSteps')
+    @security.protected(ManagePortal)
     def manage_exportSelectedSteps(self, ids, RESPONSE):
         """ Export the steps selected by the user.
         """
         if not ids:
             RESPONSE.redirect('%s/manage_exportSteps?manage_tabs_message=%s'
-                             % (self.absolute_url(), 'No+steps+selected.'))
+                              % (self.absolute_url(), 'No+steps+selected.'))
 
         result = self._doRunExportSteps(ids)
         RESPONSE.setHeader('Content-type', 'application/x-gzip')
@@ -648,7 +646,7 @@ class SetupTool(Folder):
                            'attachment; filename=%s' % result['filename'])
         return result['tarball']
 
-    security.declareProtected(ManagePortal, 'manage_exportAllSteps')
+    @security.protected(ManagePortal)
     def manage_exportAllSteps(self, RESPONSE):
         """ Export all steps.
         """
@@ -667,7 +665,7 @@ class SetupTool(Folder):
     security.declareProtected(ManagePortal, 'manage_snapshots')
     manage_snapshots = PageTemplateFile('sutSnapshots', _wwwdir)
 
-    security.declareProtected(ManagePortal, 'listSnapshotInfo')
+    @security.protected(ManagePortal)
     def listSnapshotInfo(self):
         """ Return a list of mappings describing available snapshots.
 
@@ -689,7 +687,7 @@ class SetupTool(Folder):
                                'url': folder.absolute_url()})
         return result
 
-    security.declareProtected(ManagePortal, 'listProfileInfo')
+    @security.protected(ManagePortal)
     def listProfileInfo(self, for_=None):
         """ Return a list of mappings describing registered profiles.
         Base profile is listed first, extensions are sorted.
@@ -716,7 +714,7 @@ class SetupTool(Folder):
         ext.sort(key=lambda x: x['id'])
         return base + ext
 
-    security.declareProtected(ManagePortal, 'listContextInfos')
+    @security.protected(ManagePortal)
     def listContextInfos(self, order_by='sortable_title'):
         """ List registered profiles and snapshots.
         """
@@ -746,13 +744,13 @@ class SetupTool(Folder):
 
         return tuple(s_infos + p_infos)
 
-    security.declareProtected(ManagePortal, 'getProfileImportDate')
+    @security.protected(ManagePortal)
     def getProfileImportDate(self, profile_id):
         """ See ISetupTool.
         """
         prefix = ('import-all-%s-' % profile_id).replace(':', '_')
         candidates = [x for x in self.objectIds('File')
-                        if x[:-18] == prefix and x.endswith('.log')]
+                      if x[:-18] == prefix and x.endswith('.log')]
         if len(candidates) == 0:
             return None
         candidates.sort()
@@ -763,10 +761,9 @@ class SetupTool(Folder):
                                        stamp[6:8],
                                        stamp[8:10],
                                        stamp[10:12],
-                                       stamp[12:14],
-                                      )
+                                       stamp[12:14])
 
-    security.declareProtected(ManagePortal, 'manage_createSnapshot')
+    @security.protected(ManagePortal)
     def manage_createSnapshot(self, RESPONSE, snapshot_id=None):
         """ Create a snapshot with the given ID.
 
@@ -778,7 +775,7 @@ class SetupTool(Folder):
         self.createSnapshot(snapshot_id)
 
         return RESPONSE.redirect('%s/manage_snapshots?manage_tabs_message=%s'
-                         % (self.absolute_url(), 'Snapshot+created.'))
+                                 % (self.absolute_url(), 'Snapshot+created.'))
 
     security.declareProtected(ManagePortal, 'manage_showDiff')
     manage_showDiff = PageTemplateFile('sutCompare', _wwwdir)
@@ -788,8 +785,7 @@ class SetupTool(Folder):
                             rhs,
                             missing_as_empty,
                             ignore_blanks,
-                            RESPONSE,
-                           ):
+                            RESPONSE):
         """ Crack request vars and call compareConfigurations.
 
         o Return the result as a 'text/plain' stream, suitable for framing.
@@ -797,18 +793,16 @@ class SetupTool(Folder):
         comparison = self.manage_compareConfigurations(lhs,
                                                        rhs,
                                                        missing_as_empty,
-                                                       ignore_blanks,
-                                                      )
+                                                       ignore_blanks)
         RESPONSE.setHeader('Content-Type', 'text/plain')
         return _PLAINTEXT_DIFF_HEADER % (lhs, rhs, comparison)
 
-    security.declareProtected(ManagePortal, 'manage_compareConfigurations')
+    @security.protected(ManagePortal)
     def manage_compareConfigurations(self,
                                      lhs,
                                      rhs,
                                      missing_as_empty,
-                                     ignore_blanks,
-                                    ):
+                                     ignore_blanks):
         """ Crack request vars and call compareConfigurations.
         """
         lhs_context = self._getImportContext(lhs)
@@ -817,13 +811,12 @@ class SetupTool(Folder):
         return self.compareConfigurations(lhs_context,
                                           rhs_context,
                                           missing_as_empty,
-                                          ignore_blanks,
-                                         )
+                                          ignore_blanks)
 
     security.declareProtected(ManagePortal, 'manage_stepRegistry')
     manage_stepRegistry = PageTemplateFile('sutManage', _wwwdir)
 
-    security.declareProtected(ManagePortal, 'manage_deleteImportSteps')
+    @security.protected(ManagePortal)
     def manage_deleteImportSteps(self, ids, request=None):
         """ Delete selected import steps.
         """
@@ -835,7 +828,7 @@ class SetupTool(Folder):
         url = self.absolute_url()
         request.RESPONSE.redirect("%s/manage_stepRegistry" % url)
 
-    security.declareProtected(ManagePortal, 'manage_deleteExportSteps')
+    @security.protected(ManagePortal)
     def manage_deleteExportSteps(self, ids, request=None):
         """ Delete selected export steps.
         """
@@ -850,7 +843,7 @@ class SetupTool(Folder):
     #
     # Upgrades management
     #
-    security.declareProtected(ManagePortal, 'getLastVersionForProfile')
+    @security.protected(ManagePortal)
     def getLastVersionForProfile(self, profile_id):
         """Return the last upgraded version for the specified profile.
         """
@@ -860,7 +853,7 @@ class SetupTool(Folder):
         version = self._profile_upgrade_versions.get(profile_id, UNKNOWN)
         return version
 
-    security.declareProtected(ManagePortal, 'setLastVersionForProfile')
+    @security.protected(ManagePortal)
     def setLastVersionForProfile(self, profile_id, version):
         """Set the last upgraded version for the specified profile.
         """
@@ -878,7 +871,7 @@ class SetupTool(Folder):
                 self._profile_upgrade_versions)
         self._profile_upgrade_versions[profile_id] = version
 
-    security.declareProtected(ManagePortal, 'unsetLastVersionForProfile')
+    @security.protected(ManagePortal)
     def unsetLastVersionForProfile(self, profile_id):
         """Unset the last upgraded version for the specified profile.
         """
@@ -893,21 +886,21 @@ class SetupTool(Folder):
                 self._profile_upgrade_versions)
         del self._profile_upgrade_versions[profile_id]
 
-    security.declareProtected(ManagePortal, 'getVersionForProfile')
+    @security.protected(ManagePortal)
     def getVersionForProfile(self, profile_id):
         """Return the registered filesystem version for the specified
         profile.
         """
         return self.getProfileInfo(profile_id).get('version', UNKNOWN)
 
-    security.declareProtected(ManagePortal, 'purgeProfileVersions')
+    @security.protected(ManagePortal)
     def purgeProfileVersions(self):
         """Purge the profile upgrade versions.
         """
         self._profile_upgrade_versions = PersistentMapping()
         generic_logger.info('Profile upgrade versions purged.')
 
-    security.declareProtected(ManagePortal, 'profileExists')
+    @security.protected(ManagePortal)
     def profileExists(self, profile_id):
         """Check if a profile exists."""
         if profile_id is None:
@@ -919,11 +912,11 @@ class SetupTool(Folder):
         else:
             return True
 
-    security.declareProtected(ManagePortal, "getProfileInfo")
+    @security.protected(ManagePortal)
     def getProfileInfo(self, profile_id):
         return _profile_registry.getProfileInfo(profile_id)
 
-    security.declareProtected(ManagePortal, 'getDependenciesForProfile')
+    @security.protected(ManagePortal)
     def getDependenciesForProfile(self, profile_id):
         if profile_id is None:
             return ()
@@ -937,13 +930,13 @@ class SetupTool(Folder):
         except KeyError:
             return ()
 
-    security.declareProtected(ManagePortal, 'listProfilesWithUpgrades')
+    @security.protected(ManagePortal)
     def listProfilesWithUpgrades(self):
         profiles = listProfilesWithUpgrades()
         profiles.sort()
         return profiles
 
-    security.declarePrivate('_massageUpgradeInfo')
+    @security.private
     def _massageUpgradeInfo(self, info):
         """Add a couple of data points to the upgrade info dictionary.
         """
@@ -956,7 +949,7 @@ class SetupTool(Folder):
                         not info['step'].checker(self))
         return info
 
-    security.declareProtected(ManagePortal, 'listUpgrades')
+    @security.protected(ManagePortal)
     def listUpgrades(self, profile_id, show_old=False):
         """Get the list of available upgrades.
         """
@@ -976,7 +969,7 @@ class SetupTool(Folder):
                 res.append(self._massageUpgradeInfo(info))
         return res
 
-    security.declareProtected(ManagePortal, 'hasPendingUpgrades')
+    @security.protected(ManagePortal)
     def hasPendingUpgrades(self, profile_id=None):
         """Are upgrade steps pending?
 
@@ -1001,7 +994,7 @@ class SetupTool(Folder):
                 return True
         return False
 
-    security.declareProtected(ManagePortal, 'listProfilesWithPendingUpgrades')
+    @security.protected(ManagePortal)
     def listProfilesWithPendingUpgrades(self):
         """List profile ids with pending upgrade steps.
 
@@ -1018,7 +1011,7 @@ class SetupTool(Folder):
                 res.append(profile_id)
         return res
 
-    security.declareProtected(ManagePortal, 'listUptodateProfiles')
+    @security.protected(ManagePortal)
     def listUptodateProfiles(self):
         """List profile ids without pending upgrade steps.
 
@@ -1037,7 +1030,7 @@ class SetupTool(Folder):
                 res.append(profile_id)
         return res
 
-    security.declareProtected(ManagePortal, 'manage_doUpgrades')
+    @security.protected(ManagePortal)
     def manage_doUpgrades(self, request=None):
         """Perform all selected upgrade steps.
         """
@@ -1062,9 +1055,9 @@ class SetupTool(Folder):
 
         url = self.absolute_url()
         request.RESPONSE.redirect("%s/manage_upgrades?saved=%s"
-                                    % (url, profile_id))
+                                  % (url, profile_id))
 
-    security.declareProtected(ManagePortal, 'upgradeProfile')
+    @security.protected(ManagePortal)
     def upgradeProfile(self, profile_id, dest=None):
         """Upgrade a profile.
 
@@ -1078,7 +1071,7 @@ class SetupTool(Folder):
         """
         if self.getLastVersionForProfile(profile_id) == UNKNOWN:
             generic_logger.warning('Version of profile %s is unknown, '
-                                'refusing to upgrade.', profile_id)
+                                   'refusing to upgrade.', profile_id)
             return
         if dest is not None:
             # Upgrade to a specific destination version, if found.
@@ -1086,7 +1079,7 @@ class SetupTool(Folder):
                 dest = tuple(dest.split('.'))
             if self.getLastVersionForProfile(profile_id) == dest:
                 generic_logger.warning('Profile %s is already at wanted '
-                                    'destination %r.', profile_id, dest)
+                                       'destination %r.', profile_id, dest)
                 return
         upgrades = self.listUpgrades(profile_id)
         # First get a list of single steps to apply.  This may be
@@ -1132,7 +1125,7 @@ class SetupTool(Folder):
     #
     #   Helper methods
     #
-    security.declarePrivate('_getImportContext')
+    @security.private
     def _getImportContext(self, context_id, should_purge=None, archive=None):
         """ Crack ID and generate appropriate import context.
 
@@ -1167,14 +1160,13 @@ class SetupTool(Folder):
 
         if archive is not None:
             return TarballImportContext(tool=self,
-                                       archive_bits=archive,
-                                       encoding='UTF8',
-                                       should_purge=should_purge,
-                                      )
+                                        archive_bits=archive,
+                                        encoding='UTF8',
+                                        should_purge=should_purge)
 
         raise KeyError('Unknown context "%s"' % context_id)
 
-    security.declarePrivate('_updateImportStepsRegistry')
+    @security.private
     def _updateImportStepsRegistry(self, context, encoding):
         """ Update our import steps registry from our profile.
         """
@@ -1198,10 +1190,9 @@ class SetupTool(Folder):
                                                handler=handler,
                                                dependencies=dependencies,
                                                title=title,
-                                               description=description,
-                                              )
+                                               description=description)
 
-    security.declarePrivate('_updateExportStepsRegistry')
+    @security.private
     def _updateExportStepsRegistry(self, context, encoding):
         """ Update our export steps registry from our profile.
         """
@@ -1221,10 +1212,9 @@ class SetupTool(Folder):
             self._export_registry.registerStep(id=id,
                                                handler=handler,
                                                title=title,
-                                               description=description,
-                                              )
+                                               description=description)
 
-    security.declarePrivate('_doRunImportStep')
+    @security.private
     def _doRunImportStep(self, step_id, context):
         """ Run a single import step, using a pre-built context.
         """
@@ -1244,7 +1234,7 @@ class SetupTool(Folder):
 
         return handler(context)
 
-    security.declarePrivate('_doRunExportSteps')
+    @security.private
     def _doRunExportSteps(self, steps):
         """ See ISetupTool.
         """
@@ -1272,7 +1262,7 @@ class SetupTool(Folder):
                 'tarball': context.getArchive(),
                 'filename': context.getArchiveFilename()}
 
-    security.declarePrivate('_doRunHandler')
+    @security.private
     def _doRunHandler(self, handler):
         """Run a single handler.
 
@@ -1288,12 +1278,12 @@ class SetupTool(Folder):
                 raise ValueError('Invalid handler: %s' % handler)
         return handler_function(self)
 
-    security.declareProtected(ManagePortal, 'getProfileDependencyChain')
+    @security.protected(ManagePortal)
     def getProfileDependencyChain(self, profile_id, seen=None):
         if seen is None:
             seen = set()
         elif profile_id in seen:
-            return [] # cycle break
+            return []  # cycle break
         seen.add(profile_id)
         chain = []
 
@@ -1305,7 +1295,7 @@ class SetupTool(Folder):
 
         return chain
 
-    security.declarePrivate('_runImportStepsFromContext')
+    @security.private
     def _runImportStepsFromContext(self,
                                    steps=None,
                                    purge_old=None,
@@ -1432,8 +1422,8 @@ class SetupTool(Folder):
                 else:
                     message = self._doRunImportStep(step, context)
                 message_list = [i for i in [message] if i]
-                message_list.extend([ '%s: %s' % x[1:]
-                                      for x in context.listNotes() ])
+                message_list.extend(['%s: %s' % x[1:]
+                                     for x in context.listNotes()])
                 messages[step] = '\n'.join(message_list)
                 context.clearNotes()
             # Run optional post_handler if available.
@@ -1462,7 +1452,7 @@ class SetupTool(Folder):
 
         return data
 
-    security.declarePrivate('_mangleTimestampName')
+    @security.private
     def _mangleTimestampName(self, prefix, ext=None):
         """ Create a mangled ID using a timestamp.
         """
@@ -1477,7 +1467,7 @@ class SetupTool(Folder):
 
         return fmt % items
 
-    security.declarePrivate('_createReport')
+    @security.private
     def _createReport(self, basename, steps, messages):
         """ Record the results of a run.
         """
@@ -1508,10 +1498,10 @@ class SetupTool(Folder):
         file = File(id=name,
                     title='',
                     file=report,
-                    content_type='text/plain'
-                   )
+                    content_type='text/plain')
 
         self._setObject(name, file)
+
 
 InitializeClass(SetupTool)
 

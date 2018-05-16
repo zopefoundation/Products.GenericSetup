@@ -224,31 +224,35 @@ class UnchangedTests(unittest.TestCase):
         from Products.PluginIndexes.FieldIndex.FieldIndex import FieldIndex
         from Products.GenericSetup.testing import DummySetupEnviron
         from Products.GenericSetup.PluginIndexes.exportimport \
-                import PluggableIndexNodeAdapter
+            import PluggableIndexNodeAdapter
         environ = DummySetupEnviron()
+
         def _no_clear(*a):
             raise AssertionError("Don't clear me!")
+
         index = FieldIndex('foo_field')
         index.indexed_attrs = ['bar']
-        index.clear = _no_clear 
+        index.clear = _no_clear
         adapted = PluggableIndexNodeAdapter(index, environ)
-        adapted.node = parseString(_FIELD_XML).documentElement # no raise
+        adapted.node = parseString(_FIELD_XML).documentElement  # no raise
 
     def test_KeywordIndex(self):
         from xml.dom.minidom import parseString
         from Products.PluginIndexes.KeywordIndex.KeywordIndex \
-                import KeywordIndex
+            import KeywordIndex
         from Products.GenericSetup.testing import DummySetupEnviron
         from Products.GenericSetup.PluginIndexes.exportimport \
-                import PluggableIndexNodeAdapter
+            import PluggableIndexNodeAdapter
         environ = DummySetupEnviron()
+
         def _no_clear(*a):
             raise AssertionError("Don't clear me!")
+
         index = KeywordIndex('foo_keyword')
         index.indexed_attrs = ['bar']
-        index.clear = _no_clear 
+        index.clear = _no_clear
         adapted = PluggableIndexNodeAdapter(index, environ)
-        adapted.node = parseString(_KEYWORD_XML).documentElement # no raise
+        adapted.node = parseString(_KEYWORD_XML).documentElement  # no raise
 
     def test_OddballIndex(self):
         # Some indexes, e.g. Plone's 'GopipIndex', use ths adapter but don't
@@ -256,80 +260,90 @@ class UnchangedTests(unittest.TestCase):
         from xml.dom.minidom import parseString
         from Products.GenericSetup.testing import DummySetupEnviron
         from Products.GenericSetup.PluginIndexes.exportimport \
-                import PluggableIndexNodeAdapter
+            import PluggableIndexNodeAdapter
+
         class Oddball(object):
             def clear(*a):
                 raise AssertionError("Don't clear me!")
+
         index = Oddball()
         environ = DummySetupEnviron()
         adapted = PluggableIndexNodeAdapter(index, environ)
-        adapted.node = parseString(_ODDBALL_XML).documentElement # no raise
+        adapted.node = parseString(_ODDBALL_XML).documentElement  # no raise
 
     def test_DateIndex(self):
         from xml.dom.minidom import parseString
         from Products.PluginIndexes.DateIndex.DateIndex import DateIndex
         from Products.GenericSetup.testing import DummySetupEnviron
         from Products.GenericSetup.PluginIndexes.exportimport \
-                import DateIndexNodeAdapter
+            import DateIndexNodeAdapter
         environ = DummySetupEnviron()
+
         def _no_clear(*a):
             raise AssertionError("Don't clear me!")
+
         index = DateIndex('foo_date')
         index._setPropValue('index_naive_time_as_local', True)
         index._setPropValue('precision', 0)
-        index.clear = _no_clear 
+        index.clear = _no_clear
         adapted = DateIndexNodeAdapter(index, environ)
-        adapted.node = parseString(_DATE_XML).documentElement # no raise
+        adapted.node = parseString(_DATE_XML).documentElement  # no raise
 
     def test_DateRangeIndex(self):
         from xml.dom.minidom import parseString
         from Products.PluginIndexes.DateRangeIndex.DateRangeIndex \
-                import DateRangeIndex
+            import DateRangeIndex
         from Products.GenericSetup.testing import DummySetupEnviron
         from Products.GenericSetup.PluginIndexes.exportimport \
-                import DateRangeIndexNodeAdapter
+            import DateRangeIndexNodeAdapter
         environ = DummySetupEnviron()
+
         def _no_clear(*a):
             raise AssertionError("Don't clear me!")
+
         index = DateRangeIndex('foo_daterange')
         index._since_field = 'bar'
         index._until_field = 'baz'
-        index.clear = _no_clear 
+        index.clear = _no_clear
         adapted = DateRangeIndexNodeAdapter(index, environ)
-        adapted.node = parseString(_DATERANGE_XML).documentElement # no raise
+        adapted.node = parseString(_DATERANGE_XML).documentElement  # no raise
 
     def test_FilteredSet(self):
         from xml.dom.minidom import parseString
         from Products.PluginIndexes.TopicIndex.FilteredSet \
-                import PythonFilteredSet
+            import PythonFilteredSet
         from Products.GenericSetup.testing import DummySetupEnviron
         from Products.GenericSetup.PluginIndexes.exportimport \
-                import FilteredSetNodeAdapter
+            import FilteredSetNodeAdapter
         environ = DummySetupEnviron()
+
         def _no_clear(*a):
             raise AssertionError("Don't clear me!")
+
         index = PythonFilteredSet('bar', 'True')
-        index.clear = _no_clear 
+        index.clear = _no_clear
         adapted = FilteredSetNodeAdapter(index, environ)
-        adapted.node = parseString(_SET_XML).documentElement # no raise
+        adapted.node = parseString(_SET_XML).documentElement  # no raise
 
     def test_TopicIndex(self):
         from xml.dom.minidom import parseString
         from Products.PluginIndexes.TopicIndex.TopicIndex import TopicIndex
         from Products.GenericSetup.testing import DummySetupEnviron
         from Products.GenericSetup.PluginIndexes.exportimport \
-                import TopicIndexNodeAdapter
+            import TopicIndexNodeAdapter
         environ = DummySetupEnviron()
+
         def _no_clear(*a):
             raise AssertionError("Don't clear me!")
+
         index = TopicIndex('topics')
         index.addFilteredSet('bar', 'PythonFilteredSet', 'True')
         index.addFilteredSet('baz', 'PythonFilteredSet', 'False')
         bar = index.filteredSets['bar']
         baz = index.filteredSets['baz']
-        bar.clear = baz.clear = _no_clear 
+        bar.clear = baz.clear = _no_clear
         adapted = TopicIndexNodeAdapter(index, environ)
-        adapted.node = parseString(_SET_XML).documentElement # no raise
+        adapted.node = parseString(_SET_XML).documentElement  # no raise
 
 
 def test_suite():

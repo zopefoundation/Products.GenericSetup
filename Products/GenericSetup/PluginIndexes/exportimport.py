@@ -80,15 +80,13 @@ class DateIndexNodeAdapter(NodeAdapterBase, PropertyManagerHelpers):
         """Import the object from the DOM node.
         """
         _before = {'map': self.context._properties,
-                   'items': self.context.propertyItems(),
-                  }
+                   'items': self.context.propertyItems()}
         if self.environ.shouldPurge():
             self._purgeProperties()
 
         self._initProperties(node)
         _after = {'map': self.context._properties,
-                  'items': self.context.propertyItems(),
-                 }
+                  'items': self.context.propertyItems()}
         if _before != _after:
             self.context.clear()
 

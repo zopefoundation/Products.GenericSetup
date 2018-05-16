@@ -17,12 +17,19 @@ from zope.configuration.fields import GlobalObject
 from zope.configuration.fields import MessageID
 from zope.configuration.fields import Path
 from zope.configuration.fields import PythonIdentifier
+from zope.configuration.fields import Tokens
 from zope.interface import Interface
+import zope.schema
 
 from Products.GenericSetup.interfaces import BASE
 from Products.GenericSetup.registry import _import_step_registry
 from Products.GenericSetup.registry import _export_step_registry
 from Products.GenericSetup.registry import _profile_registry
+from Products.GenericSetup.upgrade import UpgradeStep
+from Products.GenericSetup.upgrade import UpgradeDepends
+from Products.GenericSetup.upgrade import _registerUpgradeStep
+from Products.GenericSetup.upgrade import _registerNestedUpgradeStep
+
 
 # genericsetup:registerProfile
 
@@ -200,14 +207,6 @@ class importStep:
 
 # genericsetup:upgradeStep
 
-import zope.schema
-import zope.configuration
-from .upgrade import UpgradeStep
-from .upgrade import UpgradeDepends
-from .upgrade import _registerUpgradeStep
-from .upgrade import _registerNestedUpgradeStep
-
-
 class IUpgradeStepsDirective(Interface):
 
     """
@@ -282,10 +281,9 @@ class IUpgradeDependsSubDirective(Interface):
 
     import_profile = zope.schema.TextLine(
         title=u"GenericSetup profile id to load, if not the same as the "
-               u"current profile.",
-        required=False)
+              u"current profile.", required=False)
 
-    import_steps = zope.configuration.fields.Tokens(
+    import_steps = Tokens(
         title=u"Import steps to rerun",
         required=False,
         value_type=zope.schema.TextLine(title=u"Import step"),
@@ -330,9 +328,8 @@ def upgradeDepends(_context, title, profile, description=None,
                           import_profile, import_steps, run_deps, purge,
                           checker, sortkey)
     _context.action(
-        discriminator=(
-            'upgradeDepends', profile, source, destination, import_profile,
-                str(import_steps), checker, sortkey),
+        discriminator=('upgradeDepends', profile, source, destination,
+                       import_profile, str(import_steps), checker, sortkey),
         callable=_registerUpgradeStep,
         args=(step,),
         )

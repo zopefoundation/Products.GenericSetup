@@ -336,11 +336,13 @@ def _testFunc(*args, **kw):
     This is only a test.
     """
 
+
 _TEST_FUNC_NAME = 'Products.GenericSetup.tests.test_utils._testFunc'
 
 
 class Whatever:
     pass
+
 
 _WHATEVER_NAME = 'Products.GenericSetup.tests.test_utils.Whatever'
 

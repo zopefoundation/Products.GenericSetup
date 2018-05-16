@@ -109,17 +109,18 @@ class SetupEnviron(Implicit):
     def __init__(self):
         self._should_purge = True
 
-    security.declareProtected(ManagePortal, 'getLogger')
+    @security.protected(ManagePortal)
     def getLogger(self, name):
         """Get a logger with the specified name, creating it if necessary.
         """
         return logging.getLogger('GenericSetup.%s' % name)
 
-    security.declareProtected(ManagePortal, 'shouldPurge')
+    @security.protected(ManagePortal)
     def shouldPurge(self):
         """When installing, should the existing setup be purged?
         """
         return self._should_purge
+
 
 InitializeClass(SetupEnviron)
 
@@ -128,118 +129,115 @@ class BaseContext(SetupEnviron):
 
     security = ClassSecurityInfo()
 
-    def __init__( self, tool, encoding ):
+    def __init__(self, tool, encoding):
 
         self._tool = tool
-        self._site = aq_parent( aq_inner( tool ) )
+        self._site = aq_parent(aq_inner(tool))
         self._loggers = {}
         self._messages = []
         self._encoding = encoding
         self._should_purge = True
 
-    security.declareProtected( ManagePortal, 'getSite' )
-    def getSite( self ):
+    @security.protected(ManagePortal)
+    def getSite(self):
         """ See ISetupContext.
         """
         return aq_self(self._site)
 
-    security.declareProtected( ManagePortal, 'getSetupTool' )
-    def getSetupTool( self ):
+    @security.protected(ManagePortal)
+    def getSetupTool(self):
         """ See ISetupContext.
         """
         return self._tool
 
-    security.declareProtected( ManagePortal, 'getEncoding' )
-    def getEncoding( self ):
+    @security.protected(ManagePortal)
+    def getEncoding(self):
         """ See ISetupContext.
         """
         return self._encoding
 
-    security.declareProtected( ManagePortal, 'getLogger' )
-    def getLogger( self, name ):
+    @security.protected(ManagePortal)
+    def getLogger(self, name):
         """ See ISetupContext.
         """
         return self._loggers.setdefault(name, Logger(name, self._messages))
 
-    security.declareProtected( ManagePortal, 'listNotes' )
+    @security.protected(ManagePortal)
     def listNotes(self):
         """ See ISetupContext.
         """
         return self._messages[:]
 
-    security.declareProtected( ManagePortal, 'clearNotes' )
+    @security.protected(ManagePortal)
     def clearNotes(self):
         """ See ISetupContext.
         """
         self._messages[:] = []
 
+
 InitializeClass(BaseContext)
 
 
 @implementer(IChunkableImportContext)
-class DirectoryImportContext( BaseContext ):
+class DirectoryImportContext(BaseContext):
 
     security = ClassSecurityInfo()
 
-    def __init__( self
-                , tool
-                , profile_path
-                , should_purge=False
-                , encoding=None
-                ):
+    def __init__(self, tool, profile_path, should_purge=False,
+                 encoding=None):
 
-        BaseContext.__init__( self, tool, encoding )
+        BaseContext.__init__(self, tool, encoding)
         self._profile_path = profile_path
-        self._should_purge = bool( should_purge )
+        self._should_purge = bool(should_purge)
 
-    security.declareProtected( ManagePortal, 'openDataFile' )
-    def openDataFile( self, filename, subdir=None ):
+    @security.protected(ManagePortal)
+    def openDataFile(self, filename, subdir=None):
         """ See IImportContext.
         """
         if subdir is None:
-            full_path = os.path.join( self._profile_path, filename )
+            full_path = os.path.join(self._profile_path, filename)
         else:
-            full_path = os.path.join( self._profile_path, subdir, filename )
+            full_path = os.path.join(self._profile_path, subdir, filename)
 
-        if not os.path.exists( full_path ):
+        if not os.path.exists(full_path):
             return None
 
-        return open( full_path, 'rb' )
+        return open(full_path, 'rb')
 
-    security.declareProtected( ManagePortal, 'readDataFile' )
-    def readDataFile( self, filename, subdir=None ):
+    @security.protected(ManagePortal)
+    def readDataFile(self, filename, subdir=None):
         """ See IImportContext.
         """
         result = None
-        file = self.openDataFile( filename, subdir )
+        file = self.openDataFile(filename, subdir)
         if file is not None:
             result = file.read()
             file.close()
         return result
 
-    security.declareProtected( ManagePortal, 'getLastModified' )
-    def getLastModified( self, path ):
+    @security.protected(ManagePortal)
+    def getLastModified(self, path):
         """ See IImportContext.
         """
-        full_path = os.path.join( self._profile_path, path )
+        full_path = os.path.join(self._profile_path, path)
 
-        if not os.path.exists( full_path ):
+        if not os.path.exists(full_path):
             return None
 
-        return DateTime( os.path.getmtime( full_path ) )
+        return DateTime(os.path.getmtime(full_path))
 
-    security.declareProtected( ManagePortal, 'isDirectory' )
-    def isDirectory( self, path ):
+    @security.protected(ManagePortal)
+    def isDirectory(self, path):
         """ See IImportContext.
         """
-        full_path = os.path.join( self._profile_path, path )
+        full_path = os.path.join(self._profile_path, path)
 
-        if not os.path.exists( full_path ):
+        if not os.path.exists(full_path):
             return None
 
-        return os.path.isdir( full_path )
+        return os.path.isdir(full_path)
 
-    security.declareProtected( ManagePortal, 'listDirectory' )
+    @security.protected(ManagePortal)
     def listDirectory(self, path, skip=SKIPPED_FILES,
                       skip_suffixes=SKIPPED_SUFFIXES):
         """ See IImportContext.
@@ -247,9 +245,9 @@ class DirectoryImportContext( BaseContext ):
         if path is None:
             path = ''
 
-        full_path = os.path.join( self._profile_path, path )
+        full_path = os.path.join(self._profile_path, path)
 
-        if not os.path.exists( full_path ) or not os.path.isdir( full_path ):
+        if not os.path.exists(full_path) or not os.path.isdir(full_path):
             return None
 
         names = []
@@ -262,86 +260,86 @@ class DirectoryImportContext( BaseContext ):
 
         return names
 
+
 InitializeClass(DirectoryImportContext)
 
 
 @implementer(IChunkableExportContext)
-class DirectoryExportContext( BaseContext ):
+class DirectoryExportContext(BaseContext):
 
     security = ClassSecurityInfo()
 
-    def __init__( self, tool, profile_path, encoding=None ):
+    def __init__(self, tool, profile_path, encoding=None):
 
-        BaseContext.__init__( self, tool, encoding )
+        BaseContext.__init__(self, tool, encoding)
         self._profile_path = profile_path
 
-    security.declareProtected( ManagePortal, 'openDataFile' )
-    def openDataFile( self, filename, content_type, subdir=None ):
+    @security.protected(ManagePortal)
+    def openDataFile(self, filename, content_type, subdir=None):
         """ See IChunkableExportContext.
         """
         if subdir is None:
             prefix = self._profile_path
         else:
-            prefix = os.path.join( self._profile_path, subdir )
+            prefix = os.path.join(self._profile_path, subdir)
 
-        full_path = os.path.join( prefix, filename )
+        full_path = os.path.join(prefix, filename)
 
-        if not os.path.exists( prefix ):
-            os.makedirs( prefix )
+        if not os.path.exists(prefix):
+            os.makedirs(prefix)
 
-        return open( full_path, 'wb' )
+        return open(full_path, 'wb')
 
-    security.declareProtected( ManagePortal, 'writeDataFile' )
-    def writeDataFile( self, filename, text, content_type, subdir=None ):
+    @security.protected(ManagePortal)
+    def writeDataFile(self, filename, text, content_type, subdir=None):
         """ See IExportContext.
         """
         if isinstance(text, six.text_type):
             raise ValueError("Unicode text is not supported, even if it only "
                              "contains ascii. Please encode your data. See "
                              "GS 1.7.0 changes for more")
-        file = self.openDataFile( filename, content_type, subdir )
-        file.write( text )
+        file = self.openDataFile(filename, content_type, subdir)
+        file.write(text)
         file.close()
+
 
 InitializeClass(DirectoryExportContext)
 
 
 @implementer(IImportContext)
-class TarballImportContext( BaseContext ):
+class TarballImportContext(BaseContext):
 
     security = ClassSecurityInfo()
 
-    def __init__( self, tool, archive_bits, encoding=None,
-                  should_purge=False ):
-        BaseContext.__init__( self, tool, encoding )
+    def __init__(self, tool, archive_bits, encoding=None, should_purge=False):
+        BaseContext.__init__(self, tool, encoding)
         self._archive_stream = BytesIO(archive_bits)
-        self._archive = TarFile.open( 'foo.bar', 'r:gz'
-                                    , self._archive_stream )
-        self._should_purge = bool( should_purge )
+        self._archive = TarFile.open('foo.bar', 'r:gz', self._archive_stream)
+        self._should_purge = bool(should_purge)
 
-    def readDataFile( self, filename, subdir=None ):
+    def readDataFile(self, filename, subdir=None):
         """ See IImportContext.
         """
         if subdir is not None:
-            filename = '/'.join( ( subdir, filename ) )
+            filename = '/'.join((subdir, filename))
 
         try:
-            file = self._archive.extractfile( filename )
+            file = self._archive.extractfile(filename)
         except KeyError:
             return None
 
         return file.read()
 
-    def getLastModified( self, path ):
+    def getLastModified(self, path):
         """ See IImportContext.
         """
-        info = self._getTarInfo( path )
+        info = self._getTarInfo(path)
         return info and DateTime(info.mtime) or None
 
-    def isDirectory( self, path ):
+    def isDirectory(self, path):
         """ See IImportContext.
         """
-        info = self._getTarInfo( path )
+        info = self._getTarInfo(path)
 
         if info is not None:
             return info.isdir()
@@ -378,50 +376,51 @@ class TarballImportContext( BaseContext ):
 
         return names
 
-    def shouldPurge( self ):
+    def shouldPurge(self):
         """ See IImportContext.
         """
         return self._should_purge
 
-    def _getTarInfo( self, path ):
+    def _getTarInfo(self, path):
         if path.endswith('/'):
             path = path[:-1]
         try:
-            return self._archive.getmember( path )
+            return self._archive.getmember(path)
         except KeyError:
             pass
         try:
-            return self._archive.getmember( path + '/' )
+            return self._archive.getmember(path + '/')
         except KeyError:
             return None
+
 
 InitializeClass(TarballImportContext)
 
 
 @implementer(IExportContext)
-class TarballExportContext( BaseContext ):
+class TarballExportContext(BaseContext):
 
     security = ClassSecurityInfo()
 
-    def __init__( self, tool, encoding=None ):
+    def __init__(self, tool, encoding=None):
 
-        BaseContext.__init__( self, tool, encoding )
+        BaseContext.__init__(self, tool, encoding)
 
         timestamp = time.gmtime()
-        archive_name = ( 'setup_tool-%4d%02d%02d%02d%02d%02d.tar.gz'
-                       % timestamp[:6] )
+        archive_name = ('setup_tool-%4d%02d%02d%02d%02d%02d.tar.gz'
+                        % timestamp[:6])
 
         self._archive_stream = BytesIO()
         self._archive_filename = archive_name
-        self._archive = TarFile.open( archive_name, 'w:gz'
-                                    , self._archive_stream )
+        self._archive = TarFile.open(archive_name, 'w:gz',
+                                     self._archive_stream)
 
-    security.declareProtected( ManagePortal, 'writeDataFile' )
-    def writeDataFile( self, filename, text, content_type, subdir=None ):
+    @security.protected(ManagePortal)
+    def writeDataFile(self, filename, text, content_type, subdir=None):
         """ See IExportContext.
         """
         if subdir is not None:
-            filename = '/'.join( ( subdir, filename ) )
+            filename = '/'.join((subdir, filename))
 
         parents = filename.split('/')[:-1]
         while parents:
@@ -445,45 +444,46 @@ class TarballExportContext( BaseContext ):
                              "GS 1.7.0 changes for more")
         else:
             # Assume text is a an instance of a class like
-            # Products.Archetypes.WebDAVSupport.PdataStreamIterator, 
+            # Products.Archetypes.WebDAVSupport.PdataStreamIterator,
             # as in the case of ATFile
             stream = text.file
             info.size = text.size
         info.mtime = time.time()
-        self._archive.addfile( info, stream )
+        self._archive.addfile(info, stream)
 
-    security.declareProtected( ManagePortal, 'getArchive' )
-    def getArchive( self ):
+    @security.protected(ManagePortal)
+    def getArchive(self):
         """ Close the archive, and return it as a big string.
         """
         self._archive.close()
         return self._archive_stream.getvalue()
 
-    security.declareProtected( ManagePortal, 'getArchiveFilename' )
-    def getArchiveFilename( self ):
+    @security.protected(ManagePortal)
+    def getArchiveFilename(self):
         """ Close the archive, and return it as a big string.
         """
         return self._archive_filename
+
 
 InitializeClass(TarballExportContext)
 
 
 @implementer(IExportContext)
-class SnapshotExportContext( BaseContext ):
+class SnapshotExportContext(BaseContext):
 
     security = ClassSecurityInfo()
 
-    def __init__( self, tool, snapshot_id, encoding=None ):
+    def __init__(self, tool, snapshot_id, encoding=None):
 
-        BaseContext.__init__( self, tool, encoding )
+        BaseContext.__init__(self, tool, encoding)
         self._snapshot_id = snapshot_id
 
-    security.declareProtected( ManagePortal, 'writeDataFile' )
-    def writeDataFile( self, filename, text, content_type, subdir=None ):
+    @security.protected(ManagePortal)
+    def writeDataFile(self, filename, text, content_type, subdir=None):
         """ See IExportContext.
         """
         if subdir is not None:
-            filename = '/'.join( ( subdir, filename ) )
+            filename = '/'.join((subdir, filename))
 
         sep = filename.rfind('/')
         if sep != -1:
@@ -495,20 +495,20 @@ class SnapshotExportContext( BaseContext ):
                              "contains ascii. Please encode your data. See "
                              "GS 1.7.0 changes for more")
 
-        folder = self._ensureSnapshotsFolder( subdir )
+        folder = self._ensureSnapshotsFolder(subdir)
 
         # TODO: switch on content_type
-        ob = self._createObjectByType( filename, text, content_type )
-        folder._setObject( str( filename ), ob ) # No Unicode IDs!
+        ob = self._createObjectByType(filename, text, content_type)
+        folder._setObject(str(filename), ob)  # No Unicode IDs!
 
-    security.declareProtected( ManagePortal, 'getSnapshotURL' )
-    def getSnapshotURL( self ):
+    @security.protected(ManagePortal)
+    def getSnapshotURL(self):
         """ See IExportContext.
         """
-        return '%s/%s' % ( self._tool.absolute_url(), self._snapshot_id )
+        return '%s/%s' % (self._tool.absolute_url(), self._snapshot_id)
 
-    security.declareProtected( ManagePortal, 'getSnapshotFolder' )
-    def getSnapshotFolder( self ):
+    @security.protected(ManagePortal)
+    def getSnapshotFolder(self):
         """ See IExportContext.
         """
         return self._ensureSnapshotsFolder()
@@ -516,8 +516,8 @@ class SnapshotExportContext( BaseContext ):
     #
     #   Helper methods
     #
-    security.declarePrivate( '_createObjectByType' )
-    def _createObjectByType( self, name, body, content_type ):
+    @security.private
+    def _createObjectByType(self, name, body, content_type):
 
         if six.PY2 and isinstance(body, six.text_type):
             encoding = self.getEncoding()
@@ -528,36 +528,35 @@ class SnapshotExportContext( BaseContext ):
 
         if name.endswith('.py'):
 
-            ob = PythonScript( name )
-            ob.write( body )
+            ob = PythonScript(name)
+            ob.write(body)
 
         elif name.endswith('.dtml'):
 
-            ob = DTMLDocument( '', __name__=name )
-            ob.munge( body )
+            ob = DTMLDocument('', __name__=name)
+            ob.munge(body)
 
-        elif content_type in ('text/html', 'text/xml' ):
+        elif content_type in ('text/html', 'text/xml'):
 
-            ob = ZopePageTemplate( name, body
-                                 , content_type=content_type )
+            ob = ZopePageTemplate(name, body, content_type=content_type)
 
-        elif content_type[:6]=='image/':
+        elif content_type[:6] == 'image/':
 
-            ob=Image( name, '', body, content_type=content_type )
+            ob = Image(name, '', body, content_type=content_type)
 
         else:
-            ob=File( name, '', body, content_type=content_type )
+            ob = File(name, '', body, content_type=content_type)
 
         return ob
 
-    security.declarePrivate( '_ensureSnapshotsFolder' )
-    def _ensureSnapshotsFolder( self, subdir=None ):
+    @security.private
+    def _ensureSnapshotsFolder(self, subdir=None):
         """ Ensure that the appropriate snapshot folder exists.
         """
-        path = [ 'snapshots', self._snapshot_id ]
+        path = ['snapshots', self._snapshot_id]
 
         if subdir is not None:
-            path.extend( subdir.split( '/' ) )
+            path.extend(subdir.split('/'))
 
         current = self._tool
 
@@ -565,47 +564,42 @@ class SnapshotExportContext( BaseContext ):
 
             if element not in current.objectIds():
                 # No Unicode IDs!
-                current._setObject( str( element ), Folder( element ) )
+                current._setObject(str(element), Folder(element))
 
-            current = current._getOb( element )
+            current = current._getOb(element)
 
         return current
+
 
 InitializeClass(SnapshotExportContext)
 
 
 @implementer(IImportContext)
-class SnapshotImportContext( BaseContext ):
+class SnapshotImportContext(BaseContext):
 
     security = ClassSecurityInfo()
 
-    def __init__( self
-                , tool
-                , snapshot_id
-                , should_purge=False
-                , encoding=None
-                ):
-
-        BaseContext.__init__( self, tool, encoding )
+    def __init__(self, tool, snapshot_id, should_purge=False, encoding=None):
+        BaseContext.__init__(self, tool, encoding)
         self._snapshot_id = snapshot_id
         self._encoding = encoding
-        self._should_purge = bool( should_purge )
+        self._should_purge = bool(should_purge)
 
-    security.declareProtected( ManagePortal, 'readDataFile' )
-    def readDataFile( self, filename, subdir=None ):
+    @security.protected(ManagePortal)
+    def readDataFile(self, filename, subdir=None):
         """ See IImportContext.
         """
         if subdir is not None:
-            filename = '/'.join( ( subdir, filename ) )
+            filename = '/'.join((subdir, filename))
 
         sep = filename.rfind('/')
         if sep != -1:
             subdir = filename[:sep]
             filename = filename[sep+1:]
         try:
-            snapshot = self._getSnapshotFolder( subdir )
-            object = snapshot._getOb( filename )
-        except ( AttributeError, KeyError ):
+            snapshot = self._getSnapshotFolder(subdir)
+            object = snapshot._getOb(filename)
+        except (AttributeError, KeyError):
             return None
 
         if isinstance(object, File):
@@ -619,14 +613,14 @@ class SnapshotImportContext( BaseContext ):
             data = data.encode('utf-8')
         return data
 
-    security.declareProtected( ManagePortal, 'getLastModified' )
-    def getLastModified( self, path ):
+    @security.protected(ManagePortal)
+    def getLastModified(self, path):
         """ See IImportContext.
         """
         try:
             snapshot = self._getSnapshotFolder()
-            object = snapshot.restrictedTraverse( path )
-        except ( AttributeError, KeyError ):
+            object = snapshot.restrictedTraverse(path)
+        except (AttributeError, KeyError):
             return None
         else:
             mtime = getattr(object, '_p_mtime', None)
@@ -637,30 +631,30 @@ class SnapshotImportContext( BaseContext ):
                     return DateTime()
             return DateTime(mtime)
 
-    security.declareProtected( ManagePortal, 'isDirectory' )
-    def isDirectory( self, path ):
+    @security.protected(ManagePortal)
+    def isDirectory(self, path):
         """ See IImportContext.
         """
         try:
             snapshot = self._getSnapshotFolder()
-            object = snapshot.restrictedTraverse( str( path ) )
-        except ( AttributeError, KeyError ):
+            object = snapshot.restrictedTraverse(str(path))
+        except (AttributeError, KeyError):
             return None
         else:
-            folderish = getattr( object, 'isPrincipiaFolderish', False )
-            return bool( folderish )
+            folderish = getattr(object, 'isPrincipiaFolderish', False)
+            return bool(folderish)
 
-    security.declareProtected( ManagePortal, 'listDirectory' )
+    @security.protected(ManagePortal)
     def listDirectory(self, path, skip=(), skip_suffixes=()):
         """ See IImportContext.
         """
         try:
             snapshot = self._getSnapshotFolder()
-            subdir = snapshot.restrictedTraverse( path )
-        except ( AttributeError, KeyError ):
+            subdir = snapshot.restrictedTraverse(path)
+        except (AttributeError, KeyError):
             return None
         else:
-            if not getattr( subdir, 'isPrincipiaFolderish', False ):
+            if not getattr(subdir, 'isPrincipiaFolderish', False):
                 return None
 
             names = []
@@ -673,8 +667,8 @@ class SnapshotImportContext( BaseContext ):
 
             return names
 
-    security.declareProtected( ManagePortal, 'shouldPurge' )
-    def shouldPurge( self ):
+    @security.protected(ManagePortal)
+    def shouldPurge(self):
         """ See IImportContext.
         """
         return self._should_purge
@@ -682,15 +676,16 @@ class SnapshotImportContext( BaseContext ):
     #
     #   Helper methods
     #
-    security.declarePrivate( '_getSnapshotFolder' )
-    def _getSnapshotFolder( self, subdir=None ):
+    @security.private
+    def _getSnapshotFolder(self, subdir=None):
         """ Return the appropriate snapshot (sub)folder.
         """
-        path = [ 'snapshots', self._snapshot_id ]
+        path = ['snapshots', self._snapshot_id]
 
         if subdir is not None:
-            path.extend( subdir.split( '/' ) )
+            path.extend(subdir.split('/'))
 
-        return self._tool.restrictedTraverse( path )
+        return self._tool.restrictedTraverse(path)
+
 
 InitializeClass(SnapshotImportContext)

@@ -113,6 +113,7 @@ class UpgradeRegistry(object):
                 step = subs.get(step_id, None)
             return step
 
+
 _upgrade_registry = UpgradeRegistry()
 
 
@@ -175,7 +176,7 @@ class UpgradeDepends(UpgradeEntity):
                  import_steps=[], run_deps=False, purge=False, checker=None,
                  sortkey=0):
         super(UpgradeDepends, self).__init__(title, profile, source, dest,
-                                          desc, checker, sortkey)
+                                             desc, checker, sortkey)
         self.import_profile = import_profile
         self.import_steps = import_steps
         self.run_deps = run_deps
@@ -252,7 +253,7 @@ def listUpgradeSteps(tool, profile_id, source):
                 continue
             normsrc = normalize_version(step.source)
             res.append(((normsrc, step.sortkey, info['proposed']), info))
-        else: # nested steps
+        else:  # nested steps
             nested = []
             outer_proposed = False
             for inner_id, inner_step in step:

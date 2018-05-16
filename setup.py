@@ -13,6 +13,7 @@ def _package_doc(name):
     with open(os.path.join(package, name)) as f:
         return f.read()
 
+
 with open('README.rst') as f:
     README = f.read()
 

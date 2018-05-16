@@ -17,6 +17,10 @@ from OFS.PropertyManager import PropertyManager
 from OFS.SimpleItem import SimpleItem
 from zope.interface import implementer
 
+from Products.GenericSetup.interfaces import ICSVAware
+from Products.GenericSetup.interfaces import IDAVAware
+from Products.GenericSetup.interfaces import IINIAware
+
 
 class TestSimpleItem(SimpleItem):
     pass
@@ -25,12 +29,11 @@ class TestSimpleItem(SimpleItem):
 class TestSimpleItemWithProperties(SimpleItem, PropertyManager):
     pass
 
+
 KNOWN_CSV = """\
 one,two,three
 four,five,six
 """
-
-from Products.GenericSetup.interfaces import ICSVAware
 
 
 @implementer(ICSVAware)
@@ -44,13 +47,12 @@ class TestCSVAware(SimpleItem):
     def put_csv(self, text):
         self._was_put = text
 
+
 KNOWN_INI = """\
 [DEFAULT]
 title = %s
 description = %s
 """
-
-from Products.GenericSetup.interfaces import IINIAware
 
 
 @implementer(IINIAware)
@@ -65,14 +67,13 @@ class TestINIAware(SimpleItem):
     def put_ini(self, text):
         self._was_put = text
 
+
 KNOWN_DAV = """\
 Title: %s
 Description: %s
 
 %s
 """
-
-from Products.GenericSetup.interfaces import IDAVAware
 
 
 @implementer(IDAVAware)
