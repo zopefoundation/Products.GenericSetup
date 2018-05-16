@@ -132,6 +132,42 @@ _NORMAL_PROPERTY_EXPORT = u"""\
 </dummy>
 """.encode('utf-8')
 
+_NORMAL_PROPERTY_EXPORT_ISO_8859_1 = u"""\
+<?xml version="1.0" encoding="iso-8859-1"?>
+<dummy>
+ <property name="foo_boolean" type="boolean">True</property>
+ <property name="foo_date" type="date">2000/01/01 00:00:00 UTC</property>
+ <property name="foo_float" type="float">1.1</property>
+ <property name="foo_int" type="int">1</property>
+ <property name="foo_lines" type="lines">
+  <element value="Foo"/>
+  <element value="Lines"/>
+  <element value="\xfcbrigens"/>
+ </property>
+ <property name="foo_long" type="long">1</property>
+ <property name="foo_string" type="string">Foo String</property>
+ <property name="foo_text" type="text">Foo
+  Text</property>
+ <property name="foo_tokens" type="tokens">
+  <element value="Foo"/>
+  <element value="Tokens"/>
+ </property>
+ <property name="foo_selection" select_variable="foobarbaz"
+    type="selection">Foo</property>
+ <property name="foo_mselection" select_variable="foobarbaz"
+    type="multiple selection">
+  <element value="Foo"/>
+  <element value="Baz"/>
+ </property>
+ <property name="foo_boolean0" type="boolean">False</property>
+ <property name="foo_date_naive" type="date">2000/01/01 00:00:00</property>
+ <property name="foo_boolean_nodel">True</property>
+ <property name="foo_date_nodel">2000/01/01 00:00:00 UTC</property>
+ <property name="foo_float_nodel">3.1415</property>
+ <property name="foo_int_nodel">1789</property>
+</dummy>
+""".encode('iso-8859-1')
+
 _NORMAL_PROPERTY_EXPORT_OLD = b"""\
 <?xml version="1.0"?>
 <dummy>
@@ -530,6 +566,24 @@ class PropertyManagerHelpersTests(unittest.TestCase):
         helpers = self._makeOne()
         obj = self._getReal(helpers.context)
         node = _getDocumentElement(_NORMAL_PROPERTY_EXPORT_OLD)
+        helpers._initProperties(node)
+        self.assertEqual(type(obj.foo_int), int)
+        self.assertEqual(type(obj.foo_string), str)
+        self.assertEqual(type(obj.foo_tokens), tuple)
+        self.assertEqual(type(obj.foo_tokens[0]), six.binary_type)
+
+        doc = helpers._doc = PrettyDocument()
+        node = doc.createElement('dummy')
+        node.appendChild(helpers._extractProperties())
+        doc.appendChild(node)
+
+        self.assertEqual(doc.toprettyxml(' '), _NORMAL_PROPERTY_EXPORT)
+
+    def test__initProperties_normal_iso_8859_1(self):
+        from Products.GenericSetup.utils import PrettyDocument
+        helpers = self._makeOne()
+        obj = self._getReal(helpers.context)
+        node = _getDocumentElement(_NORMAL_PROPERTY_EXPORT_ISO_8859_1)
         helpers._initProperties(node)
         self.assertEqual(type(obj.foo_int), int)
         self.assertEqual(type(obj.foo_string), str)
