@@ -803,7 +803,12 @@ class PropertyManagerHelpers(object):
                     if self._encoding != default_encoding:
                         u_prop_value = prop_value.decode(self._encoding)
                         prop_value = u_prop_value.encode(default_encoding)
-                    prop_value = type_converters[prop_type](prop_value)
+                        prop_value = type_converters[prop_type](prop_value)
+                        if six.PY2:
+                            u_prop_value = prop_value.decode(default_encoding)
+                            prop_value = u_prop_value.encode(self._encoding)
+                    else:
+                        prop_value = type_converters[prop_type](prop_value)
             obj._updateProperty(prop_id, prop_value)
 
 
