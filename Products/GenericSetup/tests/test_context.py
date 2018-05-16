@@ -223,7 +223,7 @@ class DirectoryImportContextTests(FilesystemTestBase, ConformsToISetupContext, C
         self._makeFile(FILENAME, printable_bytes)
 
         self.assertEqual(len(ctx.listDirectory(None)), 1)
-        self.failUnless(FILENAME in ctx.listDirectory(None))
+        self.assertTrue(FILENAME in ctx.listDirectory(None))
 
     def test_listDirectory_simple(self):
 
@@ -257,7 +257,7 @@ class DirectoryImportContextTests(FilesystemTestBase, ConformsToISetupContext, C
 
         names = ctx.listDirectory(SUBDIR)
         self.assertEqual(len(names), 1)
-        self.failUnless('nested.txt' in names)
+        self.assertTrue('nested.txt' in names)
 
     def test_listDirectory_multiple(self):
 
@@ -271,8 +271,8 @@ class DirectoryImportContextTests(FilesystemTestBase, ConformsToISetupContext, C
 
         names = ctx.listDirectory(SUBDIR)
         self.assertEqual(len(names), 2)
-        self.failUnless('nested.txt' in names)
-        self.failUnless('another.txt' in names)
+        self.assertTrue('nested.txt' in names)
+        self.assertTrue('another.txt' in names)
 
     def test_listDirectory_skip_implicit(self):
 
@@ -289,11 +289,11 @@ class DirectoryImportContextTests(FilesystemTestBase, ConformsToISetupContext, C
 
         names = ctx.listDirectory(SUBDIR)
         self.assertEqual(len(names), 2)
-        self.failUnless('nested.txt' in names)
-        self.failUnless('another.txt' in names)
-        self.failIf('another.txt~' in names)
-        self.failIf('CVS' in names)
-        self.failIf('.svn' in names)
+        self.assertTrue('nested.txt' in names)
+        self.assertTrue('another.txt' in names)
+        self.assertFalse('another.txt~' in names)
+        self.assertFalse('CVS' in names)
+        self.assertFalse('.svn' in names)
 
     def test_listDirectory_skip_explicit(self):
 
@@ -311,11 +311,11 @@ class DirectoryImportContextTests(FilesystemTestBase, ConformsToISetupContext, C
         names = ctx.listDirectory(SUBDIR, skip=('nested.txt',),
                                   skip_suffixes=('.bak',))
         self.assertEqual(len(names), 3)
-        self.failIf('nested.txt' in names)
-        self.failIf('nested.bak' in names)
-        self.failUnless('another.txt' in names)
-        self.failUnless('CVS' in names)
-        self.failUnless('.svn' in names)
+        self.assertFalse('nested.txt' in names)
+        self.assertFalse('nested.bak' in names)
+        self.assertTrue('another.txt' in names)
+        self.assertTrue('CVS' in names)
+        self.assertTrue('.svn' in names)
 
 
 class DirectoryExportContextTests(FilesystemTestBase, ConformsToISetupContext, ConformsToIExportContext, ConformsToIChunkableExportContext
@@ -356,7 +356,8 @@ class DirectoryExportContextTests(FilesystemTestBase, ConformsToISetupContext, C
 
         ctx.writeDataFile(FILENAME, digits_bytes, 'text/plain')
 
-        self.assertEqual(open(fqname, 'rb').read(), digits_bytes)
+        with open(fqname, 'rb') as fp:
+            self.assertEqual(fp.read(), digits_bytes)
 
     def test_writeDataFile_unicode(self):
 
@@ -384,7 +385,8 @@ class DirectoryExportContextTests(FilesystemTestBase, ConformsToISetupContext, C
 
         ctx.writeDataFile(FILENAME, digits_bytes, 'text/plain', SUBDIR)
 
-        self.assertEqual(open(fqname, 'rb').read(), digits_bytes)
+        with open(fqname, 'rb') as fp:
+            self.assertEqual(fp.read(), digits_bytes)
 
     def test_writeDataFile_overwrite(self):
 
@@ -397,7 +399,8 @@ class DirectoryExportContextTests(FilesystemTestBase, ConformsToISetupContext, C
 
         ctx.writeDataFile(FILENAME, digits_bytes, 'text/plain', SUBDIR)
 
-        self.assertEqual(open(fqname, 'rb').read(), digits_bytes)
+        with open(fqname, 'rb') as fp:
+            self.assertEqual(fp.read(), digits_bytes)
 
     def test_writeDataFile_existing_subdir(self):
 
@@ -411,7 +414,8 @@ class DirectoryExportContextTests(FilesystemTestBase, ConformsToISetupContext, C
 
         ctx.writeDataFile(FILENAME, digits_bytes, 'text/plain', SUBDIR)
 
-        self.assertEqual(open(fqname, 'rb').read(), digits_bytes)
+        with open(fqname, 'rb') as fp:
+            self.assertEqual(fp.read(), digits_bytes)
 
 
 class TarballImportContextTests(ZopeTestCase, ConformsToISetupContext,
@@ -626,7 +630,7 @@ class TarballImportContextTests(ZopeTestCase, ConformsToISetupContext,
         site, tool, ctx = self._makeOne({FILENAME: printable_bytes})
 
         self.assertEqual(len(ctx.listDirectory(None)), 1)
-        self.failUnless(FILENAME in ctx.listDirectory(None))
+        self.assertTrue(FILENAME in ctx.listDirectory(None))
 
     def test_listDirectory_simple(self):
 
@@ -656,7 +660,7 @@ class TarballImportContextTests(ZopeTestCase, ConformsToISetupContext,
 
         names = ctx.listDirectory(SUBDIR)
         self.assertEqual(len(names), 1)
-        self.failUnless(FILENAME in names)
+        self.assertTrue(FILENAME in names)
 
     def test_listDirectory_multiple(self):
 
@@ -673,8 +677,8 @@ class TarballImportContextTests(ZopeTestCase, ConformsToISetupContext,
 
         names = ctx.listDirectory(SUBDIR)
         self.assertEqual(len(names), 2)
-        self.failUnless(FILENAME1 in names)
-        self.failUnless(FILENAME2 in names)
+        self.assertTrue(FILENAME1 in names)
+        self.assertTrue(FILENAME2 in names)
 
     def test_listDirectory_skip(self):
 
@@ -695,9 +699,9 @@ class TarballImportContextTests(ZopeTestCase, ConformsToISetupContext,
         names = ctx.listDirectory(SUBDIR, skip=(FILENAME1,),
                                   skip_suffixes=('.bak',))
         self.assertEqual(len(names), 1)
-        self.failIf(FILENAME1 in names)
-        self.failUnless(FILENAME2 in names)
-        self.failIf(FILENAME3 in names)
+        self.assertFalse(FILENAME1 in names)
+        self.assertTrue(FILENAME2 in names)
+        self.assertFalse(FILENAME3 in names)
 
 
 class TarballExportContextTests(ZopeTestCase, ConformsToISetupContext,
@@ -855,7 +859,7 @@ class SnapshotExportContextTests(ZopeTestCase, ConformsToISetupContext,
         snapshot = tool.snapshots._getOb('simple')
 
         self.assertEqual(len(snapshot.objectIds()), 1)
-        self.failUnless(FILENAME in snapshot.objectIds())
+        self.assertTrue(FILENAME in snapshot.objectIds())
 
         fileobj = snapshot._getOb(FILENAME)
 
@@ -879,7 +883,7 @@ class SnapshotExportContextTests(ZopeTestCase, ConformsToISetupContext,
         snapshot = tool.snapshots._getOb('simple')
 
         self.assertEqual(len(snapshot.objectIds()), 1)
-        self.failUnless(FILENAME in snapshot.objectIds())
+        self.assertTrue(FILENAME in snapshot.objectIds())
 
         fileobj = snapshot._getOb(FILENAME)
 
@@ -921,14 +925,14 @@ class SnapshotExportContextTests(ZopeTestCase, ConformsToISetupContext,
         snapshot = tool.snapshots._getOb('simple')
 
         self.assertEqual(len(snapshot.objectIds()), 1)
-        self.failUnless(FILENAME in snapshot.objectIds())
+        self.assertTrue(FILENAME in snapshot.objectIds())
 
         template = snapshot._getOb(FILENAME)
 
         self.assertEqual(template.getId(), FILENAME)
         self.assertEqual(template.meta_type, ZopePageTemplate.meta_type)
         self.assertEqual(template.read(), _XML)
-        self.failIf(template.html())
+        self.assertFalse(template.html())
 
     def test_writeDataFile_subdir_dtml(self):
 
@@ -948,7 +952,7 @@ class SnapshotExportContextTests(ZopeTestCase, ConformsToISetupContext,
         sub1 = snapshot._getOb('sub1')
 
         self.assertEqual(len(sub1.objectIds()), 1)
-        self.failUnless(FILENAME in sub1.objectIds())
+        self.assertTrue(FILENAME in sub1.objectIds())
 
         template = sub1._getOb(FILENAME)
 
@@ -978,14 +982,14 @@ class SnapshotExportContextTests(ZopeTestCase, ConformsToISetupContext,
         sub2 = sub1._getOb('sub2')
 
         self.assertEqual(len(sub2.objectIds()), 1)
-        self.failUnless(FILENAME in sub2.objectIds())
+        self.assertTrue(FILENAME in sub2.objectIds())
 
         template = sub2._getOb(FILENAME)
 
         self.assertEqual(template.getId(), FILENAME)
         self.assertEqual(template.meta_type, ZopePageTemplate.meta_type)
         self.assertEqual(template.read(), _HTML)
-        self.failUnless(template.html())
+        self.assertTrue(template.html())
 
     def test_writeDataFile_multiple(self):
 
@@ -1002,7 +1006,7 @@ class SnapshotExportContextTests(ZopeTestCase, ConformsToISetupContext,
         self.assertEqual(len(snapshot.objectIds()), 2)
 
         for id in ['foo.txt', 'bar.txt']:
-            self.failUnless(id in snapshot.objectIds())
+            self.assertTrue(id in snapshot.objectIds())
 
 
 class SnapshotImportContextTests(ZopeTestCase, ConformsToISetupContext,
@@ -1247,7 +1251,7 @@ class SnapshotImportContextTests(ZopeTestCase, ConformsToISetupContext,
         self._makeFile(tool, SNAPSHOT_ID, FILENAME, printable_bytes)
 
         self.assertEqual(len(ctx.listDirectory(None)), 1)
-        self.failUnless(FILENAME in ctx.listDirectory(None))
+        self.assertTrue(FILENAME in ctx.listDirectory(None))
 
     def test_listDirectory_simple(self):
 
@@ -1282,7 +1286,7 @@ class SnapshotImportContextTests(ZopeTestCase, ConformsToISetupContext,
 
         names = ctx.listDirectory(SUBDIR)
         self.assertEqual(len(names), 1)
-        self.failUnless(FILENAME in names)
+        self.assertTrue(FILENAME in names)
 
     def test_listDirectory_multiple(self):
 
@@ -1300,8 +1304,8 @@ class SnapshotImportContextTests(ZopeTestCase, ConformsToISetupContext,
 
         names = ctx.listDirectory(SUBDIR)
         self.assertEqual(len(names), 2)
-        self.failUnless(FILENAME1 in names)
-        self.failUnless(FILENAME2 in names)
+        self.assertTrue(FILENAME1 in names)
+        self.assertTrue(FILENAME2 in names)
 
     def test_listDirectory_skip(self):
 
@@ -1322,9 +1326,9 @@ class SnapshotImportContextTests(ZopeTestCase, ConformsToISetupContext,
         names = ctx.listDirectory(SUBDIR, skip=(FILENAME1,),
                                   skip_suffixes=('.bak',))
         self.assertEqual(len(names), 1)
-        self.failIf(FILENAME1 in names)
-        self.failUnless(FILENAME2 in names)
-        self.failIf(FILENAME3 in names)
+        self.assertFalse(FILENAME1 in names)
+        self.assertTrue(FILENAME2 in names)
+        self.assertFalse(FILENAME3 in names)
 
 
 def test_suite():

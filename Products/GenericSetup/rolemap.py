@@ -13,9 +13,9 @@
 """ GenericSetup:  Role-permission export / import
 """
 
+from AccessControl.class_init import InitializeClass
 from AccessControl.Permission import Permission
 from AccessControl.SecurityInfo import ClassSecurityInfo
-from App.class_init import InitializeClass
 from Products.PageTemplates.PageTemplateFile import PageTemplateFile
 
 from Products.GenericSetup.permissions import ManagePortal

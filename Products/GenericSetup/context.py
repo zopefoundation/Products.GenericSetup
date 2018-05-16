@@ -24,13 +24,13 @@ from tarfile import DIRTYPE
 from tarfile import TarFile
 from tarfile import TarInfo
 
+from AccessControl.class_init import InitializeClass
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from Acquisition import aq_base
 from Acquisition import aq_inner
 from Acquisition import aq_parent
 from Acquisition import aq_self
 from Acquisition import Implicit
-from App.class_init import InitializeClass
 from DateTime.DateTime import DateTime
 from OFS.DTMLDocument import DTMLDocument
 from OFS.Folder import Folder

@@ -21,9 +21,9 @@ import types
 from cgi import escape
 from operator import itemgetter
 
+from AccessControl.class_init import InitializeClass
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from Acquisition import aq_base
-from App.class_init import InitializeClass
 from OFS.Folder import Folder
 from OFS.Image import File
 from Products.PageTemplates.PageTemplateFile import PageTemplateFile
@@ -1077,7 +1077,7 @@ class SetupTool(Folder):
         profile is unknown) we do nothing.
         """
         if self.getLastVersionForProfile(profile_id) == UNKNOWN:
-            generic_logger.warn('Version of profile %s is unknown, '
+            generic_logger.warning('Version of profile %s is unknown, '
                                 'refusing to upgrade.', profile_id)
             return
         if dest is not None:
@@ -1085,7 +1085,7 @@ class SetupTool(Folder):
             if isinstance(dest, six.string_types):
                 dest = tuple(dest.split('.'))
             if self.getLastVersionForProfile(profile_id) == dest:
-                generic_logger.warn('Profile %s is already at wanted '
+                generic_logger.warning('Profile %s is already at wanted '
                                     'destination %r.', profile_id, dest)
                 return
         upgrades = self.listUpgrades(profile_id)
@@ -1108,7 +1108,7 @@ class SetupTool(Folder):
             if dest_found:
                 break
         if dest is not None and not dest_found:
-            generic_logger.warn(
+            generic_logger.warning(
                 'No route found to destination version %r for profile %s. '
                 'Profile stays at current version, %r', dest, profile_id,
                 self.getLastVersionForProfile(profile_id))

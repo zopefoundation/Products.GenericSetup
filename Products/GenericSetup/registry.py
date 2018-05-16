@@ -16,9 +16,9 @@
 from xml.sax import parseString
 from xml.sax.handler import ContentHandler
 
+from AccessControl.class_init import InitializeClass
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from Acquisition import Implicit
-from App.class_init import InitializeClass
 from Products.PageTemplates.PageTemplateFile import PageTemplateFile
 from zope.interface import implementer
 from zope.component import getGlobalSiteManager
@@ -758,8 +758,8 @@ class ProfileRegistry(Implicit):
             # If it is the same, we can safely accept it.
             # This may happen during tests.
             if info == existing_info:
-                logger.warn('Duplicate profile ID with same info ignored: %s'
-                            % profile_id)
+                logger.warning('Duplicate profile ID with same info ignored: %s'
+                               % profile_id)
                 return
             raise KeyError('Duplicate profile ID: %s' % profile_id)
 

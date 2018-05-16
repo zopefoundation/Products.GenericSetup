@@ -53,11 +53,11 @@ class ProfileMetadata( ImportConfiguratorBase ):
         if not os.path.exists( full_path ):
             return {}
 
-        file = open( full_path, 'r' )
-        try:
-            return self.parseXML( file.read() )
-        except ExpatError as e:
-            raise ExpatError('%s: %s' % (full_path, e))
+        with open(full_path, 'r') as fp:
+            try:
+                return self.parseXML( fp.read() )
+            except ExpatError as e:
+                raise ExpatError('%s: %s' % (full_path, e))
 
     def _getImportMapping( self ):
 

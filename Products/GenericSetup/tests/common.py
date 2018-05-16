@@ -131,7 +131,7 @@ class TarballTester(DOMComparator):
 
         if when is not None:
             for tarinfo in tarfile:
-                self.failIf(tarinfo.mtime < when)
+                self.assertFalse(tarinfo.mtime < when)
 
     def _verifyTarballEntry(self, fileish, entry_name, data):
 

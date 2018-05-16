@@ -88,10 +88,10 @@ class ImportStepRegistryTests(
         self.assertEqual(registry.getStep('nonesuch'), None)
         self.assertEqual(registry.getStep('nonesuch'), None)
         default = object()
-        self.failUnless(registry.getStepMetadata(
+        self.assertTrue(registry.getStepMetadata(
             'nonesuch', default) is default)
-        self.failUnless(registry.getStep('nonesuch', default) is default)
-        self.failUnless(registry.getStepMetadata(
+        self.assertTrue(registry.getStep('nonesuch', default) is default)
+        self.assertTrue(registry.getStepMetadata(
             'nonesuch', default) is default)
 
     def test_getStep_defaulted(self):
@@ -99,7 +99,7 @@ class ImportStepRegistryTests(
         registry = self._makeOne()
         default = object()
 
-        self.failUnless(registry.getStep('nonesuch', default) is default)
+        self.assertTrue(registry.getStep('nonesuch', default) is default)
         self.assertEqual(registry.getStepMetadata('nonesuch', {}), {})
 
     def test_registerStep_docstring(self):
@@ -140,7 +140,7 @@ class ImportStepRegistryTests(
 
         steps = registry.listSteps()
         self.assertEqual(len(steps), 1)
-        self.failUnless('one' in steps)
+        self.assertTrue('one' in steps)
         self.assertEqual(registry.getStep('one'), ONE_FUNC)
 
         info = registry.getStepMetadata('one')
@@ -203,9 +203,9 @@ class ImportStepRegistryTests(
 
         steps = registry.listSteps()
         self.assertEqual(len(steps), 3)
-        self.failUnless('one' in steps)
-        self.failUnless('two' in steps)
-        self.failUnless('three' in steps)
+        self.assertTrue('one' in steps)
+        self.assertTrue('two' in steps)
+        self.assertTrue('three' in steps)
 
     def test_sortStep_simple(self):
 
@@ -222,7 +222,7 @@ class ImportStepRegistryTests(
         one = steps.index('one')
         two = steps.index('two')
 
-        self.failUnless(0 <= two < one)
+        self.assertTrue(0 <= two < one)
 
     def test_sortStep_chained(self):
 
@@ -243,7 +243,7 @@ class ImportStepRegistryTests(
         two = steps.index('two')
         three = steps.index('three')
 
-        self.failUnless(0 <= three < one < two)
+        self.assertTrue(0 <= three < one < two)
 
     def test_sortStep_complex(self):
 
@@ -269,8 +269,8 @@ class ImportStepRegistryTests(
         three = steps.index('three')
         four = steps.index('four')
 
-        self.failUnless(0 <= four < two < one)
-        self.failUnless(0 <= four < three)
+        self.assertTrue(0 <= four < two < one)
+        self.assertTrue(0 <= four < three)
 
     def test_sortStep_equivalence(self):
 
@@ -297,8 +297,8 @@ class ImportStepRegistryTests(
         three = steps.index('three')
         four = steps.index('four')
 
-        self.failUnless(0 <= four < two < one)
-        self.failUnless(0 <= four < three < one)
+        self.assertTrue(0 <= four < two < one)
+        self.assertTrue(0 <= four < three < one)
 
     def test_checkComplete_simple(self):
 
@@ -309,7 +309,7 @@ class ImportStepRegistryTests(
 
         incomplete = registry.checkComplete()
         self.assertEqual(len(incomplete), 1)
-        self.failUnless(('one', 'two') in incomplete)
+        self.assertTrue(('one', 'two') in incomplete)
 
         registry.registerStep(id='two', version='2', handler=TWO_FUNC,
                               dependencies=())
@@ -325,8 +325,8 @@ class ImportStepRegistryTests(
 
         incomplete = registry.checkComplete()
         self.assertEqual(len(incomplete), 2)
-        self.failUnless(('one', 'two') in incomplete)
-        self.failUnless(('one', 'three') in incomplete)
+        self.assertTrue(('one', 'two') in incomplete)
+        self.assertTrue(('one', 'three') in incomplete)
 
         registry.registerStep(id='two', version='2', handler=TWO_FUNC,
                               dependencies=())
@@ -408,7 +408,7 @@ class ImportStepRegistryTests(
         self.assertEqual(info['handler'], ONE_FUNC_NAME)
         self.assertEqual(info['dependencies'], ())
         self.assertEqual(info['title'], 'One Step')
-        self.failUnless('One small step' in info['description'])
+        self.assertTrue('One small step' in info['description'])
 
 
 _EMPTY_IMPORT_XML = """\
@@ -607,7 +607,7 @@ class ExportStepRegistryTests(
         self.assertEqual(info['id'], 'one')
         self.assertEqual(info['handler'], ONE_FUNC_NAME)
         self.assertEqual(info['title'], 'One Step')
-        self.failUnless('One small step' in info['description'])
+        self.assertTrue('One small step' in info['description'])
 
     def test_parseXML_single_as_ascii(self):
 
@@ -625,7 +625,7 @@ class ExportStepRegistryTests(
         self.assertEqual(info['id'], 'one')
         self.assertEqual(info['handler'], ONE_FUNC_NAME)
         self.assertEqual(info['title'], 'One Step')
-        self.failUnless('One small step' in info['description'])
+        self.assertTrue('One small step' in info['description'])
 
 
 _EMPTY_EXPORT_XML = """\
@@ -715,7 +715,7 @@ class ToolsetRegistryTests(BaseRegistryTests, ConformsToIToolsetRegistry
             len(configurator.listForbiddenTools()), len(VERBOTTEN))
 
         for verbotten in configurator.listForbiddenTools():
-            self.failUnless(verbotten in VERBOTTEN)
+            self.assertTrue(verbotten in VERBOTTEN)
 
     def test_addForbiddenTool_duplicate(self):
 
@@ -757,7 +757,7 @@ class ToolsetRegistryTests(BaseRegistryTests, ConformsToIToolsetRegistry
         self.assertEqual(len(configurator.listRequiredTools()), len(REQUIRED))
 
         for id in [x[0] for x in REQUIRED]:
-            self.failUnless(id in configurator.listRequiredTools())
+            self.assertTrue(id in configurator.listRequiredTools())
 
         self.assertEqual(
             len(configurator.listRequiredToolInfo()), len(REQUIRED))
@@ -828,15 +828,15 @@ class ToolsetRegistryTests(BaseRegistryTests, ConformsToIToolsetRegistry
         configurator.parseXML(_NORMAL_TOOLSET_XML)
 
         self.assertEqual(len(configurator.listForbiddenTools()), 1)
-        self.failUnless('doomed' in configurator.listForbiddenTools())
+        self.assertTrue('doomed' in configurator.listForbiddenTools())
 
         self.assertEqual(len(configurator.listRequiredTools()), 2)
 
-        self.failUnless('mandatory' in configurator.listRequiredTools())
+        self.assertTrue('mandatory' in configurator.listRequiredTools())
         info = configurator.getRequiredToolInfo('mandatory')
         self.assertEqual(info['class'], 'path.to.one')
 
-        self.failUnless('obligatory' in configurator.listRequiredTools())
+        self.assertTrue('obligatory' in configurator.listRequiredTools())
         info = configurator.getRequiredToolInfo('obligatory')
         self.assertEqual(info['class'], 'path.to.another')
 

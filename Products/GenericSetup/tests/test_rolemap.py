@@ -86,7 +86,7 @@ class RolemapExportConfiguratorTests(BaseRegistryTests):
         info = configurator.listPermissions()[0]
         self.assertEqual(info['name'], ACI)
         self.assertEqual(info['roles'], ROLES)
-        self.failUnless(info['acquire'])
+        self.assertTrue(info['acquire'])
 
     def test_listPermissions_no_acquire(self):
 
@@ -101,7 +101,7 @@ class RolemapExportConfiguratorTests(BaseRegistryTests):
         info = configurator.listPermissions()[0]
         self.assertEqual(info['name'], ACI)
         self.assertEqual(info['roles'], ROLES)
-        self.failIf(info['acquire'])
+        self.assertFalse(info['acquire'])
 
     def test_generateXML_empty(self):
 
@@ -190,11 +190,11 @@ class RolemapImportConfiguratorTests(BaseRegistryTests):
         roles = rolemap_info['roles']
 
         self.assertEqual(len(roles), 5)
-        self.failUnless('Anonymous' in roles)
-        self.failUnless('Authenticated' in roles)
-        self.failUnless('Manager' in roles)
-        self.failUnless('Owner' in roles)
-        self.failUnless('ZZZ' in roles)
+        self.assertTrue('Anonymous' in roles)
+        self.assertTrue('Authenticated' in roles)
+        self.assertTrue('Manager' in roles)
+        self.assertTrue('Owner' in roles)
+        self.assertTrue('ZZZ' in roles)
 
     def test_parseXML_acquired_permission(self):
 
@@ -210,12 +210,12 @@ class RolemapImportConfiguratorTests(BaseRegistryTests):
         permission = rolemap_info['permissions'][0]
 
         self.assertEqual(permission['name'], ACI)
-        self.failUnless(permission['acquire'])
+        self.assertTrue(permission['acquire'])
 
         p_roles = permission['roles']
         self.assertEqual(len(p_roles), 2)
-        self.failUnless('Manager' in p_roles)
-        self.failUnless('Owner' in p_roles)
+        self.assertTrue('Manager' in p_roles)
+        self.assertTrue('Owner' in p_roles)
 
     def test_parseXML_unacquired_permission(self):
 
@@ -231,12 +231,12 @@ class RolemapImportConfiguratorTests(BaseRegistryTests):
         permission = rolemap_info['permissions'][0]
 
         self.assertEqual(permission['name'], ACI)
-        self.failIf(permission['acquire'])
+        self.assertFalse(permission['acquire'])
 
         p_roles = permission['roles']
         self.assertEqual(len(p_roles), 2)
-        self.failUnless('Manager' in p_roles)
-        self.failUnless('Owner' in p_roles)
+        self.assertTrue('Manager' in p_roles)
+        self.assertTrue('Owner' in p_roles)
 
     def test_parseXML_unacquired_permission_added_role(self):
 
@@ -250,23 +250,23 @@ class RolemapImportConfiguratorTests(BaseRegistryTests):
         roles = rolemap_info['roles']
 
         self.assertEqual(len(roles), 5)
-        self.failUnless('Anonymous' in roles)
-        self.failUnless('Authenticated' in roles)
-        self.failUnless('Manager' in roles)
-        self.failUnless('Owner' in roles)
-        self.failUnless('ZZZ' in roles)
+        self.assertTrue('Anonymous' in roles)
+        self.assertTrue('Authenticated' in roles)
+        self.assertTrue('Manager' in roles)
+        self.assertTrue('Owner' in roles)
+        self.assertTrue('ZZZ' in roles)
 
         self.assertEqual(len(rolemap_info['permissions']), 1)
         permission = rolemap_info['permissions'][0]
 
         self.assertEqual(permission['name'], ACI)
-        self.failIf(permission['acquire'])
+        self.assertFalse(permission['acquire'])
 
         p_roles = permission['roles']
         self.assertEqual(len(p_roles), 3)
-        self.failUnless('Manager' in p_roles)
-        self.failUnless('Owner' in p_roles)
-        self.failUnless('ZZZ' in p_roles)
+        self.assertTrue('Manager' in p_roles)
+        self.assertTrue('Owner' in p_roles)
+        self.assertTrue('ZZZ' in p_roles)
 
 
 _EMPTY_EXPORT = """\
@@ -585,8 +585,8 @@ class Test_importRolemap(BaseRegistryTests):
 
         self.assertEqual(existing_allowed, [])
 
-        self.failIf(site.acquiredRolesAreUsedBy(ACI))
-        self.failIf(site.acquiredRolesAreUsedBy(VIEW))
+        self.assertFalse(site.acquiredRolesAreUsedBy(ACI))
+        self.assertFalse(site.acquiredRolesAreUsedBy(VIEW))
 
         context = DummyImportContext(site, True)
         context._files['rolemap.xml'] = _ACQUIRED_EXPORT
@@ -601,8 +601,8 @@ class Test_importRolemap(BaseRegistryTests):
         self.assertEqual(new_allowed, ['Manager', 'Owner'])
 
         # ACI is overwritten by XML, but VIEW was purged
-        self.failUnless(site.acquiredRolesAreUsedBy(ACI))
-        self.failUnless(site.acquiredRolesAreUsedBy(VIEW))
+        self.assertTrue(site.acquiredRolesAreUsedBy(ACI))
+        self.assertTrue(site.acquiredRolesAreUsedBy(VIEW))
 
     def test_acquired_permission_no_purge(self):
 
@@ -620,7 +620,7 @@ class Test_importRolemap(BaseRegistryTests):
 
         self.assertEqual(existing_allowed, [])
 
-        self.failIf(site.acquiredRolesAreUsedBy(ACI))
+        self.assertFalse(site.acquiredRolesAreUsedBy(ACI))
 
         context = DummyImportContext(site, False)
         context._files['rolemap.xml'] = _ACQUIRED_EXPORT
@@ -635,8 +635,8 @@ class Test_importRolemap(BaseRegistryTests):
         self.assertEqual(new_allowed, ['Manager', 'Owner'])
 
         # ACI is overwritten by XML, but VIEW is not
-        self.failUnless(site.acquiredRolesAreUsedBy(ACI))
-        self.failIf(site.acquiredRolesAreUsedBy(VIEW))
+        self.assertTrue(site.acquiredRolesAreUsedBy(ACI))
+        self.assertFalse(site.acquiredRolesAreUsedBy(VIEW))
 
     def test_unacquired_permission_explicit_purge(self):
 
@@ -653,8 +653,8 @@ class Test_importRolemap(BaseRegistryTests):
 
         self.assertEqual(existing_allowed, ['Manager'])
 
-        self.failUnless(site.acquiredRolesAreUsedBy(ACI))
-        self.failIf(site.acquiredRolesAreUsedBy(VIEW))
+        self.assertTrue(site.acquiredRolesAreUsedBy(ACI))
+        self.assertFalse(site.acquiredRolesAreUsedBy(VIEW))
 
         context = DummyImportContext(site, True)
         context._files['rolemap.xml'] = _UNACQUIRED_EXPORT
@@ -668,8 +668,8 @@ class Test_importRolemap(BaseRegistryTests):
 
         self.assertEqual(new_allowed, ['Manager', 'Owner'])
 
-        self.failIf(site.acquiredRolesAreUsedBy(ACI))
-        self.failUnless(site.acquiredRolesAreUsedBy(VIEW))
+        self.assertFalse(site.acquiredRolesAreUsedBy(ACI))
+        self.assertTrue(site.acquiredRolesAreUsedBy(VIEW))
 
     def test_unacquired_permission_skip_purge(self):
 
@@ -686,8 +686,8 @@ class Test_importRolemap(BaseRegistryTests):
 
         self.assertEqual(existing_allowed, ['Manager'])
 
-        self.failUnless(site.acquiredRolesAreUsedBy(ACI))
-        self.failIf(site.acquiredRolesAreUsedBy(VIEW))
+        self.assertTrue(site.acquiredRolesAreUsedBy(ACI))
+        self.assertFalse(site.acquiredRolesAreUsedBy(VIEW))
 
         context = DummyImportContext(site, False)
         context._files['rolemap.xml'] = _UNACQUIRED_EXPORT
@@ -701,8 +701,8 @@ class Test_importRolemap(BaseRegistryTests):
 
         self.assertEqual(new_allowed, ['Manager', 'Owner'])
 
-        self.failIf(site.acquiredRolesAreUsedBy(ACI))
-        self.failIf(site.acquiredRolesAreUsedBy(VIEW))
+        self.assertFalse(site.acquiredRolesAreUsedBy(ACI))
+        self.assertFalse(site.acquiredRolesAreUsedBy(VIEW))
 
     def test_unacquired_permission_added_role_explicit_purge(self):
 
@@ -719,10 +719,10 @@ class Test_importRolemap(BaseRegistryTests):
 
         self.assertEqual(existing_allowed, ['Manager'])
 
-        self.failUnless(site.acquiredRolesAreUsedBy(ACI))
-        self.failIf(site.acquiredRolesAreUsedBy(VIEW))
+        self.assertTrue(site.acquiredRolesAreUsedBy(ACI))
+        self.assertFalse(site.acquiredRolesAreUsedBy(VIEW))
 
-        self.failIf(site._has_user_defined_role('ZZZ'))
+        self.assertFalse(site._has_user_defined_role('ZZZ'))
 
         context = DummyImportContext(site, True)
         context._files['rolemap.xml'] = _COMBINED_EXPORT
@@ -730,7 +730,7 @@ class Test_importRolemap(BaseRegistryTests):
         from Products.GenericSetup.rolemap import importRolemap
         importRolemap(context)
 
-        self.failUnless(site._has_user_defined_role('ZZZ'))
+        self.assertTrue(site._has_user_defined_role('ZZZ'))
 
         new_allowed = [x['name']
                        for x in site.rolesOfPermission(ACI)
@@ -738,8 +738,8 @@ class Test_importRolemap(BaseRegistryTests):
 
         self.assertEqual(new_allowed, ['Manager', 'Owner', 'ZZZ'])
 
-        self.failIf(site.acquiredRolesAreUsedBy(ACI))
-        self.failUnless(site.acquiredRolesAreUsedBy(VIEW))
+        self.assertFalse(site.acquiredRolesAreUsedBy(ACI))
+        self.assertTrue(site.acquiredRolesAreUsedBy(VIEW))
 
     def test_unacquired_permission_added_role_skip_purge(self):
 
@@ -756,10 +756,10 @@ class Test_importRolemap(BaseRegistryTests):
 
         self.assertEqual(existing_allowed, ['Manager'])
 
-        self.failUnless(site.acquiredRolesAreUsedBy(ACI))
-        self.failIf(site.acquiredRolesAreUsedBy(VIEW))
+        self.assertTrue(site.acquiredRolesAreUsedBy(ACI))
+        self.assertFalse(site.acquiredRolesAreUsedBy(VIEW))
 
-        self.failIf(site._has_user_defined_role('ZZZ'))
+        self.assertFalse(site._has_user_defined_role('ZZZ'))
 
         context = DummyImportContext(site, False)
         context._files['rolemap.xml'] = _COMBINED_EXPORT
@@ -767,7 +767,7 @@ class Test_importRolemap(BaseRegistryTests):
         from Products.GenericSetup.rolemap import importRolemap
         importRolemap(context)
 
-        self.failUnless(site._has_user_defined_role('ZZZ'))
+        self.assertTrue(site._has_user_defined_role('ZZZ'))
 
         new_allowed = [x['name']
                        for x in site.rolesOfPermission(ACI)
@@ -775,8 +775,8 @@ class Test_importRolemap(BaseRegistryTests):
 
         self.assertEqual(new_allowed, ['Manager', 'Owner', 'ZZZ'])
 
-        self.failIf(site.acquiredRolesAreUsedBy(ACI))
-        self.failIf(site.acquiredRolesAreUsedBy(VIEW))
+        self.assertFalse(site.acquiredRolesAreUsedBy(ACI))
+        self.assertFalse(site.acquiredRolesAreUsedBy(VIEW))
 
     def test_unacquired_permission_added_role_skip_purge_encode_ascii(self):
 
@@ -793,10 +793,10 @@ class Test_importRolemap(BaseRegistryTests):
 
         self.assertEqual(existing_allowed, ['Manager'])
 
-        self.failUnless(site.acquiredRolesAreUsedBy(ACI))
-        self.failIf(site.acquiredRolesAreUsedBy(VIEW))
+        self.assertTrue(site.acquiredRolesAreUsedBy(ACI))
+        self.assertFalse(site.acquiredRolesAreUsedBy(VIEW))
 
-        self.failIf(site._has_user_defined_role('ZZZ'))
+        self.assertFalse(site._has_user_defined_role('ZZZ'))
 
         context = DummyImportContext(site, False, encoding='ascii')
         context._files['rolemap.xml'] = _COMBINED_EXPORT
@@ -804,7 +804,7 @@ class Test_importRolemap(BaseRegistryTests):
         from Products.GenericSetup.rolemap import importRolemap
         importRolemap(context)
 
-        self.failUnless(site._has_user_defined_role('ZZZ'))
+        self.assertTrue(site._has_user_defined_role('ZZZ'))
 
         new_allowed = [x['name']
                        for x in site.rolesOfPermission(ACI)
@@ -812,8 +812,8 @@ class Test_importRolemap(BaseRegistryTests):
 
         self.assertEqual(new_allowed, ['Manager', 'Owner', 'ZZZ'])
 
-        self.failIf(site.acquiredRolesAreUsedBy(ACI))
-        self.failIf(site.acquiredRolesAreUsedBy(VIEW))
+        self.assertFalse(site.acquiredRolesAreUsedBy(ACI))
+        self.assertFalse(site.acquiredRolesAreUsedBy(VIEW))
 
 
 def test_suite():

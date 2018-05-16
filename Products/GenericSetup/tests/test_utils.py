@@ -643,9 +643,9 @@ class PropertyManagerHelpersTests(unittest.TestCase):
         obj.manage_addProperty('lines3', ('Foo', 'Gee'), 'lines')
         helpers._initProperties(node)
 
-        self.assertEquals(obj.getProperty('lines1'), (b'Foo', b'Bar'))
-        self.assertEquals(obj.getProperty('lines2'), (b'Foo', b'Bar'))
-        self.assertEquals(obj.getProperty('lines3'), (b'Gee', b'Foo', b'Bar'))
+        self.assertEqual(obj.getProperty('lines1'), (b'Foo', b'Bar'))
+        self.assertEqual(obj.getProperty('lines2'), (b'Foo', b'Bar'))
+        self.assertEqual(obj.getProperty('lines3'), (b'Gee', b'Foo', b'Bar'))
 
     def test__initProperties_nopurge_extension(self):
         helpers = self._makeOne()
@@ -658,9 +658,9 @@ class PropertyManagerHelpersTests(unittest.TestCase):
         obj.manage_addProperty('lines3', ('Foo', 'Gee'), 'lines')
         helpers._initProperties(node)
 
-        self.assertEquals(obj.getProperty('lines1'), (b'Foo', b'Bar'))
-        self.assertEquals(obj.getProperty('lines2'), (b'Foo', b'Bar'))
-        self.assertEquals(obj.getProperty('lines3'), (b'Gee', b'Foo', b'Bar'))
+        self.assertEqual(obj.getProperty('lines1'), (b'Foo', b'Bar'))
+        self.assertEqual(obj.getProperty('lines2'), (b'Foo', b'Bar'))
+        self.assertEqual(obj.getProperty('lines3'), (b'Gee', b'Foo', b'Bar'))
 
     def test_initProperties_remove_elements(self):
         helpers = self._makeOne()
@@ -672,8 +672,8 @@ class PropertyManagerHelpersTests(unittest.TestCase):
         obj.manage_addProperty('lines2', ('Foo', 'Gee'), 'lines')
         helpers._initProperties(node)
 
-        self.assertEquals(obj.getProperty('lines1'), (b'Gee', b'Bar'))
-        self.assertEquals(obj.getProperty('lines2'), (b'Gee',))
+        self.assertEqual(obj.getProperty('lines1'), (b'Gee', b'Bar'))
+        self.assertEqual(obj.getProperty('lines2'), (b'Gee',))
 
     def test_initProperties_remove_properties(self):
         helpers = self._makeOne()
@@ -685,7 +685,7 @@ class PropertyManagerHelpersTests(unittest.TestCase):
         node = _getDocumentElement(_ADD_PROPERTY_IMPORT)
         helpers._initProperties(node)
         self.assertTrue(obj.hasProperty('line1'))
-        self.assertEquals(obj.getProperty('line1'), 'Line 1')
+        self.assertEqual(obj.getProperty('line1'), 'Line 1')
         self.assertTrue(obj.hasProperty('line2'))
 
         # Remove one.
@@ -808,10 +808,10 @@ class MarkerInterfaceHelpersTests(unittest.TestCase):
         helpers = self._makeOne()
         obj = helpers.context
         self._populate(obj)
-        self.failUnless(IDummyMarker.providedBy(obj))
+        self.assertTrue(IDummyMarker.providedBy(obj))
 
         helpers._purgeMarkers()
-        self.failIf(IDummyMarker.providedBy(obj))
+        self.assertFalse(IDummyMarker.providedBy(obj))
 
     def test__initMarkers(self):
         from Products.GenericSetup.utils import PrettyDocument
@@ -819,7 +819,7 @@ class MarkerInterfaceHelpersTests(unittest.TestCase):
         helpers = self._makeOne()
         node = _getDocumentElement(_NORMAL_MARKER_EXPORT)
         helpers._initMarkers(node)
-        self.failUnless(IDummyMarker.providedBy(helpers.context))
+        self.assertTrue(IDummyMarker.providedBy(helpers.context))
 
         doc = helpers._doc = PrettyDocument()
         node = doc.createElement('dummy')
@@ -858,26 +858,26 @@ class ObjectManagerHelpersTests(ZopeTestCase):
     def test__initObjects(self):
         helpers = self._makeOne()
         obj = helpers.context
-        self.failIf('history' in obj.objectIds())
+        self.assertFalse('history' in obj.objectIds())
 
         # Add two objects
         node = _getDocumentElement(_ADD_IMPORT)
         helpers._initObjects(node)
-        self.failUnless('history' in obj.objectIds())
-        self.failUnless('future' in obj.objectIds())
+        self.assertTrue('history' in obj.objectIds())
+        self.assertTrue('future' in obj.objectIds())
 
         # Remove one
         node = _getDocumentElement(_REMOVE_IMPORT)
         helpers._initObjects(node)
-        self.failIf('history' in obj.objectIds())
-        self.failUnless('future' in obj.objectIds())
+        self.assertFalse('history' in obj.objectIds())
+        self.assertTrue('future' in obj.objectIds())
 
         # Removing it a second time should not throw an
         # AttributeError.
         node = _getDocumentElement(_REMOVE_IMPORT)
         helpers._initObjects(node)
-        self.failIf('history' in obj.objectIds())
-        self.failUnless('future' in obj.objectIds())
+        self.assertFalse('history' in obj.objectIds())
+        self.assertTrue('future' in obj.objectIds())
 
 
 class PrettyDocumentTests(unittest.TestCase):

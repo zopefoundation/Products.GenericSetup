@@ -26,9 +26,9 @@ from xml.dom.minidom import Node
 from xml.dom.minidom import parseString
 from xml.parsers.expat import ExpatError
 
+from AccessControl.class_init import InitializeClass
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from Acquisition import Implicit
-from App.class_init import InitializeClass
 from App.Common import package_home
 from OFS.interfaces import IOrderedContainer
 from Products.Five.utilities.interfaces import IMarkerInterfaces

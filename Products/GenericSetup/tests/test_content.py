@@ -32,7 +32,7 @@ class SimpleINIAwareTests(unittest.TestCase, ConformsToIINIAware):
         adapter = self._getTargetClass()(context)
         text = adapter.as_ini()
         parser = _parseINI(text)
-        self.failIf(parser.sections())
+        self.assertFalse(parser.sections())
         default_options = parser.defaults()
         self.assertEqual(len(default_options), 0)
 
@@ -45,7 +45,7 @@ class SimpleINIAwareTests(unittest.TestCase, ConformsToIINIAware):
         adapter = self._getTargetClass()(context)
         text = adapter.as_ini()
         parser = _parseINI(text)
-        self.failIf(parser.sections())
+        self.assertFalse(parser.sections())
         default_options = parser.defaults()
         self.assertEqual(len(default_options), 2)
         self.assertEqual(default_options['title'].strip(), TITLE)
@@ -64,7 +64,7 @@ class SimpleINIAwareTests(unittest.TestCase, ConformsToIINIAware):
         adapter = self._getTargetClass()(context)
         text = adapter.as_ini()
         parser = _parseINI(text)
-        self.failIf(parser.sections())
+        self.assertFalse(parser.sections())
         default_options = parser.defaults()
         self.assertEqual(len(default_options), 3)
         self.assertEqual(default_options['int_prop'], str(INTPROP))
@@ -75,9 +75,9 @@ class SimpleINIAwareTests(unittest.TestCase, ConformsToIINIAware):
         context = _makePropertied('empty_ini')
         adapter = self._getTargetClass()(context)
         context._properties = ()
-        self.failIf(context.propertyItems())
+        self.assertFalse(context.propertyItems())
         adapter.put_ini('')
-        self.failIf(context.propertyItems())
+        self.assertFalse(context.propertyItems())
 
     def test_put_ini_with_values_stripped(self):
         context = _makePropertied('empty_ini')
@@ -85,8 +85,8 @@ class SimpleINIAwareTests(unittest.TestCase, ConformsToIINIAware):
         adapter.put_ini('[DEFAULT]\ntitle = Foo \ndescription = bar ')
         props = context.propdict()
         self.assertEqual(len(props), 2)
-        self.failUnless('title' in props)
-        self.failUnless('description' in props)
+        self.assertTrue('title' in props)
+        self.assertTrue('description' in props)
         self.assertEqual(context.title, 'Foo')
         self.assertEqual(context.description, 'bar')
 
@@ -619,7 +619,7 @@ class FolderishExporterImporterTests(unittest.TestCase):
         self.assertEqual(len(context._notes), len(ITEM_IDS))
         for level, component, message in context._notes:
             self.assertEqual(component, 'SFWA')
-            self.failUnless(message.startswith("Couldn't make"))
+            self.assertTrue(message.startswith("Couldn't make"))
 
     def test_import_site_with_subitems_and_no_preserve(self):
         from Products.GenericSetup.tests.common import DummyImportContext

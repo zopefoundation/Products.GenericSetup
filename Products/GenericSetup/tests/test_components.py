@@ -15,9 +15,9 @@
 
 import unittest
 
+from AccessControl.class_init import InitializeClass
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from Acquisition import aq_base
-from App.class_init import InitializeClass
 from OFS.Folder import Folder
 from OFS.SimpleItem import SimpleItem
 from Products.Five.component import enableSite
@@ -280,58 +280,58 @@ class ComponentRegistryXMLAdapterTests(BodyAdapterTestCase, unittest.TestCase):
 
     def _verifyImport(self, obj):
         adapted = queryAdapter(object(), IAnotherDummy2)
-        self.failUnless(IAnotherDummy2.providedBy(adapted))
-        self.failUnless(adapted.verify())
+        self.assertTrue(IAnotherDummy2.providedBy(adapted))
+        self.assertTrue(adapted.verify())
 
         adapted = queryAdapter(object(), IAnotherDummy2, name=u'foo')
-        self.failUnless(IAnotherDummy2.providedBy(adapted))
-        self.failUnless(adapted.verify())
+        self.assertTrue(IAnotherDummy2.providedBy(adapted))
+        self.assertTrue(adapted.verify())
 
         dummy = DummyObject()
         results = [adap.verify() for adap in
                    subscribers([dummy], IAnotherDummy2)]
-        self.assertEquals(results, [True])
+        self.assertEqual(results, [True])
 
         dummy = DummyObject()
         handle(dummy)
-        self.assertEquals(dummy.handled, 1)
+        self.assertEqual(dummy.handled, 1)
 
         util = queryUtility(IDummyInterface2, name=u'foo')
-        self.failUnless(IDummyInterface.providedBy(util))
-        self.failUnless(util.verify())
-        self.failUnless(util.__parent__ == obj)
+        self.assertTrue(IDummyInterface.providedBy(util))
+        self.assertTrue(util.verify())
+        self.assertTrue(util.__parent__ == obj)
         name = ('Products.GenericSetup.tests.test_components.'
                 'IDummyInterface2-foo')
-        self.assertEquals(util.__name__, name)
-        self.failUnless(name in obj.objectIds())
+        self.assertEqual(util.__name__, name)
+        self.assertTrue(name in obj.objectIds())
 
         util = queryUtility(IDummyInterface)
-        self.failUnless(IDummyInterface.providedBy(util))
-        self.failUnless(util.verify())
-        self.failUnless(util.__parent__ == obj)
+        self.assertTrue(IDummyInterface.providedBy(util))
+        self.assertTrue(util.verify())
+        self.assertTrue(util.__parent__ == obj)
         name = 'dummy_utility'
-        self.assertEquals(util.__name__, name)
-        self.failUnless(name in obj.objectIds())
+        self.assertEqual(util.__name__, name)
+        self.assertTrue(name in obj.objectIds())
 
         util = queryUtility(IDummyInterface, name='dummy tool name')
-        self.failUnless(IDummyInterface.providedBy(util))
-        self.failUnless(util.verify())
+        self.assertTrue(IDummyInterface.providedBy(util))
+        self.assertTrue(util.verify())
         self.assertEqual(util.meta_type, 'dummy tool')
 
         # make sure we can get the tool by normal means
         tool = getattr(obj.aq_parent, 'dummy_tool')
         self.assertEqual(tool.meta_type, 'dummy tool')
-        self.assertEquals(repr(aq_base(util)), repr(aq_base(tool)))
+        self.assertEqual(repr(aq_base(util)), repr(aq_base(tool)))
 
         util = queryUtility(IDummyInterface2, name='dummy tool name2')
-        self.failUnless(IDummyInterface2.providedBy(util))
-        self.failUnless(util.verify())
+        self.assertTrue(IDummyInterface2.providedBy(util))
+        self.assertTrue(util.verify())
         self.assertEqual(util.meta_type, 'dummy tool2')
 
         # make sure we can get the tool by normal means
         tool = getattr(obj.aq_parent, 'dummy_tool2')
         self.assertEqual(tool.meta_type, 'dummy tool2')
-        self.assertEquals(repr(aq_base(util)), repr(aq_base(tool)))
+        self.assertEqual(repr(aq_base(util)), repr(aq_base(tool)))
 
     def test_blacklist_get(self):
         obj = self._obj
@@ -347,8 +347,8 @@ class ComponentRegistryXMLAdapterTests(BodyAdapterTestCase, unittest.TestCase):
         adapted = getMultiAdapter((obj, context), IBody)
 
         body = adapted.body
-        self.failIf(b'IComponentsHandlerBlacklist' in body)
-        self.failIf(b'test_components.IDummyInterface"' in body)
+        self.assertFalse(b'IComponentsHandlerBlacklist' in body)
+        self.assertFalse(b'test_components.IDummyInterface"' in body)
 
     def test_blacklist_set(self):
         obj = self._obj
@@ -363,10 +363,10 @@ class ComponentRegistryXMLAdapterTests(BodyAdapterTestCase, unittest.TestCase):
         adapted.body = self._BODY
 
         util = queryUtility(IDummyInterface2, name=u'foo')
-        self.failUnless(IDummyInterface.providedBy(util))
-        self.failUnless(util.verify())
+        self.assertTrue(IDummyInterface.providedBy(util))
+        self.assertTrue(util.verify())
         util = queryUtility(IDummyInterface)
-        self.failUnless(util is None)
+        self.assertTrue(util is None)
 
         # now in update mode
         context._should_purge = False
@@ -374,20 +374,20 @@ class ComponentRegistryXMLAdapterTests(BodyAdapterTestCase, unittest.TestCase):
         adapted.body = self._BODY
 
         util = queryUtility(IDummyInterface2, name=u'foo')
-        self.failUnless(IDummyInterface.providedBy(util))
-        self.failUnless(util.verify())
+        self.assertTrue(IDummyInterface.providedBy(util))
+        self.assertTrue(util.verify())
         util = queryUtility(IDummyInterface)
-        self.failUnless(util is None)
+        self.assertTrue(util is None)
 
         # and again in update mode
         adapted = getMultiAdapter((obj, context), IBody)
         adapted.body = self._BODY
 
         util = queryUtility(IDummyInterface2, name=u'foo')
-        self.failUnless(IDummyInterface.providedBy(util))
-        self.failUnless(util.verify())
+        self.assertTrue(IDummyInterface.providedBy(util))
+        self.assertTrue(util.verify())
         util = queryUtility(IDummyInterface)
-        self.failUnless(util is None)
+        self.assertTrue(util is None)
 
     def test_remove_components(self):
         from Products.GenericSetup.components import importComponentRegistry
@@ -401,37 +401,37 @@ class ComponentRegistryXMLAdapterTests(BodyAdapterTestCase, unittest.TestCase):
         importComponentRegistry(context)
 
         adapted = queryAdapter(object(), IAnotherDummy2)
-        self.failUnless(adapted is None)
+        self.assertTrue(adapted is None)
 
         # This one should still exist
         adapted = queryAdapter(object(), IAnotherDummy2, name=u'foo')
-        self.failIf(adapted is None)
+        self.assertFalse(adapted is None)
 
         dummy = DummyObject()
         results = [adap.verify() for adap in
                    subscribers([dummy], IAnotherDummy2)]
-        self.assertEquals(results, [])
+        self.assertEqual(results, [])
 
         dummy = DummyObject()
         handle(dummy)
-        self.assertEquals(dummy.handled, 0)
+        self.assertEqual(dummy.handled, 0)
 
         util = queryUtility(IDummyInterface2, name=u'foo')
         name = ('Products.GenericSetup.tests.test_components.'
                 'IDummyInterface2-foo')
-        self.failUnless(util is None)
-        self.failIf(name in obj.objectIds())
+        self.assertTrue(util is None)
+        self.assertFalse(name in obj.objectIds())
 
         util = queryUtility(IDummyInterface)
-        self.failUnless(util is None)
-        self.failIf('dummy_utility' in obj.objectIds())
+        self.assertTrue(util is None)
+        self.assertFalse('dummy_utility' in obj.objectIds())
 
         util = queryUtility(IDummyInterface, name='dummy tool name')
-        self.failUnless(util is None)
+        self.assertTrue(util is None)
 
         # This one should still exist
         util = queryUtility(IDummyInterface2, name='dummy tool name2')
-        self.failIf(util is None)
+        self.assertFalse(util is None)
 
     def setUp(self):
         # Create and enable a local component registry

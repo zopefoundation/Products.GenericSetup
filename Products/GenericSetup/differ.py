@@ -17,8 +17,8 @@ import difflib
 import re
 import six
 
+from AccessControl.class_init import InitializeClass
 from AccessControl.SecurityInfo import ClassSecurityInfo
-from App.class_init import InitializeClass
 
 from Products.GenericSetup.interfaces import SKIPPED_FILES
 
