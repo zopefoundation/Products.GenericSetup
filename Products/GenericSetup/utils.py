@@ -764,7 +764,9 @@ class PropertyManagerHelpers(object):
             remove_elements = []
             for sub in child.childNodes:
                 if sub.nodeName == 'element':
-                    value = sub.getAttribute('value').encode(self._encoding)
+                    value = sub.getAttribute('value')
+                    if six.PY2 and isinstance(value, six.text_type):
+                        value = value.encode(self._encoding)
                     if self._convertToBoolean(sub.getAttribute('remove')
                                               or 'False'):
                         remove_elements.append(value)
@@ -775,7 +777,7 @@ class PropertyManagerHelpers(object):
                         if value in remove_elements:
                             remove_elements.remove(value)
 
-            if prop_map.get('type') in ('lines', 'tokens',
+            if prop_map.get('type') in ('lines', 'tokens', 'ulines',
                                         'multiple selection'):
                 prop_value = tuple(new_elements) or ()
             elif prop_map.get('type') == 'boolean':
@@ -783,7 +785,9 @@ class PropertyManagerHelpers(object):
             else:
                 # if we pass a *string* to _updateProperty, all other values
                 # are converted to the right type
-                prop_value = self._getNodeText(child).encode(self._encoding)
+                prop_value = self._getNodeText(child)
+                if six.PY2 and isinstance(prop_value, six.text_type):
+                    prop_value = prop_value.encode(self._encoding)
 
             if not self._convertToBoolean(child.getAttribute('purge')
                                           or 'True'):
