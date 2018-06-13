@@ -49,7 +49,7 @@ copyright = '2008-2017, Zope CMF Developers'
 # other places throughout the built documents.
 #
 # The short X.Y version.
-version = '%s.%s' % tuple(map(int, rqmt.version.split('.')[:2]))
+version = '%s.%s' % tuple(rqmt.version.split('.')[:2])
 # The full version, including alpha/beta/rc tags.
 release = rqmt.version
 
