@@ -799,12 +799,12 @@ class PropertyManagerHelpers(object):
                                          p not in remove_elements]) +
                                   tuple(prop_value))
 
-            if isinstance(prop_value, (six.binary_type, str)):
+            if isinstance(prop_value, (six.binary_type, six.text_type)):
                 prop_type = obj.getPropertyType(prop_id) or 'string'
                 if prop_type in type_converters:
                     # The type_converters use the ZPublisher default_encoding
                     # for decoding bytes!
-                    if self._encoding != default_encoding:
+                    if self._encoding.lower() != default_encoding:
                         u_prop_value = prop_value.decode(self._encoding)
                         prop_value = u_prop_value.encode(default_encoding)
                         prop_value = type_converters[prop_type](prop_value)
