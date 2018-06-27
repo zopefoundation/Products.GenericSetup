@@ -765,7 +765,7 @@ class PropertyManagerHelpers(object):
             for sub in child.childNodes:
                 if sub.nodeName == 'element':
                     value = sub.getAttribute('value')
-                    if six.PY2 and isinstance(value, six.text_type):
+                    if prop_map.get('type') != 'ulines':
                         value = value.encode(self._encoding)
                     if self._convertToBoolean(sub.getAttribute('remove')
                                               or 'False'):
