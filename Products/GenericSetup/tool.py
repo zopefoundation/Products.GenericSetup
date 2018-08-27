@@ -921,17 +921,30 @@ class SetupTool(Folder):
 
     @security.protected(ManagePortal)
     def getDependenciesForProfile(self, profile_id):
-        if profile_id is None:
-            return ()
-        if profile_id.startswith("snapshot-"):
-            return ()
 
-        if not self.profileExists(profile_id):
-            raise KeyError(profile_id)
-        try:
-            return self.getProfileInfo(profile_id).get('dependencies', ())
-        except KeyError:
-            return ()
+        dependencies = None
+        profile_info = None
+
+        if profile_id is None or profile_id.startswith("snapshot-"):
+            dependencies = ()
+
+        profile_info = self.getProfileInfo(profile_id)
+
+        if 'dependencies' not in profile_info:
+            dependencies = ()
+        else:
+            dependencies = profile_info.get('dependencies')
+
+            for dependency_id in dependencies:
+
+                if not self.profileExists(dependency_id):
+
+                    raise KeyError('Profile "%s" requires the \
+                        dependency-profile "%s", which does not exist.'
+                        % (profile_id, dependency_id))
+
+        return dependencies
+
 
     @security.protected(ManagePortal)
     def listProfilesWithUpgrades(self):
