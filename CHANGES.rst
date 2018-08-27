@@ -14,7 +14,10 @@ New features:
 
 Bug fixes:
 
-- *add item here*
+- Do not mask KeyError in 'getProfileDependencies' from missing
+  dependency profiles.
+  Refs: https://github.com/plone/Products.CMFPlone/issues/2228
+  [ida]
 
 
 1.8.9 (2018-05-14)
