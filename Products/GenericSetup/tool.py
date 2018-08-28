@@ -940,8 +940,8 @@ class SetupTool(Folder):
                 if not self.profileExists(dependency_id):
 
                     raise KeyError('Profile "%s" requires the \
-                        dependency-profile "%s", which does not exist.'
-                        % (profile_id, dependency_id))
+                         dependency-profile "%s", which does not exist.'
+                         % (profile_id, dependency_id))
 
         return dependencies
 
