@@ -925,15 +925,15 @@ class SetupTool(Folder):
         dependencies = None
         profile_info = None
 
-        if profile_id is None or profile_id.startswith("snapshot-"):
+        if profile_id is None:
+            dependencies = ()
+
+        if profile_id.startswith("snapshot-"):
             dependencies = ()
 
         profile_info = self.getProfileInfo(profile_id)
 
-        if 'dependencies' not in profile_info:
-            dependencies = ()
-        else:
-            dependencies = profile_info.get('dependencies')
+        dependencies = profile_info.get('dependencies', ())
 
             for dependency_id in dependencies:
 
