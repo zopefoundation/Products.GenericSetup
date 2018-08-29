@@ -1714,14 +1714,17 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
         site = self._makeSite()
         tool = self._makeOne('setup_tool').__of__(site)
 
-        # Register two extension profiles.  Profile 'foo' has a dependency
-        # 'bar'.
+        # Register three extension profiles.  Profile 'foo' has a dependency
+        # 'bar', and 'baz' contains non-existing dependency-profiles.
         self._makeFile(METADATA_XML, _METADATA_XML)
         _makeTestFile(METADATA_XML, self._PROFILE_PATH2, _PLAIN_METADATA_XML)
+        _makeTestFile(METADATA_XML, self._PROFILE_PATH3, _BROKEN_METADATA_XML)
         profile_registry.registerProfile(
             'foo', 'Foo', '', self._PROFILE_PATH, profile_type=EXTENSION)
         profile_registry.registerProfile(
             'bar', 'Bar', '', self._PROFILE_PATH2, profile_type=EXTENSION)
+        profile_registry.registerProfile(
+            'baz', 'Baz', '', self._PROFILE_PATH3, profile_type=EXTENSION)
 
         self.assertEqual(tool.getDependenciesForProfile('other:foo'),
                          (u'profile-other:bar', ))
@@ -1730,8 +1733,7 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
         self.assertEqual(tool.getDependenciesForProfile(None), ())
         self.assertRaises(KeyError, tool.getDependenciesForProfile, 'nonesuch')
         # profile_info does contain dependencies, but one of them doesn't exist:
-        self._makeFile(METADATA_XML, _BROKEN_METADATA_XML)
-        self.assertEqual(tool.dependenciesExist('other:foo'), False)
+        self.assertEqual(tool.dependenciesExist('other:baz'), False)
 
 
 _DEFAULT_STEP_REGISTRIES_EXPORT_XML = ("""\
