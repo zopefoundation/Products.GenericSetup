@@ -92,6 +92,14 @@ _PLAIN_METADATA_XML = """<?xml version="1.0"?>
   <version>1.0</version>
 </metadata>
 """
+_BROKEN_METADATA_XML = """<?xml version="1.0"?>
+<metadata>
+  <version>1.0</version>
+  <dependencies>
+    <dependency>profile-other:non-existing-profile-name</dependency>
+  </dependencies>
+</metadata>
+"""
 
 
 class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
