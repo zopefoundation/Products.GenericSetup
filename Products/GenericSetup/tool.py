@@ -926,22 +926,21 @@ class SetupTool(Folder):
         profile_info = None
 
         if profile_id is None:
-            dependencies = ()
-
+            return ()
         if profile_id.startswith("snapshot-"):
-            dependencies = ()
+            return ()
 
         profile_info = self.getProfileInfo(profile_id)
 
         dependencies = profile_info.get('dependencies', ())
 
-            for dependency_id in dependencies:
+        for dependency_id in dependencies:
 
-                if not self.profileExists(dependency_id):
+            if not self.profileExists(dependency_id):
 
-                    raise KeyError('Profile "%s" requires the \
-                         dependency-profile "%s", which does not exist.'
-                         % (profile_id, dependency_id))
+                raise KeyError('Profile "%s" requires the \
+                    dependency-profile "%s", which does not exist.'
+                    % (profile_id, dependency_id))
 
         return dependencies
 
