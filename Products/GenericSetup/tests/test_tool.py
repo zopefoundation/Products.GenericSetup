@@ -1732,8 +1732,8 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
         # profile_info does contain dependencies, but one of them doesn't exist:
         self._makeFile(METADATA_XML, _BROKEN_METADATA_XML)
         self.assertEqual(tool.dependenciesExist('other:foo'), False)
-        # profile_info does not contain dependencies-property:
-        self.assertRaises(KeyError, tool.getProfileInfo('bar')['dependencies'])
+
+
 _DEFAULT_STEP_REGISTRIES_EXPORT_XML = ("""\
 <?xml version="1.0"?>
 <export-steps>
