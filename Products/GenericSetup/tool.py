@@ -928,8 +928,11 @@ class SetupTool(Folder):
         return _profile_registry.getProfileInfo(profile_id)
 
     @security.protected(ManagePortal)
-    def getDependenciesForProfile(self, profile_id):
-
+    def getDependenciesForProfile(self, profile_id, ignore_broken=False):
+        """
+        If ignore_broken is True, return all referenced dependencies.
+        Otherwise fail, if referenced dependency does not exist.
+        """
         if profile_id is None:
             return ()
         if profile_id.startswith("snapshot-"):
@@ -939,16 +942,36 @@ class SetupTool(Folder):
 
         dependencies = profile_info.get('dependencies', ())
 
-        for dependency_id in dependencies:
+        if not ignore_broken:
 
-            if not self.profileExists(dependency_id):
+            for dependency_id in dependencies:
 
-                raise KeyError('Profile "%s" requires the \
-                    dependency-profile "%s", which does not exist.'
-                    % (profile_id, dependency_id))
+                if not self.profileExists(dependency_id):
+
+                    raise KeyError('Profile "%s" requires the \
+                        dependency-profile "%s", which does not exist.'
+                        % (profile_id, dependency_id))
 
         return dependencies
 
+    @security.protected(ManagePortal)
+    def getBrokenDependencies(self, profile_id):
+        """Return referenced dependency-ids, which do not exist."""
+        broken_dependencies = []
+        dependency_ids = self.getDependenciesForProfile(profile_id,
+                                                ignore_broken=True)
+        for dependency_id in dependency_ids:
+            if not self.profileExists(dependency_id):
+                broken_dependencies.append(dependency_id)
+        return broken_dependencies
+
+    @security.protected(ManagePortal)
+    def hasDependencies(self, profile_id):
+        return len(self.getDependenciesForProfile(profile_id)) > 0
+
+    @security.protected(ManagePortal)
+    def hasBrokenDependencies(self, profile_id):
+        return len(self.getBrokenDependencies(profile_id)) > 0
 
     @security.protected(ManagePortal)
     def listProfilesWithUpgrades(self):
