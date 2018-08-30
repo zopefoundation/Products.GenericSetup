@@ -939,9 +939,6 @@ class SetupTool(Folder):
     @security.protected(ManagePortal)
     def getDependenciesForProfile(self, profile_id):
 
-        dependencies = None
-        profile_info = None
-
         if profile_id is None:
             return ()
         if profile_id.startswith("snapshot-"):
