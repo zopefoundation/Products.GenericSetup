@@ -1733,6 +1733,31 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
         self.assertEqual(tool.getDependenciesForProfile(None), ())
         self.assertRaises(KeyError, tool.getDependenciesForProfile, 'nonesuch')
 
+    def test_getBrokenDependencies(self):
+        from Products.GenericSetup.interfaces import EXTENSION
+        from Products.GenericSetup.metadata import METADATA_XML
+        site = self._makeSite()
+        tool = self._makeOne('setup_tool').__of__(site)
+
+        # Register three extension profiles.  Profile 'foo' has a dependency
+        # 'bar' and 'baz' contains non-existing dependency-profiles.
+        self._makeFile(METADATA_XML, _METADATA_XML)
+        _makeTestFile(METADATA_XML, self._PROFILE_PATH2, _PLAIN_METADATA_XML)
+        _makeTestFile(METADATA_XML, self._PROFILE_PATH3, _BROKEN_METADATA_XML)
+        profile_registry.registerProfile(
+            'foo', 'Foo', '', self._PROFILE_PATH, profile_type=EXTENSION)
+        profile_registry.registerProfile(
+            'bar', 'Bar', '', self._PROFILE_PATH2, profile_type=EXTENSION)
+        profile_registry.registerProfile(
+            'baz', 'Baz', '', self._PROFILE_PATH3, profile_type=EXTENSION)
+
+        # profile has dependencies and none of them is broken:
+        self.assertFalse(tool.hasBrokenDependencies('other:foo'))
+        # profile has no dependencies, therfore nothing can be broken:
+        self.assertFalse(tool.hasBrokenDependencies('other:bar'))
+        # profile has dependencies and at least one of them is broken:
+        self.assertTrue(tool.hasBrokenDependencies('other:baz'))
+
 
 _DEFAULT_STEP_REGISTRIES_EXPORT_XML = ("""\
 <?xml version="1.0"?>
