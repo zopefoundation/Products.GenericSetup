@@ -966,10 +966,6 @@ class SetupTool(Folder):
         return broken_dependencies
 
     @security.protected(ManagePortal)
-    def hasDependencies(self, profile_id):
-        return len(self.getDependenciesForProfile(profile_id)) > 0
-
-    @security.protected(ManagePortal)
     def hasBrokenDependencies(self, profile_id):
         return len(self.getBrokenDependencies(profile_id)) > 0
 
