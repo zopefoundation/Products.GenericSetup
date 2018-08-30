@@ -923,15 +923,6 @@ class SetupTool(Folder):
                 return False
         return True
 
-    security.declareProtected(ManagePortal, "dependenciesExist")
-    def dependenciesExist(self, profile_id):
-        """Check if all dependency-profiles exist."""
-        try:
-            dependency_ids = self.getDependenciesForProfile(profile_id)
-        except:
-            return False
-        return True
-
     @security.protected(ManagePortal)
     def getProfileInfo(self, profile_id):
         return _profile_registry.getProfileInfo(profile_id)

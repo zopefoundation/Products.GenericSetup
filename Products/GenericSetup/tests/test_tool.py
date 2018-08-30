@@ -1732,8 +1732,6 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
         self.assertEqual(tool.getDependenciesForProfile('snapshot-some'), ())
         self.assertEqual(tool.getDependenciesForProfile(None), ())
         self.assertRaises(KeyError, tool.getDependenciesForProfile, 'nonesuch')
-        # profile_info does contain dependencies, but one of them doesn't exist:
-        self.assertEqual(tool.dependenciesExist('other:baz'), False)
 
 
 _DEFAULT_STEP_REGISTRIES_EXPORT_XML = ("""\
