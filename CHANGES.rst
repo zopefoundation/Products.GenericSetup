@@ -29,6 +29,13 @@ New features:
 
 - Made the code PEP-8 compliant
 
+Bug fixes:
+
+- Regard referenced dependency-profile does not exists.
+  Refs: https://github.com/plone/Products.CMFPlone/issues/2228
+  [ida]
+
+
 1.10.0 (2017-12-07)
 -------------------
 
