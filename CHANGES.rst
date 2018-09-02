@@ -31,7 +31,8 @@ New features:
 
 Bug fixes:
 
-- Regard referenced dependency-profile does not exists.
+- Do not mask KeyError in 'getProfileDependencies' from missing
+  dependency profiles.
   Refs: https://github.com/plone/Products.CMFPlone/issues/2228
   [ida]
 
