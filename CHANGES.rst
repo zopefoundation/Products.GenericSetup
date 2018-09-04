@@ -29,6 +29,14 @@ New features:
 
 - Made the code PEP-8 compliant
 
+Bug fixes:
+
+- Do not mask KeyError in 'getProfileDependencies' from missing
+  dependency profiles.
+  Refs: https://github.com/plone/Products.CMFPlone/issues/2228
+  [ida]
+
+
 1.10.0 (2017-12-07)
 -------------------
 
