@@ -919,7 +919,7 @@ class SetupTool(Folder):
         else:
             return True
 
-    security.declareProtected(ManagePortal, "deprofilesExistpendenciesExist")
+    security.declareProtected(ManagePortal, "profilesExist")
     def profilesExist(self, profile_ids):
         """Check if all profiles exist."""
         for profile_id in profile_ids:
