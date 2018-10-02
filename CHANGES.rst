@@ -4,14 +4,6 @@ Changelog
 1.8.10 (unreleased)
 -------------------
 
-Breaking changes:
-
-- *add item here*
-
-New features:
-
-- *add item here*
-
 Bug fixes:
 
 - Do not mask KeyError in 'getProfileDependencies' from missing
