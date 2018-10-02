@@ -1,6 +1,22 @@
 Changelog
 =========
 
+1.8.11 (unreleased)
+-------------------
+
+Breaking changes:
+
+- *add item here*
+
+New features:
+
+- *add item here*
+
+Bug fixes:
+
+- *add item here*
+
+
 1.8.10 (2018-10-01)
 -------------------
 
