@@ -4,6 +4,11 @@ Changelog
 2.0b2 (unreleased)
 ------------------
 
+Bug fixes:
+
+- proper string/bytes handling for _createObjectByType
+  [ale-rt]
+
 
 2.0b1 (2018-05-16)
 ------------------
