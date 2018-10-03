@@ -4,6 +4,14 @@ Changelog
 2.0b2 (unreleased)
 ------------------
 
+Bug fixes:
+
+- Proper string/bytes handling for _createObjectByType.
+  In Python2 everything is written as bytes,
+  while on Python3 everything is written as text except files and images
+  which are stored as bytes
+  [ale-rt]
+
 
 2.0b1 (2018-05-16)
 ------------------
