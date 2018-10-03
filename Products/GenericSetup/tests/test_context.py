@@ -898,7 +898,36 @@ class SnapshotExportContextTests(ZopeTestCase, ConformsToISetupContext,
         self.assertEqual(fileobj.getContentType(), CONTENT_TYPE)
         self.assertEqual(fileobj.data, digits_bytes)
 
+    @unittest.skipIf(
+        six.PY2, 'On Python2 writing unicode files is not supported'
+    )
     def test_writeDataFile_simple_plain_text_unicode(self):
+        FILENAME = 'simple.txt'
+        CONTENT_TYPE = 'text/plain'
+        CONTENT = u'Unicode, with non-ASCII: %s.' % six.unichr(150)
+
+        site = DummySite('site').__of__(self.app)
+        site.setup_tool = DummyTool('setup_tool')
+        tool = site.setup_tool
+        ctx = self._makeOne(tool, 'simple', 'latin_1')
+        ctx.writeDataFile(FILENAME, CONTENT, CONTENT_TYPE)
+
+        snapshot = tool.snapshots._getOb('simple')
+
+        self.assertEqual(len(snapshot.objectIds()), 1)
+        self.assertTrue(FILENAME in snapshot.objectIds())
+
+        fileobj = snapshot._getOb(FILENAME)
+
+        self.assertEqual(fileobj.getId(), FILENAME)
+        self.assertEqual(fileobj.meta_type, File.meta_type)
+        self.assertEqual(fileobj.getContentType(), CONTENT_TYPE)
+        self.assertEqual(fileobj.data, CONTENT.encode(ctx._encoding))
+
+    @unittest.skipUnless(
+        six.PY2, 'On Python2 writing unicode files is not supported'
+    )
+    def test_writeDataFile_simple_plain_text_unicode_raises(self):
         FILENAME = 'simple.txt'
         CONTENT_TYPE = 'text/plain'
         CONTENT = u'Unicode, with non-ASCII: %s.' % six.unichr(150)

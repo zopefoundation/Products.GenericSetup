@@ -6,7 +6,10 @@ Changelog
 
 Bug fixes:
 
-- proper string/bytes handling for _createObjectByType
+- Proper string/bytes handling for _createObjectByType.
+  In Python2 everything is written as bytes,
+  while on Python3 everything is written as text except files and images
+  which are stored as bytes
   [ale-rt]
 
 
