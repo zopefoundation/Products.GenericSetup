@@ -518,36 +518,31 @@ class SnapshotExportContext(BaseContext):
     #
     @security.private
     def _createObjectByType(self, name, body, content_type):
+        encoding = self.getEncoding() or 'utf-8'
 
         if six.PY2 and isinstance(body, six.text_type):
-            encoding = self.getEncoding()
-            if encoding is None:
-                body = body.encode('utf-8')
-            else:
-                body = body.encode(encoding)
+            body = body.encode(encoding)
 
         if name.endswith('.py'):
-
             ob = PythonScript(name)
             ob.write(body)
+            return ob
 
-        elif name.endswith('.dtml'):
-
+        if name.endswith('.dtml'):
             ob = DTMLDocument('', __name__=name)
             ob.munge(body)
+            return ob
 
-        elif content_type in ('text/html', 'text/xml'):
+        if content_type in ('text/html', 'text/xml'):
+            return ZopePageTemplate(name, body, content_type=content_type)
 
-            ob = ZopePageTemplate(name, body, content_type=content_type)
+        if isinstance(body, six.text_type):
+            body = body.encode(encoding)
 
-        elif content_type[:6] == 'image/':
+        if content_type[:6] == 'image/':
+            return Image(name, '', body, content_type=content_type)
 
-            ob = Image(name, '', body, content_type=content_type)
-
-        else:
-            ob = File(name, '', body, content_type=content_type)
-
-        return ob
+        return File(name, '', body, content_type=content_type)
 
     @security.private
     def _ensureSnapshotsFolder(self, subdir=None):
