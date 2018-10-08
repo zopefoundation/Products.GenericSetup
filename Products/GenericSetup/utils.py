@@ -765,7 +765,8 @@ class PropertyManagerHelpers(object):
             for sub in child.childNodes:
                 if sub.nodeName == 'element':
                     value = sub.getAttribute('value')
-                    if prop_map.get('type') != 'ulines':
+                    if prop_map.get('type') not in (
+                            'ulines', 'multiple selection'):
                         value = value.encode(self._encoding)
                     if self._convertToBoolean(sub.getAttribute('remove')
                                               or 'False'):
