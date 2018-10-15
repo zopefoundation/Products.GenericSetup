@@ -8,6 +8,8 @@ New features:
 
 - Add Python 3.7 support.
 
+- Support `zope.configuration >= 4.2`.
+
 Bug fixes:
 
 - Proper string/bytes handling for _createObjectByType.
