@@ -18,7 +18,6 @@ from zope.configuration.fields import MessageID
 from zope.configuration.fields import Path
 from zope.configuration.fields import Tokens
 from zope.interface import Interface
-from zope.schema import TextLine
 import zope.schema
 
 from Products.GenericSetup.interfaces import BASE
@@ -39,7 +38,7 @@ class IRegisterProfileDirective(Interface):
     """Register profiles with the global registry.
     """
 
-    name = TextLine(
+    name = zope.schema.TextLine(
         title=u'Name',
         description=u"If not specified 'default' is used.",
         default=u'default',
@@ -113,7 +112,7 @@ def registerProfile(_context, name=u'default', title=None, description=None,
 # genericsetup:exportStep
 
 class IExportStepDirective(Interface):
-    name = TextLine(
+    name = zope.schema.TextLine(
         title=u'Name',
         description=u'',
         required=True)
@@ -150,7 +149,7 @@ class IImportStepDirective(Interface):
     """Register import steps with the global registry.
     """
 
-    name = TextLine(
+    name = zope.schema.TextLine(
         title=u'Name',
         description=u'',
         required=True)
@@ -173,7 +172,7 @@ class IImportStepDirective(Interface):
 
 class IImportStepDependsDirective(Interface):
 
-    name = TextLine(
+    name = zope.schema.TextLine(
         title=u'Name',
         description=u'Name of another import step that has to be run first',
         required=True)
