@@ -18,7 +18,7 @@ script:
 after_success:
     - coveralls
 notifications:
-    email: tseaver@palladion.com
+    email: false
 cache:
     - pip: true
     - directories:
