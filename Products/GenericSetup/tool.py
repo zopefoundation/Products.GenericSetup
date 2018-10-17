@@ -948,8 +948,9 @@ class SetupTool(Folder):
 
                 if not self.profileExists(dependency_id):
 
-                    raise KeyError('Profile "%s" requires the \
-                        dependency-profile "%s", which does not exist.'
+                    raise KeyError(
+                        'Profile "%s" requires the'
+                        ' dependency-profile "%s", which does not exist.'
                         % (profile_id, dependency_id))
 
         return dependencies
@@ -958,8 +959,8 @@ class SetupTool(Folder):
     def getBrokenDependencies(self, profile_id):
         """Return referenced dependency-ids, which do not exist."""
         broken_dependencies = []
-        dependency_ids = self.getDependenciesForProfile(profile_id,
-                                                ignore_broken=True)
+        dependency_ids = self.getDependenciesForProfile(
+            profile_id, ignore_broken=True)
         for dependency_id in dependency_ids:
             if not self.profileExists(dependency_id):
                 broken_dependencies.append(dependency_id)

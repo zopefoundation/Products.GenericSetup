@@ -1,17 +1,18 @@
 sudo: false
 language: python
-cache:
-    directories:
-        - $TRAVIS_BUILD_DIR/eggs
 python:
   - "2.7"
   - "3.5"
   - "3.6"
+matrix:
+    include:
+        - python: "3.7"
+          dist: xenial
+          sudo: true
 install:
     - pip install -U coverage coveralls
-    - pip install -U six==$(curl $(awk '$1 ==  "extends" {print $3}' buildout.cfg) 2>/dev/null | awk '$1 == "six" {print $3}')
-    - python bootstrap.py
-    - bin/buildout
+    - pip install zc.buildout
+    - buildout
 script:
     - coverage run bin/test -vvc
 after_success:
