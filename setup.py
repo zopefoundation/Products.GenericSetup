@@ -58,6 +58,7 @@ setup(
         'setuptools',
         'six',
         'Zope >= 4.0b4',
+        'zope.interface >= 3.8',
         'five.localsitemanager',
         'Products.PythonScripts',
         'Products.ZCatalog',
