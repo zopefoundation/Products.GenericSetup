@@ -4,7 +4,17 @@ Changelog
 2.0b3 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Do not turn ulines and multiple selection into bytes.
+  [davisagli]
+
+- Set body of PythonScripts as text in py3.
+  [pbauer]
+
+- Compare encodings so that UTF-8 and utf-8 are the same.
+  [pbauer]
+
+- Compare DOM as text in py3.
+  [pbauer]
 
 
 2.0b2 (2018-10-17)
