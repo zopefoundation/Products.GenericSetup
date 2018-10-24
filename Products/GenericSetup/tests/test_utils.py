@@ -774,7 +774,7 @@ class MarkerInterfaceHelpersTests(unittest.TestCase):
 
     def _makeContext(self):
         from OFS.SimpleItem import Item
-        return Item('obj')
+        return Item()
 
     def _populate(self, obj):
         from zope.interface import directlyProvides
