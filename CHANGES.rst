@@ -1,6 +1,22 @@
 Changelog
 =========
 
+2.0b4 (unreleased)
+------------------
+
+Breaking changes:
+
+- *add item here*
+
+New features:
+
+- *add item here*
+
+Bug fixes:
+
+- *add item here*
+
+
 2.0b3 (2018-11-07)
 ------------------
 
