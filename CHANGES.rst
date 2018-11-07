@@ -1,7 +1,7 @@
 Changelog
 =========
 
-2.0b3 (unreleased)
+2.0b3 (2018-11-07)
 ------------------
 
 - Do not turn ulines and multiple selection into bytes.
