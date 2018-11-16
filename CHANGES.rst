@@ -14,7 +14,9 @@ New features:
 
 Bug fixes:
 
-- *add item here*
+- Convert input from xml configuration with correct encoding before passing to
+  type_converter.
+  [sallner]
 
 
 2.0b3 (2018-11-07)
