@@ -810,7 +810,7 @@ class PropertyManagerHelpers(object):
                             u_prop_value = prop_value.decode(self._encoding)
                             prop_value = u_prop_value.encode(default_encoding)
                         prop_value = type_converters[prop_type](prop_value)
-                        if six.PY2 and isinstance(prop_value, six.binary_type):
+                        if isinstance(prop_value, six.binary_type):
                             u_prop_value = prop_value.decode(default_encoding)
                             prop_value = u_prop_value.encode(self._encoding)
                     else:
