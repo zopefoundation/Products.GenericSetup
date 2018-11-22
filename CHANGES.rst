@@ -4,16 +4,6 @@ Changelog
 2.0b4 (unreleased)
 ------------------
 
-Breaking changes:
-
-- *add item here*
-
-New features:
-
-- *add item here*
-
-Bug fixes:
-
 - Convert input from xml configuration with correct encoding before passing to
   type_converter.
   (`#77 <https://github.com/zopefoundation/Products.GenericSetup/pull/77>`_)
