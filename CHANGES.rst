@@ -1,7 +1,7 @@
 Changelog
 =========
 
-2.0b4 (unreleased)
+2.0b4 (2018-11-22)
 ------------------
 
 - Convert input from xml configuration with correct encoding before passing to
