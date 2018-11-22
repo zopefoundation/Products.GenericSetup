@@ -586,6 +586,10 @@ class PropertyManagerHelpersTests(unittest.TestCase):
         helpers = self._makeOne()
         obj = self._getReal(helpers.context)
         node = _getDocumentElement(_NORMAL_PROPERTY_EXPORT_ISO_8859_1)
+        # *sigh* The base class does not respect the encoding specified in the
+        # xml, so we have to be explicit here. In the real world it is in
+        # responsibility of the subclass.
+        helpers._encoding = 'iso-8859-1'
         helpers._initProperties(node)
         self.assertEqual(type(obj.foo_int), int)
         self.assertEqual(type(obj.foo_string), str)

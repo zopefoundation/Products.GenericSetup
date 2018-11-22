@@ -14,7 +14,10 @@ New features:
 
 Bug fixes:
 
-- *add item here*
+- Convert input from xml configuration with correct encoding before passing to
+  type_converter.
+  (`#77 <https://github.com/zopefoundation/Products.GenericSetup/pull/77>`_)
+  [sallner]
 
 
 2.0b3 (2018-11-07)

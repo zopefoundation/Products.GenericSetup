@@ -488,7 +488,7 @@ class SetupTool(Folder):
             elif line.startswith('-'):
                 result.append(('diff-removed', line))
 
-            elif line == '\ No newline at end of file':
+            elif line == r'\ No newline at end of file':
                 result.append(('diff-context', line))
 
             else:
