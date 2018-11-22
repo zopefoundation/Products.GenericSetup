@@ -16,7 +16,10 @@
 import os
 import six
 import sys
-from cgi import escape
+try:
+    from html import escape
+except ImportError:
+    from cgi import escape
 from inspect import getdoc
 from logging import getLogger
 from xml.dom.minidom import _nssplit
