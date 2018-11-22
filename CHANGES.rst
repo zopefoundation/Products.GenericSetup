@@ -16,6 +16,7 @@ Bug fixes:
 
 - Convert input from xml configuration with correct encoding before passing to
   type_converter.
+  (`#77 <https://github.com/zopefoundation/Products.GenericSetup/pull/77>`_)
   [sallner]
 
 
