@@ -3,6 +3,7 @@ from setuptools import setup
 from setuptools import find_packages
 
 NAME = 'GenericSetup'
+URL = 'https://github.com/zopefoundation/Products.%s' % NAME
 
 here = os.path.abspath(os.path.dirname(__file__))
 package = os.path.join(here, 'Products', NAME)
@@ -46,7 +47,12 @@ setup(
     keywords='web application server zope zope4 cmf',
     author="Zope Foundation and Contributors",
     author_email="zope-cmf@zope.org",
-    url="https://github.com/zopefoundation/Products.GenericSetup",
+    url=URL,
+    project_urls={
+        'Documentation': 'https://productsgenericsetup.readthedocs.io',
+        'Source code': URL,
+        'Issue tracker': '%s/issues' % URL,
+    },
     license="ZPL 2.1",
     packages=find_packages(),
     include_package_data=True,
