@@ -18,7 +18,7 @@ import six
 import sys
 try:
     from html import escape
-except ImportError:
+except ImportError:  # BBB Python 2
     from cgi import escape
 from inspect import getdoc
 from logging import getLogger

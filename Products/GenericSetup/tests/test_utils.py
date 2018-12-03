@@ -916,12 +916,12 @@ class PrettyDocumentTests(unittest.TestCase):
         else:
             self.assertEqual(xml_output, cgi_escaped)
 
-        # Reparse from cgi.escape representation
+        # Reparse from cgi.escape representation (Python 2 only)
         # should always work
         e = _getDocumentElement(cgi_escaped)
         self.assertEqual(e.getAttribute('foo'), original)
 
-        # Reparse from html.escape representation
+        # Reparse from html.escape representation (Python 3 only)
         # should always work, even without html.escape
         e = _getDocumentElement(html_escaped)
         self.assertEqual(e.getAttribute('foo'), original)
@@ -949,12 +949,12 @@ class PrettyDocumentTests(unittest.TestCase):
         else:
             self.assertEqual(xml_output, cgi_escaped)
 
-        # Reparse from cgi.escape representation
+        # Reparse from cgi.escape representation (Python 2 only)
         # should always work
         e = _getDocumentElement(cgi_escaped)
         self.assertEqual(e.childNodes[0].nodeValue, original)
 
-        # Reparse from html.escape representation
+        # Reparse from html.escape representation (Python 3 only)
         # should always work, even without html.escape
         e = _getDocumentElement(html_escaped)
         self.assertEqual(e.childNodes[0].nodeValue, original)
