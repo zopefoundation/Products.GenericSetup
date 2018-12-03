@@ -15,7 +15,7 @@
 
 try:
     from html import escape
-except ImportError:
+except ImportError:  # BBB Python 2
     from cgi import escape
 import logging
 import os

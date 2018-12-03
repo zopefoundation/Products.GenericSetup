@@ -4,7 +4,8 @@ Changelog
 2.0b5 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Fix deprecation warnings for ``cgi.escape`` by using ``html.escape``
+  (`#76 <https://github.com/zopefoundation/Products.GenericSetup/issues/76>`_)
 
 
 2.0b4 (2018-11-22)

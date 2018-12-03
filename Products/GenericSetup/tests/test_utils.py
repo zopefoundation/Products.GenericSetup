@@ -15,6 +15,11 @@
 """ GenericSetup.utils unit tests
 """
 
+try:
+    from html import escape  # noqa
+    HTML_ESCAPE = True
+except ImportError:
+    HTML_ESCAPE = False
 import six
 import unittest
 
@@ -891,34 +896,67 @@ class PrettyDocumentTests(unittest.TestCase):
     def test_attr_quoting(self):
         from Products.GenericSetup.utils import PrettyDocument
         original = 'baz &nbsp;<bar>&"\''
-        expected = (b'<?xml version="1.0" encoding="utf-8"?>\n'
-                    b'<doc bar="" foo="baz '
-                    b'&amp;nbsp;&lt;bar&gt;&amp;&quot;\'"/>\n')
+        html_escaped = (b'<?xml version="1.0" encoding="utf-8"?>\n'
+                        b'<doc bar="" foo="baz '
+                        b'&amp;nbsp;&lt;bar&gt;&amp;&quot;&#x27;"/>\n')
+        cgi_escaped = (b'<?xml version="1.0" encoding="utf-8"?>\n'
+                       b'<doc bar="" foo="baz '
+                       b'&amp;nbsp;&lt;bar&gt;&amp;&quot;\'"/>\n')
 
         doc = PrettyDocument()
         node = doc.createElement('doc')
         node.setAttribute('foo', original)
         node.setAttribute('bar', None)
         doc.appendChild(node)
-        self.assertEqual(doc.toprettyxml(' '), expected)
-        # Reparse
-        e = _getDocumentElement(expected)
+
+        # Output depends on the presence of html.escape
+        xml_output = doc.toprettyxml(' ')
+        if HTML_ESCAPE:
+            self.assertEqual(xml_output, html_escaped)
+        else:
+            self.assertEqual(xml_output, cgi_escaped)
+
+        # Reparse from cgi.escape representation (Python 2 only)
+        # should always work
+        e = _getDocumentElement(cgi_escaped)
+        self.assertEqual(e.getAttribute('foo'), original)
+
+        # Reparse from html.escape representation (Python 3 only)
+        # should always work, even without html.escape
+        e = _getDocumentElement(html_escaped)
         self.assertEqual(e.getAttribute('foo'), original)
 
     def test_text_quoting(self):
         from Products.GenericSetup.utils import PrettyDocument
         original = 'goo &nbsp;<hmm>&"\''
-        expected = (b'<?xml version="1.0" encoding="utf-8"?>\n'
-                    b'<doc>goo &amp;nbsp;&lt;hmm&gt;&amp;"\'</doc>\n')
+        html_escaped = (b'<?xml version="1.0" encoding="utf-8"?>\n'
+                        b'<doc>goo &amp;nbsp;&lt;hmm&gt;'
+                        b'&amp;&quot;&#x27;</doc>\n')
+        cgi_escaped = (b'<?xml version="1.0" encoding="utf-8"?>\n'
+                       b'<doc>goo &amp;nbsp;&lt;hmm&gt;'
+                       b'&amp;"\'</doc>\n')
 
         doc = PrettyDocument()
         node = doc.createElement('doc')
         child = doc.createTextNode(original)
         node.appendChild(child)
         doc.appendChild(node)
-        self.assertEqual(doc.toprettyxml(' '), expected)
-        # Reparse
-        e = _getDocumentElement(expected)
+
+        # Output depends on the presence of html.escape
+        xml_output = doc.toprettyxml(' ')
+        if HTML_ESCAPE:
+            self.assertEqual(xml_output, html_escaped)
+        else:
+            self.assertEqual(xml_output, cgi_escaped)
+
+        # Reparse from cgi.escape representation (Python 2 only)
+        # should always work
+        e = _getDocumentElement(cgi_escaped)
+        self.assertEqual(e.childNodes[0].nodeValue, original)
+
+        # Reparse from html.escape representation (Python 3 only)
+        # should always work, even without html.escape
+        e = _getDocumentElement(html_escaped)
         self.assertEqual(e.childNodes[0].nodeValue, original)
 
 
