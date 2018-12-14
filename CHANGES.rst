@@ -1,7 +1,7 @@
 Changelog
 =========
 
-2.0b5 (unreleased)
+2.0b5 (2018-12-14)
 ------------------
 
 - Fix deprecation warnings for ``cgi.escape`` by using ``html.escape``
