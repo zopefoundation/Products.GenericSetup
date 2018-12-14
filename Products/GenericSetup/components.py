@@ -22,7 +22,7 @@ from Acquisition import aq_parent
 from zope.component import adapts
 from zope.component import getUtilitiesFor
 from zope.component import queryMultiAdapter
-from zope.component.interfaces import ComponentLookupError
+from zope.interface.interfaces import ComponentLookupError
 from zope.interface.interfaces import IComponentRegistry
 from zope.component.interfaces import IPossibleSite
 
