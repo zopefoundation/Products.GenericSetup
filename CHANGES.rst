@@ -4,7 +4,9 @@ Changelog
 2.0b6 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Specify supported Python versions using ``python_requires`` in setup.py
+
+- Adding suport for Python 3.8
 
 
 2.0b5 (2018-12-14)
