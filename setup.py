@@ -69,7 +69,6 @@ setup(
         'zope.interface >= 3.8',
         'five.localsitemanager',
         'Products.PythonScripts',
-        'Products.ZCTextIndex',
         'Products.ZCatalog',
     ],
     tests_require=[
