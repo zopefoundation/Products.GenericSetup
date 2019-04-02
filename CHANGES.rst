@@ -4,6 +4,9 @@ Changelog
 2.0b6 (unreleased)
 ------------------
 
+- clean up ``setup.py`` and remove support for ``setup.py test``
+ (`#73 <https://github.com/zopefoundation/Products.GenericSetup/issues/73>`_)
+
 - add support for unicode data in ``writeDataFile``
   (`#79 <https://github.com/zopefoundation/Products.GenericSetup/issues/79>`_)
 

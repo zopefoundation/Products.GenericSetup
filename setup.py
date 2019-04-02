@@ -60,32 +60,19 @@ setup(
     namespace_packages=['Products'],
     zip_safe=False,
     python_requires='>=2.7,!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*',
-    setup_requires=['eggtestinfo',
-                    ],
     install_requires=[
         'setuptools',
         'six',
         'Zope >= 4.0b4',
-        'zope.interface >= 3.8',
         'five.localsitemanager',
         'Products.PythonScripts',
         'Products.ZCatalog',
     ],
-    tests_require=[
-        'zope.testrunner',
-    ],
     extras_require=dict(
-        docs=[
-            'Sphinx',
-            'repoze.sphinx.autointerface',
-        ],
+        docs=['Sphinx', 'repoze.sphinx.autointerface'],
     ),
-    test_loader="zope.testrunner.eggsupport:SkipLayers",
-    test_suite="Products.GenericSetup.tests",
     entry_points="""
     [zope2.initialize]
     Products.GenericSetup = Products.GenericSetup:initialize
-    [distutils.commands]
-    ftest = zope.testing.testrunner.eggsupport:ftest
     """,
 )
