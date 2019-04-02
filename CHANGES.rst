@@ -4,6 +4,9 @@ Changelog
 2.0b6 (unreleased)
 ------------------
 
+- add support for unicode data in ``writeDataFile``
+  (`#79 <https://github.com/zopefoundation/Products.GenericSetup/issues/79>`_)
+
 - Specify supported Python versions using ``python_requires`` in setup.py
 
 - Adding suport for Python 3.8

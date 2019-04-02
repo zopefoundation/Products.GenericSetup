@@ -295,9 +295,8 @@ class DirectoryExportContext(BaseContext):
         """ See IExportContext.
         """
         if isinstance(text, six.text_type):
-            raise ValueError("Unicode text is not supported, even if it only "
-                             "contains ascii. Please encode your data. See "
-                             "GS 1.7.0 changes for more")
+            encoding = self.getEncoding() or 'utf-8'
+            text = text.encode(encoding)
         file = self.openDataFile(filename, content_type, subdir)
         file.write(text)
         file.close()
@@ -435,13 +434,13 @@ class TarballExportContext(BaseContext):
             parents.pop()
 
         info = TarInfo(filename)
+        if isinstance(text, six.text_type):
+            encoding = self.getEncoding() or 'utf-8'
+            text = text.encode(encoding)
+
         if isinstance(text, six.binary_type):
             stream = BytesIO(text)
             info.size = len(text)
-        elif isinstance(text, six.text_type):
-            raise ValueError("Unicode text is not supported, even if it only "
-                             "contains ascii. Please encode your data. See "
-                             "GS 1.7.0 changes for more")
         else:
             # Assume text is a an instance of a class like
             # Products.Archetypes.WebDAVSupport.PdataStreamIterator,
@@ -491,9 +490,8 @@ class SnapshotExportContext(BaseContext):
             filename = filename[sep+1:]
 
         if six.PY2 and isinstance(text, six.text_type):
-            raise ValueError("Unicode text is not supported, even if it only "
-                             "contains ascii. Please encode your data. See "
-                             "GS 1.7.0 changes for more")
+            encoding = self.getEncoding() or 'utf-8'
+            text = text.encode(encoding)
 
         folder = self._ensureSnapshotsFolder(subdir)
 

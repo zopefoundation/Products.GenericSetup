@@ -366,16 +366,15 @@ class DirectoryExportContextTests(FilesystemTestBase, ConformsToISetupContext,
 
         text = u'Kein Weltraum links vom Gerät'
         FILENAME = 'unicode.txt'
-        self._makeFile(FILENAME, printable_bytes)
+        fqname = self._makeFile(FILENAME, printable_bytes)
 
         site = DummySite('site').__of__(self.app)
         ctx = self._makeOne(site, self._PROFILE_PATH)
 
-        self.assertRaises(ValueError, ctx.writeDataFile,
-                          FILENAME, text, 'text/plain')
-        text = u'No umlauts'
-        self.assertRaises(ValueError, ctx.writeDataFile,
-                          FILENAME, text, 'text/plain')
+        ctx.writeDataFile(FILENAME, text, 'text/plain')
+
+        with open(fqname, 'rb') as fp:
+            self.assertEqual(fp.read(), text.encode('UTF-8'))
 
     def test_writeDataFile_new_subdir(self):
 
@@ -752,15 +751,17 @@ class TarballExportContextTests(ZopeTestCase, ConformsToISetupContext,
     def test_writeDataFile_umlauts(self):
 
         text = u'Kein Weltraum links vom Gerät'
+        now = int(time.time())
 
         site = DummySite('site').__of__(self.app)
         ctx = self._getTargetClass()(site)
 
-        self.assertRaises(ValueError, ctx.writeDataFile,
-                          'foo.txt', text, 'text/plain')
-        text = u'No umlauts'
-        self.assertRaises(ValueError, ctx.writeDataFile,
-                          'foo.txt', text, 'text/plain')
+        ctx.writeDataFile('foo.txt', text, 'text/plain')
+
+        fileish = BytesIO(ctx.getArchive())
+
+        self._verifyTarballContents(fileish, ['foo.txt'], now)
+        self._verifyTarballEntry(fileish, 'foo.txt', text.encode('UTF-8'))
 
     def test_writeDataFile_multiple(self):
 
@@ -898,9 +899,6 @@ class SnapshotExportContextTests(ZopeTestCase, ConformsToISetupContext,
         self.assertEqual(fileobj.getContentType(), CONTENT_TYPE)
         self.assertEqual(fileobj.data, digits_bytes)
 
-    @unittest.skipIf(
-        six.PY2, 'On Python2 writing unicode files is not supported'
-    )
     def test_writeDataFile_simple_plain_text_unicode(self):
         FILENAME = 'simple.txt'
         CONTENT_TYPE = 'text/plain'
@@ -923,25 +921,6 @@ class SnapshotExportContextTests(ZopeTestCase, ConformsToISetupContext,
         self.assertEqual(fileobj.meta_type, File.meta_type)
         self.assertEqual(fileobj.getContentType(), CONTENT_TYPE)
         self.assertEqual(fileobj.data, CONTENT.encode(ctx._encoding))
-
-    @unittest.skipUnless(
-        six.PY2, 'On Python2 writing unicode files is not supported'
-    )
-    def test_writeDataFile_simple_plain_text_unicode_raises(self):
-        FILENAME = 'simple.txt'
-        CONTENT_TYPE = 'text/plain'
-        CONTENT = u'Unicode, with non-ASCII: %s.' % six.unichr(150)
-
-        site = DummySite('site').__of__(self.app)
-        site.setup_tool = DummyTool('setup_tool')
-        tool = site.setup_tool
-        ctx = self._makeOne(tool, 'simple', 'latin_1')
-
-        self.assertRaises(ValueError, ctx.writeDataFile,
-                          FILENAME, CONTENT, CONTENT_TYPE)
-        CONTENT = u'No unicode chars'
-        self.assertRaises(ValueError, ctx.writeDataFile,
-                          FILENAME, CONTENT, CONTENT_TYPE)
 
     def test_writeDataFile_simple_xml(self):
 
