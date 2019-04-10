@@ -4,6 +4,9 @@ Changelog
 2.0b6 (unreleased)
 ------------------
 
+- Zope 4 ZMI: declare that creating a GS tool does not need an add dialog
+  (`#80 <https://github.com/zopefoundation/Products.GenericSetup/issues/80>`_)
+
 - clean up ``setup.py`` and remove support for ``setup.py test``
  (`#73 <https://github.com/zopefoundation/Products.GenericSetup/issues/73>`_)
 
