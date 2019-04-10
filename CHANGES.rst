@@ -1,7 +1,7 @@
 Changelog
 =========
 
-2.0b6 (unreleased)
+2.0b6 (2019-04-09)
 ------------------
 
 - Zope 4 ZMI: Added icon
