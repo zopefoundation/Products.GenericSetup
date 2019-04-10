@@ -4,6 +4,8 @@ Changelog
 2.0b6 (unreleased)
 ------------------
 
+- Zope 4 ZMI: Added icon
+
 - Zope 4 ZMI: declare that creating a GS tool does not need an add dialog
   (`#80 <https://github.com/zopefoundation/Products.GenericSetup/issues/80>`_)
 

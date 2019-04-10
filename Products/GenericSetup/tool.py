@@ -176,6 +176,7 @@ class SetupTool(Folder):
     """
 
     meta_type = 'Generic Setup Tool'
+    zmi_icon = 'fas fa-industry'
     zmi_show_add_dialog = False
 
     _baseline_context_id = ''
