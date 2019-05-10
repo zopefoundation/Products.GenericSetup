@@ -1,20 +1,20 @@
 .. image:: https://img.shields.io/pypi/v/Products.GenericSetup.svg
-   :target: https://pypi.python.org/pypi/Products.GenericSetup/
-   :alt: Latest release
+        :target: https://pypi.python.org/pypi/Products.GenericSetup/
+        :alt: Latest release
 
 .. image:: https://img.shields.io/pypi/pyversions/Products.GenericSetup.svg
-   :target: https://pypi.org/project/Products.GenericSetup/
-   :alt: Supported Python versions
+        :target: https://pypi.org/project/Products.GenericSetup/
+        :alt: Supported Python versions
 
 .. image:: https://travis-ci.org/zopefoundation/Products.GenericSetup.svg?branch=master
-   :target: https://travis-ci.org/zopefoundation/Products.GenericSetup
+        :target: https://travis-ci.org/zopefoundation/Products.GenericSetup
 
 .. image:: https://coveralls.io/repos/github/zopefoundation/Products.GenericSetup/badge.svg?branch=master
-   :target: https://coveralls.io/github/zopefoundation/Products.GenericSetup?branch=master
+        :target: https://coveralls.io/github/zopefoundation/Products.GenericSetup?branch=master
 
 .. image:: https://readthedocs.org/projects/productsgenericsetup/badge/?version=latest
-   :target: https://productsgenericsetup.readthedocs.io/
-   :alt: Documentation Status
+        :target: https://productsgenericsetup.readthedocs.io/
+        :alt: Documentation Status
 
 
 Products.GenericSetup
