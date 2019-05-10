@@ -15,6 +15,7 @@ build
 coverage.xml
 develop-eggs
 dist
+default.profraw
 downloads
 eggs
 htmlcov
