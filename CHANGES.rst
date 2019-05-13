@@ -19,7 +19,7 @@ Changelog
   (`#80 <https://github.com/zopefoundation/Products.GenericSetup/issues/80>`_)
 
 - clean up ``setup.py`` and remove support for ``setup.py test``
- (`#73 <https://github.com/zopefoundation/Products.GenericSetup/issues/73>`_)
+  (`#73 <https://github.com/zopefoundation/Products.GenericSetup/issues/73>`_)
 
 - add support for unicode data in ``writeDataFile``
   (`#79 <https://github.com/zopefoundation/Products.GenericSetup/issues/79>`_)
