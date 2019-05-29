@@ -267,6 +267,6 @@ def listUpgradeSteps(tool, profile_id, source):
                 sortkey = nested[0]['sortkey']
                 normsrc = normalize_version(src)
                 res.append(((normsrc, sortkey, outer_proposed), nested))
-    res.sort()
+    res.sort(key=lambda x: x[0])
     res = [i[1] for i in res]
     return res
