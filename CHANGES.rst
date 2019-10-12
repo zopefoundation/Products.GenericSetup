@@ -1,7 +1,7 @@
 Changelog
 =========
 
-2.1b1 (unreleased)
+2.0.1 (2019-10-12)
 ------------------
 
 - Fix the sorting of upgrade steps.  [vanderbauwhede]
