@@ -112,6 +112,9 @@ def importToolset(context):
     toolset = setup_tool.getToolsetRegistry()
 
     toolset.parseXML(xml, encoding)
+    # Force a safe so changes in simple lists and dicts are persisted.
+    # https://github.com/zopefoundation/Products.GenericSetup/issues/86
+    setup_tool._p_changed = True
 
     existing_ids = site.objectIds()
 
