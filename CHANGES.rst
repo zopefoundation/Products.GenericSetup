@@ -14,7 +14,7 @@ New features:
 
 Bug fixes:
 
-- *add item here*
+- No longer test on Python 2.6.
 
 
 1.8.10 (2018-10-01)
