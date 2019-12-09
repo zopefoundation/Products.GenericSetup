@@ -4,7 +4,8 @@ Changelog
 2.0.2 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Force saving unpersisted changes in toolset registry.
+  Fixes `issue 86 <https://github.com/zopefoundation/Products.GenericSetup/issues/86>`_.
 
 
 2.0.1 (2019-10-12)
