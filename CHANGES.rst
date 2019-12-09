@@ -14,6 +14,9 @@ New features:
 
 Bug fixes:
 
+- Force saving unpersisted changes in toolset registry.
+  Fixes `issue 86 <https://github.com/zopefoundation/Products.GenericSetup/issues/86>`_.
+
 - No longer test on Python 2.6.
 
 
