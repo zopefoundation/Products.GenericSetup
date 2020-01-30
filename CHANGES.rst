@@ -1,7 +1,7 @@
 Changelog
 =========
 
-2.0.2 (unreleased)
+2.0.2 (2020-01-29)
 ------------------
 
 - Remove Zope 2.13 fossils to stay compatible with Zope 5
