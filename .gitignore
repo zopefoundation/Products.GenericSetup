@@ -26,6 +26,7 @@ var
 /include
 /lib*
 pip-selfcheck.json
+pyvenv.cfg
 /src
 docs/_build/
 
