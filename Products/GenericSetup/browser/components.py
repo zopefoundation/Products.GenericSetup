@@ -14,7 +14,6 @@
 """
 
 from Products.Five import BrowserView
-from Products.Five.browser.decode import processInputs
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from Products.Five.component.interfaces import IObjectManagerSite
 from zope.component import adapts
@@ -23,7 +22,6 @@ from zope.component import getMultiAdapter
 from zope.interface import implementer
 from zope.interface import Interface
 from zope.schema import Text
-from ZPublisher import HTTPRequest
 
 from Products.GenericSetup.context import SetupEnviron
 from Products.GenericSetup.interfaces import IBody
@@ -66,10 +64,6 @@ class ComponentsSetupView(BrowserView):
     status = ''
 
     def update(self):
-        # BBB: for Zope < 2.14
-        if not getattr(self.request, 'postProcessInputs', False):
-            processInputs(self.request, [HTTPRequest.default_encoding])
-
         self.adapter = getAdapter(self.context, IComponentsSetupSchema)
 
         if 'apply' in self.request.form:

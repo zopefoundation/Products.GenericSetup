@@ -4,6 +4,8 @@ Changelog
 2.0.2 (unreleased)
 ------------------
 
+- Remove Zope 2.13 fossils to stay compatible with Zope 5
+
 - Force saving unpersisted changes in toolset registry.
   Fixes `issue 86 <https://github.com/zopefoundation/Products.GenericSetup/issues/86>`_.
 
