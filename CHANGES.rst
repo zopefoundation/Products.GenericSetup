@@ -4,14 +4,6 @@ Changelog
 1.8.11 (unreleased)
 -------------------
 
-Breaking changes:
-
-- *add item here*
-
-New features:
-
-- *add item here*
-
 Bug fixes:
 
 - Force saving unpersisted changes in toolset registry.
