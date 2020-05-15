@@ -18,6 +18,7 @@ dist
 default.profraw
 downloads
 eggs
+flake8
 htmlcov
 local.cfg
 parts
