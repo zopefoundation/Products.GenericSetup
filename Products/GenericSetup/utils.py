@@ -51,7 +51,7 @@ from Products.GenericSetup.permissions import ManagePortal
 
 _pkgdir = package_home(globals())
 _wwwdir = os.path.join(_pkgdir, 'www')
-_xmldir = os.path.join(_pkgdir, 'xml')
+_xmldir = os.path.join(_pkgdir, 'xml_templates')
 
 # Please note that these values may change. Always import
 # the values from here instead of using the values directly.

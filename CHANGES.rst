@@ -4,6 +4,9 @@ Changelog
 2.0.3 (unreleased)
 ------------------
 
+- Renamed ``xml`` dir to ``xml_templates``.
+  This avoids an import warning on Python 2.7.
+
 
 2.0.2 (2020-01-29)
 ------------------
