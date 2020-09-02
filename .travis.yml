@@ -16,7 +16,7 @@ matrix:
           env: TOXENV=py38
 
 install:
-    - install -U pip setuptools tox coveralls
+    - pip install -U pip setuptools tox coveralls
 
 script:
     - tox
