@@ -14,13 +14,15 @@
 """
 
 import unittest
+
 from Testing import ZopeTestCase
 from zope.component import getMultiAdapter
 
-from Products.GenericSetup.interfaces import IBody
-from Products.GenericSetup.testing import BodyAdapterTestCase
-from Products.GenericSetup.testing import DummySetupEnviron
-from Products.GenericSetup.testing import ExportImportZCMLLayer
+from ...interfaces import IBody
+from ...testing import BodyAdapterTestCase
+from ...testing import DummySetupEnviron
+from ...testing import ExportImportZCMLLayer
+
 
 ZopeTestCase.installProduct('ZCTextIndex', 1)
 ZopeTestCase.installProduct('PluginIndexes', 1)
@@ -123,8 +125,7 @@ class ZCatalogXMLAdapterTests(BodyAdapterTestCase, unittest.TestCase):
     layer = ExportImportZCMLLayer
 
     def _getTargetClass(self):
-        from Products.GenericSetup.ZCatalog.exportimport \
-                import ZCatalogXMLAdapter
+        from ..exportimport import ZCatalogXMLAdapter
 
         return ZCatalogXMLAdapter
 

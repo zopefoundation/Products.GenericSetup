@@ -15,17 +15,17 @@
 
 from AccessControl.SecurityInfo import ModuleSecurityInfo
 
-from Products.GenericSetup.interfaces import BASE
-from Products.GenericSetup.interfaces import EXTENSION
-from Products.GenericSetup.permissions import ManagePortal
-from Products.GenericSetup.registry import _profile_registry \
-    as profile_registry
+from .interfaces import BASE
+from .interfaces import EXTENSION
+from .permissions import ManagePortal
+from .registry import _profile_registry as profile_registry
+
 
 # This is for easier imports by add-ons.
 BASE, EXTENSION, profile_registry  # pyflakes
 
 security = ModuleSecurityInfo('Products.GenericSetup')
-security.declareProtected(ManagePortal, 'profile_registry')
+security.declareProtected(ManagePortal, 'profile_registry')  # NOQA: D001
 
 
 def initialize(context):

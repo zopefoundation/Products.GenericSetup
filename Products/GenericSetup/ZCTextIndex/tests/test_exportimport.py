@@ -17,8 +17,9 @@ import unittest
 
 from Acquisition import Implicit
 
-from Products.GenericSetup.testing import NodeAdapterTestCase
-from Products.GenericSetup.testing import ExportImportZCMLLayer
+from ...testing import ExportImportZCMLLayer
+from ...testing import NodeAdapterTestCase
+
 
 _PLEXICON_XML = b"""\
 <object name="foo_plexicon" meta_type="ZCTextIndex Lexicon">
@@ -53,8 +54,7 @@ class ZCLexiconNodeAdapterTests(NodeAdapterTestCase, unittest.TestCase):
     layer = ExportImportZCMLLayer
 
     def _getTargetClass(self):
-        from Products.GenericSetup.ZCTextIndex.exportimport \
-                import ZCLexiconNodeAdapter
+        from ..exportimport import ZCLexiconNodeAdapter
 
         return ZCLexiconNodeAdapter
 
@@ -76,8 +76,7 @@ class ZCTextIndexNodeAdapterTests(NodeAdapterTestCase, unittest.TestCase):
     layer = ExportImportZCMLLayer
 
     def _getTargetClass(self):
-        from Products.GenericSetup.ZCTextIndex.exportimport \
-                import ZCTextIndexNodeAdapter
+        from ..exportimport import ZCTextIndexNodeAdapter
 
         return ZCTextIndexNodeAdapter
 
@@ -104,10 +103,11 @@ class UnchangedTests(unittest.TestCase):
 
     def test_ZCLexicon(self):
         from xml.dom.minidom import parseString
-        from Products.GenericSetup.testing import DummySetupEnviron
+
         from Products.ZCTextIndex.PipelineFactory import element_factory
-        from Products.GenericSetup.ZCTextIndex.exportimport \
-            import ZCLexiconNodeAdapter
+
+        from ...testing import DummySetupEnviron
+        from ..exportimport import ZCLexiconNodeAdapter
 
         _XML = b"""\
         <object name="foo_plexicon" meta_type="ZCTextIndex Lexicon">
@@ -136,11 +136,12 @@ class UnchangedTests(unittest.TestCase):
 
     def test_ZCTextIndex(self):
         from xml.dom.minidom import parseString
+
         from Products.ZCTextIndex.ZCTextIndex import PLexicon
         from Products.ZCTextIndex.ZCTextIndex import ZCTextIndex
-        from Products.GenericSetup.testing import DummySetupEnviron
-        from Products.GenericSetup.ZCTextIndex.exportimport \
-            import ZCTextIndexNodeAdapter
+
+        from ...testing import DummySetupEnviron
+        from ..exportimport import ZCTextIndexNodeAdapter
         _XML = b"""\
         <index name="foo_zctext" meta_type="ZCTextIndex">
         <indexed_attr value="bar"/>

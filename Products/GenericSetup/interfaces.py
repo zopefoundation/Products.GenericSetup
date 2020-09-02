@@ -18,6 +18,7 @@ from zope.interface import Interface
 from zope.schema import Text
 from zope.schema import TextLine
 
+
 # Please note that these values may change. Always import
 # the values from here instead of using the values directly.
 BASE, EXTENSION = 1, 2

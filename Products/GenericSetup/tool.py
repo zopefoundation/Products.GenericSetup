@@ -17,49 +17,52 @@ try:
     from html import escape
 except ImportError:  # BBB Python 2
     from cgi import escape
+
 import logging
 import os
-import six
 import time
 import types
 from operator import itemgetter
+
+import six
 
 from AccessControl.class_init import InitializeClass
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from Acquisition import aq_base
 from OFS.Folder import Folder
 from OFS.Image import File
-from Products.PageTemplates.PageTemplateFile import PageTemplateFile
 from persistent.mapping import PersistentMapping
+from Products.PageTemplates.PageTemplateFile import PageTemplateFile
 from zope import event
 from zope.interface import implementer
 
-from Products.GenericSetup.context import DirectoryImportContext
-from Products.GenericSetup.context import SnapshotExportContext
-from Products.GenericSetup.context import SnapshotImportContext
-from Products.GenericSetup.context import TarballExportContext
-from Products.GenericSetup.context import TarballImportContext
-from Products.GenericSetup.differ import ConfigDiff
-from Products.GenericSetup.events import BeforeProfileImportEvent
-from Products.GenericSetup.events import ProfileImportedEvent
-from Products.GenericSetup.interfaces import BASE
-from Products.GenericSetup.interfaces import EXTENSION
-from Products.GenericSetup.interfaces import ISetupTool
-from Products.GenericSetup.interfaces import SKIPPED_FILES
-from Products.GenericSetup.permissions import ManagePortal
-from Products.GenericSetup.registry import ExportStepRegistry
-from Products.GenericSetup.registry import ImportStepRegistry
-from Products.GenericSetup.registry import ToolsetRegistry
-from Products.GenericSetup.registry import _export_step_registry
-from Products.GenericSetup.registry import _import_step_registry
-from Products.GenericSetup.registry import _profile_registry
-from Products.GenericSetup.upgrade import _upgrade_registry
-from Products.GenericSetup.upgrade import listProfilesWithUpgrades
-from Products.GenericSetup.upgrade import listUpgradeSteps
-from Products.GenericSetup.utils import _computeTopologicalSort
-from Products.GenericSetup.utils import _getProductPath
-from Products.GenericSetup.utils import _resolveDottedName
-from Products.GenericSetup.utils import _wwwdir
+from .context import DirectoryImportContext
+from .context import SnapshotExportContext
+from .context import SnapshotImportContext
+from .context import TarballExportContext
+from .context import TarballImportContext
+from .differ import ConfigDiff
+from .events import BeforeProfileImportEvent
+from .events import ProfileImportedEvent
+from .interfaces import BASE
+from .interfaces import EXTENSION
+from .interfaces import SKIPPED_FILES
+from .interfaces import ISetupTool
+from .permissions import ManagePortal
+from .registry import ExportStepRegistry
+from .registry import ImportStepRegistry
+from .registry import ToolsetRegistry
+from .registry import _export_step_registry
+from .registry import _import_step_registry
+from .registry import _profile_registry
+from .upgrade import _upgrade_registry
+from .upgrade import listProfilesWithUpgrades
+from .upgrade import listUpgradeSteps
+from .utils import _computeTopologicalSort
+from .utils import _getProductPath
+from .utils import _resolveDottedName
+from .utils import _wwwdir
+
 
 IMPORT_STEPS_XML = 'import_steps.xml'
 EXPORT_STEPS_XML = 'export_steps.xml'
@@ -519,7 +522,7 @@ class SetupTool(Folder):
          {'label': 'Manage', 'action': 'manage_stepRegistry'}) +
         Folder.manage_options[3:])  # skip "View", "Properties"
 
-    security.declareProtected(ManagePortal, 'manage_tool')
+    security.declareProtected(ManagePortal, 'manage_tool')  # NOQA: D001
     manage_tool = PageTemplateFile('sutProperties', _wwwdir)
 
     @security.protected(ManagePortal)
@@ -535,14 +538,15 @@ class SetupTool(Folder):
             RESPONSE.redirect('%s/manage_tool?manage_tabs_message=%s' %
                               (self.absolute_url(), 'Properties+updated.'))
 
-    security.declareProtected(ManagePortal, 'manage_importSteps')
+    security.declareProtected(ManagePortal, 'manage_importSteps')  # NOQA: D001
     manage_importSteps = PageTemplateFile('sutImportSteps', _wwwdir)
 
-    security.declareProtected(ManagePortal, 'manage_fullImport')
+    security.declareProtected(ManagePortal, 'manage_fullImport')  # NOQA: D001
     manage_fullImport = PageTemplateFile(
         'sutFullImport', _wwwdir)
 
-    security.declareProtected(ManagePortal, 'manage_tarballImport')
+    security.declareProtected(ManagePortal,  # NOQA: D001
+                              'manage_tarballImport')
     manage_tarballImport = PageTemplateFile(
         'sutTarballImport', _wwwdir)
 
@@ -637,7 +641,7 @@ class SetupTool(Folder):
         return self.manage_tarballImport(manage_tabs_message=steps_run,
                                          messages=result['messages'])
 
-    security.declareProtected(ManagePortal, 'manage_exportSteps')
+    security.declareProtected(ManagePortal, 'manage_exportSteps')  # NOQA: D001
     manage_exportSteps = PageTemplateFile('sutExportSteps', _wwwdir)
 
     @security.protected(ManagePortal)
@@ -664,13 +668,13 @@ class SetupTool(Folder):
                            'attachment; filename=%s' % result['filename'])
         return result['tarball']
 
-    security.declareProtected(ManagePortal, 'manage_upgrades')
+    security.declareProtected(ManagePortal, 'manage_upgrades')  # NOQA: D001
     manage_upgrades = PageTemplateFile('setup_upgrades', _wwwdir)
 
-    security.declareProtected(ManagePortal, 'upgradeStepMacro')
+    security.declareProtected(ManagePortal, 'upgradeStepMacro')  # NOQA: D001
     upgradeStepMacro = PageTemplateFile('upgradeStep', _wwwdir)
 
-    security.declareProtected(ManagePortal, 'manage_snapshots')
+    security.declareProtected(ManagePortal, 'manage_snapshots')  # NOQA: D001
     manage_snapshots = PageTemplateFile('sutSnapshots', _wwwdir)
 
     @security.protected(ManagePortal)
@@ -785,7 +789,7 @@ class SetupTool(Folder):
         return RESPONSE.redirect('%s/manage_snapshots?manage_tabs_message=%s'
                                  % (self.absolute_url(), 'Snapshot+created.'))
 
-    security.declareProtected(ManagePortal, 'manage_showDiff')
+    security.declareProtected(ManagePortal, 'manage_showDiff')  # NOQA: D001
     manage_showDiff = PageTemplateFile('sutCompare', _wwwdir)
 
     def manage_downloadDiff(self,
@@ -821,7 +825,8 @@ class SetupTool(Folder):
                                           missing_as_empty,
                                           ignore_blanks)
 
-    security.declareProtected(ManagePortal, 'manage_stepRegistry')
+    security.declareProtected(ManagePortal,  # NOQA: D001
+                              'manage_stepRegistry')
     manage_stepRegistry = PageTemplateFile('sutManage', _wwwdir)
 
     @security.protected(ManagePortal)

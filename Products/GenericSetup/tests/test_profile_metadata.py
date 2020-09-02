@@ -14,11 +14,13 @@
 """
 
 import unittest
+
 from Testing.ZopeTestCase import ZopeTestCase
 from Testing.ZopeTestCase import installProduct
 
-from Products.GenericSetup import profile_registry
-from Products.GenericSetup.metadata import ProfileMetadata
+from .. import profile_registry
+from ..metadata import ProfileMetadata
+
 
 desc = 'DESCRIPTION TEXT'
 version = 'VERSION'

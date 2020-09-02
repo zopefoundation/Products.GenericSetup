@@ -15,11 +15,13 @@
 
 import unittest
 
-from Products.GenericSetup.interfaces import IBody
-from Products.GenericSetup.testing import BodyAdapterTestCase
-from Products.GenericSetup.testing import ExportImportZCMLLayer
-from Products.GenericSetup.testing import DummySetupEnviron
 from zope.component import getMultiAdapter
+
+from ...interfaces import IBody
+from ...testing import BodyAdapterTestCase
+from ...testing import DummySetupEnviron
+from ...testing import ExportImportZCMLLayer
+
 
 _FOLDER_BODY = b"""\
 <?xml version="1.0" encoding="utf-8"?>
@@ -34,7 +36,7 @@ class FolderXMLAdapterTests(BodyAdapterTestCase, unittest.TestCase):
     layer = ExportImportZCMLLayer
 
     def _getTargetClass(self):
-        from Products.GenericSetup.OFSP.exportimport import FolderXMLAdapter
+        from ..exportimport import FolderXMLAdapter
 
         return FolderXMLAdapter
 

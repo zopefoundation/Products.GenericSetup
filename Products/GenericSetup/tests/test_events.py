@@ -1,9 +1,11 @@
 import unittest
+
 from zope.interface.verify import verifyObject
-from Products.GenericSetup.events import BeforeProfileImportEvent
-from Products.GenericSetup.interfaces import IBeforeProfileImportEvent
-from Products.GenericSetup.events import ProfileImportedEvent
-from Products.GenericSetup.interfaces import IProfileImportedEvent
+
+from ..events import BeforeProfileImportEvent
+from ..events import ProfileImportedEvent
+from ..interfaces import IBeforeProfileImportEvent
+from ..interfaces import IProfileImportedEvent
 
 
 class BaseEventTests:

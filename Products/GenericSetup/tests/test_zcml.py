@@ -16,12 +16,12 @@
 import doctest
 import unittest
 from doctest import ELLIPSIS
-from zope.testing.cleanup import cleanUp
-
-from Products.GenericSetup.registry import _import_step_registry
-from Products.GenericSetup.registry import _export_step_registry
 
 from Zope2.App import zcml
+from zope.testing.cleanup import cleanUp
+
+from ..registry import _export_step_registry
+from ..registry import _import_step_registry
 
 
 def dummy_importstep(context):

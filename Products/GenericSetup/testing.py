@@ -13,13 +13,12 @@
 """Node adapter testing utils.
 """
 
-import six
-
-from Testing.ZopeTestCase.layer import ZopeLite
-
 from xml.dom.minidom import parseString
 
+import six
+
 from OFS.interfaces import IItem
+from Testing.ZopeTestCase.layer import ZopeLite
 from zope.component import getMultiAdapter
 from zope.interface import implementer
 from zope.interface.verify import verifyClass
@@ -147,12 +146,13 @@ class ExportImportZCMLLayer(ZopeLite):
 
     @classmethod
     def setUp(cls):
-        import Zope2.App
         import AccessControl
         import Products.Five
-        import Products.GenericSetup
+        import Zope2.App
         import zope.traversing
         from Zope2.App import zcml
+
+        import Products.GenericSetup
 
         zcml.load_config('meta.zcml', Zope2.App)
         zcml.load_config('meta.zcml', Products.Five)

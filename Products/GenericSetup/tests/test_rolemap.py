@@ -17,7 +17,7 @@ import unittest
 
 from OFS.Folder import Folder
 
-from Products.GenericSetup.testing import ExportImportZCMLLayer
+from ..testing import ExportImportZCMLLayer
 from .common import BaseRegistryTests
 from .common import DummyExportContext
 from .common import DummyImportContext
@@ -29,7 +29,7 @@ class RolemapExportConfiguratorTests(BaseRegistryTests):
 
     def _getTargetClass(self):
 
-        from Products.GenericSetup.rolemap import RolemapExportConfigurator
+        from ..rolemap import RolemapExportConfigurator
         return RolemapExportConfigurator
 
     def test_listRoles_normal(self):
@@ -165,7 +165,7 @@ class RolemapImportConfiguratorTests(BaseRegistryTests):
 
     def _getTargetClass(self):
 
-        from Products.GenericSetup.rolemap import RolemapImportConfigurator
+        from ..rolemap import RolemapImportConfigurator
         return RolemapImportConfigurator
 
     def test_parseXML_empty(self):
@@ -369,7 +369,7 @@ class Test_exportRolemap(BaseRegistryTests):
 
         context = DummyExportContext(site)
 
-        from Products.GenericSetup.rolemap import exportRolemap
+        from ..rolemap import exportRolemap
         exportRolemap(context)
 
         self.assertEqual(len(context._wrote), 1)
@@ -388,7 +388,7 @@ class Test_exportRolemap(BaseRegistryTests):
 
         context = DummyExportContext(site)
 
-        from Products.GenericSetup.rolemap import exportRolemap
+        from ..rolemap import exportRolemap
         exportRolemap(context)
 
         self.assertEqual(len(context._wrote), 1)
@@ -408,7 +408,7 @@ class Test_exportRolemap(BaseRegistryTests):
 
         context = DummyExportContext(site)
 
-        from Products.GenericSetup.rolemap import exportRolemap
+        from ..rolemap import exportRolemap
         exportRolemap(context)
 
         self.assertEqual(len(context._wrote), 1)
@@ -431,7 +431,7 @@ class Test_exportRolemap(BaseRegistryTests):
 
         context = DummyExportContext(site)
 
-        from Products.GenericSetup.rolemap import exportRolemap
+        from ..rolemap import exportRolemap
         exportRolemap(context)
 
         self.assertEqual(len(context._wrote), 1)
@@ -451,7 +451,7 @@ class Test_exportRolemap(BaseRegistryTests):
 
         context = DummyExportContext(site)
 
-        from Products.GenericSetup.rolemap import exportRolemap
+        from ..rolemap import exportRolemap
         exportRolemap(context)
 
         self.assertEqual(len(context._wrote), 1)
@@ -488,7 +488,7 @@ class Test_importRolemap(BaseRegistryTests):
         context = DummyImportContext(site, True)
         # context._files[ 'rolemap.xml' ] = _EMPTY_EXPORT # no file!
 
-        from Products.GenericSetup.rolemap import importRolemap
+        from ..rolemap import importRolemap
         importRolemap(context)
 
         new_roles = list(getattr(site, '__ac_roles__', []))[:]
@@ -515,7 +515,7 @@ class Test_importRolemap(BaseRegistryTests):
         context = DummyImportContext(site)
         context._files['rolemap.xml'] = _EMPTY_EXPORT
 
-        from Products.GenericSetup.rolemap import importRolemap
+        from ..rolemap import importRolemap
         importRolemap(context)
 
         new_roles = list(getattr(site, '__ac_roles__', []))[:]
@@ -537,7 +537,7 @@ class Test_importRolemap(BaseRegistryTests):
         context = DummyImportContext(site, True)
         context._files['rolemap.xml'] = _EMPTY_EXPORT
 
-        from Products.GenericSetup.rolemap import importRolemap
+        from ..rolemap import importRolemap
         importRolemap(context)
 
         new_roles = list(getattr(site, '__ac_roles__', []))[:]
@@ -559,7 +559,7 @@ class Test_importRolemap(BaseRegistryTests):
         context = DummyImportContext(site, False)
         context._files['rolemap.xml'] = _EMPTY_EXPORT
 
-        from Products.GenericSetup.rolemap import importRolemap
+        from ..rolemap import importRolemap
         importRolemap(context)
 
         new_roles = list(getattr(site, '__ac_roles__', []))[:]
@@ -591,7 +591,7 @@ class Test_importRolemap(BaseRegistryTests):
         context = DummyImportContext(site, True)
         context._files['rolemap.xml'] = _ACQUIRED_EXPORT
 
-        from Products.GenericSetup.rolemap import importRolemap
+        from ..rolemap import importRolemap
         importRolemap(context)
 
         new_allowed = [x['name']
@@ -625,7 +625,7 @@ class Test_importRolemap(BaseRegistryTests):
         context = DummyImportContext(site, False)
         context._files['rolemap.xml'] = _ACQUIRED_EXPORT
 
-        from Products.GenericSetup.rolemap import importRolemap
+        from ..rolemap import importRolemap
         importRolemap(context)
 
         new_allowed = [x['name']
@@ -659,7 +659,7 @@ class Test_importRolemap(BaseRegistryTests):
         context = DummyImportContext(site, True)
         context._files['rolemap.xml'] = _UNACQUIRED_EXPORT
 
-        from Products.GenericSetup.rolemap import importRolemap
+        from ..rolemap import importRolemap
         importRolemap(context)
 
         new_allowed = [x['name']
@@ -692,7 +692,7 @@ class Test_importRolemap(BaseRegistryTests):
         context = DummyImportContext(site, False)
         context._files['rolemap.xml'] = _UNACQUIRED_EXPORT
 
-        from Products.GenericSetup.rolemap import importRolemap
+        from ..rolemap import importRolemap
         importRolemap(context)
 
         new_allowed = [x['name']
@@ -727,7 +727,7 @@ class Test_importRolemap(BaseRegistryTests):
         context = DummyImportContext(site, True)
         context._files['rolemap.xml'] = _COMBINED_EXPORT
 
-        from Products.GenericSetup.rolemap import importRolemap
+        from ..rolemap import importRolemap
         importRolemap(context)
 
         self.assertTrue(site._has_user_defined_role('ZZZ'))
@@ -764,7 +764,7 @@ class Test_importRolemap(BaseRegistryTests):
         context = DummyImportContext(site, False)
         context._files['rolemap.xml'] = _COMBINED_EXPORT
 
-        from Products.GenericSetup.rolemap import importRolemap
+        from ..rolemap import importRolemap
         importRolemap(context)
 
         self.assertTrue(site._has_user_defined_role('ZZZ'))
@@ -801,7 +801,7 @@ class Test_importRolemap(BaseRegistryTests):
         context = DummyImportContext(site, False, encoding='ascii')
         context._files['rolemap.xml'] = _COMBINED_EXPORT
 
-        from Products.GenericSetup.rolemap import importRolemap
+        from ..rolemap import importRolemap
         importRolemap(context)
 
         self.assertTrue(site._has_user_defined_role('ZZZ'))

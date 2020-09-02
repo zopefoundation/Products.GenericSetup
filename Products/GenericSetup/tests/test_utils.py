@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 ##############################################################################
 #
 # Copyright (c) 2004 Zope Foundation and Contributors.
@@ -20,12 +18,14 @@ try:
     HTML_ESCAPE = True
 except ImportError:
     HTML_ESCAPE = False
-import six
 import unittest
 
+import six
+
 from DateTime.DateTime import DateTime
-from Testing.ZopeTestCase import installProduct
 from Testing.ZopeTestCase import ZopeTestCase
+from Testing.ZopeTestCase import installProduct
+
 
 installProduct('GenericSetup')
 
@@ -361,19 +361,19 @@ class UtilsTests(unittest.TestCase):
 
     def test__getDottedName_simple(self):
 
-        from Products.GenericSetup.utils import _getDottedName
+        from ..utils import _getDottedName
 
         self.assertEqual(_getDottedName(_testFunc), _TEST_FUNC_NAME)
 
     def test__getDottedName_string(self):
 
-        from Products.GenericSetup.utils import _getDottedName
+        from ..utils import _getDottedName
 
         self.assertEqual(_getDottedName(_TEST_FUNC_NAME), _TEST_FUNC_NAME)
 
     def test__getDottedName_unicode(self):
 
-        from Products.GenericSetup.utils import _getDottedName
+        from ..utils import _getDottedName
 
         dotted = u'%s' % _TEST_FUNC_NAME
         self.assertEqual(_getDottedName(dotted), _TEST_FUNC_NAME)
@@ -381,19 +381,19 @@ class UtilsTests(unittest.TestCase):
 
     def test__getDottedName_class(self):
 
-        from Products.GenericSetup.utils import _getDottedName
+        from ..utils import _getDottedName
 
         self.assertEqual(_getDottedName(Whatever), _WHATEVER_NAME)
 
     def test__getDottedName_inst(self):
 
-        from Products.GenericSetup.utils import _getDottedName
+        from ..utils import _getDottedName
 
         self.assertEqual(_getDottedName(whatever_inst), _WHATEVER_INST_NAME)
 
     def test__getDottedName_noname(self):
 
-        from Products.GenericSetup.utils import _getDottedName
+        from ..utils import _getDottedName
 
         class Doh:
             pass
@@ -405,13 +405,13 @@ class UtilsTests(unittest.TestCase):
 class PropertyManagerHelpersTests(unittest.TestCase):
 
     def _getTargetClass(self):
-        from Products.GenericSetup.utils import PropertyManagerHelpers
+        from ..utils import PropertyManagerHelpers
 
         return PropertyManagerHelpers
 
     def _makeOne(self, context=None, environ=None):
-        from Products.GenericSetup.utils import NodeAdapterBase
-        from Products.GenericSetup.testing import DummySetupEnviron
+        from ..testing import DummySetupEnviron
+        from ..utils import NodeAdapterBase
 
         class Foo(self._getTargetClass(), NodeAdapterBase):
             pass
@@ -467,7 +467,7 @@ class PropertyManagerHelpersTests(unittest.TestCase):
                                 u'Foo\nLines\n\xfcbrigens'.encode('utf-8'))
         else:
             obj._updateProperty('foo_lines',
-                                'Foo\nLines\nübrigens')
+                                u'Foo\nLines\n\xfcbrigens')
         obj._updateProperty('foo_long', '1')
         obj._updateProperty('foo_string', 'Foo String')
         obj._updateProperty('foo_text', 'Foo\nText')
@@ -483,7 +483,7 @@ class PropertyManagerHelpersTests(unittest.TestCase):
         obj._updateProperty('foo_int_nodel', '1789')
 
     def test__extractProperties_empty(self):
-        from Products.GenericSetup.utils import PrettyDocument
+        from ..utils import PrettyDocument
         helpers = self._makeOne()
         doc = helpers._doc = PrettyDocument()
         node = doc.createElement('dummy')
@@ -493,7 +493,7 @@ class PropertyManagerHelpersTests(unittest.TestCase):
         self.assertEqual(doc.toprettyxml(' '), _EMPTY_PROPERTY_EXPORT)
 
     def test__extractProperties_none(self):
-        from Products.GenericSetup.utils import PrettyDocument
+        from ..utils import PrettyDocument
         context = self._makeContext()
         # When a text property is None, in 1.10.0 you get an AttributeError:
         # 'NoneType' object has no attribute 'decode'
@@ -507,7 +507,7 @@ class PropertyManagerHelpersTests(unittest.TestCase):
         self.assertEqual(doc.toprettyxml(' '), _NONE_PROPERTY_EXPORT)
 
     def test__extractProperties_normal(self):
-        from Products.GenericSetup.utils import PrettyDocument
+        from ..utils import PrettyDocument
         helpers = self._makeOne()
         obj = self._getReal(helpers.context)
         self._populate(obj)
@@ -551,7 +551,7 @@ class PropertyManagerHelpersTests(unittest.TestCase):
         self.assertEqual(obj.foo_int_nodel, 0)
 
     def test__initProperties_normal(self):
-        from Products.GenericSetup.utils import PrettyDocument
+        from ..utils import PrettyDocument
         helpers = self._makeOne()
         obj = self._getReal(helpers.context)
         node = _getDocumentElement(_NORMAL_PROPERTY_EXPORT)
@@ -569,7 +569,7 @@ class PropertyManagerHelpersTests(unittest.TestCase):
         self.assertEqual(doc.toprettyxml(' '), _NORMAL_PROPERTY_EXPORT)
 
     def test__initProperties_normal_oldxml(self):
-        from Products.GenericSetup.utils import PrettyDocument
+        from ..utils import PrettyDocument
         helpers = self._makeOne()
         obj = self._getReal(helpers.context)
         node = _getDocumentElement(_NORMAL_PROPERTY_EXPORT_OLD)
@@ -587,7 +587,7 @@ class PropertyManagerHelpersTests(unittest.TestCase):
         self.assertEqual(doc.toprettyxml(' '), _NORMAL_PROPERTY_EXPORT)
 
     def test__initProperties_normal_iso_8859_1(self):
-        from Products.GenericSetup.utils import PrettyDocument
+        from ..utils import PrettyDocument
         helpers = self._makeOne()
         obj = self._getReal(helpers.context)
         node = _getDocumentElement(_NORMAL_PROPERTY_EXPORT_ISO_8859_1)
@@ -609,7 +609,7 @@ class PropertyManagerHelpersTests(unittest.TestCase):
         self.assertEqual(doc.toprettyxml(' '), _NORMAL_PROPERTY_EXPORT)
 
     def test__initProperties_fixed(self):
-        from Products.GenericSetup.utils import PrettyDocument
+        from ..utils import PrettyDocument
         helpers = self._makeOne()
         node = _getDocumentElement(_FIXED_PROPERTY_EXPORT)
         helpers._initProperties(node)
@@ -622,7 +622,7 @@ class PropertyManagerHelpersTests(unittest.TestCase):
         self.assertEqual(doc.toprettyxml(' '), _NORMAL_PROPERTY_EXPORT)
 
     def test__initProperties_special(self):
-        from Products.GenericSetup.utils import PrettyDocument
+        from ..utils import PrettyDocument
         helpers = self._makeOne()
         node = _getDocumentElement(_SPECIAL_IMPORT)
         helpers._initProperties(node)
@@ -716,8 +716,8 @@ class PropertyManagerHelpersTests(unittest.TestCase):
 class PropertyManagerHelpersNonPMContextTests(PropertyManagerHelpersTests):
 
     def _makeOne(self, context=None, environ=None):
-        from Products.GenericSetup.utils import NodeAdapterBase
-        from Products.GenericSetup.testing import DummySetupEnviron
+        from ..testing import DummySetupEnviron
+        from ..utils import NodeAdapterBase
 
         class Foo(self._getTargetClass(), NodeAdapterBase):
             _PROPERTIES = _TESTED_PROPERTIES
@@ -762,13 +762,13 @@ class PropertyManagerHelpersNonPMContextTests(PropertyManagerHelpersTests):
 class MarkerInterfaceHelpersTests(unittest.TestCase):
 
     def _getTargetClass(self):
-        from Products.GenericSetup.utils import MarkerInterfaceHelpers
+        from ..utils import MarkerInterfaceHelpers
 
         return MarkerInterfaceHelpers
 
     def _makeOne(self, context=None, environ=None):
-        from Products.GenericSetup.utils import NodeAdapterBase
-        from Products.GenericSetup.testing import DummySetupEnviron
+        from ..testing import DummySetupEnviron
+        from ..utils import NodeAdapterBase
 
         class Foo(self._getTargetClass(), NodeAdapterBase):
             pass
@@ -787,15 +787,17 @@ class MarkerInterfaceHelpersTests(unittest.TestCase):
 
     def _populate(self, obj):
         from zope.interface import directlyProvides
-        from Products.GenericSetup.testing import IDummyMarker
+
+        from ..testing import IDummyMarker
         directlyProvides(obj, IDummyMarker)
 
     def setUp(self):
-        from zope.component import provideAdapter
-        from zope.component.interface import provideInterface
         from OFS.interfaces import IItem
         from Products.Five.utilities.marker import MarkerInterfacesAdapter
-        from Products.GenericSetup.testing import IDummyMarker
+        from zope.component import provideAdapter
+        from zope.component.interface import provideInterface
+
+        from ..testing import IDummyMarker
         provideAdapter(MarkerInterfacesAdapter, (IItem,))
         provideInterface('', IDummyMarker)
 
@@ -804,7 +806,7 @@ class MarkerInterfaceHelpersTests(unittest.TestCase):
         cleanUp()
 
     def test__extractMarkers(self):
-        from Products.GenericSetup.utils import PrettyDocument
+        from ..utils import PrettyDocument
         helpers = self._makeOne()
         self._populate(helpers.context)
         doc = helpers._doc = PrettyDocument()
@@ -815,7 +817,7 @@ class MarkerInterfaceHelpersTests(unittest.TestCase):
         self.assertEqual(doc.toprettyxml(' '), _NORMAL_MARKER_EXPORT)
 
     def test__purgeMarkers(self):
-        from Products.GenericSetup.testing import IDummyMarker
+        from ..testing import IDummyMarker
         helpers = self._makeOne()
         obj = helpers.context
         self._populate(obj)
@@ -825,8 +827,8 @@ class MarkerInterfaceHelpersTests(unittest.TestCase):
         self.assertFalse(IDummyMarker.providedBy(obj))
 
     def test__initMarkers(self):
-        from Products.GenericSetup.utils import PrettyDocument
-        from Products.GenericSetup.testing import IDummyMarker
+        from ..testing import IDummyMarker
+        from ..utils import PrettyDocument
         helpers = self._makeOne()
         node = _getDocumentElement(_NORMAL_MARKER_EXPORT)
         helpers._initMarkers(node)
@@ -843,13 +845,13 @@ class MarkerInterfaceHelpersTests(unittest.TestCase):
 class ObjectManagerHelpersTests(ZopeTestCase):
 
     def _getTargetClass(self):
-        from Products.GenericSetup.utils import ObjectManagerHelpers
+        from ..utils import ObjectManagerHelpers
 
         return ObjectManagerHelpers
 
     def _makeOne(self, context=None, environ=None):
-        from Products.GenericSetup.utils import NodeAdapterBase
-        from Products.GenericSetup.testing import DummySetupEnviron
+        from ..testing import DummySetupEnviron
+        from ..utils import NodeAdapterBase
 
         class Foo(self._getTargetClass(), NodeAdapterBase):
             pass
@@ -894,7 +896,7 @@ class ObjectManagerHelpersTests(ZopeTestCase):
 class PrettyDocumentTests(unittest.TestCase):
 
     def test_attr_quoting(self):
-        from Products.GenericSetup.utils import PrettyDocument
+        from ..utils import PrettyDocument
         original = 'baz &nbsp;<bar>&"\''
         html_escaped = (b'<?xml version="1.0" encoding="utf-8"?>\n'
                         b'<doc bar="" foo="baz '
@@ -927,7 +929,7 @@ class PrettyDocumentTests(unittest.TestCase):
         self.assertEqual(e.getAttribute('foo'), original)
 
     def test_text_quoting(self):
-        from Products.GenericSetup.utils import PrettyDocument
+        from ..utils import PrettyDocument
         original = 'goo &nbsp;<hmm>&"\''
         html_escaped = (b'<?xml version="1.0" encoding="utf-8"?>\n'
                         b'<doc>goo &amp;nbsp;&lt;hmm&gt;'
@@ -962,7 +964,7 @@ class PrettyDocumentTests(unittest.TestCase):
 
 def test_suite():
     # reimport to make sure tests are run from Products
-    from Products.GenericSetup.tests.test_utils import UtilsTests
+    from .test_utils import UtilsTests
 
     return unittest.TestSuite((
         unittest.makeSuite(UtilsTests),

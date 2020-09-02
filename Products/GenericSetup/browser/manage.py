@@ -1,6 +1,7 @@
 from Products.Five import BrowserView
-from Products.GenericSetup.registry import _import_step_registry
-from Products.GenericSetup.registry import _export_step_registry
+
+from ..registry import _export_step_registry
+from ..registry import _import_step_registry
 
 
 class ImportStepsView(BrowserView):

@@ -13,25 +13,26 @@
 """Local component registry export / import handler.
 """
 
-import six
-
 from operator import itemgetter
+
+import six
 
 from Acquisition import aq_base
 from Acquisition import aq_parent
 from zope.component import adapts
 from zope.component import getUtilitiesFor
 from zope.component import queryMultiAdapter
+from zope.component.interfaces import IPossibleSite
 from zope.interface.interfaces import ComponentLookupError
 from zope.interface.interfaces import IComponentRegistry
-from zope.component.interfaces import IPossibleSite
 
-from Products.GenericSetup.interfaces import IBody
-from Products.GenericSetup.interfaces import IComponentsHandlerBlacklist
-from Products.GenericSetup.interfaces import ISetupEnviron
-from Products.GenericSetup.utils import _getDottedName
-from Products.GenericSetup.utils import _resolveDottedName
-from Products.GenericSetup.utils import XMLAdapterBase
+from .interfaces import IBody
+from .interfaces import IComponentsHandlerBlacklist
+from .interfaces import ISetupEnviron
+from .utils import XMLAdapterBase
+from .utils import _getDottedName
+from .utils import _resolveDottedName
+
 
 BLACKLIST_SELF = _getDottedName(IComponentsHandlerBlacklist)
 

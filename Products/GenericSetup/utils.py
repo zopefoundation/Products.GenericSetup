@@ -14,20 +14,23 @@
 """
 
 import os
-import six
 import sys
+from inspect import getdoc
+from logging import getLogger
+from xml.dom.minidom import Document
+from xml.dom.minidom import Element
+from xml.dom.minidom import Node
+from xml.dom.minidom import _nssplit
+from xml.dom.minidom import parseString
+from xml.parsers.expat import ExpatError
+
+
 try:
     from html import escape
 except ImportError:  # BBB Python 2
     from cgi import escape
-from inspect import getdoc
-from logging import getLogger
-from xml.dom.minidom import _nssplit
-from xml.dom.minidom import Document
-from xml.dom.minidom import Element
-from xml.dom.minidom import Node
-from xml.dom.minidom import parseString
-from xml.parsers.expat import ExpatError
+
+import six
 
 from AccessControl.class_init import InitializeClass
 from AccessControl.SecurityInfo import ClassSecurityInfo
@@ -42,11 +45,11 @@ from zope.interface import implementer_only
 from ZPublisher.Converters import type_converters
 from ZPublisher.HTTPRequest import default_encoding
 
-from Products.GenericSetup.exceptions import BadRequest
-from Products.GenericSetup.interfaces import IBody
-from Products.GenericSetup.interfaces import INode
-from Products.GenericSetup.interfaces import ISetupTool
-from Products.GenericSetup.permissions import ManagePortal
+from .exceptions import BadRequest
+from .interfaces import IBody
+from .interfaces import INode
+from .interfaces import ISetupTool
+from .permissions import ManagePortal
 
 
 _pkgdir = package_home(globals())

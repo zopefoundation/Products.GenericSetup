@@ -16,17 +16,17 @@
 from zope.component import adapts
 from zope.component import queryMultiAdapter
 
-from Products.GenericSetup.interfaces import INode
-from Products.GenericSetup.interfaces import ISetupEnviron
-from Products.GenericSetup.utils import NodeAdapterBase
-from Products.GenericSetup.utils import PropertyManagerHelpers
-
 from Products.PluginIndexes.interfaces import IDateIndex
 from Products.PluginIndexes.interfaces import IDateRangeIndex
 from Products.PluginIndexes.interfaces import IFilteredSet
 from Products.PluginIndexes.interfaces import IPathIndex
 from Products.PluginIndexes.interfaces import IPluggableIndex
 from Products.PluginIndexes.interfaces import ITopicIndex
+
+from ..interfaces import INode
+from ..interfaces import ISetupEnviron
+from ..utils import NodeAdapterBase
+from ..utils import PropertyManagerHelpers
 
 
 class PluggableIndexNodeAdapter(NodeAdapterBase):

@@ -18,11 +18,13 @@ from AccessControl.Permission import Permission
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from Products.PageTemplates.PageTemplateFile import PageTemplateFile
 
-from Products.GenericSetup.permissions import ManagePortal
-from Products.GenericSetup.utils import _xmldir
-from Products.GenericSetup.utils import ExportConfiguratorBase
-from Products.GenericSetup.utils import ImportConfiguratorBase
-from Products.GenericSetup.utils import CONVERTER, DEFAULT, KEY
+from .permissions import ManagePortal
+from .utils import CONVERTER
+from .utils import DEFAULT
+from .utils import KEY
+from .utils import ExportConfiguratorBase
+from .utils import ImportConfiguratorBase
+from .utils import _xmldir
 
 
 #
@@ -65,7 +67,7 @@ def importRolemap(context):
 
             items = list(site.__dict__.items())
 
-            for k, v in items:  # XXX: WAAA
+            for k, v in items:  # WAAA
 
                 if k == '__ac_roles__':
                     delattr(site, k)

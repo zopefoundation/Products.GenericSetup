@@ -16,11 +16,12 @@
 import os
 from xml.parsers.expat import ExpatError
 
-from Products.GenericSetup.utils import _getProductPath
-from Products.GenericSetup.utils import CONVERTER
-from Products.GenericSetup.utils import DEFAULT
-from Products.GenericSetup.utils import ImportConfiguratorBase
-from Products.GenericSetup.utils import KEY
+from .utils import CONVERTER
+from .utils import DEFAULT
+from .utils import KEY
+from .utils import ImportConfiguratorBase
+from .utils import _getProductPath
+
 
 METADATA_XML = 'metadata.xml'
 

@@ -15,12 +15,14 @@
 
 import difflib
 import re
+
 import six
 
 from AccessControl.class_init import InitializeClass
 from AccessControl.SecurityInfo import ClassSecurityInfo
 
-from Products.GenericSetup.interfaces import SKIPPED_FILES
+from .interfaces import SKIPPED_FILES
+
 
 BLANKS_REGEX = re.compile(b'^\\s*$')
 

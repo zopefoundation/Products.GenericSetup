@@ -17,9 +17,8 @@ import six
 
 from zope.component import adapts
 
-from Products.GenericSetup.interfaces import ISetupEnviron
-from Products.GenericSetup.utils import BodyAdapterBase
-
+from ..interfaces import ISetupEnviron
+from ..utils import BodyAdapterBase
 from .interfaces import IPythonScript
 
 

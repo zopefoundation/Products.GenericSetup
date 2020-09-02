@@ -13,11 +13,13 @@
 """PythonScript export / import support unit tests.
 """
 
-import six
 import unittest
 
-from Products.GenericSetup.testing import BodyAdapterTestCase
-from Products.GenericSetup.testing import ExportImportZCMLLayer
+import six
+
+from ...testing import BodyAdapterTestCase
+from ...testing import ExportImportZCMLLayer
+
 
 _PYTHONSCRIPT_BODY = b"""\
 ## Script (Python) "foo_script"
@@ -37,8 +39,7 @@ class PythonScriptBodyAdapterTests(BodyAdapterTestCase, unittest.TestCase):
     layer = ExportImportZCMLLayer
 
     def _getTargetClass(self):
-        from Products.GenericSetup.PythonScripts.exportimport \
-                import PythonScriptBodyAdapter
+        from ..exportimport import PythonScriptBodyAdapter
 
         return PythonScriptBodyAdapter
 

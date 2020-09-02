@@ -13,21 +13,21 @@
 """GenericSetup ZCML directives.
 """
 
+import zope.schema
 from zope.configuration.fields import GlobalObject
 from zope.configuration.fields import MessageID
 from zope.configuration.fields import Path
 from zope.configuration.fields import Tokens
 from zope.interface import Interface
-import zope.schema
 
-from Products.GenericSetup.interfaces import BASE
-from Products.GenericSetup.registry import _import_step_registry
-from Products.GenericSetup.registry import _export_step_registry
-from Products.GenericSetup.registry import _profile_registry
-from Products.GenericSetup.upgrade import UpgradeStep
-from Products.GenericSetup.upgrade import UpgradeDepends
-from Products.GenericSetup.upgrade import _registerUpgradeStep
-from Products.GenericSetup.upgrade import _registerNestedUpgradeStep
+from .interfaces import BASE
+from .registry import _export_step_registry
+from .registry import _import_step_registry
+from .registry import _profile_registry
+from .upgrade import UpgradeDepends
+from .upgrade import UpgradeStep
+from .upgrade import _registerNestedUpgradeStep
+from .upgrade import _registerUpgradeStep
 
 
 # genericsetup:registerProfile
@@ -105,7 +105,7 @@ def registerProfile(_context, name=u'default', title=None, description=None,
         discriminator=('registerProfile', product, name),
         callable=_profile_registry.registerProfile,
         args=(name, title, description, directory, product, provides, for_,
-              pre_handler, post_handler)
+              pre_handler, post_handler),
         )
 
 
@@ -184,7 +184,7 @@ class importStep:
         """ Add a new import step to the registry.
         """
         self.context = context
-        self.discriminator = ('importStep', name),
+        self.discriminator = ('importStep', name)
         self.name = name
         self.handler = handler
         self.title = title
@@ -379,7 +379,7 @@ class upgradeSteps(object):
                 'upgradeDepends', self.profile, self.source, self.dest,
                 import_profile, str(import_steps), checker, self.sortkey),
             callable=_registerNestedUpgradeStep,
-            args=(step, self.id)
+            args=(step, self.id),
             )
 
     def __call__(self):

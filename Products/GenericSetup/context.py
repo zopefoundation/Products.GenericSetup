@@ -17,20 +17,21 @@ Wrappers representing the state of an import / export operation.
 
 import logging
 import os
-import six
-from io import BytesIO
 import time
+from io import BytesIO
 from tarfile import DIRTYPE
 from tarfile import TarFile
 from tarfile import TarInfo
 
+import six
+
 from AccessControl.class_init import InitializeClass
 from AccessControl.SecurityInfo import ClassSecurityInfo
+from Acquisition import Implicit
 from Acquisition import aq_base
 from Acquisition import aq_inner
 from Acquisition import aq_parent
 from Acquisition import aq_self
-from Acquisition import Implicit
 from DateTime.DateTime import DateTime
 from OFS.DTMLDocument import DTMLDocument
 from OFS.Folder import Folder
@@ -40,15 +41,15 @@ from Products.PageTemplates.ZopePageTemplate import ZopePageTemplate
 from Products.PythonScripts.PythonScript import PythonScript
 from zope.interface import implementer
 
-from Products.GenericSetup.interfaces import IChunkableExportContext
-from Products.GenericSetup.interfaces import IChunkableImportContext
-from Products.GenericSetup.interfaces import IExportContext
-from Products.GenericSetup.interfaces import IImportContext
-from Products.GenericSetup.interfaces import ISetupEnviron
-from Products.GenericSetup.interfaces import IWriteLogger
-from Products.GenericSetup.interfaces import SKIPPED_FILES
-from Products.GenericSetup.interfaces import SKIPPED_SUFFIXES
-from Products.GenericSetup.permissions import ManagePortal
+from .interfaces import SKIPPED_FILES
+from .interfaces import SKIPPED_SUFFIXES
+from .interfaces import IChunkableExportContext
+from .interfaces import IChunkableImportContext
+from .interfaces import IExportContext
+from .interfaces import IImportContext
+from .interfaces import ISetupEnviron
+from .interfaces import IWriteLogger
+from .permissions import ManagePortal
 
 
 @implementer(IWriteLogger)
@@ -495,7 +496,7 @@ class SnapshotExportContext(BaseContext):
 
         folder = self._ensureSnapshotsFolder(subdir)
 
-        # TODO: switch on content_type
+        # MISSING: switch on content_type
         ob = self._createObjectByType(filename, text, content_type)
         folder._setObject(str(filename), ob)  # No Unicode IDs!
 

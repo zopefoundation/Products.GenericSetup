@@ -13,14 +13,13 @@
 """OFSP export / import support.
 """
 
+from OFS.interfaces import IFolder
 from zope.component import adapts
 
-from Products.GenericSetup.interfaces import ISetupEnviron
-from Products.GenericSetup.utils import XMLAdapterBase
-from Products.GenericSetup.utils import ObjectManagerHelpers
-from Products.GenericSetup.utils import PropertyManagerHelpers
-
-from OFS.interfaces import IFolder
+from ..interfaces import ISetupEnviron
+from ..utils import ObjectManagerHelpers
+from ..utils import PropertyManagerHelpers
+from ..utils import XMLAdapterBase
 
 
 class FolderXMLAdapter(XMLAdapterBase, ObjectManagerHelpers,

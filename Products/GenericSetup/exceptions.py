@@ -14,8 +14,8 @@
 """
 
 from AccessControl.SecurityInfo import ModuleSecurityInfo
-from zExceptions import BadRequest
+from zExceptions import BadRequest  # NOQA: F401
+
 
 security = ModuleSecurityInfo('Products.GenericSetup.exceptions')
-security.declarePublic('BadRequest')
-BadRequest  # pyflakes
+security.declarePublic('BadRequest')  # NOQA: D001

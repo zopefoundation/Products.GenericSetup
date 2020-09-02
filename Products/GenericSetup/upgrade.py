@@ -13,10 +13,10 @@
 """Upgrade steps and registry.
 """
 
-from pkg_resources import parse_version
 import six
 
 from BTrees.OOBTree import OOBTree
+from pkg_resources import parse_version
 
 from Products.GenericSetup.interfaces import IUpgradeSteps
 from Products.GenericSetup.registry import GlobalRegistryStorage

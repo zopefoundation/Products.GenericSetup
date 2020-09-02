@@ -15,15 +15,15 @@
 
 import unittest
 
-from .conformance import ConformsToIINIAware
 from .conformance import ConformsToIFilesystemExporter
 from .conformance import ConformsToIFilesystemImporter
+from .conformance import ConformsToIINIAware
 
 
 class SimpleINIAwareTests(unittest.TestCase, ConformsToIINIAware):
 
     def _getTargetClass(self):
-        from Products.GenericSetup.content import SimpleINIAware
+        from ..content import SimpleINIAware
         return SimpleINIAware
 
     def test_as_ini_no_properties(self):
@@ -124,39 +124,32 @@ class FolderishExporterImporterTests(unittest.TestCase):
         tearDown()
 
     def _getExporter(self):
-        from Products.GenericSetup.content import exportSiteStructure
+        from ..content import exportSiteStructure
         return exportSiteStructure
 
     def _getImporter(self):
-        from Products.GenericSetup.content import importSiteStructure
+        from ..content import importSiteStructure
         return importSiteStructure
 
     def _makeSetupTool(self):
-        from Products.GenericSetup.tool import SetupTool
+        from ..tool import SetupTool
         return SetupTool('portal_setup')
 
     def _setUpAdapters(self):
-        from zope.component import getSiteManager
-
         from OFS.interfaces import IObjectManager
         from OFS.interfaces import IPropertyManager
+        from zope.component import getSiteManager
 
-        from Products.GenericSetup.interfaces import IFilesystemExporter
-        from Products.GenericSetup.interfaces import IFilesystemImporter
-        from Products.GenericSetup.interfaces import ICSVAware
-        from Products.GenericSetup.interfaces import IINIAware
-        from Products.GenericSetup.interfaces import IDAVAware
-
-        from Products.GenericSetup.content import \
-            SimpleINIAware
-        from Products.GenericSetup.content import \
-            FolderishExporterImporter
-        from Products.GenericSetup.content import \
-            CSVAwareFileAdapter
-        from Products.GenericSetup.content import \
-            INIAwareFileAdapter
-        from Products.GenericSetup.content import \
-            DAVAwareFileAdapter
+        from ..content import CSVAwareFileAdapter
+        from ..content import DAVAwareFileAdapter
+        from ..content import FolderishExporterImporter
+        from ..content import INIAwareFileAdapter
+        from ..content import SimpleINIAware
+        from ..interfaces import ICSVAware
+        from ..interfaces import IDAVAware
+        from ..interfaces import IFilesystemExporter
+        from ..interfaces import IFilesystemImporter
+        from ..interfaces import IINIAware
 
         sm = getSiteManager()
 
@@ -206,7 +199,7 @@ class FolderishExporterImporterTests(unittest.TestCase):
                            )
 
     def test_export_empty_site(self):
-        from Products.GenericSetup.tests.common import DummyExportContext
+        from .common import DummyExportContext
         self._setUpAdapters()
         site = _makeFolder('site')
         site.title = 'test_export_empty_site'
@@ -234,7 +227,7 @@ class FolderishExporterImporterTests(unittest.TestCase):
         self.assertEqual(defaults['title'], site.title)
 
     def test_export_empty_site_with_setup_tool(self):
-        from Products.GenericSetup.tests.common import DummyExportContext
+        from .common import DummyExportContext
         self._setUpAdapters()
         site = _makeFolder('site')
         site._setObject('setup_tool', self._makeSetupTool())
@@ -265,8 +258,8 @@ class FolderishExporterImporterTests(unittest.TestCase):
         self.assertEqual(defaults['description'], site.description)
 
     def test_export_site_with_non_exportable_simple_items(self):
-        from Products.GenericSetup.tests.common import DummyExportContext
-        from Products.GenericSetup.utils import _getDottedName
+        from ..utils import _getDottedName
+        from .common import DummyExportContext
         self._setUpAdapters()
         ITEM_IDS = ('foo', 'bar', 'baz')
 
@@ -304,8 +297,8 @@ class FolderishExporterImporterTests(unittest.TestCase):
         self.assertEqual(defaults['description'], 'CCC')
 
     def test_export_site_with_exportable_simple_items(self):
-        from Products.GenericSetup.tests.common import DummyExportContext
-        from Products.GenericSetup.utils import _getDottedName
+        from ..utils import _getDottedName
+        from .common import DummyExportContext
         self._setUpAdapters()
         ITEM_IDS = ('foo', 'bar', 'baz')
 
@@ -350,8 +343,8 @@ class FolderishExporterImporterTests(unittest.TestCase):
         self.assertEqual(defaults['description'], 'CCC')
 
     def test_export_site_with_subfolders(self):
-        from Products.GenericSetup.tests.common import DummyExportContext
-        from Products.GenericSetup.utils import _getDottedName
+        from ..utils import _getDottedName
+        from .common import DummyExportContext
         self._setUpAdapters()
         FOLDER_IDS = ('foo', 'bar', 'baz')
 
@@ -410,8 +403,8 @@ class FolderishExporterImporterTests(unittest.TestCase):
         self.assertEqual(defaults['description'], 'CCC')
 
     def test_export_site_with_csvaware(self):
-        from Products.GenericSetup.tests.common import DummyExportContext
-        from Products.GenericSetup.utils import _getDottedName
+        from ..utils import _getDottedName
+        from .common import DummyExportContext
         self._setUpAdapters()
 
         site = _makeFolder('site')
@@ -460,7 +453,7 @@ class FolderishExporterImporterTests(unittest.TestCase):
         self.assertEqual(rows[1][2], 'six')
 
     def test_import_empty_site(self):
-        from Products.GenericSetup.tests.common import DummyImportContext
+        from .common import DummyImportContext
         self._setUpAdapters()
         site = _makeFolder('site')
         context = DummyImportContext(site)
@@ -471,7 +464,7 @@ class FolderishExporterImporterTests(unittest.TestCase):
         self.assertEqual(len(site.objectIds()), 0)
 
     def test_import_empty_site_with_setup_tool(self):
-        from Products.GenericSetup.tests.common import DummyImportContext
+        from .common import DummyImportContext
         self._setUpAdapters()
         site = _makeFolder('site')
         site._setObject('setup_tool', self._makeSetupTool())
@@ -485,8 +478,8 @@ class FolderishExporterImporterTests(unittest.TestCase):
         self.assertEqual(site.objectIds()[0], 'setup_tool')
 
     def test_import_site_with_subfolders(self):
-        from Products.GenericSetup.tests.common import DummyImportContext
-        from Products.GenericSetup.utils import _getDottedName
+        from ..utils import _getDottedName
+        from .common import DummyImportContext
         self._setUpAdapters()
         FOLDER_IDS = ('foo', 'bar', 'baz')
 
@@ -514,10 +507,10 @@ class FolderishExporterImporterTests(unittest.TestCase):
         self.assertEqual(len(content), len(FOLDER_IDS))
 
     def test_import_site_with_subitems(self):
-        from Products.GenericSetup.tests.common import DummyImportContext
-        from Products.GenericSetup.utils import _getDottedName
-        from Products.GenericSetup.tests.faux_objects import KNOWN_INI
-        from Products.GenericSetup.tests.faux_objects import TestINIAware
+        from ..utils import _getDottedName
+        from .common import DummyImportContext
+        from .faux_objects import KNOWN_INI
+        from .faux_objects import TestINIAware
         dotted = _getDottedName(TestINIAware)
         self._setUpAdapters()
         ITEM_IDS = ('foo', 'bar', 'baz')
@@ -543,8 +536,8 @@ class FolderishExporterImporterTests(unittest.TestCase):
             self.assertEqual(found_id, expected_id)
 
     def test_import_site_with_subitems_wo_adapter(self):
-        from Products.GenericSetup.tests.common import DummyImportContext
-        from Products.GenericSetup.utils import _getDottedName
+        from ..utils import _getDottedName
+        from .common import DummyImportContext
         item = _makeItem('no_adapter')
         dotted = _getDottedName(item.__class__)
         self._setUpAdapters()
@@ -563,10 +556,10 @@ class FolderishExporterImporterTests(unittest.TestCase):
         self.assertEqual(after[0], 'no_adapter')
 
     def test_import_site_with_subitems_and_blanklines_dotobjects(self):
-        from Products.GenericSetup.tests.common import DummyImportContext
-        from Products.GenericSetup.utils import _getDottedName
-        from Products.GenericSetup.tests.faux_objects import KNOWN_INI
-        from Products.GenericSetup.tests.faux_objects import TestINIAware
+        from ..utils import _getDottedName
+        from .common import DummyImportContext
+        from .faux_objects import KNOWN_INI
+        from .faux_objects import TestINIAware
         dotted = _getDottedName(TestINIAware)
         self._setUpAdapters()
         ITEM_IDS = ('foo', 'bar', 'baz')
@@ -593,8 +586,8 @@ class FolderishExporterImporterTests(unittest.TestCase):
             self.assertEqual(found_id, expected_id)
 
     def test_import_site_with_subitem_unknown_portal_type(self):
-        from Products.GenericSetup.tests.common import DummyImportContext
-        from Products.GenericSetup.tests.faux_objects import KNOWN_INI
+        from .common import DummyImportContext
+        from .faux_objects import KNOWN_INI
         self._setUpAdapters()
         ITEM_IDS = ('foo', 'bar', 'baz')
 
@@ -622,7 +615,7 @@ class FolderishExporterImporterTests(unittest.TestCase):
             self.assertTrue(message.startswith("Couldn't make"))
 
     def test_import_site_with_subitems_and_no_preserve(self):
-        from Products.GenericSetup.tests.common import DummyImportContext
+        from .common import DummyImportContext
         self._setUpAdapters()
         ITEM_IDS = ('foo', 'bar', 'baz')
 
@@ -640,7 +633,7 @@ class FolderishExporterImporterTests(unittest.TestCase):
         self.assertEqual(len(site.objectIds()), 0)
 
     def test_import_site_with_subitemss_and_preserve(self):
-        from Products.GenericSetup.tests.common import DummyImportContext
+        from .common import DummyImportContext
         self._setUpAdapters()
         ITEM_IDS = ('foo', 'bar', 'baz')
 
@@ -662,7 +655,7 @@ class FolderishExporterImporterTests(unittest.TestCase):
             self.assertEqual(after[i], ITEM_IDS[i])
 
     def test_import_site_with_subitemss_and_preserve_partial(self):
-        from Products.GenericSetup.tests.common import DummyImportContext
+        from .common import DummyImportContext
         self._setUpAdapters()
         ITEM_IDS = ('foo', 'bar', 'baz')
 
@@ -684,8 +677,8 @@ class FolderishExporterImporterTests(unittest.TestCase):
         self.assertEqual(after[1], 'baz')
 
     def test_import_site_with_subfolders_and_preserve(self):
-        from Products.GenericSetup.tests.common import DummyImportContext
-        from Products.GenericSetup.utils import _getDottedName
+        from ..utils import _getDottedName
+        from .common import DummyImportContext
         self._setUpAdapters()
 
         site = _makeFolder('site')
@@ -720,7 +713,7 @@ class Test_globpattern(unittest.TestCase):
     NAMELIST = ('foo', 'bar', 'baz', 'bam', 'qux', 'quxx', 'quxxx')
 
     def _checkResults(self, globpattern, namelist, expected):
-        from Products.GenericSetup.content import _globtest
+        from ..content import _globtest
         found = _globtest(globpattern, namelist)
         self.assertEqual(len(found), len(expected))
         for found_item, expected_item in zip(found, expected):
@@ -745,15 +738,15 @@ class CSVAwareFileAdapterTests(unittest.TestCase,
                                ):
 
     def _getTargetClass(self):
-        from Products.GenericSetup.content import CSVAwareFileAdapter
+        from ..content import CSVAwareFileAdapter
         return CSVAwareFileAdapter
 
     def _makeOne(self, context, *args, **kw):
         return self._getTargetClass()(context, *args, **kw)
 
     def test_export_with_known_CSV(self):
-        from Products.GenericSetup.tests.common import DummyExportContext
-        from Products.GenericSetup.tests.faux_objects import KNOWN_CSV
+        from .common import DummyExportContext
+        from .faux_objects import KNOWN_CSV
         sheet = _makeCSVAware('config')
 
         adapter = self._makeOne(sheet)
@@ -768,7 +761,7 @@ class CSVAwareFileAdapterTests(unittest.TestCase,
         self.assertEqual(text.strip(), KNOWN_CSV.strip())
 
     def test_import_with_known_CSV(self):
-        from Products.GenericSetup.tests.common import DummyImportContext
+        from .common import DummyImportContext
         ORIG_CSV = """\
 one,two,three
 four,five,six
@@ -800,14 +793,14 @@ class INIAwareFileAdapterTests(unittest.TestCase,
                                ):
 
     def _getTargetClass(self):
-        from Products.GenericSetup.content import INIAwareFileAdapter
+        from ..content import INIAwareFileAdapter
         return INIAwareFileAdapter
 
     def _makeOne(self, context, *args, **kw):
         return self._getTargetClass()(context, *args, **kw)
 
     def test_export_ini_file(self):
-        from Products.GenericSetup.tests.common import DummyExportContext
+        from .common import DummyExportContext
         ini_file = _makeINIAware('ini_file.html')
         adapter = self._makeOne(ini_file)
         context = DummyExportContext(None)
@@ -821,8 +814,8 @@ class INIAwareFileAdapterTests(unittest.TestCase,
         self.assertEqual(text.strip(), ini_file.as_ini().strip())
 
     def test_import_ini_file(self):
-        from Products.GenericSetup.tests.common import DummyImportContext
-        from Products.GenericSetup.tests.faux_objects import KNOWN_INI
+        from .common import DummyImportContext
+        from .faux_objects import KNOWN_INI
         ini_file = _makeINIAware('ini_file.html')
         adapter = self._makeOne(ini_file)
         context = DummyImportContext(None)
@@ -842,14 +835,14 @@ class DAVAwareFileAdapterTests(unittest.TestCase,
                                ):
 
     def _getTargetClass(self):
-        from Products.GenericSetup.content import DAVAwareFileAdapter
+        from ..content import DAVAwareFileAdapter
         return DAVAwareFileAdapter
 
     def _makeOne(self, context, *args, **kw):
         return self._getTargetClass()(context, *args, **kw)
 
     def test_export_dav_file(self):
-        from Products.GenericSetup.tests.common import DummyExportContext
+        from .common import DummyExportContext
         dav_file = _makeDAVAware('dav_file.html')
         adapter = self._makeOne(dav_file)
         context = DummyExportContext(None)
@@ -862,8 +855,8 @@ class DAVAwareFileAdapterTests(unittest.TestCase,
         self.assertEqual(text.strip(), dav_file.manage_FTPget().strip())
 
     def test_import_dav_file(self):
-        from Products.GenericSetup.tests.common import DummyImportContext
-        from Products.GenericSetup.tests.faux_objects import KNOWN_DAV
+        from .common import DummyImportContext
+        from .faux_objects import KNOWN_DAV
         VALUES = ('Title: dav_file', 'Description: abc', 'body goes here')
         dav_file = _makeDAVAware('dav_file.html')
         adapter = self._makeOne(dav_file)
@@ -875,8 +868,7 @@ class DAVAwareFileAdapterTests(unittest.TestCase,
 
 
 def _makePropertied(id):
-    from Products.GenericSetup.tests.faux_objects \
-        import TestSimpleItemWithProperties
+    from .faux_objects import TestSimpleItemWithProperties
 
     propertied = TestSimpleItemWithProperties()
     propertied._setId(id)
@@ -885,7 +877,7 @@ def _makePropertied(id):
 
 
 def _makeCSVAware(id, csv=None):
-    from Products.GenericSetup.tests.faux_objects import TestCSVAware
+    from .faux_objects import TestCSVAware
 
     aware = TestCSVAware()
     aware._setId(id)
@@ -896,7 +888,7 @@ def _makeCSVAware(id, csv=None):
 
 
 def _makeINIAware(id):
-    from Products.GenericSetup.tests.faux_objects import TestINIAware
+    from .faux_objects import TestINIAware
 
     aware = TestINIAware()
     aware._setId(id)
@@ -905,7 +897,7 @@ def _makeINIAware(id):
 
 
 def _makeDAVAware(id):
-    from Products.GenericSetup.tests.faux_objects import TestDAVAware
+    from .faux_objects import TestDAVAware
 
     aware = TestDAVAware()
     aware._setId(id)
@@ -914,7 +906,7 @@ def _makeDAVAware(id):
 
 
 def _makeItem(id):
-    from Products.GenericSetup.tests.faux_objects import TestSimpleItem
+    from .faux_objects import TestSimpleItem
 
     aware = TestSimpleItem()
     aware._setId(id)
@@ -938,13 +930,14 @@ def _makeFolder(id):
 
 def _parseCSV(text):
     from csv import reader
+
     from six.moves import cStringIO
     return [x for x in reader(cStringIO(text))]
 
 
 def _parseINI(text):
-    from six.moves.configparser import ConfigParser
     from six.moves import cStringIO
+    from six.moves.configparser import ConfigParser
     parser = ConfigParser()
     try:
         parser.read_file(cStringIO(text))

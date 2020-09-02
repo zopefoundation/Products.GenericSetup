@@ -13,13 +13,14 @@
 """ Unit tests for differ module.
 """
 
-import six
 import unittest
-from Testing.ZopeTestCase import ZopeTestCase
+
+import six
 
 from DateTime.DateTime import DateTime
 from OFS.Folder import Folder
 from OFS.Image import File
+from Testing.ZopeTestCase import ZopeTestCase
 
 
 class DummySite(Folder):
@@ -31,7 +32,7 @@ class Test_unidiff(unittest.TestCase):
 
     def test_unidiff_both_text(self):
 
-        from Products.GenericSetup.differ import unidiff
+        from ..differ import unidiff
 
         diff_lines = unidiff(ONE_FOUR, ZERO_FOUR)
         diff_text = b'\n'.join(diff_lines)
@@ -39,7 +40,7 @@ class Test_unidiff(unittest.TestCase):
 
     def test_unidiff_both_lines(self):
 
-        from Products.GenericSetup.differ import unidiff
+        from ..differ import unidiff
 
         diff_lines = unidiff(ONE_FOUR.splitlines(), ZERO_FOUR.splitlines())
         diff_text = b'\n'.join(diff_lines)
@@ -47,7 +48,7 @@ class Test_unidiff(unittest.TestCase):
 
     def test_unidiff_mixed(self):
 
-        from Products.GenericSetup.differ import unidiff
+        from ..differ import unidiff
 
         diff_lines = unidiff(ONE_FOUR, ZERO_FOUR.splitlines())
         diff_text = b'\n'.join(diff_lines)
@@ -55,7 +56,7 @@ class Test_unidiff(unittest.TestCase):
 
     def test_unidiff_ignore_blanks(self):
 
-        from Products.GenericSetup.differ import unidiff
+        from ..differ import unidiff
 
         double_spaced = ONE_FOUR.replace(b'\n', b'\n\n')
         diff_lines = unidiff(double_spaced, ZERO_FOUR.splitlines(),
@@ -99,7 +100,7 @@ class ConfigDiffTests(ZopeTestCase):
 
     def _getTargetClass(self):
 
-        from Products.GenericSetup.differ import ConfigDiff
+        from ..differ import ConfigDiff
         return ConfigDiff
 
     def _makeOne(self, lhs, rhs, *args, **kw):
@@ -119,7 +120,7 @@ class ConfigDiffTests(ZopeTestCase):
 
     def _makeContext(self, context_id):
 
-        from Products.GenericSetup.context import SnapshotImportContext
+        from ..context import SnapshotImportContext
 
         self._makeSite()
 

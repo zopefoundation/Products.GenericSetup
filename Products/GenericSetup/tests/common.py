@@ -15,17 +15,18 @@
 
 import os
 import shutil
-import six
 from tarfile import TarFile
+
+import six
 
 from AccessControl.SecurityManagement import newSecurityManager
 from AccessControl.users import UnrestrictedUser
 from Testing.ZopeTestCase import ZopeTestCase
 from zope.interface import implementer
 
-from Products.GenericSetup.interfaces import IExportContext
-from Products.GenericSetup.interfaces import IImportContext
-from Products.GenericSetup.testing import DummyLogger
+from ..interfaces import IExportContext
+from ..interfaces import IImportContext
+from ..testing import DummyLogger
 
 
 class DOMComparator:

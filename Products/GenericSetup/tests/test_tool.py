@@ -14,10 +14,12 @@
 """
 
 import os
-import six
 import unittest
+
+import six
 from six import BytesIO
 
+import transaction
 from AccessControl.SecurityManagement import newSecurityManager
 from AccessControl.users import UnrestrictedUser
 from Acquisition import aq_base
@@ -25,34 +27,35 @@ from OFS.Folder import Folder
 from zope.component import adapter
 from zope.component import provideHandler
 from zope.component.globalregistry import base as base_registry
-import transaction
 
 from Products.GenericSetup import profile_registry
-from Products.GenericSetup.context import TarballExportContext
-from Products.GenericSetup.interfaces import IBeforeProfileImportEvent
-from Products.GenericSetup.interfaces import IProfileImportedEvent
-from Products.GenericSetup.testing import ExportImportZCMLLayer
-from Products.GenericSetup.tests.common import _makeTestFile
-from Products.GenericSetup.tests.common import BaseRegistryTests
-from Products.GenericSetup.tests.common import DummyExportContext
-from Products.GenericSetup.tests.common import DummyImportContext
-from Products.GenericSetup.tests.common import FilesystemTestBase
-from Products.GenericSetup.tests.common import TarballTester
-from Products.GenericSetup.tests.conformance import ConformsToISetupTool
-from Products.GenericSetup.tests.test_registry import _EMPTY_EXPORT_XML
-from Products.GenericSetup.tests.test_registry import _EMPTY_IMPORT_XML
-from Products.GenericSetup.tests.test_registry import _EMPTY_TOOLSET_XML
-from Products.GenericSetup.tests.test_registry import _NORMAL_TOOLSET_XML
-from Products.GenericSetup.tests.test_registry import _SINGLE_EXPORT_XML
-from Products.GenericSetup.tests.test_registry import _SINGLE_IMPORT_XML
-from Products.GenericSetup.tests.test_registry import IAnotherSite
-from Products.GenericSetup.tests.test_registry import IDerivedSite
-from Products.GenericSetup.tests.test_registry import ISite
-from Products.GenericSetup.tests.test_registry import ONE_FUNC
-from Products.GenericSetup.tests.test_zcml import dummy_upgrade
-from Products.GenericSetup.upgrade import _registerUpgradeStep
-from Products.GenericSetup.upgrade import listUpgradeSteps
-from Products.GenericSetup.upgrade import UpgradeStep
+
+from ..context import TarballExportContext
+from ..interfaces import IBeforeProfileImportEvent
+from ..interfaces import IProfileImportedEvent
+from ..testing import ExportImportZCMLLayer
+from ..upgrade import UpgradeStep
+from ..upgrade import _registerUpgradeStep
+from ..upgrade import listUpgradeSteps
+from .common import BaseRegistryTests
+from .common import DummyExportContext
+from .common import DummyImportContext
+from .common import FilesystemTestBase
+from .common import TarballTester
+from .common import _makeTestFile
+from .conformance import ConformsToISetupTool
+from .test_registry import _EMPTY_EXPORT_XML
+from .test_registry import _EMPTY_IMPORT_XML
+from .test_registry import _EMPTY_TOOLSET_XML
+from .test_registry import _NORMAL_TOOLSET_XML
+from .test_registry import _SINGLE_EXPORT_XML
+from .test_registry import _SINGLE_IMPORT_XML
+from .test_registry import ONE_FUNC
+from .test_registry import IAnotherSite
+from .test_registry import IDerivedSite
+from .test_registry import ISite
+from .test_zcml import dummy_upgrade
+
 
 _before_import_events = []
 
@@ -111,7 +114,7 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
     _PROFILE_PATH3 = '/tmp/STT_test3'
 
     def afterSetUp(self):
-        from Products.GenericSetup.upgrade import _upgrade_registry
+        from ..upgrade import _upgrade_registry
         _upgrade_registry.clear()
         profile_registry.clear()
         global _before_import_events
@@ -125,12 +128,12 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
         base_registry.unregisterHandler(handleBeforeProfileImportEvent)
         base_registry.unregisterHandler(handleProfileImportedEvent)
         FilesystemTestBase.beforeTearDown(self)
-        from Products.GenericSetup.upgrade import _upgrade_registry
+        from ..upgrade import _upgrade_registry
         profile_registry.clear()
         _upgrade_registry.clear()
 
     def _getTargetClass(self):
-        from Products.GenericSetup.tool import SetupTool
+        from ..tool import SetupTool
 
         return SetupTool
 
@@ -161,9 +164,9 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
         self.assertEqual(len(toolset_registry.listRequiredTools()), 0)
 
     def test_getBaselineContextID(self):
-        from Products.GenericSetup.tool import EXPORT_STEPS_XML
-        from Products.GenericSetup.tool import IMPORT_STEPS_XML
-        from Products.GenericSetup.tool import TOOLSET_XML
+        from ..tool import EXPORT_STEPS_XML
+        from ..tool import IMPORT_STEPS_XML
+        from ..tool import TOOLSET_XML
 
         tool = self._makeOne('setup_tool')
 
@@ -180,20 +183,18 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
 
         tool = self._makeOne('setup_tool')
 
-        self.assertRaises(KeyError, tool.setBaselineContext, 'profile-foo'
-                          )
+        self.assertRaises(KeyError, tool.setBaselineContext, 'profile-foo')
 
     def test_setBaselineContext_empty_string(self):
 
         tool = self._makeOne('setup_tool')
 
-        self.assertRaises(KeyError, tool.setBaselineContext, ''
-                          )
+        self.assertRaises(KeyError, tool.setBaselineContext, '')
 
     def test_setBaselineContext(self):
-        from Products.GenericSetup.tool import EXPORT_STEPS_XML
-        from Products.GenericSetup.tool import IMPORT_STEPS_XML
-        from Products.GenericSetup.tool import TOOLSET_XML
+        from ..tool import EXPORT_STEPS_XML
+        from ..tool import IMPORT_STEPS_XML
+        from ..tool import TOOLSET_XML
 
         tool = self._makeOne('setup_tool')
         tool.getExportStepRegistry().clear()
@@ -537,7 +538,7 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
         self.assertFalse(site.purged)
 
     def test_runAllImportStepsFromProfile_without_depends(self):
-        from Products.GenericSetup.metadata import METADATA_XML
+        from ..metadata import METADATA_XML
 
         self._makeFile(METADATA_XML, _METADATA_XML)
 
@@ -557,7 +558,7 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
         self.assertEqual(_imported, [self._PROFILE_PATH])
 
     def test_runAllImportStepsFromProfile_with_depends(self):
-        from Products.GenericSetup.metadata import METADATA_XML
+        from ..metadata import METADATA_XML
 
         self._makeFile(METADATA_XML, _METADATA_XML)
 
@@ -583,8 +584,8 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
         # it yet again.  Once is quite enough, thank you.  Running any
         # upgrade steps would be nice though.  There are options.
         # Setup a tool and profiles for testing dependency strategies.
-        from Products.GenericSetup.metadata import METADATA_XML
-        from Products.GenericSetup.interfaces import EXTENSION
+        from ..interfaces import EXTENSION
+        from ..metadata import METADATA_XML
         self._makeFile(METADATA_XML, _DOUBLE_METADATA_XML)
         _makeTestFile(METADATA_XML, self._PROFILE_PATH2, _PLAIN_METADATA_XML)
         _makeTestFile(METADATA_XML, self._PROFILE_PATH3, _PLAIN_METADATA_XML)
@@ -648,7 +649,7 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
         tool = self._setup_dependency_strategy_test_tool()
 
         # Run the main profile.
-        from Products.GenericSetup.tool import DEPENDENCY_STRATEGY_REAPPLY
+        from ..tool import DEPENDENCY_STRATEGY_REAPPLY
         tool.runAllImportStepsFromProfile(
             'profile-other:foo',
             dependency_strategy=DEPENDENCY_STRATEGY_REAPPLY)
@@ -667,7 +668,7 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
         tool = self._setup_dependency_strategy_test_tool()
 
         # Run the main profile.
-        from Products.GenericSetup.tool import DEPENDENCY_STRATEGY_NEW
+        from ..tool import DEPENDENCY_STRATEGY_NEW
         tool.runAllImportStepsFromProfile(
             'profile-other:foo',
             dependency_strategy=DEPENDENCY_STRATEGY_NEW)
@@ -685,7 +686,7 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
         tool = self._setup_dependency_strategy_test_tool()
 
         # Run the main profile.
-        from Products.GenericSetup.tool import DEPENDENCY_STRATEGY_IGNORE
+        from ..tool import DEPENDENCY_STRATEGY_IGNORE
         tool.runAllImportStepsFromProfile(
             'profile-other:foo',
             dependency_strategy=DEPENDENCY_STRATEGY_IGNORE)
@@ -707,7 +708,7 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
                           'profile-other:foo', dependency_strategy='random')
 
     def test_runAllImportStepsFromProfile_set_last_profile_version(self):
-        from Products.GenericSetup.metadata import METADATA_XML
+        from ..metadata import METADATA_XML
 
         self._makeFile(METADATA_XML, _METADATA_XML)
 
@@ -731,7 +732,7 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
                          ('1', '0'))
 
     def test_runAllImportStepsFromProfile_step_registration_with_depends(self):
-        from Products.GenericSetup.metadata import METADATA_XML
+        from ..metadata import METADATA_XML
 
         self._makeFile(METADATA_XML, _METADATA_XML)
 
@@ -765,7 +766,7 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
         tool = self._makeOne('setup_tool').__of__(site)
         result = tool.runAllImportStepsFromProfile(
             'snapshot-dummy',
-            blacklisted_steps=['toolset']
+            blacklisted_steps=['toolset'],
         )
 
         self.assertEqual((result['messages']['toolset']), 'step skipped')
@@ -773,9 +774,9 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
     def test_runAllImportStepsFromProfile_with_base_profile(self):
         # Applying a base profile should clear the profile upgrade
         # versions.
-        from Products.GenericSetup.interfaces import BASE
-        from Products.GenericSetup.interfaces import EXTENSION
-        from Products.GenericSetup.metadata import METADATA_XML
+        from ..interfaces import BASE
+        from ..interfaces import EXTENSION
+        from ..metadata import METADATA_XML
         site = self._makeSite()
         site.setup_tool = self._makeOne('setup_tool')
         tool = site.setup_tool
@@ -862,8 +863,7 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
 
         self.assertEqual(len(result['steps']), 1)
         self.assertEqual(result['steps'][0], 'step_registries')
-        self.assertEqual(result['messages']['step_registries'], None
-                         )
+        self.assertEqual(result['messages']['step_registries'], None)
 
     def test_runExportStep_step_registry_default(self):
         site = self._makeSite()
@@ -878,8 +878,7 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
 
         self.assertEqual(len(result['steps']), 1)
         self.assertEqual(result['steps'][0], 'step_registries')
-        self.assertEqual(result['messages']['step_registries'], None
-                         )
+        self.assertEqual(result['messages']['step_registries'], None)
         fileish = BytesIO(result['tarball'])
 
         self._verifyTarballContents(fileish,
@@ -915,8 +914,7 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
         self.assertEqual(sorted(result['steps']),
                          ['componentregistry', 'rolemap',
                           'step_registries', 'toolset'])
-        self.assertEqual(result['messages']['step_registries'], None
-                         )
+        self.assertEqual(result['messages']['step_registries'], None)
         fileish = BytesIO(result['tarball'])
 
         self._verifyTarballContents(fileish,
@@ -1057,8 +1055,7 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
         self.assertEqual(
             sorted(result['steps']),
             ['componentregistry', 'rolemap', 'step_registries', 'toolset'])
-        self.assertEqual(result['messages']['step_registries'], None
-                         )
+        self.assertEqual(result['messages']['step_registries'], None)
 
         snapshot = result['snapshot']
 
@@ -1089,9 +1086,9 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
         self.assertEqual(info['title'], 'default')
 
     def test_applyContext(self):
-        from Products.GenericSetup.tool import EXPORT_STEPS_XML
-        from Products.GenericSetup.tool import IMPORT_STEPS_XML
-        from Products.GenericSetup.tool import TOOLSET_XML
+        from ..tool import EXPORT_STEPS_XML
+        from ..tool import IMPORT_STEPS_XML
+        from ..tool import TOOLSET_XML
 
         site = self._makeSite()
         tool = self._makeOne('setup_tool').__of__(site)
@@ -1152,7 +1149,7 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
         self.assertEqual(info['type'], 'snapshot')
 
     def test_listContextInfos_with_registered_base_profile(self):
-        from Products.GenericSetup.interfaces import BASE
+        from ..interfaces import BASE
 
         profile_registry.registerProfile('foo', 'Foo', '', self._PROFILE_PATH,
                                          'Foo', BASE)
@@ -1167,7 +1164,7 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
         self.assertEqual(info['type'], 'base')
 
     def test_listContextInfos_with_registered_extension_profile(self):
-        from Products.GenericSetup.interfaces import EXTENSION
+        from ..interfaces import EXTENSION
 
         profile_registry.registerProfile('foo', 'Foo', '', self._PROFILE_PATH,
                                          'Foo', EXTENSION)
@@ -1182,8 +1179,8 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
         self.assertEqual(info['type'], 'extension')
 
     def test_listContextInfos_with_ordering(self):
-        from Products.GenericSetup.interfaces import BASE
-        from Products.GenericSetup.interfaces import EXTENSION
+        from ..interfaces import BASE
+        from ..interfaces import EXTENSION
 
         # three extension profiles
         profile_registry.registerProfile(
@@ -1671,7 +1668,7 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
                         list(result).index(u'toolset'))
 
     def test_listProfileInfo_for_parameter(self):
-        from Products.GenericSetup.metadata import METADATA_XML
+        from ..metadata import METADATA_XML
 
         self._makeFile(METADATA_XML, _METADATA_XML)
 
@@ -1688,8 +1685,8 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
         self.assertEqual(len(tool.listProfileInfo(for_=IAnotherSite)), 0)
 
     def test_profileExists(self):
-        from Products.GenericSetup.interfaces import EXTENSION
-        from Products.GenericSetup.metadata import METADATA_XML
+        from ..interfaces import EXTENSION
+        from ..metadata import METADATA_XML
         site = self._makeSite()
         tool = self._makeOne('setup_tool').__of__(site)
 
@@ -1709,8 +1706,8 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
         self.assertFalse(tool.profileExists('nonesuch'))
 
     def test_getDependenciesForProfile(self):
-        from Products.GenericSetup.interfaces import EXTENSION
-        from Products.GenericSetup.metadata import METADATA_XML
+        from ..interfaces import EXTENSION
+        from ..metadata import METADATA_XML
         site = self._makeSite()
         tool = self._makeOne('setup_tool').__of__(site)
 
@@ -1734,8 +1731,8 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
         self.assertRaises(KeyError, tool.getDependenciesForProfile, 'nonesuch')
 
     def test_getBrokenDependencies(self):
-        from Products.GenericSetup.interfaces import EXTENSION
-        from Products.GenericSetup.metadata import METADATA_XML
+        from ..interfaces import EXTENSION
+        from ..metadata import METADATA_XML
         site = self._makeSite()
         tool = self._makeOne('setup_tool').__of__(site)
 
@@ -1866,7 +1863,7 @@ def _exportPropertiesINI(context):
 class _ToolsetSetup(BaseRegistryTests):
 
     def _initSite(self):
-        from Products.GenericSetup.tool import SetupTool
+        from ..tool import SetupTool
 
         site = Folder()
         site._setId('site')
@@ -1881,8 +1878,8 @@ class Test_exportToolset(_ToolsetSetup):
     layer = ExportImportZCMLLayer
 
     def test_empty(self):
-        from Products.GenericSetup.tool import exportToolset
-        from Products.GenericSetup.tool import TOOLSET_XML
+        from ..tool import TOOLSET_XML
+        from ..tool import exportToolset
 
         site = self._initSite()
         context = DummyExportContext(site, tool=site.setup_tool)
@@ -1896,8 +1893,8 @@ class Test_exportToolset(_ToolsetSetup):
         self.assertEqual(content_type, 'text/xml')
 
     def test_normal(self):
-        from Products.GenericSetup.tool import exportToolset
-        from Products.GenericSetup.tool import TOOLSET_XML
+        from ..tool import TOOLSET_XML
+        from ..tool import exportToolset
 
         site = self._initSite()
         toolset = site.setup_tool.getToolsetRegistry()
@@ -1921,8 +1918,8 @@ class Test_importToolset(_ToolsetSetup):
     layer = ExportImportZCMLLayer
 
     def test_import_updates_registry(self):
-        from Products.GenericSetup.tool import importToolset
-        from Products.GenericSetup.tool import TOOLSET_XML
+        from ..tool import TOOLSET_XML
+        from ..tool import importToolset
 
         site = self._initSite()
         context = DummyImportContext(site, tool=site.setup_tool)
@@ -1958,8 +1955,8 @@ class Test_importToolset(_ToolsetSetup):
         # have unique IDs set at the class level and that you can call their
         # constructor with no arguments. However, there might be tools
         # that need IDs set.
-        from Products.GenericSetup.tool import importToolset
-        from Products.GenericSetup.tool import TOOLSET_XML
+        from ..tool import TOOLSET_XML
+        from ..tool import importToolset
 
         site = self._initSite()
         context = DummyImportContext(site, tool=site.setup_tool)
@@ -1974,8 +1971,8 @@ class Test_importToolset(_ToolsetSetup):
     def test_tool_id_required(self):
         # Tests that tool creation will still work when an id is required
         # by the tool constructor.
-        from Products.GenericSetup.tool import importToolset
-        from Products.GenericSetup.tool import TOOLSET_XML
+        from ..tool import TOOLSET_XML
+        from ..tool import importToolset
 
         site = self._initSite()
         context = DummyImportContext(site, tool=site.setup_tool)
@@ -1988,8 +1985,8 @@ class Test_importToolset(_ToolsetSetup):
             self.assertEqual(tool.getId(), tool_id)
 
     def test_forbidden_tools(self):
-        from Products.GenericSetup.tool import importToolset
-        from Products.GenericSetup.tool import TOOLSET_XML
+        from ..tool import TOOLSET_XML
+        from ..tool import importToolset
 
         TOOL_IDS = ('doomed', 'blasted', 'saved')
 
@@ -2015,8 +2012,8 @@ class Test_importToolset(_ToolsetSetup):
         self.assertTrue('saved' in site.objectIds())
 
     def test_required_tools_missing(self):
-        from Products.GenericSetup.tool import importToolset
-        from Products.GenericSetup.tool import TOOLSET_XML
+        from ..tool import TOOLSET_XML
+        from ..tool import importToolset
 
         site = self._initSite()
         self.assertEqual(len(site.objectIds()), 1)
@@ -2033,8 +2030,8 @@ class Test_importToolset(_ToolsetSetup):
             aq_base(site._getOb('obligatory')), DummyTool))
 
     def test_required_tools_no_replacement(self):
-        from Products.GenericSetup.tool import importToolset
-        from Products.GenericSetup.tool import TOOLSET_XML
+        from ..tool import TOOLSET_XML
+        from ..tool import importToolset
 
         site = self._initSite()
 
@@ -2058,8 +2055,8 @@ class Test_importToolset(_ToolsetSetup):
         self.assertTrue(aq_base(site._getOb('obligatory')) is obligatory)
 
     def test_required_tools_with_replacement(self):
-        from Products.GenericSetup.tool import importToolset
-        from Products.GenericSetup.tool import TOOLSET_XML
+        from ..tool import TOOLSET_XML
+        from ..tool import importToolset
 
         site = self._initSite()
 
@@ -2089,8 +2086,8 @@ class Test_importToolset(_ToolsetSetup):
             aq_base(site._getOb('obligatory')), DummyTool))
 
     def test_required_tools_missing_acquired_nofail(self):
-        from Products.GenericSetup.tool import importToolset
-        from Products.GenericSetup.tool import TOOLSET_XML
+        from ..tool import TOOLSET_XML
+        from ..tool import importToolset
 
         site = self._initSite()
         parent_site = Folder()
@@ -2123,8 +2120,8 @@ class Test_importToolset(_ToolsetSetup):
             aq_base(site._getOb('obligatory')), DummyTool))
 
     def test_required_tools_missing_class_with_replacement(self):
-        from Products.GenericSetup.tool import importToolset
-        from Products.GenericSetup.tool import TOOLSET_XML
+        from ..tool import TOOLSET_XML
+        from ..tool import importToolset
 
         site = self._initSite()
 

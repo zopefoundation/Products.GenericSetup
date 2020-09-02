@@ -17,9 +17,9 @@ from OFS.PropertyManager import PropertyManager
 from OFS.SimpleItem import SimpleItem
 from zope.interface import implementer
 
-from Products.GenericSetup.interfaces import ICSVAware
-from Products.GenericSetup.interfaces import IDAVAware
-from Products.GenericSetup.interfaces import IINIAware
+from ..interfaces import ICSVAware
+from ..interfaces import IDAVAware
+from ..interfaces import IINIAware
 
 
 class TestSimpleItem(SimpleItem):

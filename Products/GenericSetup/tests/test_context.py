@@ -1,4 +1,3 @@
-# encoding: utf-8
 ##############################################################################
 #
 # Copyright (c) 2004 Zope Foundation and Contributors.
@@ -14,31 +13,32 @@
 """ Unit tests for import / export contexts.
 """
 from __future__ import absolute_import
-import unittest
-from Testing.ZopeTestCase import ZopeTestCase
 
 import logging
 import os
-from six import BytesIO
-from string import digits
-from string import printable
-import six
 import tempfile
 import time
+import unittest
+from string import digits
+from string import printable
 from tarfile import TarFile
 from tarfile import TarInfo
+
+import six
+from six import BytesIO
 
 from DateTime.DateTime import DateTime
 from OFS.Folder import Folder
 from OFS.Image import File
+from Testing.ZopeTestCase import ZopeTestCase
 
 from .common import FilesystemTestBase
 from .common import TarballTester
-from .conformance import ConformsToISetupContext
-from .conformance import ConformsToIImportContext
-from .conformance import ConformsToIExportContext
 from .conformance import ConformsToIChunkableExportContext
 from .conformance import ConformsToIChunkableImportContext
+from .conformance import ConformsToIExportContext
+from .conformance import ConformsToIImportContext
+from .conformance import ConformsToISetupContext
 
 
 printable_bytes = printable.encode('utf-8')
@@ -68,7 +68,7 @@ class DirectoryImportContextTests(FilesystemTestBase, ConformsToISetupContext,
 
     def _getTargetClass(self):
 
-        from Products.GenericSetup.context import DirectoryImportContext
+        from ..context import DirectoryImportContext
         return DirectoryImportContext
 
     def test_getLogger(self):
@@ -328,7 +328,7 @@ class DirectoryExportContextTests(FilesystemTestBase, ConformsToISetupContext,
 
     def _getTargetClass(self):
 
-        from Products.GenericSetup.context import DirectoryExportContext
+        from ..context import DirectoryExportContext
         return DirectoryExportContext
 
     def test_getLogger(self):
@@ -364,7 +364,7 @@ class DirectoryExportContextTests(FilesystemTestBase, ConformsToISetupContext,
 
     def test_writeDataFile_unicode(self):
 
-        text = u'Kein Weltraum links vom Gerät'
+        text = u'Kein Weltraum links vom Ger\xe4t'
         FILENAME = 'unicode.txt'
         fqname = self._makeFile(FILENAME, printable_bytes)
 
@@ -426,7 +426,7 @@ class TarballImportContextTests(ZopeTestCase, ConformsToISetupContext,
 
     def _getTargetClass(self):
 
-        from Products.GenericSetup.context import TarballImportContext
+        from ..context import TarballImportContext
         return TarballImportContext
 
     def _makeOne(self, file_dict={}, mod_time=None, *args, **kw):
@@ -496,8 +496,7 @@ class TarballImportContextTests(ZopeTestCase, ConformsToISetupContext,
     def test_ctorparms(self):
 
         ENCODING = 'latin-1'
-        site, tool, ctx = self._makeOne(encoding=ENCODING, should_purge=True
-                                        )
+        site, tool, ctx = self._makeOne(encoding=ENCODING, should_purge=True)
 
         self.assertEqual(ctx.getEncoding(), ENCODING)
         self.assertEqual(ctx.shouldPurge(), True)
@@ -712,7 +711,7 @@ class TarballExportContextTests(ZopeTestCase, ConformsToISetupContext,
 
     def _getTargetClass(self):
 
-        from Products.GenericSetup.context import TarballExportContext
+        from ..context import TarballExportContext
         return TarballExportContext
 
     def test_getLogger(self):
@@ -750,7 +749,7 @@ class TarballExportContextTests(ZopeTestCase, ConformsToISetupContext,
 
     def test_writeDataFile_umlauts(self):
 
-        text = u'Kein Weltraum links vom Gerät'
+        text = u'Kein Weltraum links vom Ger\xe4t'
         now = int(time.time())
 
         site = DummySite('site').__of__(self.app)
@@ -818,7 +817,7 @@ class SnapshotExportContextTests(ZopeTestCase, ConformsToISetupContext,
 
     def _getTargetClass(self):
 
-        from Products.GenericSetup.context import SnapshotExportContext
+        from ..context import SnapshotExportContext
         return SnapshotExportContext
 
     def _makeOne(self, *args, **kw):
@@ -1028,7 +1027,7 @@ class SnapshotImportContextTests(ZopeTestCase, ConformsToISetupContext,
 
     def _getTargetClass(self):
 
-        from Products.GenericSetup.context import SnapshotImportContext
+        from ..context import SnapshotImportContext
         return SnapshotImportContext
 
     def _makeOne(self, context_id, *args, **kw):

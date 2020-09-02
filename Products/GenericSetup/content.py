@@ -15,20 +15,22 @@
 
 from csv import reader
 from csv import writer
-from six.moves.configparser import ConfigParser
+
 from six.moves import cStringIO
+from six.moves.configparser import ConfigParser
 
 from zope.component import queryAdapter
 from zope.interface import implementer
 
-from Products.GenericSetup.interfaces import IContentFactory
-from Products.GenericSetup.interfaces import IContentFactoryName
-from Products.GenericSetup.interfaces import IFilesystemExporter
-from Products.GenericSetup.interfaces import IFilesystemImporter
-from Products.GenericSetup.interfaces import IINIAware
-from Products.GenericSetup.interfaces import ISetupTool
-from Products.GenericSetup.utils import _getDottedName
-from Products.GenericSetup.utils import _resolveDottedName
+from .interfaces import IContentFactory
+from .interfaces import IContentFactoryName
+from .interfaces import IFilesystemExporter
+from .interfaces import IFilesystemImporter
+from .interfaces import IINIAware
+from .interfaces import ISetupTool
+from .utils import _getDottedName
+from .utils import _resolveDottedName
+
 
 #
 #   setup_tool handlers

@@ -14,10 +14,13 @@
 """
 
 import unittest
+
 from zope.testing.cleanup import cleanUp
 
 import Products.GenericSetup
-from Products.GenericSetup.registry import _import_step_registry
+
+from ..registry import _import_step_registry
+
 
 # BBB for Zope 2.12
 try:

@@ -33,15 +33,16 @@ from zope.component.globalregistry import base
 from zope.component.hooks import clearSite
 from zope.component.hooks import setHooks
 from zope.component.hooks import setSite
-from zope.interface import implementer
 from zope.interface import Interface
+from zope.interface import implementer
 
-from Products.GenericSetup.interfaces import IBody
-from Products.GenericSetup.interfaces import IComponentsHandlerBlacklist
-from Products.GenericSetup.testing import BodyAdapterTestCase
-from Products.GenericSetup.testing import DummySetupEnviron
-from Products.GenericSetup.testing import ExportImportZCMLLayer
-from Products.GenericSetup.tests.common import DummyImportContext
+from ..interfaces import IBody
+from ..interfaces import IComponentsHandlerBlacklist
+from ..testing import BodyAdapterTestCase
+from ..testing import DummySetupEnviron
+from ..testing import ExportImportZCMLLayer
+from ..tests.common import DummyImportContext
+
 
 try:
     from five.localsitemanager.registry import PersistentComponents
@@ -133,8 +134,7 @@ class DummyTool(SimpleItem):
     meta_type = 'dummy tool'
     security = ClassSecurityInfo()
 
-    security.declarePublic('verify')
-
+    @security.public
     def verify(self):
         return True
 
@@ -150,8 +150,7 @@ class DummyTool2(SimpleItem):
     meta_type = 'dummy tool2'
     security = ClassSecurityInfo()
 
-    security.declarePublic('verify')
-
+    @security.public
     def verify(self):
         return True
 
@@ -392,7 +391,7 @@ class ComponentRegistryXMLAdapterTests(BodyAdapterTestCase, unittest.TestCase):
         self.assertTrue(util is None)
 
     def test_remove_components(self):
-        from Products.GenericSetup.components import importComponentRegistry
+        from ..components import importComponentRegistry
 
         obj = self._obj
         self._populate(obj)
@@ -463,8 +462,7 @@ class ComponentRegistryXMLAdapterTests(BodyAdapterTestCase, unittest.TestCase):
 if PersistentComponents is not None:
     def test_suite():
         # reimport to make sure tests are run from Products
-        from Products.GenericSetup.tests.test_components \
-            import ComponentRegistryXMLAdapterTests
+        from ..tests.test_components import ComponentRegistryXMLAdapterTests
 
         return unittest.TestSuite((
             unittest.makeSuite(ComponentRegistryXMLAdapterTests),

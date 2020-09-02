@@ -19,12 +19,12 @@ from Products.Five.component.interfaces import IObjectManagerSite
 from zope.component import adapts
 from zope.component import getAdapter
 from zope.component import getMultiAdapter
-from zope.interface import implementer
 from zope.interface import Interface
+from zope.interface import implementer
 from zope.schema import Text
 
-from Products.GenericSetup.context import SetupEnviron
-from Products.GenericSetup.interfaces import IBody
+from ..context import SetupEnviron
+from ..interfaces import IBody
 
 
 class IComponentsSetupSchema(Interface):

@@ -15,8 +15,9 @@
 
 import unittest
 
-from Products.GenericSetup.testing import BodyAdapterTestCase
-from Products.GenericSetup.testing import ExportImportZCMLLayer
+from ...testing import BodyAdapterTestCase
+from ...testing import ExportImportZCMLLayer
+
 
 _PAGETEMPLATE_BODY = b"""\
 <html>
@@ -30,8 +31,7 @@ class ZopePageTemplateBodyAdapterTests(BodyAdapterTestCase, unittest.TestCase):
     layer = ExportImportZCMLLayer
 
     def _getTargetClass(self):
-        from Products.GenericSetup.PageTemplates.exportimport \
-                import ZopePageTemplateBodyAdapter
+        from ..exportimport import ZopePageTemplateBodyAdapter
 
         return ZopePageTemplateBodyAdapter
 

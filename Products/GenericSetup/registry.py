@@ -13,35 +13,36 @@
 """ Classes:  ImportStepRegistry, ExportStepRegistry
 """
 
+
+import logging
+import types
 from xml.sax import parseString
 from xml.sax.handler import ContentHandler
+
+import six
 
 from AccessControl.class_init import InitializeClass
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from Acquisition import Implicit
 from Products.PageTemplates.PageTemplateFile import PageTemplateFile
-from zope.interface import implementer
 from zope.component import getGlobalSiteManager
+from zope.interface import implementer
 
-from Products.GenericSetup.interfaces import BASE
-from Products.GenericSetup.interfaces import IImportStepRegistry
-from Products.GenericSetup.interfaces import IExportStepRegistry
-from Products.GenericSetup.interfaces import IToolsetRegistry
-from Products.GenericSetup.interfaces import IProfileRegistry
-from Products.GenericSetup.interfaces import IProfile
-from Products.GenericSetup.interfaces import IImportStep
-from Products.GenericSetup.interfaces import IExportStep
-from Products.GenericSetup.permissions import ManagePortal
-from Products.GenericSetup.metadata import ProfileMetadata
-from Products.GenericSetup.utils import _xmldir
-from Products.GenericSetup.utils import _getDottedName
-from Products.GenericSetup.utils import _resolveDottedName
-from Products.GenericSetup.utils import _extractDocstring
-from Products.GenericSetup.utils import _computeTopologicalSort
-
-import logging
-import six
-import types
+from .interfaces import BASE
+from .interfaces import IExportStep
+from .interfaces import IExportStepRegistry
+from .interfaces import IImportStep
+from .interfaces import IImportStepRegistry
+from .interfaces import IProfile
+from .interfaces import IProfileRegistry
+from .interfaces import IToolsetRegistry
+from .metadata import ProfileMetadata
+from .permissions import ManagePortal
+from .utils import _computeTopologicalSort
+from .utils import _extractDocstring
+from .utils import _getDottedName
+from .utils import _resolveDottedName
+from .utils import _xmldir
 
 
 logger = logging.getLogger('Products.GenericSetup')
@@ -468,7 +469,7 @@ class ImportStepRegistry(BaseStepRegistry):
     def _computeTopologicalSort(self):
         return _computeTopologicalSort(self._registered.values())
 
-    security.declarePrivate('_exportTemplate')
+    security.declarePrivate('_exportTemplate')  # NOQA: D001
     _exportTemplate = PageTemplateFile('isrExport.xml', _xmldir)
 
 
@@ -541,7 +542,7 @@ class ExportStepRegistry(BaseStepRegistry):
     #
     #   Helper methods
     #
-    security.declarePrivate('_exportTemplate')
+    security.declarePrivate('_exportTemplate')  # NOQA: D001
     _exportTemplate = PageTemplateFile('esrExport.xml', _xmldir)
 
 
@@ -655,7 +656,7 @@ class ToolsetRegistry(Implicit):
     #
     #   Helper methods.
     #
-    security.declarePrivate('_toolsetConfig')
+    security.declarePrivate('_toolsetConfig')  # NOQA: D001
     _toolsetConfig = PageTemplateFile('tscExport.xml', _xmldir,
                                       __name__='toolsetConfig')
 

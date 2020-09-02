@@ -13,19 +13,20 @@
 """ Registry unit tests.
 """
 from __future__ import absolute_import
+
 import unittest
 
 from OFS.Folder import Folder
-from Products.GenericSetup.testing import ExportImportZCMLLayer
-from Products.GenericSetup.tests.common import BaseRegistryTests
-from Products.GenericSetup import EXTENSION
 from zope.interface import Interface
 
-from .conformance import ConformsToIStepRegistry
-from .conformance import ConformsToIImportStepRegistry
+from .. import EXTENSION
+from ..testing import ExportImportZCMLLayer
+from .common import BaseRegistryTests
 from .conformance import ConformsToIExportStepRegistry
-from .conformance import ConformsToIToolsetRegistry
+from .conformance import ConformsToIImportStepRegistry
 from .conformance import ConformsToIProfileRegistry
+from .conformance import ConformsToIStepRegistry
+from .conformance import ConformsToIToolsetRegistry
 
 
 ###############################
@@ -68,7 +69,7 @@ class ImportStepRegistryTests(BaseRegistryTests, ConformsToIStepRegistry,
 
     def _getTargetClass(self):
 
-        from Products.GenericSetup.registry import ImportStepRegistry
+        from ..registry import ImportStepRegistry
         return ImportStepRegistry
 
     def test_empty(self):
@@ -465,7 +466,7 @@ class ExportStepRegistryTests(BaseRegistryTests, ConformsToIStepRegistry,
 
     def _getTargetClass(self):
 
-        from Products.GenericSetup.registry import ExportStepRegistry
+        from ..registry import ExportStepRegistry
         return ExportStepRegistry
 
     def _makeOne(self, *args, **kw):
@@ -581,8 +582,7 @@ class ExportStepRegistryTests(BaseRegistryTests, ConformsToIStepRegistry,
         registry = self._makeOne().__of__(self.app)
 
         registry.registerStep(id='one', handler=ONE_FUNC,
-                              description='One small step'
-                              )
+                              description='One small step')
 
         info_list = registry.parseXML(_EMPTY_EXPORT_XML)
 
@@ -593,8 +593,7 @@ class ExportStepRegistryTests(BaseRegistryTests, ConformsToIStepRegistry,
         registry = self._makeOne().__of__(self.app)
 
         registry.registerStep(id='two', handler=TWO_FUNC, title='Two Steps',
-                              description='Texas two step'
-                              )
+                              description='Texas two step')
 
         info_list = registry.parseXML(_SINGLE_EXPORT_XML)
 
@@ -611,8 +610,7 @@ class ExportStepRegistryTests(BaseRegistryTests, ConformsToIStepRegistry,
         registry = self._makeOne().__of__(self.app)
 
         registry.registerStep(id='two', handler=TWO_FUNC, title='Two Steps',
-                              description='Texas two step'
-                              )
+                              description='Texas two step')
 
         info_list = registry.parseXML(_SINGLE_EXPORT_XML, encoding='ascii')
 
@@ -675,7 +673,7 @@ class ToolsetRegistryTests(BaseRegistryTests, ConformsToIToolsetRegistry):
 
     def _getTargetClass(self):
 
-        from Products.GenericSetup.registry import ToolsetRegistry
+        from ..registry import ToolsetRegistry
         return ToolsetRegistry
 
     def _initSite(self):
@@ -902,7 +900,7 @@ class ProfileRegistryTests(BaseRegistryTests, ConformsToIProfileRegistry):
 
     def _getTargetClass(self):
 
-        from Products.GenericSetup.registry import ProfileRegistry
+        from ..registry import ProfileRegistry
         return ProfileRegistry
 
     def test_empty(self):
