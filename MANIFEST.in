@@ -1,10 +1,15 @@
-include *.txt *.rst
-include .coveragerc
+include *.rst
+include *.txt
 include tox.ini
 
-prune docs/_build
+exclude MANIFEST.in
 
-recursive-include Products *
-recursive-include docs *
-
-global-exclude *.pyc
+recursive-include Products *.png
+recursive-include Products *.txt
+recursive-include Products *.xml
+recursive-include Products *.zcml
+recursive-include Products *.pt
+recursive-include Products *.zpt
+recursive-include docs *.py
+recursive-include docs *.rst
+recursive-include docs Makefile

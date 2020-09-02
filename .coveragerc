@@ -1,6 +1,0 @@
-[run]
-branch = True
-source = Products.GenericSetup
-
-[report]
-precision = 2
