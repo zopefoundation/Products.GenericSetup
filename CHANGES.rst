@@ -1,7 +1,7 @@
 Changelog
 =========
 
-2.0.3 (unreleased)
+2.0.3 (2020-09-28)
 ------------------
 
 - When logging an upgrade, print the version tuple joined by dots.
