@@ -61,6 +61,7 @@ from .upgrade import listUpgradeSteps
 from .utils import _computeTopologicalSort
 from .utils import _getProductPath
 from .utils import _resolveDottedName
+from .utils import _version_for_print
 from .utils import _wwwdir
 
 
@@ -1129,7 +1130,8 @@ class SetupTool(Folder):
                 dest = tuple(dest.split('.'))
             if self.getLastVersionForProfile(profile_id) == dest:
                 generic_logger.warning('Profile %s is already at wanted '
-                                       'destination %r.', profile_id, dest)
+                                       'destination %r.', profile_id,
+                                       _version_for_print(dest))
                 return
         upgrades = self.listUpgrades(profile_id)
         # First get a list of single steps to apply.  This may be
@@ -1153,8 +1155,9 @@ class SetupTool(Folder):
         if dest is not None and not dest_found:
             generic_logger.warning(
                 'No route found to destination version %r for profile %s. '
-                'Profile stays at current version, %r', dest, profile_id,
-                self.getLastVersionForProfile(profile_id))
+                'Profile stays at current version, %r',
+                _version_for_print(dest), profile_id,
+                _version_for_print(self.getLastVersionForProfile(profile_id)))
             return
         if to_apply:
             for step in to_apply:
@@ -1165,12 +1168,14 @@ class SetupTool(Folder):
                 self.setLastVersionForProfile(profile_id, step.dest)
                 generic_logger.info(
                     'Profile %s upgraded to version %r.',
-                    profile_id, self.getLastVersionForProfile(profile_id))
+                    profile_id,
+                    _version_for_print(
+                        self.getLastVersionForProfile(profile_id)))
         else:
             generic_logger.info(
                 'No upgrades available for profile %s. '
                 'Profile stays at version %r.', profile_id,
-                self.getLastVersionForProfile(profile_id))
+                _version_for_print(self.getLastVersionForProfile(profile_id)))
 
     #
     #   Helper methods

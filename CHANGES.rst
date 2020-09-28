@@ -4,6 +4,8 @@ Changelog
 2.0.3 (unreleased)
 ------------------
 
+- When logging an upgrade, print the version tuple joined by dots.
+
 - Renamed ``xml`` dir to ``xml_templates``.
   This avoids an import warning on Python 2.7.
 
