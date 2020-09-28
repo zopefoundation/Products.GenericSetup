@@ -401,6 +401,16 @@ class UtilsTests(unittest.TestCase):
         doh = Doh()
         self.assertRaises(ValueError, _getDottedName, doh)
 
+    def test__version_for_print(self):
+        from ..utils import _version_for_print as vfp
+
+        self.assertEqual(vfp('1000'), '1000')
+        self.assertEqual(vfp(('1000',)), '1000')
+        self.assertEqual(vfp(('1', '2', '3')), '1.2.3')
+        self.assertEqual(vfp((42)), '42')
+        self.assertEqual(vfp(('unknown')), 'unknown')
+        self.assertEqual(vfp((None)), 'None')
+
 
 class PropertyManagerHelpersTests(unittest.TestCase):
 

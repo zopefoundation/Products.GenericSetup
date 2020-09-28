@@ -156,6 +156,21 @@ def _extractDocstring(func, default_title, default_description):
     return title, description
 
 
+def _version_for_print(version):
+    """Return a version suitable for printing/logging.
+
+    Versions of profiles and destinations of upgrade steps
+    are likely tuples.  We join them with dots.
+
+    Used internally when logging.
+    """
+    if isinstance(version, six.string_types):
+        return version
+    if isinstance(version, tuple):
+        return ".".join(version)
+    return str(version)
+
+
 ##############################################################################
 # WARNING: PLEASE DON'T USE THE CONFIGURATOR PATTERN. THE RELATED BASE CLASSES
 # WILL BECOME DEPRECATED AS SOON AS GENERICSETUP ITSELF NO LONGER USES THEM.
