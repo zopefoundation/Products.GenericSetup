@@ -6,8 +6,8 @@
         :target: https://pypi.org/project/Products.GenericSetup/
         :alt: Supported Python versions
 
-.. image:: https://travis-ci.org/zopefoundation/Products.GenericSetup.svg?branch=master
-        :target: https://travis-ci.org/zopefoundation/Products.GenericSetup
+.. image:: https://travis-ci.com/zopefoundation/Products.GenericSetup.svg?branch=master
+        :target: https://travis-ci.com/zopefoundation/Products.GenericSetup
 
 .. image:: https://coveralls.io/repos/github/zopefoundation/Products.GenericSetup/badge.svg?branch=master
         :target: https://coveralls.io/github/zopefoundation/Products.GenericSetup?branch=master
