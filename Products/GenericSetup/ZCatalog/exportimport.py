@@ -13,10 +13,9 @@
 """ZCatalog export / import support.
 """
 
+from Products.ZCatalog.interfaces import IZCatalog
 from zope.component import adapts
 from zope.component import queryMultiAdapter
-
-from Products.ZCatalog.interfaces import IZCatalog
 
 from ..interfaces import INode
 from ..interfaces import ISetupEnviron
