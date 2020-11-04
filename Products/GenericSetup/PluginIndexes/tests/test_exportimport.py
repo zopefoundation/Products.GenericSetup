@@ -327,9 +327,8 @@ class UnchangedTests(unittest.TestCase):
     def test_TopicIndex(self):
         from xml.dom.minidom import parseString
 
-        from Products.PluginIndexes.TopicIndex.TopicIndex import TopicIndex
-
         from Products.GenericSetup.testing import DummySetupEnviron
+        from Products.PluginIndexes.TopicIndex.TopicIndex import TopicIndex
 
         from ..exportimport import TopicIndexNodeAdapter
         environ = DummySetupEnviron()

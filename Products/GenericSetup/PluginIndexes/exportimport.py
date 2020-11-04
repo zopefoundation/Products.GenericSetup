@@ -13,14 +13,15 @@
 """PluginIndexes export / import support.
 """
 
+from zope.component import adapts
+from zope.component import queryMultiAdapter
+
 from Products.PluginIndexes.interfaces import IDateIndex
 from Products.PluginIndexes.interfaces import IDateRangeIndex
 from Products.PluginIndexes.interfaces import IFilteredSet
 from Products.PluginIndexes.interfaces import IPathIndex
 from Products.PluginIndexes.interfaces import IPluggableIndex
 from Products.PluginIndexes.interfaces import ITopicIndex
-from zope.component import adapts
-from zope.component import queryMultiAdapter
 
 from ..interfaces import INode
 from ..interfaces import ISetupEnviron

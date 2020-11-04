@@ -16,10 +16,11 @@
 from BTrees.IOBTree import IOBTree
 from BTrees.Length import Length
 from BTrees.OIBTree import OIBTree
+from zope.component import adapts
+
 from Products.ZCTextIndex.interfaces import IZCLexicon
 from Products.ZCTextIndex.interfaces import IZCTextIndex
 from Products.ZCTextIndex.PipelineFactory import element_factory
-from zope.component import adapts
 
 from ..interfaces import ISetupEnviron
 from ..utils import NodeAdapterBase
