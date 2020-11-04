@@ -4,7 +4,7 @@ Changelog
 2.0.4 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Add support for Python 3.9.
 
 
 2.0.3 (2020-09-28)

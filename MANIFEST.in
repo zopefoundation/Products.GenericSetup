@@ -2,8 +2,6 @@ include *.rst
 include *.txt
 include tox.ini
 
-exclude MANIFEST.in
-
 recursive-include Products *.png
 recursive-include Products *.txt
 recursive-include Products *.xml
