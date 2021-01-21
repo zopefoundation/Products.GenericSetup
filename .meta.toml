@@ -15,7 +15,7 @@ with-sphinx-doctests = false
 fail-under = 92
 
 [isort]
-known_first_party = "Products.PluginIndexes Products.ZCatalog BTrees"
+known_first_party = "Products.PluginIndexes, Products.ZCTextIndex, Products.ZCatalog"
 
 [manifest]
 additional-rules = [
