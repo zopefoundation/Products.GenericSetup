@@ -324,7 +324,7 @@ class DirectoryExportContextTests(FilesystemTestBase, ConformsToISetupContext,
                                   ConformsToIExportContext,
                                   ConformsToIChunkableExportContext):
 
-    _PROFILE_PATH = '/tmp/ECTTexts'
+    _PROFILE_PATH = tempfile.mkdtemp(prefix='ECTTexts')
 
     def _getTargetClass(self):
 
