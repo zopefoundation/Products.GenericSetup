@@ -64,7 +64,7 @@ class DirectoryImportContextTests(FilesystemTestBase, ConformsToISetupContext,
                                   ConformsToIImportContext,
                                   ConformsToIChunkableImportContext):
 
-    _PROFILE_PATH = '/tmp/ICTTexts'
+    _PROFILE_PATH = tempfile.mkdtemp(prefix='ICTTexts')
 
     def _getTargetClass(self):
 
