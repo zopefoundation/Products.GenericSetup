@@ -8,7 +8,7 @@ NAME = 'GenericSetup'
 URL = 'https://github.com/zopefoundation/Products.%s' % NAME
 
 here = os.path.abspath(os.path.dirname(__file__))
-package = os.path.join(here, 'Products', NAME)
+package = os.path.join(here, 'src', 'Products', NAME)
 docs = os.path.join(here, 'docs')
 
 
@@ -58,7 +58,8 @@ setup(
         'Issue tracker': '%s/issues' % URL,
     },
     license="ZPL 2.1",
-    packages=find_packages(),
+    packages=find_packages('src'),
+    package_dir={'': 'src'},
     include_package_data=True,
     namespace_packages=['Products'],
     zip_safe=False,

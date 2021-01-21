@@ -1,39 +1,25 @@
-*.egg
-*.egg-info
-*.mo
+# Generated from:
+# https://github.com/zopefoundation/meta/tree/master/config/zope-product
+*.egg-info/
+*.profraw
 *.pyc
 *.pyo
 .coverage
 .coverage.*
-.eggs
+.eggs/
 .installed.cfg
 .mr.developer.cfg
-.Python
-.tox
-bin
-build
+.tox/
+__pycache__/
+bin/
+build/
 coverage.xml
-develop-eggs
-dist
-default.profraw
-downloads
-eggs
-htmlcov
-local.cfg
-parts
-src
-var
-/include
-/lib*
-pip-selfcheck.json
+develop-eggs/
+dist/
+docs/_build
+eggs/
+htmlcov/
+lib/
+lib64
+parts/
 pyvenv.cfg
-/src
-docs/_build/
-
-# VirtualEnv on Windows:
-Include/
-Lib/
-Scripts/
-
-# Editor Backups:
-*~
