@@ -424,7 +424,8 @@ class PrettyDocument(Document):
         return e
 
     def writexml(self, writer, indent="", addindent="", newl="",
-                 encoding='utf-8'):
+                 encoding='utf-8', standalone=None):
+        # `standalone` was added in Python 3.9 but is ignored here
         if encoding is None:
             writer.write('<?xml version="1.0"?>\n')
         else:
