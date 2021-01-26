@@ -14,6 +14,7 @@
 """
 
 import os
+import tempfile
 import unittest
 
 import six
@@ -109,9 +110,9 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
 
     layer = ExportImportZCMLLayer
 
-    _PROFILE_PATH = '/tmp/STT_test'
-    _PROFILE_PATH2 = '/tmp/STT_test2'
-    _PROFILE_PATH3 = '/tmp/STT_test3'
+    _PROFILE_PATH = tempfile.mkdtemp(prefix='STT_test')
+    _PROFILE_PATH2 = tempfile.mkdtemp(prefix='STT_test2')
+    _PROFILE_PATH3 = tempfile.mkdtemp(prefix='STT_test3')
 
     def afterSetUp(self):
         from ..upgrade import _upgrade_registry

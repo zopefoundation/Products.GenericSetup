@@ -1,0 +1,29 @@
+# Generated from:
+# https://github.com/zopefoundation/meta/tree/master/config/zope-product
+[meta]
+template = "zope-product"
+commit-id = "fa5e2a952a937751fc91774c2c9d2e429a8e02ed"
+
+[python]
+with-appveyor = false
+with-pypy = false
+with-legacy-python = true
+with-docs = false
+with-sphinx-doctests = false
+
+[coverage]
+fail-under = 92
+
+[isort]
+known_first_party = "Products.PluginIndexes, Products.ZCTextIndex, Products.ZCatalog"
+
+[manifest]
+additional-rules = [
+    "include buildout4.cfg",
+    "recursive-include docs *.py",
+    "recursive-include docs *.rst",
+    "recursive-include docs Makefile",
+    "recursive-include src *.png",
+    "recursive-include src *.xml",
+    "recursive-include src *.zpt",
+    ]

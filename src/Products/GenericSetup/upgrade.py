@@ -14,9 +14,9 @@
 """
 
 import six
+from pkg_resources import parse_version
 
 from BTrees.OOBTree import OOBTree
-from pkg_resources import parse_version
 
 from Products.GenericSetup.interfaces import IUpgradeSteps
 from Products.GenericSetup.registry import GlobalRegistryStorage
