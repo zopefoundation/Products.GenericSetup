@@ -1,7 +1,7 @@
 Changelog
 =========
 
-2.0.4 (unreleased)
+2.1.0 (unreleased)
 ------------------
 
 - Add support for Python 3.9.
