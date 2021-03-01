@@ -23,6 +23,7 @@ from six import BytesIO
 import transaction
 from AccessControl.Permissions import view
 from AccessControl.SecurityManagement import newSecurityManager
+from AccessControl.SecurityManagement import noSecurityManager
 from AccessControl.users import UnrestrictedUser
 from Acquisition import aq_base
 from OFS.Folder import Folder
@@ -133,6 +134,7 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
         from ..upgrade import _upgrade_registry
         profile_registry.clear()
         _upgrade_registry.clear()
+        noSecurityManager()
 
     def _getTargetClass(self):
         from ..tool import SetupTool
@@ -146,6 +148,8 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
         site.title = title
 
         self.app._setObject('site', site)
+        self.app.acl_users.userFolderAddUser('admin', '', ['Manager'], [])
+        newSecurityManager(None, self.app.acl_users.getUser('admin'))
         return self.app._getOb('site')
 
     def test_empty(self):

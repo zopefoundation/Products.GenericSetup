@@ -28,6 +28,7 @@ import six
 
 from AccessControl.class_init import InitializeClass
 from AccessControl.Permissions import view
+from AccessControl.Permissions import view_management_screens
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from Acquisition import aq_base
 from OFS.Folder import Folder
@@ -201,6 +202,9 @@ class SetupTool(Folder):
     _exclude_global_steps = False
 
     security = ClassSecurityInfo()
+
+    # Make sure anonymous users cannot access anything inside the tool
+    security.declareObjectProtected(view_management_screens)
 
     def __init__(self, id):
         self.id = str(id)
