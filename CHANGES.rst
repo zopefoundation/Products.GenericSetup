@@ -4,7 +4,7 @@ Changelog
 2.1.1 (unreleased)
 ------------------
 
-- Enforce access control on setup tool log files
+- Enforce access control on setup tool log files and snapshot files and folders.
   (`#101 <https://github.com/zopefoundation/Products.GenericSetup/issues/101>`_)
 
 
