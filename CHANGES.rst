@@ -4,7 +4,8 @@ Changelog
 2.1.1 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Enforce access control on setup tool log files
+  (`#101 <https://github.com/zopefoundation/Products.GenericSetup/issues/101>`_)
 
 
 2.1.0 (2021-01-26)

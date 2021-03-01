@@ -21,6 +21,7 @@ import six
 from six import BytesIO
 
 import transaction
+from AccessControl.Permissions import view
 from AccessControl.SecurityManagement import newSecurityManager
 from AccessControl.users import UnrestrictedUser
 from Acquisition import aq_base
@@ -487,6 +488,16 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
         prefix = str('import-all-%s' % PROFILE_ID)
         logged = [x for x in tool.objectIds('File') if x.startswith(prefix)]
         self.assertEqual(len(logged), 1)
+
+        # Check acess restriction on log files
+        logged = [x for x in tool.objectIds('File')]
+        for file_id in logged:
+            file_ob = tool._getOb(file_id)
+            rop_info = file_ob.rolesOfPermission(view)
+            allowed_roles = sorted([x['name'] for x in rop_info
+                                    if x['selected']])
+            self.assertEqual(allowed_roles, ['Manager', 'Owner'])
+            self.assertFalse(file_ob.acquiredRolesAreUsedBy(view))
 
     def test_runAllImportStepsFromProfile_sorted_explicit_purge(self):
 
