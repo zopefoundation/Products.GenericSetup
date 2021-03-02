@@ -21,7 +21,9 @@ import six
 from six import BytesIO
 
 import transaction
+from AccessControl.Permissions import view
 from AccessControl.SecurityManagement import newSecurityManager
+from AccessControl.SecurityManagement import noSecurityManager
 from AccessControl.users import UnrestrictedUser
 from Acquisition import aq_base
 from OFS.Folder import Folder
@@ -132,6 +134,7 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
         from ..upgrade import _upgrade_registry
         profile_registry.clear()
         _upgrade_registry.clear()
+        noSecurityManager()
 
     def _getTargetClass(self):
         from ..tool import SetupTool
@@ -145,6 +148,8 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
         site.title = title
 
         self.app._setObject('site', site)
+        self.app.acl_users.userFolderAddUser('admin', '', ['Manager'], [])
+        newSecurityManager(None, self.app.acl_users.getUser('admin'))
         return self.app._getOb('site')
 
     def test_empty(self):
@@ -468,6 +473,15 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
         logged = [x for x in tool.objectIds('File') if x.startswith(prefix)]
         self.assertEqual(len(logged), 1)
 
+    def check_restricted_access(self, obj):
+        # For most objects that we create, we do not want ordinary users to
+        # see it, also not when they have View permission on a higher level.
+        rop_info = obj.rolesOfPermission(view)
+        allowed_roles = sorted([x['name'] for x in rop_info
+                                if x['selected']])
+        self.assertEqual(allowed_roles, ['Manager', 'Owner'])
+        self.assertFalse(obj.acquiredRolesAreUsedBy(view))
+
     def test_runAllImportStepsFromProfile_unicode_id_creates_reports(self):
 
         TITLE = 'original title'
@@ -487,6 +501,12 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
         prefix = str('import-all-%s' % PROFILE_ID)
         logged = [x for x in tool.objectIds('File') if x.startswith(prefix)]
         self.assertEqual(len(logged), 1)
+
+        # Check acess restriction on log files
+        logged = [x for x in tool.objectIds('File')]
+        for file_id in logged:
+            file_ob = tool._getOb(file_id)
+            self.check_restricted_access(file_ob)
 
     def test_runAllImportStepsFromProfile_sorted_explicit_purge(self):
 
@@ -1085,6 +1105,15 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
 
         self.assertEqual(info['id'], 'default')
         self.assertEqual(info['title'], 'default')
+
+        # Check access restriction on snapshot files and folders
+        self.check_restricted_access(tool.snapshots)
+        self.check_restricted_access(snapshot)
+        for obj in snapshot.objectValues():
+            self.check_restricted_access(obj)
+            if hasattr(aq_base(obj), 'objectValues'):
+                for child in obj.objectValues():
+                    self.check_restricted_access(child)
 
     def test_applyContext(self):
         from ..tool import EXPORT_STEPS_XML

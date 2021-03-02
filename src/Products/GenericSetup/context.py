@@ -26,6 +26,7 @@ from tarfile import TarInfo
 import six
 
 from AccessControl.class_init import InitializeClass
+from AccessControl.Permissions import view
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from Acquisition import Implicit
 from Acquisition import aq_base
@@ -499,6 +500,10 @@ class SnapshotExportContext(BaseContext):
         # MISSING: switch on content_type
         ob = self._createObjectByType(filename, text, content_type)
         folder._setObject(str(filename), ob)  # No Unicode IDs!
+        # Tighten the View permission on the new object.
+        # Only the owner and Manager users may view the log.
+        # file_ob = self._getOb(name)
+        ob.manage_permission(view, ('Manager', 'Owner'), 0)
 
     @security.protected(ManagePortal)
     def getSnapshotURL(self):
@@ -559,8 +564,10 @@ class SnapshotExportContext(BaseContext):
             if element not in current.objectIds():
                 # No Unicode IDs!
                 current._setObject(str(element), Folder(element))
-
-            current = current._getOb(element)
+                current = current._getOb(element)
+                current.manage_permission(view, ('Manager', 'Owner'), 0)
+            else:
+                current = current._getOb(element)
 
         return current
 
