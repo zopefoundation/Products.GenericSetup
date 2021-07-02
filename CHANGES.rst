@@ -1,7 +1,7 @@
 Changelog
 =========
 
-2.1.2 (unreleased)
+2.1.2 (2021-07-02)
 ------------------
 
 - Document and fix behavior of methods that open/read/write filesystem files
