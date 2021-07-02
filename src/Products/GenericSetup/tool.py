@@ -473,6 +473,10 @@ class SetupTool(Folder):
 
         for line in lines.splitlines():
 
+            # All the operations below expect native strings
+            if six.PY3 and not isinstance(line, str):
+                line = line.decode('UTF-8')
+
             if line.startswith('** '):
 
                 if line.find('File') > -1:

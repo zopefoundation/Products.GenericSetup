@@ -16,6 +16,8 @@
 from csv import reader
 from csv import writer
 
+import six
+from six import BytesIO
 from six.moves import cStringIO
 from six.moves.configparser import ConfigParser
 
@@ -143,6 +145,9 @@ class FolderishExporterImporter(object):
         if not preserve:
             preserve = []
         else:
+            # Make sure ``preserve`` is a native string
+            if six.PY3 and not isinstance(preserve, str):
+                preserve = preserve.decode('UTF-8')
             preserve = _globtest(preserve, prior)
 
         preserve.extend([x[0] for x in must_preserve])
@@ -156,6 +161,8 @@ class FolderishExporterImporter(object):
             return
 
         dialect = 'excel'
+        if six.PY3 and not isinstance(objects, str):
+            objects = objects.decode('UTF-8')
         stream = cStringIO(objects)
 
         rowiter = reader(stream, dialect)
@@ -274,7 +281,7 @@ class CSVAwareFileAdapter(object):
             logger = import_context.getLogger('CSAFA')
             logger.info('no .csv file for %s/%s' % (subdir, cid))
         else:
-            stream = cStringIO(data)
+            stream = BytesIO(data)
             self.context.put_csv(stream)
 
 
@@ -339,6 +346,11 @@ class SimpleINIAware(object):
         """
         context = self.context
         parser = ConfigParser()
+
+        # read_file/readfp expect text, not bytes
+        if isinstance(text, six.binary_type):
+            text = text.decode('UTF-8')
+
         try:
             parser.read_file(cStringIO(text))
         except AttributeError:  # Python 2
@@ -412,6 +424,6 @@ class DAVAwareFileAdapter(object):
             logger = import_context.getLogger('SGAIFA')
             logger.info('no .ini file for %s/%s' % (subdir, cid))
         else:
-            request = FauxDAVRequest(BODY=data, BODYFILE=cStringIO(data))
+            request = FauxDAVRequest(BODY=data, BODYFILE=BytesIO(data))
             response = FauxDAVResponse()
             self.context.PUT(request, response)

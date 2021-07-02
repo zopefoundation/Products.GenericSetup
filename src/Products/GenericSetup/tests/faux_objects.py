@@ -68,7 +68,7 @@ class TestINIAware(SimpleItem):
         self._was_put = text
 
 
-KNOWN_DAV = """\
+KNOWN_DAV = b"""\
 Title: %s
 Description: %s
 
@@ -79,9 +79,9 @@ Description: %s
 @implementer(IDAVAware)
 class TestDAVAware(SimpleItem):
     _was_put = None
-    title = 'DAV title'
-    description = 'DAV description'
-    body = 'DAV body'
+    title = b'DAV title'
+    description = b'DAV description'
+    body = b'DAV body'
 
     def manage_FTPget(self):
         return KNOWN_DAV % (self.title, self.description, self.body)
