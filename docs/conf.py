@@ -13,6 +13,7 @@
 # All configuration values have a default value; values that are commented out
 # serve to show the default value.
 
+import datetime
 import sys
 import os
 import pkg_resources
@@ -42,8 +43,9 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General substitutions.
+year = datetime.datetime.now().year
 project = 'Products.GenericSetup'
-copyright = '2008-2017, Zope CMF Developers'
+copyright = '2008-%s, Zope Foundation and Contributors' % year
 
 # The default replacements for |version| and |release|, also used in various
 # other places throughout the built documents.

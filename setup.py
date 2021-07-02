@@ -12,11 +12,6 @@ package = os.path.join(here, 'src', 'Products', NAME)
 docs = os.path.join(here, 'docs')
 
 
-def _package_doc(name):
-    with open(os.path.join(package, name)) as f:
-        return f.read()
-
-
 with open('README.rst') as f:
     README = f.read()
 
@@ -27,7 +22,7 @@ _BOUNDARY = '\n' + ('-' * 60) + '\n\n'
 
 setup(
     name='Products.GenericSetup',
-    version=_package_doc('version.txt').strip(),
+    version='2.1.3.dev0',
     description='Read Zope configuration state from profile dirs / tarballs',
     long_description=README + _BOUNDARY + CHANGES,
     classifiers=[
