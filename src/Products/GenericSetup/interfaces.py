@@ -85,8 +85,8 @@ class IImportContext(ISetupContext):
         o 'subdir' is an optional subdirectory;  if not supplied, search
           only the "root" directory.
 
-        o Return the file contents as a string, or None if the
-          file cannot be found.
+        o Return the file contents as bytes (``str`` on Python 2 and ``bytes``
+          on Python 3), or None if the file cannot be found.
         """
 
     def getLastModified(path):
@@ -138,8 +138,9 @@ class IChunkableImportContext(IImportContext):
           which to find the file;  if not passed, write the file to the
           "root" of the target.
 
-        o Return a readable file-like object;  the caller is responsible
-          for calling 'close' on it.
+        o Return a readable file-like object in binary mode that will return
+          bytes when read from (``str`` on Python 2 and ``bytes`` on Python 3);
+          the caller is responsible for calling 'close' on it.
         """
 
 
@@ -186,8 +187,9 @@ class IChunkableExportContext(IExportContext):
           which to write the file;  if not passed, write the file to the
           "root" of the target.
 
-        o Return a writeable file-like object;  the caller is responsible
-          for calling 'close' on it.
+        o Return a writeable file-like object in binary mode that expects
+          bytes data (``str`` on Python 2 and ``bytes`` on Python 3);
+          the caller is responsible for calling 'close' on it.
         """
 
 

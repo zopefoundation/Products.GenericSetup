@@ -15,6 +15,8 @@
 
 import unittest
 
+import six
+
 from .conformance import ConformsToIFilesystemExporter
 from .conformance import ConformsToIFilesystemImporter
 from .conformance import ConformsToIINIAware
@@ -766,7 +768,7 @@ class CSVAwareFileAdapterTests(unittest.TestCase,
 one,two,three
 four,five,six
 """
-        NEW_CSV = """\
+        NEW_CSV = b"""\
 four,five,six
 one,two,three
 """
@@ -857,7 +859,7 @@ class DAVAwareFileAdapterTests(unittest.TestCase,
     def test_import_dav_file(self):
         from .common import DummyImportContext
         from .faux_objects import KNOWN_DAV
-        VALUES = ('Title: dav_file', 'Description: abc', 'body goes here')
+        VALUES = (b'Title: dav_file', b'Description: abc', b'body goes here')
         dav_file = _makeDAVAware('dav_file.html')
         adapter = self._makeOne(dav_file)
         context = DummyImportContext(None)
@@ -939,6 +941,11 @@ def _parseINI(text):
     from six.moves import cStringIO
     from six.moves.configparser import ConfigParser
     parser = ConfigParser()
+
+    # read_file/readfp expect text, not bytes
+    if isinstance(text, six.binary_type):
+        text = text.decode('UTF-8')
+
     try:
         parser.read_file(cStringIO(text))
     except AttributeError:  # Python 2

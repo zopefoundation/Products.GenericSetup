@@ -4,6 +4,12 @@ Changelog
 2.1.2 (unreleased)
 ------------------
 
+- Document and fix behavior of methods that open/read/write filesystem files
+  (`#107 <https://github.com/zopefoundation/Products.GenericSetup/issues/107>`_)
+
+- Fix snapshot comparisons under Python 3
+  (`#85 <https://github.com/zopefoundation/Products.GenericSetup/issues/85>`_)
+
 
 2.1.1 (2021-03-02)
 ------------------

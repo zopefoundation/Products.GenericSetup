@@ -208,7 +208,12 @@ class DummyImportContext:
         if subdir is not None:
             filename = '/'.join((subdir, filename))
 
-        return self._files.get(filename)
+        # readDataFile must return bytes, so we make sure it does.
+        contents = self._files.get(filename)
+        if isinstance(contents, six.text_type):
+            contents = contents.encode(self._encoding or 'UTF-8')
+
+        return contents
 
     def shouldPurge(self):
 
