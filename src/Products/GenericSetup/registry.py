@@ -435,7 +435,7 @@ class ImportStepRegistry(BaseStepRegistry):
         if handler is None:
             raise ValueError('No handler specified')
 
-        if already and already['version'] > version:
+        if already and already['version'] and already['version'] > version:
             raise KeyError('Existing registration for step %s, version %s'
                            % (id, already['version']))
 

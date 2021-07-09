@@ -4,6 +4,7 @@ Changelog
 2.1.3 (unreleased)
 ------------------
 
+- Fix Issue #83 where empty Versions caused an Error [gogobd]
 
 2.1.2 (2021-07-02)
 ------------------
