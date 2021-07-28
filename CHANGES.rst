@@ -1,7 +1,7 @@
 Changelog
 =========
 
-2.1.3 (unreleased)
+2.1.3 (2021-07-28)
 ------------------
 
 - Fix Issue #83 where empty Versions caused an Error [gogobd]
