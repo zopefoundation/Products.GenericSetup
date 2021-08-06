@@ -4,7 +4,9 @@ Changelog
 2.1.4 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Fix compatibility with Zope 5.3, where a lines property is expected to contain text,
+  instead of bytes.
+  (`#109 <https://github.com/zopefoundation/Products.GenericSetup/issues/109>`_)
 
 
 2.1.3 (2021-07-28)

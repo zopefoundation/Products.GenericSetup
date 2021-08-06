@@ -662,11 +662,24 @@ class PropertyManagerHelpersTests(unittest.TestCase):
         obj.manage_addProperty('lines1', ('Foo', 'Gee'), 'lines')
         obj.manage_addProperty('lines2', ('Foo', 'Gee'), 'lines')
         obj.manage_addProperty('lines3', ('Foo', 'Gee'), 'lines')
+        # Check that the type is what we expect.
+        # Beware of bytes versus text.
+        # Since Zope 5.3, lines should contain text.
+        # See zopefoundation/Products.GenericSetup/issues/109
+        # An import should not result in bytes instead of text.
+        is_bytes = isinstance(obj.getProperty('lines1')[0], bytes)
         helpers._initProperties(node)
-
-        self.assertEqual(obj.getProperty('lines1'), (b'Foo', b'Bar'))
-        self.assertEqual(obj.getProperty('lines2'), (b'Foo', b'Bar'))
-        self.assertEqual(obj.getProperty('lines3'), (b'Gee', b'Foo', b'Bar'))
+        if is_bytes:
+            self.assertEqual(obj.getProperty('lines1'), (b'Foo', b'Bar'))
+            self.assertEqual(obj.getProperty('lines2'), (b'Foo', b'Bar'))
+            self.assertEqual(
+                obj.getProperty('lines3'),
+                (b'Gee', b'Foo', b'Bar')
+            )
+        else:
+            self.assertEqual(obj.getProperty('lines1'), ('Foo', 'Bar'))
+            self.assertEqual(obj.getProperty('lines2'), ('Foo', 'Bar'))
+            self.assertEqual(obj.getProperty('lines3'), ('Gee', 'Foo', 'Bar'))
 
     def test__initProperties_nopurge_extension(self):
         helpers = self._makeOne()
@@ -677,11 +690,20 @@ class PropertyManagerHelpersTests(unittest.TestCase):
         obj.manage_addProperty('lines1', ('Foo', 'Gee'), 'lines')
         obj.manage_addProperty('lines2', ('Foo', 'Gee'), 'lines')
         obj.manage_addProperty('lines3', ('Foo', 'Gee'), 'lines')
+        is_bytes = isinstance(obj.getProperty('lines1')[0], bytes)
         helpers._initProperties(node)
 
-        self.assertEqual(obj.getProperty('lines1'), (b'Foo', b'Bar'))
-        self.assertEqual(obj.getProperty('lines2'), (b'Foo', b'Bar'))
-        self.assertEqual(obj.getProperty('lines3'), (b'Gee', b'Foo', b'Bar'))
+        if is_bytes:
+            self.assertEqual(obj.getProperty('lines1'), (b'Foo', b'Bar'))
+            self.assertEqual(obj.getProperty('lines2'), (b'Foo', b'Bar'))
+            self.assertEqual(
+                obj.getProperty('lines3'),
+                (b'Gee', b'Foo', b'Bar')
+            )
+        else:
+            self.assertEqual(obj.getProperty('lines1'), ('Foo', 'Bar'))
+            self.assertEqual(obj.getProperty('lines2'), ('Foo', 'Bar'))
+            self.assertEqual(obj.getProperty('lines3'), ('Gee', 'Foo', 'Bar'))
 
     def test_initProperties_remove_elements(self):
         helpers = self._makeOne()
@@ -691,10 +713,15 @@ class PropertyManagerHelpersTests(unittest.TestCase):
         obj._properties = ()
         obj.manage_addProperty('lines1', ('Foo', 'Gee'), 'lines')
         obj.manage_addProperty('lines2', ('Foo', 'Gee'), 'lines')
+        is_bytes = isinstance(obj.getProperty('lines1')[0], bytes)
         helpers._initProperties(node)
 
-        self.assertEqual(obj.getProperty('lines1'), (b'Gee', b'Bar'))
-        self.assertEqual(obj.getProperty('lines2'), (b'Gee',))
+        if is_bytes:
+            self.assertEqual(obj.getProperty('lines1'), (b'Gee', b'Bar'))
+            self.assertEqual(obj.getProperty('lines2'), (b'Gee',))
+        else:
+            self.assertEqual(obj.getProperty('lines1'), ('Gee', 'Bar'))
+            self.assertEqual(obj.getProperty('lines2'), ('Gee',))
 
     def test_initProperties_remove_properties(self):
         helpers = self._makeOne()
