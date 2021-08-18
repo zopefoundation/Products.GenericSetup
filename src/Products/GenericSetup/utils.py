@@ -61,6 +61,21 @@ _xmldir = os.path.join(_pkgdir, 'xml_templates')
 CONVERTER, DEFAULT, KEY = 1, 2, 3
 I18NURI = 'http://xml.zope.org/namespaces/i18n'
 
+# If we have type converters for lines and string, which should be always,
+# then we may need to call these converters on Zope 5.3 and higher.
+# This is because since Zope 5.3, the lines converter gives
+# text instead of bytes.
+# See https://github.com/zopefoundation/Products.GenericSetup/issues/109
+if (
+    "lines" in type_converters
+    and "string" in type_converters
+    and isinstance(type_converters["lines"]("blah")[0], six.text_type)
+):
+    LINES_HAS_TEXT = True
+else:
+    # Older Zope
+    LINES_HAS_TEXT = False
+
 
 def _getDottedName(named):
 
@@ -800,6 +815,13 @@ class PropertyManagerHelpers(object):
                         if value in remove_elements:
                             remove_elements.remove(value)
 
+            if LINES_HAS_TEXT and obj.getPropertyType(prop_id) == 'lines':
+                # Since Zope 5.3, lines should contain text, not bytes.
+                # https://github.com/zopefoundation/Products.GenericSetup/issues/109
+                new_elements = _convert_lines(new_elements, self._encoding)
+                remove_elements = _convert_lines(
+                    remove_elements, self._encoding)
+
             if prop_map.get('type') in ('lines', 'tokens', 'ulines',
                                         'multiple selection'):
                 prop_value = tuple(new_elements) or ()
@@ -816,6 +838,13 @@ class PropertyManagerHelpers(object):
                                           or 'True'):
                 # If the purge attribute is False, merge sequences
                 prop = obj.getProperty(prop_id)
+                # Before Zope 5.3, lines contained bytes.
+                # After, they contain text.
+                # We may need to convert the existing property value first,
+                # otherwise we may be combining bytes and text.
+                # See zopefoundation/Products.GenericSetup/issues/109
+                if LINES_HAS_TEXT and obj.getPropertyType(prop_id) == 'lines':
+                    prop = _convert_lines(prop, self._encoding)
                 if isinstance(prop, (tuple, list)):
                     prop_value = (tuple([p for p in prop
                                          if p not in prop_value and
@@ -825,19 +854,41 @@ class PropertyManagerHelpers(object):
             if isinstance(prop_value, (six.binary_type, six.text_type)):
                 prop_type = obj.getPropertyType(prop_id) or 'string'
                 if prop_type in type_converters:
+                    prop_converter = type_converters[prop_type]
                     # The type_converters use the ZPublisher default_encoding
                     # for decoding bytes!
                     if self._encoding.lower() != default_encoding:
-                        if isinstance(prop_value, six.binary_type):
-                            u_prop_value = prop_value.decode(self._encoding)
-                            prop_value = u_prop_value.encode(default_encoding)
-                        prop_value = type_converters[prop_type](prop_value)
-                        if isinstance(prop_value, six.binary_type):
-                            u_prop_value = prop_value.decode(default_encoding)
-                            prop_value = u_prop_value.encode(self._encoding)
+                        prop_value = _de_encode_value(
+                            prop_value, self._encoding, prop_converter)
                     else:
-                        prop_value = type_converters[prop_type](prop_value)
+                        prop_value = prop_converter(prop_value)
             obj._updateProperty(prop_id, prop_value)
+
+
+def _de_encode_value(prop_value, encoding, converter):
+    if isinstance(prop_value, six.binary_type):
+        u_prop_value = prop_value.decode(encoding)
+        prop_value = u_prop_value.encode(default_encoding)
+    prop_value = converter(prop_value)
+    if isinstance(prop_value, six.binary_type):
+        u_prop_value = prop_value.decode(default_encoding)
+        prop_value = u_prop_value.encode(encoding)
+    return prop_value
+
+
+def _convert_lines(values, encoding):
+    # Only called when LINES_HAS_TEXT is True.
+    if not isinstance(values, (list, tuple)):
+        values = values.splitlines()
+    if encoding.lower() == default_encoding:
+        converter = type_converters['lines']
+        return converter(values)
+    # According to the tests, we support non utf-8 encodings like iso-8859-1.
+    converter = type_converters['string']
+    return [
+        _de_encode_value(prop_value, encoding, converter)
+        for prop_value in values
+    ]
 
 
 class MarkerInterfaceHelpers(object):
