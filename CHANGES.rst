@@ -1,7 +1,7 @@
 Changelog
 =========
 
-2.1.4 (unreleased)
+2.1.4 (2021-09-15)
 ------------------
 
 - Fix compatibility with Zope 5.3, where a lines property is expected to contain text,
