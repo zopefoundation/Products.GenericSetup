@@ -20,6 +20,7 @@ from BTrees.OOBTree import OOBTree
 
 from Products.GenericSetup.interfaces import IUpgradeSteps
 from Products.GenericSetup.registry import GlobalRegistryStorage
+from Products.GenericSetup.utils import _getHash
 
 
 def normalize_version(version):
@@ -123,7 +124,7 @@ class UpgradeEntity(object):
     """
     def __init__(self, title, profile, source, dest, desc, checker=None,
                  sortkey=0):
-        self.id = str(abs(hash('%s%s%s%s' % (title, source, dest, sortkey))))
+        self.id = _getHash(title, source, dest, sortkey)
         self.title = title
         if source == '*':
             source = None

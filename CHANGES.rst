@@ -4,6 +4,9 @@ Changelog
 2.1.5 (unreleased)
 ------------------
 
+- Fix #114: Problems using ZMI on multi-instance clusters due to instable hash key.
+  (`#114 <https://github.com/zopefoundation/Products.GenericSetup/issues/114>`_)
+
 - Move several tabs to Zope 4+ ZMI-markup standard.  [jensens]
 
 

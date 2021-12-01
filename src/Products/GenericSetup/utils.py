@@ -13,6 +13,7 @@
 """ GenericSetup product utilities
 """
 
+import hashlib
 import os
 import sys
 from inspect import getdoc
@@ -1027,3 +1028,10 @@ def _getProductPath(product_name):
                              % product_name)
 
     return product.__path__[0]
+
+
+def _getHash(*args):
+    """return a stable md hash of given string arguments"""
+    base = "".join([str(x) for x in args])
+    hashmd5 = hashlib.md5(base.encode('utf8'))
+    return hashmd5.hexdigest()
