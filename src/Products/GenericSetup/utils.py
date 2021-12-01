@@ -13,9 +13,9 @@
 """ GenericSetup product utilities
 """
 
+import hashlib
 import os
 import sys
-import hashlib
 from inspect import getdoc
 from logging import getLogger
 from xml.dom.minidom import Document
