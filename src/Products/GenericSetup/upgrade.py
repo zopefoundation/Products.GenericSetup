@@ -14,6 +14,7 @@
 """
 
 import six
+import hashlib
 from pkg_resources import parse_version
 
 from BTrees.OOBTree import OOBTree
@@ -123,7 +124,9 @@ class UpgradeEntity(object):
     """
     def __init__(self, title, profile, source, dest, desc, checker=None,
                  sortkey=0):
-        self.id = str(abs(hash('%s%s%s%s' % (title, source, dest, sortkey))))
+        id_base = f'{title}{source}{dest}{sortkey}'
+        id_hash = hashlib.md5(id_base.encode('utf8'))
+        self.id = id_hash.hexdigest()
         self.title = title
         if source == '*':
             source = None

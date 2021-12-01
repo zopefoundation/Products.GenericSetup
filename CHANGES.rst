@@ -4,7 +4,8 @@ Changelog
 2.1.5 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Fix #114: Problems using ZMI on multi-instance clusters dues to instable hash key.
+  (`#114 <https://github.com/zopefoundation/Products.GenericSetup/issues/114>`_)
 
 
 2.1.4 (2021-09-15)

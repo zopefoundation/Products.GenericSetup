@@ -13,6 +13,7 @@
 """GenericSetup ZCML directives.
 """
 
+import hashlib
 import zope.schema
 from zope.configuration.fields import GlobalObject
 from zope.configuration.fields import MessageID
@@ -354,8 +355,9 @@ class upgradeSteps(object):
         step = UpgradeStep(title, self.profile, self.source, self.dest,
                            description, handler, checker, self.sortkey)
         if self.id is None:
-            self.id = str(abs(hash('%s%s%s%s' % (title, self.source, self.dest,
-                                                 self.sortkey))))
+            id_base = f'{title}{self.source}{self.dest}{self.sortkey}'
+            id_hash = hashlib.md5(id_base.encode('utf8'))
+            self.id = id_hash.hexdigest()
         _context.action(
             discriminator=(
                 'upgradeStep', self.profile, self.source, self.dest, handler,
@@ -372,8 +374,9 @@ class upgradeSteps(object):
                               description, import_profile, import_steps,
                               run_deps, purge, checker, self.sortkey)
         if self.id is None:
-            self.id = str(abs(hash('%s%s%s%s' % (title, self.source, self.dest,
-                                                 self.sortkey))))
+            id_base = f'{title}{self.source}{self.dest}{self.sortkey}'
+            id_hash = hashlib.md5(id_base.encode('utf8'))
+            self.id = id_hash.hexdigest()
         _context.action(
             discriminator=(
                 'upgradeDepends', self.profile, self.source, self.dest,
