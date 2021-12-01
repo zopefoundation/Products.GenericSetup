@@ -4,7 +4,7 @@ Changelog
 2.1.5 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Move several tabs to Zope 4+ ZMI-markup standard.  [jensens]
 
 
 2.1.4 (2021-09-15)
