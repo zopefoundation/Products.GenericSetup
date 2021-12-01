@@ -14,13 +14,13 @@
 """
 
 import six
-import hashlib
 from pkg_resources import parse_version
 
 from BTrees.OOBTree import OOBTree
 
 from Products.GenericSetup.interfaces import IUpgradeSteps
 from Products.GenericSetup.registry import GlobalRegistryStorage
+from Products.GenericSetup.utils import _getHash
 
 
 def normalize_version(version):
@@ -124,9 +124,7 @@ class UpgradeEntity(object):
     """
     def __init__(self, title, profile, source, dest, desc, checker=None,
                  sortkey=0):
-        id_base = f'{title}{source}{dest}{sortkey}'
-        id_hash = hashlib.md5(id_base.encode('utf8'))
-        self.id = id_hash.hexdigest()
+        self.id = _getHash(title, source, dest, sortkey)
         self.title = title
         if source == '*':
             source = None
