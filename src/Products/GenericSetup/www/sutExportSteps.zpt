@@ -49,8 +49,9 @@ Download selected export steps as tarball.
            tal:content="info/title">STEP TITLE</label><br />
     <small tal:content="info/description">STEP DESCRIPTION</small>
    </td>
-   <td
-       tal:content="info/handler">DOTTED.NAME</td>
+   <td>
+       <code tal:content="info/handler">DOTTED.NAME</code>
+   </td>
   </tr>
   </tal:loop>
 </tbody>

@@ -123,8 +123,9 @@ Reapplying these import steps is potentially a dangerous operation.
            tal:attributes="for python: step_id  + '__'"><strong>STEP TITLE</strong></label><br />
     <small tal:content="info/description">STEP DESCRIPTION</small>
    </td>
-   <td
-       tal:content="info/handler">DOTTED.NAME</td>
+   <td>
+       <code tal:content="info/handler">DOTTED.NAME</code>
+   </td>
   </tr>
   </tal:loop>
 </tbody>
