@@ -14,13 +14,14 @@
       <label tal:attributes="for info/id"
              tal:content="info/title">INFO</label><br/>
       <label tal:attributes="for info/id"
+             tal:condition="info/description"
              tal:content="info/description">DESCRIPTION</label>
     </td>
-    <td class="form-help">
+    <td>
       <label tal:attributes="for info/id"
              tal:content="structure string:(${info/ssource} &amp;#8594; ${info/sdest})">PATH</label>
     </td>
-    <td class="form-help">
+    <td>
       <label tal:attributes="for info/id"
              tal:condition="info/done"
              tal:content="default">(done)</label>
