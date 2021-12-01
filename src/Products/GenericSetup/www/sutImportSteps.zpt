@@ -9,52 +9,63 @@
                    extension_contexts_ordered_by_id python:[c for c in context.listContextInfos(order_by='sortable_id') if c['type'] in ['extension','snapshot']];
                    has_pending_upgrades context/hasPendingUpgrades;
                    ">
-<h1 tal:replace="structure context/manage_page_header">PAGE HEADER</h1>
-<h2 tal:replace="structure context/manage_tabs">TABS</h2>
+<div tal:replace="structure context/manage_page_header">PAGE HEADER</div>
+<div tal:replace="structure context/manage_tabs">TABS</div>
 
-<h3>Site Configuration Advanced Import Steps</h3>
+<main class="container-fluid">
 
-<p class="form-help">
+<h1>Site Configuration Advanced Import Steps</h1>
+
+<div class="alert alert-info" role="alert"
+     tal:condition="options/messages | nothing">
+  <strong>Info:</strong> Selected import steps executed. See  <strong><a href="#log">Message Log</a></strong> for details.
+</div>
+
+<p class="lead">
 This tool allows one to re-run individual steps of the site setup
 procedure, in order to pick up changes since the site was created.
 </p>
-<p class="form-help">
+<p>
 For a simpler form, see the <a href="manage_importSteps">Import</a> tab.
 </p>
-<p class="form-help" tal:condition="has_pending_upgrades">
-  <strong>
-    Note: there are profiles with pending <a href="manage_upgrades">upgrades</a>.
-  </strong>
-</p>
+<div class="alert alert-warning" role="alert"
+     tal:condition="has_pending_upgrades">
+  <strong>Note:</strong> there are profiles with pending <strong><a href="manage_upgrades">upgrades</a></strong>.
+</div>
 
-<h3>Select Profile or Snapshot</h3>
-<p class="form-help">
+<h2>Select Profile or Snapshot</h2>
+<p>
   After you have selected a profile, you will get some options.
 </p>
 <tal:title_or_id repeat="select_key python:['title', 'id']">
 <form action="." method="post" id="profileform"
       tal:attributes="action string:${context/absolute_url}/manage_importSteps;
                       id string:profileform_${select_key}">
-  <p tal:condition="python:select_key == 'title'">You can select a profile by <strong>title</strong>:</p>
-  <p tal:condition="python:select_key == 'id'">or you can select a profile by <strong>id</strong>:</p>
-<select name="context_id"
-        tal:attributes="onchange string:document.getElementById('profileform_${select_key}').submit();">
- <option value=""
-         tal:attributes="selected not:context_id">
- Please select an option</option>
- <option value=""
-         tal:attributes="value base_context_id;
-                         selected python:context_id==base_context_id">
-   Current base profile (<span tal:replace="python:base_context_title if select_key == 'title' else base_context_id"/>)</option>
- <option value="context-CONTEXT_ID"
-    tal:repeat="context python:extension_contexts if select_key == 'title' else extension_contexts_ordered_by_id"
-    tal:attributes="value context/id; selected python:context_id==context['id']"
-    tal:content="python:context[select_key]">Context title or id</option>
-</select>
+  <div class="form-group">
+    <label for="context_id_${select_key}">Select a profile by <strong>${select_key}</strong>:</label>
+    <select name="context_id"
+            class="form-control"
+            id="context_id_${select_key}"
+            tal:attributes="onchange string:document.getElementById('profileform_${select_key}').submit();">
+    <option value=""
+            tal:attributes="selected not:context_id">
+    Please select an option</option>
+    <option value=""
+            tal:attributes="value base_context_id;
+                            selected python:context_id==base_context_id">
+      Current base profile (<span tal:replace="python:base_context_title if select_key == 'title' else base_context_id"/>)</option>
+    <option value="context-CONTEXT_ID"
+        tal:repeat="context python:extension_contexts if select_key == 'title' else extension_contexts_ordered_by_id"
+        tal:attributes="value context/id; selected python:context_id==context['id']"
+        tal:content="python:context[select_key]">Context title or id</option>
+    </select>
+  </div>
   <noscript>
-    <input class="form-element" type="submit"
-           name="manage_importSteps:method"
-           value="Switch profile" />
+  <div class="form-group zmi-controls">
+    <div class="input-group">
+      <input type="submit" class="btn btn-default" name="manage_importSteps:method" value="Switch profile" />
+    </div>
+  </div>
   </noscript>
 </form>
 </tal:title_or_id>
@@ -67,104 +78,96 @@ You have selected the baseline profile.
 Reapplying these import steps is potentially a dangerous operation.
 </p>
 
-<h3>Available Import Steps for "<span tal:replace="context_title">Base profile</span>"</h3>
+<h2>Available Import Steps for "<span tal:replace="context_title">Base profile</span>"</h2>
 
-<p class="form-help" tal:condition="python:context.hasPendingUpgrades(context_id)">
-  <strong>
-    Note: there are pending <a href="manage_upgrades" tal:attributes="href string:manage_upgrades?profile_id=${context_id}">upgrades</a> for
-    this profile.
-  </strong>
-</p>
+<div class="alert alert-warning" role="alert"
+     tal:condition="python:context.hasPendingUpgrades(context_id)">
+  <strong>Note:</strong> there are pending
+    <strong><a href="manage_upgrades" tal:attributes="href string:manage_upgrades?profile_id=${context_id}">upgrades</a></strong>
+    for this profile.
+</div>
+
 <form action="." method="post" enctype="multipart/form-data"
       tal:attributes="action context/absolute_url">
 <tal:dummy define="dummy python:context.applyContextById(context_id)"/>
 <input type="hidden" name="ids:default:tokens" value="" />
 
-<table cellspacing="0" cellpadding="4">
-
+<table cellspacing="0" cellpadding="4" class="table table-hover">
+ class="text-center"
  <thead>
-  <tr class="list-header">
-   <td class="list-item">Sel.</td>
-   <td class="list-item">#</td>
-   <td class="list-item">Title / Description</td>
-   <td class="list-item">Handler</td>
+  <tr>
+   <td class="text-center">
+     <button type="button" class="btn" title="toggle selection" onclick="inputs = document.querySelectorAll('.step_checkbox'); for (var index = 0; index &lt; inputs.length; index++) {inputs[index].checked = inputs[index].checked ? false : true}; return false;"><i class="fa fa-exchange-alt"></i></button>
+  </td>
+   <td class="text-right">#</td>
+   <td>Title / Description</td>
+   <td>Handler</td>
   </tr>
  </thead>
 
  <tbody tal:define="step_ids context/getSortedImportSteps;
                    ">
   <tal:loop tal:repeat="step_id step_ids">
-  <tr valign="top"
-      tal:define="info python: context.getImportStepMetadata( step_id );"
-      tal:attributes="class python:
-                     repeat[ 'step_id' ].odd and 'row-normal' or 'row-hilite';
-                     style python:info['invalid'] and 'background: red' or None" >
-   <td class="list-item" width="16">
-    <input type="checkbox" name="ids:list" value="STEP_ID"
-           class="step_checkbox"
-           tal:attributes="id step_id;
-                           value step_id" />
+  <tr tal:define="info python: context.getImportStepMetadata( step_id );"
+      tal:attributes="style python:info['invalid'] and 'background: red' or None" >
+   <td class="text-center">
+    <input class="step_checkbox"
+           type="checkbox" name="ids:list" value="STEP_ID"
+           tal:attributes="id python: step_id  + '__';
+                           value step_id;" />
    </td>
-   <td align="right" class="list-item"
+   <td class="text-right"
        tal:content="repeat/step_id/number">1</td>
-   <td class="list-item">
+   <td>
     <label tal:content="info/title"
-           tal:attributes="for step_id">STEP TITLE</label><br />
-    <em tal:content="info/description">STEP DESCRIPTION</em>
+           tal:attributes="for python: step_id  + '__'"><strong>STEP TITLE</strong></label><br />
+    <small tal:content="info/description">STEP DESCRIPTION</small>
    </td>
-   <td class="list-item"
+   <td
        tal:content="info/handler">DOTTED.NAME</td>
   </tr>
   </tal:loop>
-
-  <tr valign="top">
-    <td colspan="4">
-      <button type="button" onclick="inputs = document.querySelectorAll('.step_checkbox'); for (var index = 0; index &lt; inputs.length; index++) {inputs[index].checked = inputs[index].checked ? false : true}; return false;">Toggle selection</button>
-    </td>
-  </tr>
-
-
-  <tr valign="top" class="list-header">
-   <td colspan="4"><strong>Import selected steps</strong></td>
-  </tr>
-
-  <tr valign="top">
-   <td />
-   <td colspan="3">
-    <input type="hidden" name="context_id" value="" tal:attributes="value context_id"/>
-    <input type="hidden" name="run_dependencies:int:default" value="0" />
-    <input class="form-element" type="checkbox" id="run_dependencies"
-           name="run_dependencies:boolean" value="1" checked="checked" />
-    <label for="run_dependencies">Include dependencies of steps?</label>
-    <input class="form-element" type="submit"
-           name="manage_importSelectedSteps:method"
-           value=" Import selected steps " />
-
-   </td>
-  </tr>
-
- </tbody>
+</tbody>
 </table>
 
-<table cellspacing="0" cellpadding="4"
-       tal:condition="options/messages | nothing">
+<input type="hidden" name="context_id" value="" tal:attributes="value context_id"/>
+<input type="hidden" name="run_dependencies:int:default" value="0" />
 
-  <tr class="list-header">
-   <td colspan="4">Message Log</td>
-  </tr>
+<div class="form-group ml-2">
+  <label for="run_dependencies">
+    <input class="form-element" type="checkbox" id="run_dependencies"
+            name="run_dependencies:boolean" value="1" checked="checked" />
+            Include dependencies of steps?
+    </label>
+</div>
+<div class="form-group zmi-controls">
+  <div class="input-group">
+    <input class="btn btn-primary" type="submit"
+           name="manage_importSelectedSteps:method"
+           value=" Import selected steps " />
+  </div>
+</div>
+</form>
+
+
+<h2 tal:condition="options/messages | nothing"><a id="log">Message Log</a></h2>
+
+<table cellspacing="0" cellpadding="4" class="table"
+       tal:condition="options/messages | nothing">
 
   <tr valign="top"
       tal:repeat="item options/messages/items">
    <td tal:content="python: item[0]">STEP</td>
-   <td colspan="3"
-       tal:content="structure python: item[1].replace('\n', '&lt;br /&gt;')"
+   <td tal:content="structure python: item[1].replace('\n', '&lt;br /&gt;')"
        >MESSAGE</td>
   </tr>
 
 </table>
-</form>
+
 
 </div>
 
-<h1 tal:replace="structure context/manage_page_footer">PAGE FOOTER</h1>
+</main>
+
+<span tal:replace="structure context/manage_page_footer">PAGE FOOTER</span>
 </tal:block>
