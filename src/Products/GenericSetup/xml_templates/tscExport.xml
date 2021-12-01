@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<tool-setup xmlns:tal="http://xml.zope.org/namespaces/tal"><tal:case 
+<tool-setup xmlns:tal="http://xml.zope.org/namespaces/tal"><tal:case
 tal:condition="context/listForbiddenTools">
  <forbidden tool_id="TOOL_ID"
 tal:repeat="id context/listForbiddenTools"
