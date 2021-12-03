@@ -1,7 +1,7 @@
 Changelog
 =========
 
-2.1.5 (unreleased)
+2.1.5 (2021-12-03)
 ------------------
 
 - Fix #114: Problems using ZMI on multi-instance clusters due to instable hash key.
