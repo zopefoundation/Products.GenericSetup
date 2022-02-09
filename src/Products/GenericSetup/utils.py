@@ -15,7 +15,6 @@
 
 import hashlib
 import os
-import sys
 from inspect import getdoc
 from logging import getLogger
 from xml.dom.minidom import Document
@@ -40,6 +39,7 @@ from App.Common import package_home
 from OFS.interfaces import IOrderedContainer
 from Products.Five.utilities.interfaces import IMarkerInterfaces
 from zope.component import queryMultiAdapter
+from zope.configuration.name import resolve
 from zope.interface import directlyProvides
 from zope.interface import implementer
 from zope.interface import implementer_only
@@ -116,39 +116,11 @@ def _getDottedName(named):
 def _resolveDottedName(dotted):
     __traceback_info__ = dotted
 
-    parts = dotted.split('.')
-
-    if not parts:
-        raise ValueError("incomplete dotted name: %s" % dotted)
-
-    parts_copy = parts[:]
-
-    while parts_copy:
-        try:
-            module = __import__('.'.join(parts_copy))
-            break
-
-        except ImportError:
-            # Reraise if the import error was caused inside the imported file
-            if sys.exc_info()[2].tb_next is not None:
-                raise
-
-            del parts_copy[-1]
-
-            if not parts_copy:
-                return None
-
-    parts = parts[1:]  # Funky semantics of __import__'s return value
-
-    obj = module
-
-    for part in parts:
-        try:
-            obj = getattr(obj, part)
-        except AttributeError:
-            return None
-
-    return obj
+    try:
+        return resolve(dotted)
+    except ImportError:
+        # use ModuleNotFoundError when Python 3.6 is minimum supported version
+        return
 
 
 def _extractDocstring(func, default_title, default_description):

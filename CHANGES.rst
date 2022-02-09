@@ -4,7 +4,8 @@ Changelog
 2.1.6 (unreleased)
 ------------------
 
-- *nothing changed yet*
+- Fix #118: Import handler not found .
+  (`#118 <https://github.com/zopefoundation/Products.GenericSetup/issues/118>`_)
 
 
 2.1.5 (2021-12-03)
