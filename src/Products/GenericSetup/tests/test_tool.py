@@ -1575,6 +1575,13 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
         tool.upgradeProfile('no.such.profile:default', dest='42')
         self.assertEqual(tool._profile_upgrade_versions, {})
 
+        # On Python 3.4+ we could use self.assertLogs to check that a warning
+        # message was logged, and on 3.10+ use self.assertNoLogs to test
+        # the opposite when called with quiet=True.  Since we still support
+        # Python 2.7, never mind.  Do quickly test that the quiet argument
+        # throws no error.
+        tool.upgradeProfile('no.such.profile:default', quiet=True)
+
     def test_persistent_profile_upgrade_versions(self):
         site = self._makeSite()
         site.setup_tool = self._makeOne('setup_tool')
@@ -1639,6 +1646,12 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
         # Upgrade the profile one step to version 1.
         tool.upgradeProfile('foo', '1')
         self.assertEqual(tool.getLastVersionForProfile('foo'), ('1',))
+        # Do that again and you will get a warning, which you can choose
+        # to silence.  Note: we do not test if something really gets logged.
+        tool.upgradeProfile('foo', '1')
+        self.assertEqual(tool.getLastVersionForProfile('foo'), ('1',))
+        tool.upgradeProfile('foo', '1', quiet=True)
+        self.assertEqual(tool.getLastVersionForProfile('foo'), ('1',))
         # Upgrade the profile two steps to version 3.  This one has a
         # checker.  The profile version must be correctly updated.
         tool.upgradeProfile('foo', '3')
@@ -1646,6 +1659,10 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
         # Upgrade the profile to a non existing version.  Nothing
         # should happen.
         tool.upgradeProfile('foo', '5')
+        self.assertEqual(tool.getLastVersionForProfile('foo'), ('3',))
+        # It throws a warning which you can choose to ignore.
+        # The effect is the same.
+        tool.upgradeProfile('foo', '5', quiet=True)
         self.assertEqual(tool.getLastVersionForProfile('foo'), ('3',))
         # Upgrade the profile to the latest version.
         tool.upgradeProfile('foo')

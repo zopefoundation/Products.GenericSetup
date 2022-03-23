@@ -7,6 +7,9 @@ Changelog
 - Fix #118: Import handler not found .
   (`#118 <https://github.com/zopefoundation/Products.GenericSetup/issues/118>`_)
 
+- Allow passing ``quiet=True`` to ``upgradeProfile``.
+  Then we do not complain when the profile is not installed or needs no upgrade.
+
 
 2.1.5 (2021-12-03)
 ------------------
