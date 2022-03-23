@@ -1118,7 +1118,7 @@ class SetupTool(Folder):
                                   % (url, profile_id))
 
     @security.protected(ManagePortal)
-    def upgradeProfile(self, profile_id, dest=None):
+    def upgradeProfile(self, profile_id, dest=None, quiet=False):
         """Upgrade a profile.
 
         Apply all upgrade steps.
@@ -1126,21 +1126,25 @@ class SetupTool(Folder):
         When 'dest' is given, only update to that version.  If the
         version is not found, give a warning and do nothing.
 
+        When 'quiet' is True, we do not complain when we cannot do anything.
+
         If the profile was not applied previously (last version for
         profile is unknown) we do nothing.
         """
         if self.getLastVersionForProfile(profile_id) == UNKNOWN:
-            generic_logger.warning('Version of profile %s is unknown, '
-                                   'refusing to upgrade.', profile_id)
+            if not quiet:
+                generic_logger.warning('Version of profile %s is unknown, '
+                                       'refusing to upgrade.', profile_id)
             return
         if dest is not None:
             # Upgrade to a specific destination version, if found.
             if isinstance(dest, six.string_types):
                 dest = tuple(dest.split('.'))
             if self.getLastVersionForProfile(profile_id) == dest:
-                generic_logger.warning('Profile %s is already at wanted '
-                                       'destination %r.', profile_id,
-                                       _version_for_print(dest))
+                if not quiet:
+                    generic_logger.warning('Profile %s is already at wanted '
+                                           'destination %r.', profile_id,
+                                           _version_for_print(dest))
                 return
         upgrades = self.listUpgrades(profile_id)
         # First get a list of single steps to apply.  This may be
@@ -1180,7 +1184,7 @@ class SetupTool(Folder):
                     profile_id,
                     _version_for_print(
                         self.getLastVersionForProfile(profile_id)))
-        else:
+        elif not quiet:
             generic_logger.info(
                 'No upgrades available for profile %s. '
                 'Profile stays at version %r.', profile_id,

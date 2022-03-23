@@ -4,7 +4,8 @@ Changelog
 2.1.6 (unreleased)
 ------------------
 
-- *nothing changed yet*
+- Allow passing ``quiet=True`` to ``upgradeProfile``.
+  Then we do not complain when the profile is not installed or needs no upgrade.
 
 
 2.1.5 (2021-12-03)
