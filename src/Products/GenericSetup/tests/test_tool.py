@@ -37,7 +37,9 @@ from ..context import TarballExportContext
 from ..interfaces import IBeforeProfileImportEvent
 from ..interfaces import IProfileImportedEvent
 from ..testing import ExportImportZCMLLayer
+from ..upgrade import UpgradeDepends
 from ..upgrade import UpgradeStep
+from ..upgrade import _registerNestedUpgradeStep
 from ..upgrade import _registerUpgradeStep
 from ..upgrade import listUpgradeSteps
 from .common import BaseRegistryTests
@@ -1372,6 +1374,232 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
                          {'foo': ('1', '0'), 'bar': ('2', '0')})
         tool.purgeProfileVersions()
         self.assertEqual(tool._profile_upgrade_versions, {})
+
+    def test_listUpgradeSteps(self):
+        site = self._makeSite()
+        site.setup_tool = self._makeOne('setup_tool')
+        tool = site.setup_tool
+
+        # we start without upgrades
+        self.assertEqual(listUpgradeSteps(tool, 'prof', None), [])
+        self.assertEqual(listUpgradeSteps(tool, 'prof', 'unknown'), [])
+        self.assertEqual(listUpgradeSteps(tool, 'prof', '1.0'), [])
+        self.assertEqual(listUpgradeSteps(tool, 'prof', '1.0', dest='1.1'), [])
+
+        # register upgrade step
+        step1 = UpgradeStep("Upgrade 1",
+                            'prof', '1.0', '1.1', '',
+                            dummy_upgrade,
+                            None, "1")
+        _registerUpgradeStep(step1)
+        self.assertEqual(len(listUpgradeSteps(tool, 'prof', 'unknown')), 1)
+        self.assertEqual(len(listUpgradeSteps(tool, 'prof', None)), 1)
+        self.assertEqual(len(listUpgradeSteps(tool, 'prof', '0.5')), 1)
+        self.assertEqual(len(listUpgradeSteps(tool, 'prof', '1.0')), 1)
+        self.assertEqual(len(listUpgradeSteps(tool, 'prof', '1.1')), 0)
+        self.assertEqual(len(listUpgradeSteps(tool, 'prof', '1.2')), 0)
+        # test with explicit destinations
+        self.assertEqual(
+            len(listUpgradeSteps(tool, 'prof', '0.5', dest='1.0')),
+            0,
+        )
+        self.assertEqual(
+            len(listUpgradeSteps(tool, 'prof', '0.5', dest='1.1')),
+            1,
+        )
+        # 1.2 cannot be reached, but listUpgradeSteps does not care:
+        # it reports all steps that bring the source in this direction.
+        self.assertEqual(
+            len(listUpgradeSteps(tool, 'prof', '0.5', dest='1.2')),
+            1,
+        )
+
+        # register a second upgrade step
+        step2 = UpgradeStep("Upgrade 2",
+                            'prof', '1.1', '1.2', '',
+                            dummy_upgrade,
+                            None, "2")
+        _registerUpgradeStep(step2)
+        self.assertEqual(len(listUpgradeSteps(tool, 'prof', 'unknown')), 2)
+        self.assertEqual(len(listUpgradeSteps(tool, 'prof', None)), 2)
+        self.assertEqual(len(listUpgradeSteps(tool, 'prof', '0.5')), 2)
+        self.assertEqual(len(listUpgradeSteps(tool, 'prof', '1.0')), 2)
+        self.assertEqual(len(listUpgradeSteps(tool, 'prof', '1.1')), 1)
+        self.assertEqual(len(listUpgradeSteps(tool, 'prof', '1.2')), 0)
+        self.assertEqual(
+            len(listUpgradeSteps(tool, 'prof', '1.0', dest='1.0')),
+            0,
+        )
+        self.assertEqual(
+            len(listUpgradeSteps(tool, 'prof', '1.0', dest='1.1')),
+            1,
+        )
+        self.assertEqual(
+            len(listUpgradeSteps(tool, 'prof', '1.0', dest='1.2')),
+            2,
+        )
+        self.assertEqual(
+            len(listUpgradeSteps(tool, 'prof', '1.0', dest='1.3')),
+            2,
+        )
+        # try different spelling of versions
+        self.assertEqual(len(listUpgradeSteps(tool, 'prof', ('1', '1'))), 1)
+        self.assertEqual(
+            len(listUpgradeSteps(tool, 'prof', '1.0', dest=('1', '1'))),
+            1,
+        )
+        self.assertEqual(
+            len(listUpgradeSteps(tool, 'prof', ('1', '0'), dest=('1', '1'))),
+            1,
+        )
+
+    def test_listUpgrades(self):
+        site = self._makeSite()
+        site.setup_tool = self._makeOne('setup_tool')
+        tool = site.setup_tool
+        profile_id_1 = 'dummy_profile1'
+        product_name = 'GenericSetup'
+        directory = os.path.split(__file__)[0]
+        path = os.path.join(directory, 'versioned_profile')
+
+        # register profile
+        profile_registry.registerProfile(profile_id_1,
+                                         'Dummy Profile 1',
+                                         'This is dummy profile 1',
+                                         path,
+                                         product=product_name)
+
+        # get full profile id
+        profile_id_1 = ':'.join((product_name, profile_id_1))
+        self.assertEqual(tool.listUpgrades(profile_id_1), [])
+        self.assertEqual(tool.listUpgrades('non-existing'), [])
+        self.assertFalse(tool.hasUpgrades(profile_id_1))
+        self.assertFalse(tool.hasUpgrades('non-existing'))
+
+        # register upgrade step
+        step1 = UpgradeStep("Upgrade 1",
+                            profile_id_1, '1.0', '1.1', '',
+                            dummy_upgrade,
+                            None, "1")
+        _registerUpgradeStep(step1)
+        self.assertTrue(tool.hasUpgrades(profile_id_1))
+        self.assertFalse(tool.hasUpgrades('non-existing'))
+        self.assertEqual(len(tool.listUpgrades(profile_id_1)), 1)
+        self.assertEqual(len(tool.listUpgrades('non-existing')), 0)
+        first_step = tool.listUpgrades(profile_id_1)[0]
+        self.assertEqual(first_step.pop('id'), step1.id)
+        self.assertIs(first_step.pop('step'), step1)
+        self.assertEqual(
+            first_step,
+            {
+                'description': '',
+                'dest': ('1', '1'),
+                'done': False,
+                'haspath': ('1', '1'),
+                'proposed': True,
+                'sdest': '1.1',
+                'sortkey': '1',
+                'source': ('1', '0'),
+                'ssource': '1.0',
+                'title': 'Upgrade 1',
+            },
+        )
+        # We can ask for a simple flat list, giving only steps.
+        self.assertEqual(tool.listUpgrades(profile_id_1, simple=True), [step1])
+
+        # register second upgrade step, with two sub steps
+        # step2 = upgradeSteps(None, profile_id_1, '1.1', '1.2', '')
+        step2_hash = 'step2_dummy_hash'
+        step2a = UpgradeStep("Upgrade 2a",
+                             profile_id_1, '1.1', '1.2', '',
+                             dummy_upgrade,
+                             None, "1")
+        _registerNestedUpgradeStep(step2a, step2_hash)
+        step2b = UpgradeDepends("Upgrade 2b",
+                                profile_id_1, '1.1', '1.2', '',
+                                sortkey="2")
+        _registerNestedUpgradeStep(step2b, step2_hash)
+        self.assertTrue(tool.hasUpgrades(profile_id_1))
+        self.assertEqual(len(tool.listUpgrades(profile_id_1)), 2)
+        self.assertEqual(tool.listUpgrades(profile_id_1)[0]['id'], step1.id)
+        self.assertEqual(
+            tool.listUpgrades(profile_id_1)[1][0]['id'],
+            step2a.id,
+        )
+        self.assertEqual(
+            tool.listUpgrades(profile_id_1)[1][1]['id'],
+            step2b.id,
+        )
+        self.assertEqual(len(tool.listUpgrades(profile_id_1, simple=True)), 3)
+        self.assertEqual(
+            tool.listUpgrades(profile_id_1, simple=True),
+            [step1, step2a, step2b],
+        )
+        self.assertEqual(len(tool.listUpgrades(profile_id_1, dest='1.1')), 1)
+        self.assertEqual(len(tool.listUpgrades(profile_id_1, dest='1.0')), 0)
+        self.assertEqual(len(tool.listUpgrades(profile_id_1, dest='2.0')), 2)
+
+        # Pretend profile 1 was installed to an earlier version.
+        tool.setLastVersionForProfile(profile_id_1, '1.0')
+        self.assertTrue(tool.hasUpgrades(profile_id_1))
+        self.assertEqual(len(tool.listUpgrades(profile_id_1)), 2)
+        self.assertEqual(len(tool.listUpgrades(profile_id_1, dest='1.1')), 1)
+        self.assertEqual(len(tool.listUpgrades(profile_id_1, dest='1.0')), 0)
+        self.assertEqual(len(tool.listUpgrades(profile_id_1, dest='2.0')), 2)
+        self.assertEqual(
+            tool.listUpgrades(profile_id_1, dest='1.1')[0]['id'],
+            step1.id,
+        )
+        self.assertEqual(
+            tool.listUpgrades(profile_id_1, simple=True),
+            [step1, step2a, step2b],
+        )
+
+        # upgrade to 1.1
+        tool.upgradeProfile(profile_id_1, dest='1.1')
+        self.assertEqual(
+            tool.getLastVersionForProfile(profile_id_1),
+            ('1', '1'),
+        )
+        self.assertTrue(tool.hasUpgrades(profile_id_1))
+        self.assertEqual(len(tool.listUpgrades(profile_id_1)), 1)
+        self.assertEqual(
+            len(tool.listUpgrades(profile_id_1, show_old=True)),
+            2,
+        )
+        self.assertEqual(len(tool.listUpgrades(profile_id_1, dest='2.0')), 1)
+        self.assertEqual(
+            tool.listUpgrades(profile_id_1, simple=True),
+            [step2a, step2b],
+        )
+
+        # upgrade all the way
+        tool.upgradeProfile(profile_id_1)
+        self.assertEqual(
+            tool.getLastVersionForProfile(profile_id_1),
+            ('1', '2'),
+        )
+        self.assertFalse(tool.hasUpgrades(profile_id_1))
+        self.assertEqual(len(tool.listUpgrades(profile_id_1)), 0)
+        self.assertEqual(
+            len(tool.listUpgrades(profile_id_1, show_old=True)),
+            2,
+        )
+        self.assertEqual(len(tool.listUpgrades(profile_id_1, dest='2.0')), 0)
+        self.assertEqual(
+            tool.listUpgrades(profile_id_1, simple=True),
+            [],
+        )
+        self.assertEqual(
+            tool.listUpgrades(profile_id_1, show_old=True, simple=True),
+            [step1, step2a, step2b],
+        )
+        self.assertEqual(
+            tool.listUpgrades(
+                profile_id_1, show_old=True, simple=True, dest='1.1'
+            ),
+            [step1],
+        )
 
     def test_listProfilesWithUpgrades(self):
         site = self._makeSite()

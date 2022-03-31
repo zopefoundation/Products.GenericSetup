@@ -4,6 +4,12 @@ Changelog
 2.1.6 (unreleased)
 ------------------
 
+- Add method ``tool.hasUpgrades``.
+  This is more efficient than checking if ``tool.listUpgrades`` returns a non-empty list.
+
+- Add options ``dest`` and ``simple`` to ``tool.listUpgrades``.
+  Use this to simplify the ``upgradeProfile`` method.
+
 - Fix #118: Import handler not found .
   (`#118 <https://github.com/zopefoundation/Products.GenericSetup/issues/118>`_)
 
