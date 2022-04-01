@@ -93,7 +93,6 @@ Reapplying these import steps is potentially a dangerous operation.
 <input type="hidden" name="ids:default:tokens" value="" />
 
 <table cellspacing="0" cellpadding="4" class="table table-hover">
- class="text-center"
  <thead>
   <tr>
    <td class="text-center">
