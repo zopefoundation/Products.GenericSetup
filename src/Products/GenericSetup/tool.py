@@ -1010,24 +1010,53 @@ class SetupTool(Folder):
         return info
 
     @security.protected(ManagePortal)
-    def listUpgrades(self, profile_id, show_old=False):
-        """Get the list of available upgrades.
+    def listUpgrades(
+            self, profile_id, show_old=False, dest=None, simple=False,
+            ):
+        """Get the list of available upgrades for a profile.
+
+        With 'show_old=True', we show all upgrades, also ones that have been
+        applied already.  Otherwise we take the last installed profile version
+        as minimum source.
+
+        When 'dest' is given, this is the maximum destination.  We do not
+        report steps that upgrade to a higher destination.  We report steps
+        that go in the right direction, even if there is no step that brings
+        you to this exact version.
+
+        By default we return a list of dictionaries, and sub lists of
+        dictionaries. Each dictionary has information on one upgrade step.
+        When simple=True we instead return a flat list with only upgrade steps.
         """
         if show_old:
             source = None
         else:
             source = self.getLastVersionForProfile(profile_id)
-        upgrades = listUpgradeSteps(self, profile_id, source)
+        upgrades = listUpgradeSteps(self, profile_id, source, dest=dest)
         res = []
         for info in upgrades:
             if type(info) == list:
                 subset = []
                 for subinfo in info:
+                    if simple:
+                        res.append(subinfo['step'])
+                        continue
                     subset.append(self._massageUpgradeInfo(subinfo))
-                res.append(subset)
+                if subset:
+                    res.append(subset)
+            elif simple:
+                res.append(info['step'])
+                continue
             else:
                 res.append(self._massageUpgradeInfo(info))
         return res
+
+    @security.protected(ManagePortal)
+    def hasUpgrades(self, profile_id):
+        """Does the profile have upgrade steps?
+        """
+        source = self.getLastVersionForProfile(profile_id)
+        return listUpgradeSteps(self, profile_id, source, quick=True)
 
     @security.protected(ManagePortal)
     def hasPendingUpgrades(self, profile_id=None):
@@ -1050,7 +1079,7 @@ class SetupTool(Folder):
                 # We are not interested in profiles that have never been
                 # applied.
                 continue
-            if self.listUpgrades(profile_id):
+            if self.hasUpgrades(profile_id):
                 return True
         return False
 
@@ -1067,7 +1096,7 @@ class SetupTool(Folder):
                 # We are not interested in profiles that have never been
                 # applied.
                 continue
-            if self.listUpgrades(profile_id):
+            if self.hasUpgrades(profile_id):
                 res.append(profile_id)
         return res
 
@@ -1146,49 +1175,40 @@ class SetupTool(Folder):
                                            'destination %r.', profile_id,
                                            _version_for_print(dest))
                 return
-        upgrades = self.listUpgrades(profile_id)
-        # First get a list of single steps to apply.  This may be
+        # Get a list of single steps to apply.  This may be
         # limited by the wanted destination version.
-        to_apply = []
-        dest_found = False
-        step = None
-        for upgrade in upgrades:
-            # An upgrade may be a single step (for a bare upgradeStep)
-            # or a list of steps (for upgradeSteps containing upgradeStep
-            # directives).
-            if not isinstance(upgrade, list):
-                upgrade = [upgrade]
-            for upgradestep in upgrade:
-                step = upgradestep['step']
-                to_apply.append(step)
-                if dest is not None and step.dest == dest:
-                    dest_found = True
-            if dest_found:
-                break
-        if dest is not None and not dest_found:
+        upgrades = self.listUpgrades(profile_id, dest=dest, simple=True)
+        if dest is not None and (not upgrades or upgrades[-1].dest != dest):
             generic_logger.warning(
                 'No route found to destination version %r for profile %s. '
                 'Profile stays at current version, %r',
-                _version_for_print(dest), profile_id,
-                _version_for_print(self.getLastVersionForProfile(profile_id)))
+                _version_for_print(dest),
+                profile_id,
+                _version_for_print(self.getLastVersionForProfile(profile_id)),
+            )
             return
-        if to_apply:
-            for step in to_apply:
-                step.doStep(self)
-            # We update the profile version to the last one we have
-            # reached with running an upgrade step.
-            if step and step.dest is not None:
-                self.setLastVersionForProfile(profile_id, step.dest)
+        if not upgrades:
+            if not quiet:
                 generic_logger.info(
-                    'Profile %s upgraded to version %r.',
+                    'No upgrades available for profile %s. '
+                    'Profile stays at version %r.',
                     profile_id,
                     _version_for_print(
-                        self.getLastVersionForProfile(profile_id)))
-        elif not quiet:
+                        self.getLastVersionForProfile(profile_id)
+                    )
+                )
+            return
+        for step in upgrades:
+            step.doStep(self)
+        # We update the profile version to the last one we have
+        # reached with running an upgrade step.
+        if step.dest is not None:
+            self.setLastVersionForProfile(profile_id, step.dest)
             generic_logger.info(
-                'No upgrades available for profile %s. '
-                'Profile stays at version %r.', profile_id,
-                _version_for_print(self.getLastVersionForProfile(profile_id)))
+                'Profile %s upgraded to version %r.',
+                profile_id,
+                _version_for_print(
+                    self.getLastVersionForProfile(profile_id)))
 
     #
     #   Helper methods
