@@ -1,7 +1,7 @@
 Changelog
 =========
 
-2.1.6 (unreleased)
+2.2.0 (2022-04-04)
 ------------------
 
 - Add method ``tool.hasUpgrades``.
