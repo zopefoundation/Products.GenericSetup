@@ -414,6 +414,105 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
                                       purge_old=False)
         self.assertFalse(site.purged)
 
+    def test_runImportStepFromProfile_with_path_simple(self):
+        site = self._makeSite()
+        tool = self._makeOne('setup_tool').__of__(site)
+        _imported = []
+
+        def applyContext(context):
+            _imported.append(context._profile_path)
+
+        tool.applyContext = applyContext
+        tool.runImportStepFromProfile(None, 'rolemap', path=self._PROFILE_PATH)
+        self.assertEqual(_imported, [self._PROFILE_PATH])
+        tool.runImportStepFromProfile(
+            None, 'rolemap', path=self._PROFILE_PATH2)
+        self.assertEqual(_imported, [self._PROFILE_PATH, self._PROFILE_PATH2])
+
+    def test_runImportStepFromProfile_with_path_no_dependencies(self):
+        # When importing a path, the metadata.xml is never read, so
+        # dependencies are ignored.  Same will be true for archives/tarballs.
+        # Theoretically this could be fixed.  But if you need this, then you
+        # might as well just register an actual profile.
+        from ..metadata import METADATA_XML
+
+        # Add metadata with dependencies in the directory and register the
+        # dependency profile.
+        self._makeFile(METADATA_XML, _METADATA_XML)
+        site = self._makeSite()
+        tool = self._makeOne('setup_tool').__of__(site)
+        profile_registry.registerProfile('bar', 'Bar', '', self._PROFILE_PATH2)
+
+        _imported = []
+
+        def applyContext(context):
+            _imported.append(context._profile_path)
+
+        tool.applyContext = applyContext
+        tool.runImportStepFromProfile(
+            None, 'rolemap', path=self._PROFILE_PATH)
+        # Only the path of the directory will have been imported,
+        # not the dependency profile.
+        self.assertEqual(_imported, [self._PROFILE_PATH])
+
+    def test_runImportStepFromProfile_with_path_purging(self):
+        # Tests for importing a directory with GenericSetup files.
+        # We are especially interested to see if old settings get purged.
+        # This is adapted from test_manage_importTarball.
+        # Note that purging is handled differently for tarballs and
+        # directories.
+        site = self._makeSite()
+        site.setup_tool = self._makeOne('setup_tool')
+        tool = site.setup_tool
+        # We need to be Manager to see the result of calling
+        # manage_importTarball.
+        newSecurityManager(None, UnrestrictedUser('root', '', ['Manager'], ''))
+
+        ROLEMAP_XML = """<?xml version="1.0"?>
+<rolemap>
+  <roles>
+    <role name="%s" />
+  </roles>
+  <permissions />
+</rolemap>
+"""
+
+        def add_rolemap_to_dir(name):
+            # Create a file rolemap.xml containing 'name' as role.
+            # Put this in the directory on the profile path.
+            contents = ROLEMAP_XML % name
+            if isinstance(contents, six.text_type):
+                contents = contents.encode('utf-8')
+            self._makeFile('rolemap.xml', contents)
+
+        # Import first role.
+        add_rolemap_to_dir('First')
+        tool.runImportStepFromProfile(None, 'rolemap', path=self._PROFILE_PATH)
+        self.assertTrue('First' in site.valid_roles())
+
+        # Import second role.
+        add_rolemap_to_dir('Second')
+        tool.runImportStepFromProfile(None, 'rolemap', path=self._PROFILE_PATH)
+        self.assertTrue('Second' in site.valid_roles())
+        # The first role is still there, because by default we do not purge.
+        self.assertTrue('First' in site.valid_roles())
+
+        # Import third role in purge mode.
+        add_rolemap_to_dir('Third')
+        tool.runImportStepFromProfile(
+            None, 'rolemap',  path=self._PROFILE_PATH, purge_old=True)
+        self.assertTrue('Third' in site.valid_roles())
+        # The other roles are gone.
+        self.assertFalse('First' in site.valid_roles())
+        self.assertFalse('Second' in site.valid_roles())
+
+        # A few standard roles are never removed, probably because they are
+        # defined one level higher.
+        self.assertTrue('Anonymous' in site.valid_roles())
+        self.assertTrue('Authenticated' in site.valid_roles())
+        self.assertTrue('Manager' in site.valid_roles())
+        self.assertTrue('Owner' in site.valid_roles())
+
     def test_runAllImportStepsFromProfile_empty(self):
 
         site = self._makeSite()
@@ -870,6 +969,104 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
         tool.runAllImportStepsFromProfile('profile-other:foo')
         self.assertEqual(tool.pre_handler_called, 2)
         self.assertEqual(tool.post_handler_called, 2)
+
+    def test_runAllImportStepsFromProfile_with_path_simple(self):
+        site = self._makeSite()
+        tool = self._makeOne('setup_tool').__of__(site)
+        _imported = []
+
+        def applyContext(context):
+            _imported.append(context._profile_path)
+
+        tool.applyContext = applyContext
+        tool.runAllImportStepsFromProfile(None, path=self._PROFILE_PATH)
+        self.assertEqual(_imported, [self._PROFILE_PATH])
+        tool.runAllImportStepsFromProfile(None, path=self._PROFILE_PATH2)
+        self.assertEqual(_imported, [self._PROFILE_PATH, self._PROFILE_PATH2])
+
+    def test_runAllImportStepsFromProfile_with_path_no_dependencies(self):
+        # When importing a path, the metadata.xml is never read, so
+        # dependencies are ignored.  Same will be true for archives/tarballs.
+        # Theoretically this could be fixed.  But if you need this, then you
+        # might as well just register an actual profile.
+        from ..metadata import METADATA_XML
+
+        # Add metadata with dependencies in the directory and register the
+        # dependency profile.
+        self._makeFile(METADATA_XML, _METADATA_XML)
+        site = self._makeSite()
+        tool = self._makeOne('setup_tool').__of__(site)
+        profile_registry.registerProfile('bar', 'Bar', '', self._PROFILE_PATH2)
+
+        _imported = []
+
+        def applyContext(context):
+            _imported.append(context._profile_path)
+
+        tool.applyContext = applyContext
+        tool.runAllImportStepsFromProfile(
+            None, path=self._PROFILE_PATH)
+        # Only the path of the directory will have been imported,
+        # not the dependency profile.
+        self.assertEqual(_imported, [self._PROFILE_PATH])
+
+    def test_runAllImportStepsFromProfile_with_path_purging(self):
+        # Tests for importing a directory with GenericSetup files.
+        # We are especially interested to see if old settings get purged.
+        # This is adapted from test_manage_importTarball.
+        # Note that purging is handled differently for tarballs and
+        # directories.
+        site = self._makeSite()
+        site.setup_tool = self._makeOne('setup_tool')
+        tool = site.setup_tool
+        # We need to be Manager to see the result of calling
+        # manage_importTarball.
+        newSecurityManager(None, UnrestrictedUser('root', '', ['Manager'], ''))
+
+        ROLEMAP_XML = """<?xml version="1.0"?>
+<rolemap>
+  <roles>
+    <role name="%s" />
+  </roles>
+  <permissions />
+</rolemap>
+"""
+
+        def add_rolemap_to_dir(name):
+            # Create a file rolemap.xml containing 'name' as role.
+            # Put this in the directory on the profile path.
+            contents = ROLEMAP_XML % name
+            if isinstance(contents, six.text_type):
+                contents = contents.encode('utf-8')
+            self._makeFile('rolemap.xml', contents)
+
+        # Import first role.
+        add_rolemap_to_dir('First')
+        tool.runAllImportStepsFromProfile(None, path=self._PROFILE_PATH)
+        self.assertTrue('First' in site.valid_roles())
+
+        # Import second role.
+        add_rolemap_to_dir('Second')
+        tool.runAllImportStepsFromProfile(None, path=self._PROFILE_PATH)
+        self.assertTrue('Second' in site.valid_roles())
+        # The first role is still there, because by default we do not purge.
+        self.assertTrue('First' in site.valid_roles())
+
+        # Import third role in purge mode.
+        add_rolemap_to_dir('Third')
+        tool.runAllImportStepsFromProfile(None, path=self._PROFILE_PATH,
+                                          purge_old=True)
+        self.assertTrue('Third' in site.valid_roles())
+        # The other roles are gone.
+        self.assertFalse('First' in site.valid_roles())
+        self.assertFalse('Second' in site.valid_roles())
+
+        # A few standard roles are never removed, probably because they are
+        # defined one level higher.
+        self.assertTrue('Anonymous' in site.valid_roles())
+        self.assertTrue('Authenticated' in site.valid_roles())
+        self.assertTrue('Manager' in site.valid_roles())
+        self.assertTrue('Owner' in site.valid_roles())
 
     def test_runExportStep_nonesuch(self):
         site = self._makeSite()

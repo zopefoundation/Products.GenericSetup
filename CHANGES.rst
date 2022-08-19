@@ -1,10 +1,17 @@
 Changelog
 =========
 
-2.2.1 (unreleased)
+2.3.0 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Add ``import_path`` to ``upgradeDepends`` directive.
+  This avoids the need to register a full profile, when you only need
+  to import a few files once in an upgrade step.
+  The path must be within the path of a package.
+  By default this is the path of the profile for which this is an upgrade.
+  You can also specify a path in a different package: ``other.package:profile/path``.
+  You can combine this with ``import_steps``, but not with ``import_profile``.
+  Note that ``metadata.xml`` is never read, so you cannot use dependencies.
 
 
 2.2.0 (2022-04-04)

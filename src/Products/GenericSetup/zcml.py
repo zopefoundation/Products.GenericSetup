@@ -289,6 +289,12 @@ class IUpgradeDependsSubDirective(Interface):
         value_type=zope.schema.TextLine(title=u"Import step"),
         )
 
+    import_path = zope.schema.TextLine(
+        title=u"Path to a GenericSetup profile to load which has not been "
+              u"explicitly registered. Path is relative to the current "
+              u"package, unless prepended with a dotted name: "
+              u"other.package:profile/path.", required=False)
+
     run_deps = zope.schema.Bool(
         title=u"Run import step dependencies?",
         required=False,
@@ -323,13 +329,14 @@ def upgradeStep(_context, title, profile, handler, description=None,
 def upgradeDepends(_context, title, profile, description=None,
                    import_profile=None, import_steps=[], source='*',
                    destination='*', run_deps=False, purge=False, checker=None,
-                   sortkey=0):
+                   sortkey=0, import_path=None):
     step = UpgradeDepends(title, profile, source, destination, description,
                           import_profile, import_steps, run_deps, purge,
-                          checker, sortkey)
+                          checker, sortkey, import_path)
     _context.action(
         discriminator=('upgradeDepends', profile, source, destination,
-                       import_profile, str(import_steps), checker, sortkey),
+                       import_profile, str(import_steps), checker, sortkey,
+                       import_path),
         callable=_registerUpgradeStep,
         args=(step,),
         )
@@ -366,17 +373,19 @@ class upgradeSteps(object):
 
     def upgradeDepends(self, _context, title, description=None,
                        import_profile=None, import_steps=[], run_deps=False,
-                       purge=False, checker=None):
+                       purge=False, checker=None, import_path=None):
         """ nested upgradeDepends directive """
         step = UpgradeDepends(title, self.profile, self.source, self.dest,
                               description, import_profile, import_steps,
-                              run_deps, purge, checker, self.sortkey)
+                              run_deps, purge, checker, self.sortkey,
+                              import_path)
         if self.id is None:
             self.id = _getHash(title, self.source, self.dest, self.sortkey)
         _context.action(
             discriminator=(
                 'upgradeDepends', self.profile, self.source, self.dest,
-                import_profile, str(import_steps), checker, self.sortkey),
+                import_profile, str(import_steps), checker, self.sortkey,
+                import_path),
             callable=_registerNestedUpgradeStep,
             args=(step, self.id),
             )

@@ -289,6 +289,10 @@ def test_registerUpgradeSteps(self):
       ...       run_deps="True"
       ...       purge="True"
       ...       />
+      ...   <genericsetup:upgradeDepends
+      ...       title="Bar Upgrade dependency profile import steps"
+      ...       import_path="dummy-path"
+      ...       />
       ...  </genericsetup:upgradeSteps>
       ... </configure>'''
       >>> zcml.load_config('meta.zcml', Products.GenericSetup)
@@ -306,11 +310,13 @@ def test_registerUpgradeSteps(self):
       >>> isinstance(steps, list)
       True
       >>> len(steps)
-      3
-      >>> step1, step2, step3 = steps
-      >>> step1['source'] == step2['source'] == step3['source'] == ('1', '0')
+      4
+      >>> step1, step2, step3, step4 = steps
+      >>> step1['source'] == step2['source'] == step3['source'] \
+              == step4['source'] == ('1', '0')
       True
-      >>> step1['dest'] == step2['dest'] == step3['dest'] == ('1', '1')
+      >>> step1['dest'] == step2['dest'] == step3['dest'] \
+              == step4['dest'] == ('1', '1')
       True
       >>> step1['step'].handler
       <function b_dummy_upgrade at ...>
@@ -328,6 +334,8 @@ def test_registerUpgradeSteps(self):
       True
       >>> step3['step'].purge
       True
+      >>> str(step4['step'].import_path)
+      'dummy-path'
 
     First one listed should be second in the registry due to sortkey:
 

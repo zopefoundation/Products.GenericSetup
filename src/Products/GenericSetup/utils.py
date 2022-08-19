@@ -1007,3 +1007,30 @@ def _getHash(*args):
     base = "".join([str(x) for x in args])
     hashmd5 = hashlib.md5(base.encode('utf8'))
     return hashmd5.hexdigest()
+
+
+def _get_import_path(import_path, profile_id):
+    """Get import path relative to the package of a profile id.
+
+    Return the path if valid, otherwise raise a ValueError.
+    """
+    if ":" in import_path:
+        # other.package:profile/path
+        module_name, path = import_path.split(":")
+    else:
+        path = import_path
+        module_name, _ignored = profile_id.split(":")
+    module = _resolveDottedName(module_name)
+    if module is None:
+        raise ValueError("No module found with name {}".format(module_name))
+    module_path = os.path.realpath(module.__path__[0])
+    path = os.path.realpath(os.path.join(module_path, path))
+    if not path.startswith(module_path):
+        # To be safer with security, we don't allow absolute paths
+        # or paths to a parent dir.
+        raise ValueError(
+            "Disallowed: import_path {} leads to path outside of "
+            "module {}.".format(import_path, module_name))
+    if not os.path.exists(path):
+        raise ValueError("Path does not exist: {}".format(import_path))
+    return path

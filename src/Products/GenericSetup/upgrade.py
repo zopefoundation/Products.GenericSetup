@@ -20,6 +20,7 @@ from BTrees.OOBTree import OOBTree
 
 from Products.GenericSetup.interfaces import IUpgradeSteps
 from Products.GenericSetup.registry import GlobalRegistryStorage
+from Products.GenericSetup.utils import _get_import_path
 from Products.GenericSetup.utils import _getHash
 
 
@@ -191,18 +192,26 @@ class UpgradeDepends(UpgradeEntity):
     """
     def __init__(self, title, profile, source, dest, desc, import_profile=None,
                  import_steps=[], run_deps=False, purge=False, checker=None,
-                 sortkey=0):
+                 sortkey=0, import_path=None):
         super(UpgradeDepends, self).__init__(title, profile, source, dest,
                                              desc, checker, sortkey)
+        if import_profile and import_path:
+            raise ValueError(
+                "import_profile and import_path are mutually exclusive.")
         self.import_profile = import_profile
         self.import_steps = import_steps
+        self.import_path = import_path
         self.run_deps = run_deps
         self.purge = purge
 
     PROFILE_PREFIX = 'profile-%s'
 
     def doStep(self, tool):
-        if self.import_profile is None:
+        path = None
+        if self.import_path is not None:
+            path = _get_import_path(self.import_path, self.profile)
+            profile_id = None
+        elif self.import_profile is None:
             profile_id = self.PROFILE_PREFIX % self.profile
         else:
             profile_id = self.PROFILE_PREFIX % self.import_profile
@@ -210,14 +219,15 @@ class UpgradeDepends(UpgradeEntity):
             for step in self.import_steps:
                 tool.runImportStepFromProfile(profile_id, step,
                                               run_dependencies=self.run_deps,
-                                              purge_old=self.purge)
+                                              purge_old=self.purge, path=path)
         else:
             # if no steps are specified we assume we want to reimport
             # the entire profile
             ign_deps = not self.run_deps
             tool.runAllImportStepsFromProfile(profile_id,
                                               purge_old=self.purge,
-                                              ignore_dependencies=ign_deps)
+                                              ignore_dependencies=ign_deps,
+                                              path=path)
 
 
 def _registerUpgradeStep(step):
