@@ -520,9 +520,14 @@ class ISetupTool(Interface):
             step
         """
 
-    def runAllImportStepsFromProfile(profile_id, purge_old=None,
+    def runAllImportStepsFromProfile(profile_id,
+                                     purge_old=None,
                                      ignore_dependencies=False,
-                                     blacklisted_steps=None):
+                                     archive=None,
+                                     blacklisted_steps=None,
+                                     dependency_strategy=None,
+                                     path=None):
+
         """ Run all setup steps for the given profile in dependency order.
 
         o 'profile_id' must be a valid ID of a registered profile;
@@ -535,8 +540,26 @@ class ISetupTool(Interface):
         o Unless 'ignore_dependencies' is true this will also import
           all profiles this profile depends on.
 
+        o 'archive' is a tarball with files to import.
+          Note that metadata.xml is never read, so you cannot use dependencies.
+
         o 'blacklisted_steps' can be a list of step-names that won't be
           executed. Use with special care and only for special cases.
+
+        o 'dependency_strategy' is an integer describing what do we do with
+          already applied dependency profiles.  The default is to apply new
+          profiles (of course), and upgrade outdated ones.
+          See 'DEFAULT_DEPENDENCY_STRATEGY' in 'tool.py'
+
+        o 'path' is the path to a directory with files to import.
+          This avoids the need to register a full profile, when you only need
+          to import a few files once in an upgrade step.
+          It is best to use an absolute path.
+          Note that metadata.xml is never read, so you cannot use dependencies.
+
+        o First the code should find a profile via the 'profile_id'.
+          If nothing is found, the 'archive' is tried.
+          If nothing is found, the 'path' is tried.
 
 
         o Return a mapping, with keys:

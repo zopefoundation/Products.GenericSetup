@@ -4,7 +4,11 @@ Changelog
 2.2.1 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Add ``path`` keyword argument to ``tool.runAllImportStepsFromProfile``.
+  This avoids the need to register a full profile, when you only need
+  to import a few files once in an upgrade step.
+  It is best to use an absolute path.
+  Note that ``metadata.xml`` is never read, so you cannot use dependencies.
 
 
 2.2.0 (2022-04-04)

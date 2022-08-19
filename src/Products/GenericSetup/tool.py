@@ -391,7 +391,8 @@ class SetupTool(Folder):
                                      ignore_dependencies=False,
                                      archive=None,
                                      blacklisted_steps=None,
-                                     dependency_strategy=None):
+                                     dependency_strategy=None,
+                                     path=None):
         """ See ISetupTool.
         """
         __traceback_info__ = profile_id
@@ -402,9 +403,13 @@ class SetupTool(Folder):
                             archive=archive,
                             ignore_dependencies=ignore_dependencies,
                             blacklisted_steps=blacklisted_steps,
-                            dependency_strategy=dependency_strategy)
+                            dependency_strategy=dependency_strategy,
+                            path=path)
         if profile_id is None:
-            prefix = 'import-all-from-tar'
+            if path is None:
+                prefix = 'import-all-from-tar'
+            else:
+                prefix = 'import-all-from-path'
         else:
             prefix = 'import-all-%s' % profile_id.replace(':', '_')
         name = self._mangleTimestampName(prefix, 'log')
@@ -1214,13 +1219,17 @@ class SetupTool(Folder):
     #   Helper methods
     #
     @security.private
-    def _getImportContext(self, context_id, should_purge=None, archive=None):
+    def _getImportContext(self,
+                          context_id,
+                          should_purge=None,
+                          archive=None,
+                          path=None):
         """ Crack ID and generate appropriate import context.
 
-        Note: it seems context_id (profile id) and archive (tarball)
-        are mutually exclusive.  Exactly one of the two should be
-        None.  There seems to be no use case for a different
-        combination.
+        Note: context_id (profile id), archive (tarball) and path (directory)
+        are mutually exclusive.  Exactly one of these should be set.
+        The others should be None.  There seems to be no use case for a
+        different combination.
         """
         encoding = self.getEncoding()
 
@@ -1251,6 +1260,12 @@ class SetupTool(Folder):
                                         archive_bits=archive,
                                         encoding='UTF8',
                                         should_purge=should_purge)
+
+        if path is not None:
+            if should_purge is None:
+                should_purge = False
+            return DirectoryImportContext(self, path, should_purge,
+                                          encoding)
 
         raise KeyError('Unknown context "%s"' % context_id)
 
@@ -1391,7 +1406,8 @@ class SetupTool(Folder):
                                    archive=None,
                                    ignore_dependencies=False,
                                    blacklisted_steps=None,
-                                   dependency_strategy=None):
+                                   dependency_strategy=None,
+                                   path=None):
 
         # 1. Determine upgrade strategy.
         #    What do we do with already applied dependency profiles?
@@ -1425,9 +1441,10 @@ class SetupTool(Folder):
         else:
             raise ValueError('Unknown dependency_strategy %r.' %
                              dependency_strategy)
+        main_profile_id = profile_id or path or 'archive'
         generic_logger.info(
             'Importing profile %s with dependency strategy %s.',
-            profile_id, dependency_strategy)
+            main_profile_id, dependency_strategy)
 
         # 2. Gather a list of profiles to handle.
 
@@ -1441,7 +1458,8 @@ class SetupTool(Folder):
         else:
             # Two possibilities:
             # - We ignore dependencies, so we have a single profile id.
-            # - Profile id is None and we import a tarball (in the archive).
+            # - Profile id is None and we import a tarball (in the archive)
+            #   or a profile from a path.
             chain = [profile_id]
 
         # 3. For each profile, depending on the keyword arguments, either:
@@ -1466,7 +1484,8 @@ class SetupTool(Folder):
             else:
                 profile_type = profile_info.get('type')
             if num == last_num:
-                generic_logger.info('Applying main profile %s', profile_id)
+                generic_logger.info('Applying main profile %s',
+                                    main_profile_id)
             else:
                 # This is a dependency profile.  This means we are not
                 # completely ignoring them, otherwise it would not
@@ -1488,7 +1507,8 @@ class SetupTool(Folder):
             # The next lines are done at least for the main profile.
             # Possibly also for dependency profiles, depending on the
             # condition above.  It applies the profile.
-            context = self._getImportContext(profile_id, purge_old, archive)
+            context = self._getImportContext(
+                profile_id, purge_old, archive, path)
             self.applyContext(context)
             if detect_steps:
                 steps = self.getSortedImportSteps()
