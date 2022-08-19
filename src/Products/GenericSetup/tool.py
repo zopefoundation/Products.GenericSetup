@@ -62,6 +62,7 @@ from .upgrade import listProfilesWithUpgrades
 from .upgrade import listUpgradeSteps
 from .utils import _computeTopologicalSort
 from .utils import _getProductPath
+from .utils import _profile_directory_with_one_file
 from .utils import _resolveDottedName
 from .utils import _version_for_print
 from .utils import _wwwdir
@@ -338,6 +339,24 @@ class SetupTool(Folder):
         """ See ISetupTool.
         """
         return self._toolset_registry
+
+    @security.protected(ManagePortal)
+    def runImportStepFromText(self, filename, contents, purge_old=False):
+        """Create an import context on-the-fly to run one import step.
+
+        Note that all import steps will be run, but normally only one step
+        will match the filename and actually do something.
+
+        'filename' may contain one slash to indicate a sub directory.
+
+        Example calls:
+
+        runImportStepFromText('rolemap.xml', '<xml />')
+        runImportStepFromText('types/Document.xml', '<xml />')
+        """
+        with _profile_directory_with_one_file(filename, contents) as path:
+            self.runAllImportStepsFromProfile(None, path=path,
+                                              purge_old=purge_old)
 
     @security.protected(ManagePortal)
     def runImportStepFromProfile(self, profile_id, step_id,

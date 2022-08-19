@@ -4,6 +4,10 @@ Changelog
 2.2.1 (unreleased)
 ------------------
 
+- Add method ``tool.runImportStepFromText``.
+  Pass it a filename, for example ``rolemap.xml`` or ``types/Document.xml`` and some text.
+  This gets saved in a temporary profile which is then applied.
+
 - Add ``path`` keyword argument to ``tool.runAllImportStepsFromProfile``.
   This avoids the need to register a full profile, when you only need
   to import a few files once in an upgrade step.

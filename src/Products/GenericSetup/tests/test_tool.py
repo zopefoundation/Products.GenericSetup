@@ -969,6 +969,53 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
         self.assertTrue('Manager' in site.valid_roles())
         self.assertTrue('Owner' in site.valid_roles())
 
+    def test_runImportStepFromText(self):
+        # Tests for importing a directory with GenericSetup files.
+        # We are especially interested to see if old settings get purged.
+        # This is adapted from test_manage_importTarball.
+        # Note that purging is handled differently for tarballs and
+        # directories.
+        site = self._makeSite()
+        site.setup_tool = self._makeOne('setup_tool')
+        tool = site.setup_tool
+        # We need to be Manager to see the result of calling
+        # manage_importTarball.
+        newSecurityManager(None, UnrestrictedUser('root', '', ['Manager'], ''))
+
+        ROLEMAP_XML = """<?xml version="1.0"?>
+<rolemap>
+  <roles>
+    <role name="%s" />
+  </roles>
+  <permissions />
+</rolemap>
+"""
+
+        # Import first role.
+        tool.runImportStepFromText('rolemap.xml', ROLEMAP_XML % 'First')
+        self.assertTrue('First' in site.valid_roles())
+
+        # Import second role.
+        tool.runImportStepFromText('rolemap.xml', ROLEMAP_XML % 'Second')
+        self.assertTrue('Second' in site.valid_roles())
+        # The first role is still there, because by default we do not purge.
+        self.assertTrue('First' in site.valid_roles())
+
+        # Import third role in purge mode.
+        tool.runImportStepFromText('rolemap.xml', ROLEMAP_XML % 'Third',
+                                   purge_old=True)
+        self.assertTrue('Third' in site.valid_roles())
+        # The other roles are gone.
+        self.assertFalse('First' in site.valid_roles())
+        self.assertFalse('Second' in site.valid_roles())
+
+        # A few standard roles are never removed, probably because they are
+        # defined one level higher.
+        self.assertTrue('Anonymous' in site.valid_roles())
+        self.assertTrue('Authenticated' in site.valid_roles())
+        self.assertTrue('Manager' in site.valid_roles())
+        self.assertTrue('Owner' in site.valid_roles())
+
     def test_runExportStep_nonesuch(self):
         site = self._makeSite()
         tool = self._makeOne('setup_tool').__of__(site)

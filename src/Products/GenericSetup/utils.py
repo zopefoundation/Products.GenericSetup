@@ -15,6 +15,9 @@
 
 import hashlib
 import os
+import shutil
+import tempfile
+from contextlib import contextmanager
 from inspect import getdoc
 from logging import getLogger
 from xml.dom.minidom import Document
@@ -1007,3 +1010,32 @@ def _getHash(*args):
     base = "".join([str(x) for x in args])
     hashmd5 = hashlib.md5(base.encode('utf8'))
     return hashmd5.hexdigest()
+
+
+@contextmanager
+def _profile_directory_with_one_file(filename, contents):
+    """Create a profile directory with one file.
+
+    'filename' may contain one slash to indicate a sub directory.
+    """
+    if isinstance(contents, six.text_type):
+        contents = contents.encode('utf-8')
+
+    # Create all needed directories.
+    root_path = tempfile.mkdtemp(prefix='gs')
+    path, filename = os.path.split(filename)
+    subdir = os.path.join(root_path, path)
+    if not os.path.exists(subdir):
+        os.makedirs(subdir)
+
+    # Get the full file path and write to it.
+    fqpath = os.path.join(subdir, filename)
+    with open(fqpath, 'wb') as myfile:
+        myfile.write(contents)
+
+    try:
+        # We need the top-level temporary directory.
+        yield root_path
+    finally:
+        # Remove the temporary directory.
+        shutil.rmtree(root_path)
