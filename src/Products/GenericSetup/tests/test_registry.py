@@ -1036,7 +1036,26 @@ class ProfileRegistryTests(BaseRegistryTests, ConformsToIProfileRegistry):
                           'path': u'',
                           'product': u'',
                           'title': u'',
-                         'type': None})
+                          'type': None})
+
+    def test_getProfileInfo_directory_exists(self):
+        # Since GenericSetup 2.3.0 you can refer to module:path as profile.
+        # This profile then exists on-the-fly, without registering it.
+        registry = self._makeOne()
+        profile_id = 'Products.GenericSetup:tests/default_profile'
+        self.assertEqual(registry.getProfileInfo(profile_id),
+                         {'description': u'',
+                          'for': None,
+                          'id': profile_id,
+                          'path': u'tests/default_profile',
+                          'product': u'Products.GenericSetup',
+                          'title': u'',
+                          'type': None})
+
+    def test_getProfileInfo_directory_non_existing(self):
+        registry = self._makeOne()
+        with self.assertRaises(KeyError):
+            registry.getProfileInfo('Products.GenericSetup:foobar')
 
 
 def test_suite():

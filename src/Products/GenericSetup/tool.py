@@ -428,9 +428,13 @@ class SetupTool(Folder):
             if path is None:
                 prefix = 'import-all-from-tar'
             else:
+                # We could add the actual path, but that shows the full path
+                # in the report id, which gets ugly, for example:
+                # 'import-all-from-path-home_username_.cached-eggs...'
                 prefix = 'import-all-from-path'
         else:
-            prefix = 'import-all-%s' % profile_id.replace(':', '_')
+            prefix = 'import-all-%s' % profile_id.replace(
+                ':', '_').replace('/', '_')
         name = self._mangleTimestampName(prefix, 'log')
         self._createReport(name, result['steps'], result['messages'])
 

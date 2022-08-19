@@ -4,6 +4,12 @@ Changelog
 2.3.0 (unreleased)
 ------------------
 
+- You can refer to ``module:path`` as profile.
+  This profile then exists on-the-fly, without registering it.
+  This is useful for profiles that are used only in upgrades,
+  for example: ``my.package:profiles/upgrades/to_42``.
+  You can use this as ``import_profile`` in an ``upgradeDepends`` directive.
+
 - Add method ``tool.runImportStepFromText``.
   Pass it a filename, for example ``rolemap.xml`` or ``types/Document.xml`` and some text.
   This gets saved in a temporary profile which is then applied.

@@ -2125,6 +2125,15 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
         self.assertFalse(tool.profileExists(None))
         self.assertFalse(tool.profileExists('nonesuch'))
 
+        # Since GenericSetup 2.3.0 you can refer to module:path as profile.
+        # This profile then exists on-the-fly, without registering it.
+        self.assertTrue(
+            tool.profileExists('Products.GenericSetup:tests/default_profile'))
+        self.assertTrue(
+            tool.profileExists('Products.GenericSetup.tests:default_profile'))
+        self.assertTrue(tool.profileExists('Products.GenericSetup:browser'))
+        self.assertFalse(tool.profileExists('Products.GenericSetup:foobar'))
+
     def test_getDependenciesForProfile(self):
         from ..interfaces import EXTENSION
         from ..metadata import METADATA_XML

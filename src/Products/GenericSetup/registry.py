@@ -15,6 +15,7 @@
 
 
 import logging
+import os
 import types
 from xml.sax import parseString
 from xml.sax.handler import ContentHandler
@@ -699,6 +700,22 @@ class ProfileRegistry(Implicit):
 
         result = self._registered.get(profile_id)
         if result is None:
+            if profile_id.count(":") == 1:
+                # Try one alternative: module:path
+                module_name, path = profile_id.split(":")
+                module = _resolveDottedName(module_name)
+                if module is not None:
+                    if os.path.exists(os.path.join(module.__path__[0], path)):
+                        # directory import
+                        info = {'id': profile_id,
+                                'title': u'',
+                                'description': u'',
+                                'path': path,
+                                'product': module_name,
+                                'type': None,
+                                'for': None}
+                        return info
+
             raise KeyError(profile_id)
         if for_ is not None:
             if not issubclass(for_, result['for']):
