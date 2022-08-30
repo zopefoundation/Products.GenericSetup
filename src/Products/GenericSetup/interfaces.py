@@ -519,8 +519,6 @@ class ISetupTool(Interface):
           to import a few files once in an upgrade step.
           It is best to use an absolute path, otherwise it would depend on
           your working directory.
-          Note that metadata.xml is never read, so you cannot use profile
-          dependencies.
 
         o Return a mapping, with keys:
 
