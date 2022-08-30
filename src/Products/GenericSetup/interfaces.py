@@ -569,9 +569,8 @@ class ISetupTool(Interface):
           Note that metadata.xml is never read, so you cannot use profile
           dependencies.
 
-        o First the code should find a profile via the 'profile_id'.
-          If nothing is found, the 'archive' is tried.
-          If nothing is found, the 'path' is tried.
+        o The profile to be imported is determined from profile_id,
+          archive or path (the first with a value different from 'None').
 
         o Return a mapping, with keys:
 
