@@ -519,7 +519,8 @@ class ISetupTool(Interface):
           to import a few files once in an upgrade step.
           It is best to use an absolute path, otherwise it would depend on
           your working directory.
-          Note that metadata.xml is never read, so you cannot use dependencies.
+          Note that metadata.xml is never read, so you cannot use profile
+          dependencies.
 
         o Return a mapping, with keys:
 
@@ -551,7 +552,8 @@ class ISetupTool(Interface):
           all profiles this profile depends on.
 
         o 'archive' is a tarball with files to import.
-          Note that metadata.xml is never read, so you cannot use dependencies.
+          Note that metadata.xml is never read, so you cannot use profile
+          dependencies.
 
         o 'blacklisted_steps' can be a list of step-names that won't be
           executed. Use with special care and only for special cases.
@@ -566,7 +568,8 @@ class ISetupTool(Interface):
           to import a few files once in an upgrade step.
           It is best to use an absolute path, otherwise it would depend on
           your working directory.
-          Note that metadata.xml is never read, so you cannot use dependencies.
+          Note that metadata.xml is never read, so you cannot use profile
+          dependencies.
 
         o First the code should find a profile via the 'profile_id'.
           If nothing is found, the 'archive' is tried.

@@ -11,7 +11,7 @@ Changelog
   By default this is the path of the profile for which this is an upgrade.
   You can also specify a path in a different package: ``other.package:profile/path``.
   You can combine this with ``import_steps``, but not with ``import_profile``.
-  Note that ``metadata.xml`` is never read, so you cannot use dependencies.
+  Note that ``metadata.xml`` is never read, so you cannot use profile dependencies.
 
 
 2.2.0 (2022-04-04)

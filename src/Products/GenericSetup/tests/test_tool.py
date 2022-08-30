@@ -430,7 +430,7 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
         self.assertEqual(_imported, [self._PROFILE_PATH, self._PROFILE_PATH2])
 
     def test_runImportStepFromProfile_with_path_no_dependencies(self):
-        # When importing a path, the metadata.xml is never read, so
+        # When importing a path, the metadata.xml is never read, so profile
         # dependencies are ignored.  Same will be true for archives/tarballs.
         # Theoretically this could be fixed.  But if you need this, then you
         # might as well just register an actual profile.
@@ -985,7 +985,7 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
         self.assertEqual(_imported, [self._PROFILE_PATH, self._PROFILE_PATH2])
 
     def test_runAllImportStepsFromProfile_with_path_no_dependencies(self):
-        # When importing a path, the metadata.xml is never read, so
+        # When importing a path, the metadata.xml is never read, so profile
         # dependencies are ignored.  Same will be true for archives/tarballs.
         # Theoretically this could be fixed.  But if you need this, then you
         # might as well just register an actual profile.
