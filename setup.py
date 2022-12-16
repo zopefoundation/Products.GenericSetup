@@ -22,7 +22,7 @@ _BOUNDARY = '\n' + ('-' * 60) + '\n\n'
 
 setup(
     name='Products.GenericSetup',
-    version='2.2.1.dev0',
+    version='2.3.0',
     description='Read Zope configuration state from profile dirs / tarballs',
     long_description=README + _BOUNDARY + CHANGES,
     classifiers=[
@@ -41,6 +41,7 @@ setup(
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
+        "Programming Language :: Python :: 3.11",
         "Programming Language :: Python :: Implementation :: CPython",
         "Topic :: Software Development",
         "Topic :: System :: Archiving :: Packaging",
