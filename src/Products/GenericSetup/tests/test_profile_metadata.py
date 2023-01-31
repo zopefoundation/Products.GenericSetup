@@ -27,16 +27,16 @@ version = 'VERSION'
 dep1 = 'DEPENDENCY 1'
 dep2 = 'DEPENDENCY 2'
 
-_METADATA_XML = """<?xml version="1.0"?>
+_METADATA_XML = f"""<?xml version="1.0"?>
 <metadata>
-  <description>%s</description>
-  <version>%s</version>
+  <description>{desc}</description>
+  <version>{version}</version>
   <dependencies>
-    <dependency>%s</dependency>
-    <dependency>%s</dependency>
+    <dependency>{dep1}</dependency>
+    <dependency>{dep2}</dependency>
   </dependencies>
 </metadata>
-""" % (desc, version, dep1, dep2)
+"""
 
 _METADATA_MAP = {
     'description': desc,
@@ -44,13 +44,13 @@ _METADATA_MAP = {
     'dependencies': (dep1, dep2),
 }
 
-_METADATA_EMPTY_DEPENDENCIES_XML = """<?xml version="1.0"?>
+_METADATA_EMPTY_DEPENDENCIES_XML = f"""<?xml version="1.0"?>
 <metadata>
-  <description>%s</description>
-  <version>%s</version>
+  <description>{desc}</description>
+  <version>{version}</version>
   <dependencies></dependencies>
 </metadata>
-""" % (desc, version)
+"""
 
 _METADATA_MAP_EMPTY_DEPENDENCIES = {
     'description': desc,
@@ -75,7 +75,7 @@ class ProfileMetadataTests(ZopeTestCase):
             profile_id, 'Dummy Profile', 'This is a dummy profile',
             'tests/metadata_profile', product=product_name)
         profile_info = profile_registry.getProfileInfo(
-            '%s:%s' % (product_name, profile_id))
+            f'{product_name}:{profile_id}')
         self.assertEqual(profile_info['description'],
                          'Description from metadata')
 
@@ -88,5 +88,5 @@ class ProfileMetadataTests(ZopeTestCase):
 
 def test_suite():
     return unittest.TestSuite((
-        unittest.makeSuite(ProfileMetadataTests),
+        unittest.defaultTestLoader.loadTestsFromTestCase(ProfileMetadataTests),
     ))

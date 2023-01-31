@@ -19,8 +19,6 @@ import types
 from xml.sax import parseString
 from xml.sax.handler import ContentHandler
 
-import six
-
 from AccessControl.class_init import InitializeClass
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from Acquisition import Implicit
@@ -92,9 +90,8 @@ class _ToolsetParser(_HandlerBase):
             opposite = 'required' if name == 'forbidden' else 'forbidden'
             raise ValueError(
                 "The 'remove' keyword is not supported in toolset.xml. "
-                "Failed to remove '{0}' from {1} tools. "
-                "Use an element '{2}' instead.".format(
-                    tool_id, name, opposite))
+                f"Failed to remove '{tool_id}' from {name} tools. "
+                f"Use an element '{opposite}' instead.")
 
         if name == 'forbidden':
             if tool_id not in self._forbidden:
@@ -134,8 +131,8 @@ class _ImportStepRegistryParser(_HandlerBase):
             if self._pending is not None:
                 raise ValueError('Cannot nest setup-step elements')
 
-            self._pending = dict([(k, self._extract(attrs, k))
-                                  for k in attrs.keys()])
+            self._pending = {k: self._extract(attrs, k)
+                             for k in attrs.keys()}
 
             self._pending['dependencies'] = []
 
@@ -198,8 +195,8 @@ class _ExportStepRegistryParser(_HandlerBase):
             if self._pending is not None:
                 raise ValueError('Cannot nest export-step elements')
 
-            self._pending = dict([(k, self._extract(attrs, k))
-                                  for k in attrs.keys()])
+            self._pending = {k: self._extract(attrs, k)
+                             for k in attrs.keys()}
 
         else:
             raise ValueError('Unknown element %s' % name)
@@ -227,7 +224,7 @@ class _ExportStepRegistryParser(_HandlerBase):
 InitializeClass(_ExportStepRegistryParser)
 
 
-class GlobalRegistryStorage(object):
+class GlobalRegistryStorage:
 
     def __init__(self, interfaceClass):
         self.interfaceClass = interfaceClass
@@ -307,8 +304,6 @@ class BaseStepRegistry(Implicit):
         o 'handler' values are serialized using their dotted names.
         """
         xml = self._exportTemplate()
-        if six.PY2:
-            xml = xml.encode(encoding)
         return xml
 
     @security.private
@@ -341,10 +336,9 @@ class BaseStepRegistry(Implicit):
         if reader is not None:
             text = reader()
 
-        if not six.PY2:
-            if isinstance(text, bytes):
-                text = text.decode('utf-8')
-            encoding = None
+        if isinstance(text, bytes):
+            text = text.decode('utf-8')
+        encoding = None
 
         parser = self.RegistryParser(encoding)
         parseString(text, parser)
@@ -621,8 +615,6 @@ class ToolsetRegistry(Implicit):
         """ Pseudo API.
         """
         xml = self._toolsetConfig()
-        if six.PY2:
-            xml = xml.encode(encoding)
         return xml
 
     @security.protected(ManagePortal)
@@ -634,10 +626,9 @@ class ToolsetRegistry(Implicit):
         if reader is not None:
             text = reader()
 
-        if not six.PY2:
-            if isinstance(text, bytes):
-                text = text.decode('utf-8')
-            encoding = None
+        if isinstance(text, bytes):
+            text = text.decode('utf-8')
+        encoding = None
 
         parser = _ToolsetParser(encoding)
         parseString(text, parser)
@@ -683,11 +674,11 @@ class ProfileRegistry(Implicit):
         """
         if profile_id is None:
             # tarball import
-            info = {'id': u'',
-                    'title': u'',
-                    'description': u'',
-                    'path': u'',
-                    'product': u'',
+            info = {'id': '',
+                    'title': '',
+                    'description': '',
+                    'path': '',
+                    'product': '',
                     'type': None,
                     'for': None}
             return info
@@ -774,7 +765,7 @@ class ProfileRegistry(Implicit):
         self._registered[profile_id] = info
 
     def _computeProfileId(self, name, product):
-        profile_id = '%s:%s' % (product or 'other', name)
+        profile_id = '{}:{}'.format(product or 'other', name)
         return profile_id
 
     @security.protected(ManagePortal)

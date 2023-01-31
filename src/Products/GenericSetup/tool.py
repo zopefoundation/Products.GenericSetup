@@ -13,18 +13,12 @@
 """ Classes:  SetupTool
 """
 
-try:
-    from html import escape
-except ImportError:  # BBB Python 2
-    from cgi import escape
-
 import logging
 import os
 import time
 import types
+from html import escape
 from operator import itemgetter
-
-import six
 
 from AccessControl.class_init import InitializeClass
 from AccessControl.Permissions import view
@@ -474,7 +468,7 @@ class SetupTool(Folder):
         for line in lines.splitlines():
 
             # All the operations below expect native strings
-            if six.PY3 and not isinstance(line, str):
+            if not isinstance(line, str):
                 line = line.decode('UTF-8')
 
             if line.startswith('** '):
@@ -513,7 +507,7 @@ class SetupTool(Folder):
                 result.append(('diff-header', line))
 
         return '<pre>\n%s\n</pre>' % (
-            '\n'.join([('<span class="%s">%s</span>' % (cl, escape(l)))
+            '\n'.join([(f'<span class="{cl}">{escape(l)}</span>')
                        for cl, l in result]))
 
     #
@@ -620,7 +614,7 @@ class SetupTool(Folder):
                 result = self.runAllImportStepsFromProfile(profile_id)
 
                 for k, v in result['messages'].items():
-                    detail['%s:%s' % (profile_id, k)] = v
+                    detail[f'{profile_id}:{k}'] = v
 
             return self.manage_fullImport(manage_tabs_message=message,
                                           messages=detail)
@@ -778,12 +772,12 @@ class SetupTool(Folder):
         candidates.sort()
         last = candidates[-1]
         stamp = last[-18:-4]
-        return '%s-%s-%sT%s:%s:%sZ' % (stamp[0:4],
-                                       stamp[4:6],
-                                       stamp[6:8],
-                                       stamp[8:10],
-                                       stamp[10:12],
-                                       stamp[12:14])
+        return '{}-{}-{}T{}:{}:{}Z'.format(stamp[0:4],
+                                           stamp[4:6],
+                                           stamp[6:8],
+                                           stamp[8:10],
+                                           stamp[10:12],
+                                           stamp[12:14])
 
     @security.protected(ManagePortal)
     def manage_createSnapshot(self, RESPONSE, snapshot_id=None):
@@ -886,7 +880,7 @@ class SetupTool(Folder):
         prefix = 'profile-'
         if profile_id.startswith(prefix):
             profile_id = profile_id[len(prefix):]
-        if isinstance(version, six.string_types):
+        if isinstance(version, str):
             version = tuple(version.split('.'))
         if not isinstance(self._profile_upgrade_versions, PersistentMapping):
             # migrate to persistent
@@ -1133,8 +1127,7 @@ class SetupTool(Folder):
             step = _upgrade_registry.getUpgradeStep(profile_id, step_id)
             if step is not None:
                 step.doStep(self)
-                msg = "Ran upgrade step %s for profile %s" % (step.title,
-                                                              profile_id)
+                msg = f'Ran upgrade step {step.title} for profile {profile_id}'
                 logger.log(logging.INFO, msg)
 
         # We update the profile version to the last one we have reached
@@ -1167,7 +1160,7 @@ class SetupTool(Folder):
             return
         if dest is not None:
             # Upgrade to a specific destination version, if found.
-            if isinstance(dest, six.string_types):
+            if isinstance(dest, str):
                 dest = tuple(dest.split('.'))
             if self.getLastVersionForProfile(profile_id) == dest:
                 if not quiet:
@@ -1570,12 +1563,8 @@ class SetupTool(Folder):
             lines.append('')
 
         report = '\n'.join(lines)
-        if isinstance(report, six.text_type):
+        if isinstance(report, str):
             report = report.encode('latin-1')
-
-        # BBB: ObjectManager won't allow unicode IDS
-        if isinstance(basename, six.text_type) and six.PY2:
-            basename = basename.encode('UTF-8')
 
         name = basename
         index = 0

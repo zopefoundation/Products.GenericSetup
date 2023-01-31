@@ -40,54 +40,54 @@ class IRegisterProfileDirective(Interface):
     """
 
     name = zope.schema.TextLine(
-        title=u'Name',
-        description=u"If not specified 'default' is used.",
-        default=u'default',
+        title='Name',
+        description="If not specified 'default' is used.",
+        default='default',
         required=False)
 
     title = MessageID(
-        title=u'Title',
-        description=u'Optional title for the profile.',
+        title='Title',
+        description='Optional title for the profile.',
         default=None,
         required=False)
 
     description = MessageID(
-        title=u'Description',
-        description=u'Optional description for the profile.',
+        title='Description',
+        description='Optional description for the profile.',
         default=None,
         required=False)
 
     directory = Path(
-        title=u'Path',
-        description=u"If not specified 'profiles/<name>' is used.",
+        title='Path',
+        description="If not specified 'profiles/<name>' is used.",
         required=False)
 
     provides = GlobalObject(
-        title=u'Type',
-        description=u"If not specified 'BASE' is used.",
+        title='Type',
+        description="If not specified 'BASE' is used.",
         default=BASE,
         required=False)
 
     for_ = GlobalObject(
-        title=u'Site Interface',
-        description=u'If not specified the profile is always available.',
+        title='Site Interface',
+        description='If not specified the profile is always available.',
         default=None,
         required=False)
 
     pre_handler = GlobalObject(
-        title=u'Pre handler',
-        description=(u'Function called before applying all steps. '
+        title='Pre handler',
+        description=('Function called before applying all steps. '
                      'It gets passed the setup tool as context.'),
         required=False)
 
     post_handler = GlobalObject(
-        title=u'Post handler',
-        description=(u'Function called after applying all steps. '
+        title='Post handler',
+        description=('Function called after applying all steps. '
                      'It gets passed the setup tool as context.'),
         required=False)
 
 
-def registerProfile(_context, name=u'default', title=None, description=None,
+def registerProfile(_context, name='default', title=None, description=None,
                     directory=None, provides=BASE, for_=None,
                     pre_handler=None, post_handler=None):
     """ Add a new profile to the registry.
@@ -97,10 +97,10 @@ def registerProfile(_context, name=u'default', title=None, description=None,
         directory = 'profiles/%s' % name
 
     if title is None:
-        title = u"Profile '%s' from '%s'" % (name, product)
+        title = f"Profile '{name}' from '{product}'"
 
     if description is None:
-        description = u''
+        description = ''
 
     _context.action(
         discriminator=('registerProfile', product, name),
@@ -114,23 +114,23 @@ def registerProfile(_context, name=u'default', title=None, description=None,
 
 class IExportStepDirective(Interface):
     name = zope.schema.TextLine(
-        title=u'Name',
-        description=u'',
+        title='Name',
+        description='',
         required=True)
 
     title = MessageID(
-        title=u'Title',
-        description=u'',
+        title='Title',
+        description='',
         required=True)
 
     description = MessageID(
-        title=u'Description',
-        description=u'',
+        title='Description',
+        description='',
         required=True)
 
     handler = GlobalObject(
-        title=u'Handler',
-        description=u'',
+        title='Handler',
+        description='',
         required=True)
 
 
@@ -151,31 +151,31 @@ class IImportStepDirective(Interface):
     """
 
     name = zope.schema.TextLine(
-        title=u'Name',
-        description=u'',
+        title='Name',
+        description='',
         required=True)
 
     title = MessageID(
-        title=u'Title',
-        description=u'',
+        title='Title',
+        description='',
         required=True)
 
     description = MessageID(
-        title=u'Description',
-        description=u'',
+        title='Description',
+        description='',
         required=True)
 
     handler = GlobalObject(
-        title=u'Handler',
-        description=u'',
+        title='Handler',
+        description='',
         required=True)
 
 
 class IImportStepDependsDirective(Interface):
 
     name = zope.schema.TextLine(
-        title=u'Name',
-        description=u'Name of another import step that has to be run first',
+        title='Name',
+        description='Name of another import step that has to be run first',
         required=True)
 
 
@@ -214,19 +214,19 @@ class IUpgradeStepsDirective(Interface):
     """
 
     source = zope.schema.ASCII(
-        title=u"Source version",
+        title="Source version",
         required=False)
 
     destination = zope.schema.ASCII(
-        title=u"Destination version",
+        title="Destination version",
         required=False)
 
     sortkey = zope.schema.Int(
-        title=u"Sort key",
+        title="Sort key",
         required=False)
 
     profile = zope.schema.TextLine(
-        title=u"GenericSetup profile id",
+        title="GenericSetup profile id",
         required=True)
 
 
@@ -237,19 +237,19 @@ class IUpgradeStepsStepSubDirective(Interface):
     """
 
     title = zope.schema.TextLine(
-        title=u"Title",
+        title="Title",
         required=True)
 
     description = zope.schema.TextLine(
-        title=u"Upgrade step description",
+        title="Upgrade step description",
         required=False)
 
     handler = GlobalObject(
-        title=u"Upgrade handler",
+        title="Upgrade handler",
         required=True)
 
     checker = GlobalObject(
-        title=u"Upgrade checker",
+        title="Upgrade checker",
         required=False)
 
 
@@ -270,32 +270,32 @@ class IUpgradeDependsSubDirective(Interface):
     """
 
     title = zope.schema.TextLine(
-        title=u"Title",
+        title="Title",
         required=True,
         )
 
     description = zope.schema.TextLine(
-        title=u"Upgrade dependency description",
+        title="Upgrade dependency description",
         required=False,
         )
 
     import_profile = zope.schema.TextLine(
-        title=u"GenericSetup profile id to load, if not the same as the "
-              u"current profile.", required=False)
+        title="GenericSetup profile id to load, if not the same as the "
+              "current profile.", required=False)
 
     import_steps = Tokens(
-        title=u"Import steps to rerun",
+        title="Import steps to rerun",
         required=False,
-        value_type=zope.schema.TextLine(title=u"Import step"),
+        value_type=zope.schema.TextLine(title="Import step"),
         )
 
     run_deps = zope.schema.Bool(
-        title=u"Run import step dependencies?",
+        title="Run import step dependencies?",
         required=False,
         )
 
     purge = zope.schema.Bool(
-        title=u"Import steps w/ purge=True?",
+        title="Import steps w/ purge=True?",
         required=False,
         )
 
@@ -335,7 +335,7 @@ def upgradeDepends(_context, title, profile, description=None,
         )
 
 
-class upgradeSteps(object):
+class upgradeSteps:
 
     """
     Allows nested upgrade steps.

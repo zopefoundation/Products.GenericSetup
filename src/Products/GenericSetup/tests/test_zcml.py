@@ -377,13 +377,13 @@ class ImportStepTests(unittest.TestCase):
          </genericsetup:importStep>
         </configure>""")
         self.assertEqual(_import_step_registry.listSteps(), ['name'])
-        data = _import_step_registry.getStepMetadata(u'name')
+        data = _import_step_registry.getStepMetadata('name')
         expected = 'Products.GenericSetup.tests.test_zcml.dummy_importstep'
         self.assertEqual(data["handler"], expected)
-        self.assertEqual(data["description"], u"description")
-        self.assertEqual(data["title"], u"title")
+        self.assertEqual(data["description"], "description")
+        self.assertEqual(data["title"], "title")
         self.assertEqual(data["dependencies"], ())
-        self.assertEqual(data["id"], u"name")
+        self.assertEqual(data["id"], "name")
 
     def testWithDependency(self):
         zcml.load_string("""
@@ -397,8 +397,8 @@ class ImportStepTests(unittest.TestCase):
           <depends name="something.else"/>
          </genericsetup:importStep>
         </configure>""")
-        data = _import_step_registry.getStepMetadata(u'name')
-        self.assertEqual(data["dependencies"], (u"something.else",))
+        data = _import_step_registry.getStepMetadata('name')
+        self.assertEqual(data["dependencies"], ("something.else",))
 
 
 class ExportStepTests(unittest.TestCase):
@@ -421,13 +421,13 @@ class ExportStepTests(unittest.TestCase):
             handler="Products.GenericSetup.tests.test_zcml.dummy_exportstep"
             />
         </configure>""")
-        self.assertEqual(_export_step_registry.listSteps(), [u'name'])
-        data = _export_step_registry.getStepMetadata(u'name')
+        self.assertEqual(_export_step_registry.listSteps(), ['name'])
+        data = _export_step_registry.getStepMetadata('name')
         expected = 'Products.GenericSetup.tests.test_zcml.dummy_exportstep'
         self.assertEqual(data["handler"], expected)
-        self.assertEqual(data["description"], u"description")
-        self.assertEqual(data["title"], u"title")
-        self.assertEqual(data["id"], u"name")
+        self.assertEqual(data["description"], "description")
+        self.assertEqual(data["title"], "title")
+        self.assertEqual(data["id"], "name")
 
 
 class UpgradeStepTests(unittest.TestCase):
@@ -465,9 +465,10 @@ class UpgradeStepTests(unittest.TestCase):
 
 
 def test_suite():
+    loader = unittest.defaultTestLoader
     suite = unittest.TestSuite()
     suite.addTest(doctest.DocTestSuite(optionflags=ELLIPSIS))
-    suite.addTest(unittest.makeSuite(ImportStepTests))
-    suite.addTest(unittest.makeSuite(ExportStepTests))
-    suite.addTest(unittest.makeSuite(UpgradeStepTests))
+    suite.addTest(loader.loadTestsFromTestCase(ImportStepTests))
+    suite.addTest(loader.loadTestsFromTestCase(ExportStepTests))
+    suite.addTest(loader.loadTestsFromTestCase(UpgradeStepTests))
     return suite

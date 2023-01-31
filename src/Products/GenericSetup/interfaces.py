@@ -85,8 +85,8 @@ class IImportContext(ISetupContext):
         o 'subdir' is an optional subdirectory;  if not supplied, search
           only the "root" directory.
 
-        o Return the file contents as bytes (``str`` on Python 2 and ``bytes``
-          on Python 3), or None if the file cannot be found.
+        o Return the file contents as bytes, or None if the file cannot be
+          found.
         """
 
     def getLastModified(path):
@@ -139,8 +139,8 @@ class IChunkableImportContext(IImportContext):
           "root" of the target.
 
         o Return a readable file-like object in binary mode that will return
-          bytes when read from (``str`` on Python 2 and ``bytes`` on Python 3);
-          the caller is responsible for calling 'close' on it.
+          bytes when read from. The caller is responsible for calling 'close'
+          on it.
         """
 
 
@@ -188,8 +188,7 @@ class IChunkableExportContext(IExportContext):
           "root" of the target.
 
         o Return a writeable file-like object in binary mode that expects
-          bytes data (``str`` on Python 2 and ``bytes`` on Python 3);
-          the caller is responsible for calling 'close' on it.
+          bytes data. The caller is responsible for calling 'close' on it.
         """
 
 
@@ -652,7 +651,7 @@ class INode(Interface):
     'body'.
     """
 
-    node = Text(description=u'Im- and export the object as a DOM node.')
+    node = Text(description='Im- and export the object as a DOM node.')
 
 
 class IBody(INode):
@@ -660,13 +659,13 @@ class IBody(INode):
     """Body im- and exporter.
     """
 
-    body = Text(description=u'Im- and export the object as a file body.')
+    body = Text(description='Im- and export the object as a file body.')
 
-    mime_type = TextLine(description=u'MIME type of the file body.')
+    mime_type = TextLine(description='MIME type of the file body.')
 
-    name = TextLine(description=u'Enforce this name for the file.')
+    name = TextLine(description='Enforce this name for the file.')
 
-    suffix = TextLine(description=u'Suffix for the file.')
+    suffix = TextLine(description='Suffix for the file.')
 
 
 class IFilesystemExporter(Interface):

@@ -16,9 +16,7 @@
 import os
 import tempfile
 import unittest
-
-import six
-from six import BytesIO
+from io import BytesIO
 
 import transaction
 from AccessControl.Permissions import view
@@ -487,7 +485,7 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
     def test_runAllImportStepsFromProfile_unicode_id_creates_reports(self):
 
         TITLE = 'original title'
-        PROFILE_ID = u'snapshot-testing'
+        PROFILE_ID = 'snapshot-testing'
         site = self._makeSite(TITLE)
         tool = self._makeOne('setup_tool').__of__(site)
 
@@ -821,11 +819,11 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
         # Apply the extension profile.
         tool.runAllImportStepsFromProfile('profile-other:ham')
         self.assertEqual(tool._profile_upgrade_versions,
-                         {u'other:ham': (u'1', u'0')})
+                         {'other:ham': ('1', '0')})
         # Apply the base profile.
         tool.runAllImportStepsFromProfile('profile-other:foo')
         self.assertEqual(tool._profile_upgrade_versions,
-                         {u'other:foo': (u'1', u'0')})
+                         {'other:foo': ('1', '0')})
 
     def test_runAllImportStepsFromProfile_with_unknown_pre_handler(self):
         # Registering already fails.
@@ -1015,7 +1013,7 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
             # role.
             context = TarballExportContext(tool)
             contents = ROLEMAP_XML % name
-            if isinstance(contents, six.text_type):
+            if isinstance(contents, str):
                 contents = contents.encode('utf-8')
             context.writeDataFile('rolemap.xml', contents, 'text/xml')
             return context.getArchive()
@@ -1632,7 +1630,7 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
                             None, "1")
         _registerUpgradeStep(step1)
         self.assertEqual(tool.listProfilesWithUpgrades(),
-                         [u'GenericSetup:dummy_profile'])
+                         ['GenericSetup:dummy_profile'])
         self.assertEqual(tool.listProfilesWithPendingUpgrades(), [])
         self.assertEqual(tool.listUptodateProfiles(), [])
         self.assertEqual(tool.hasPendingUpgrades(), False)
@@ -1644,7 +1642,7 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
                             None, "1")
         _registerUpgradeStep(step2)
         self.assertEqual(tool.listProfilesWithUpgrades(),
-                         [u'GenericSetup:dummy_profile'])
+                         ['GenericSetup:dummy_profile'])
         self.assertEqual(tool.listProfilesWithPendingUpgrades(), [])
         self.assertEqual(tool.listUptodateProfiles(), [])
         self.assertEqual(tool.hasPendingUpgrades(), False)
@@ -1655,9 +1653,9 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
         # Pretend the profile was installed
         tool.setLastVersionForProfile(profile_id, '1.0')
         self.assertEqual(tool.listProfilesWithUpgrades(),
-                         [u'GenericSetup:dummy_profile'])
+                         ['GenericSetup:dummy_profile'])
         self.assertEqual(tool.listProfilesWithPendingUpgrades(),
-                         [u'GenericSetup:dummy_profile'])
+                         ['GenericSetup:dummy_profile'])
         self.assertEqual(tool.listUptodateProfiles(), [])
         self.assertEqual(tool.hasPendingUpgrades(), True)
 
@@ -1671,9 +1669,9 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
         self.assertEqual(tool.getLastVersionForProfile(profile_id),
                          ('1', '1'))
         self.assertEqual(tool.listProfilesWithUpgrades(),
-                         [u'GenericSetup:dummy_profile'])
+                         ['GenericSetup:dummy_profile'])
         self.assertEqual(tool.listProfilesWithPendingUpgrades(),
-                         [u'GenericSetup:dummy_profile'])
+                         ['GenericSetup:dummy_profile'])
         self.assertEqual(tool.listUptodateProfiles(), [])
         self.assertEqual(tool.hasPendingUpgrades(), True)
 
@@ -1687,10 +1685,10 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
         self.assertEqual(tool.getLastVersionForProfile(profile_id),
                          ('1', '2'))
         self.assertEqual(tool.listProfilesWithUpgrades(),
-                         [u'GenericSetup:dummy_profile'])
+                         ['GenericSetup:dummy_profile'])
         self.assertEqual(tool.listProfilesWithPendingUpgrades(), [])
         self.assertEqual(tool.listUptodateProfiles(),
-                         [u'GenericSetup:dummy_profile'])
+                         ['GenericSetup:dummy_profile'])
         self.assertEqual(tool.hasPendingUpgrades(), False)
 
         # Pretend the profile was never installed.
@@ -1902,21 +1900,21 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
         tool = site.setup_tool
         result = tool.listExportSteps()
         self.assertEqual(len(result), 4)
-        self.assertTrue(u'componentregistry' in result)
-        self.assertTrue(u'rolemap' in result)
-        self.assertTrue(u'step_registries' in result)
-        self.assertTrue(u'toolset' in result)
+        self.assertTrue('componentregistry' in result)
+        self.assertTrue('rolemap' in result)
+        self.assertTrue('step_registries' in result)
+        self.assertTrue('toolset' in result)
 
-        tool._export_registry.registerStep(u'foo', handler='foo.export')
-        tool._export_registry.registerStep(u'toolset',
+        tool._export_registry.registerStep('foo', handler='foo.export')
+        tool._export_registry.registerStep('toolset',
                                            handler='toolset.export')
         result = tool.listExportSteps()
         self.assertEqual(len(result), 5)
-        self.assertTrue(u'componentregistry' in result)
-        self.assertTrue(u'foo' in result)
-        self.assertTrue(u'rolemap' in result)
-        self.assertTrue(u'step_registries' in result)
-        self.assertTrue(u'toolset' in result)
+        self.assertTrue('componentregistry' in result)
+        self.assertTrue('foo' in result)
+        self.assertTrue('rolemap' in result)
+        self.assertTrue('step_registries' in result)
+        self.assertTrue('toolset' in result)
 
     def test_getSortedImportSteps(self):
         site = self._makeSite()
@@ -1924,23 +1922,23 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
         tool = site.setup_tool
         result = tool.getSortedImportSteps()
         self.assertEqual(len(result), 3)
-        self.assertTrue(u'componentregistry' in result)
-        self.assertTrue(u'rolemap' in result)
-        self.assertTrue(u'toolset' in result)
-        self.assertTrue(list(result).index(u'componentregistry') >
-                        list(result).index(u'toolset'))
+        self.assertTrue('componentregistry' in result)
+        self.assertTrue('rolemap' in result)
+        self.assertTrue('toolset' in result)
+        self.assertTrue(list(result).index('componentregistry') >
+                        list(result).index('toolset'))
 
-        tool._import_registry.registerStep(u'foo', handler='foo.import')
-        tool._import_registry.registerStep(u'toolset',
+        tool._import_registry.registerStep('foo', handler='foo.import')
+        tool._import_registry.registerStep('toolset',
                                            handler='toolset.import')
         result = tool.getSortedImportSteps()
         self.assertEqual(len(result), 4)
-        self.assertTrue(u'componentregistry' in result)
-        self.assertTrue(u'foo' in result)
-        self.assertTrue(u'rolemap' in result)
-        self.assertTrue(u'toolset' in result)
-        self.assertTrue(list(result).index(u'componentregistry') >
-                        list(result).index(u'toolset'))
+        self.assertTrue('componentregistry' in result)
+        self.assertTrue('foo' in result)
+        self.assertTrue('rolemap' in result)
+        self.assertTrue('toolset' in result)
+        self.assertTrue(list(result).index('componentregistry') >
+                        list(result).index('toolset'))
 
     def test_listProfileInfo_for_parameter(self):
         from ..metadata import METADATA_XML
@@ -1999,7 +1997,7 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
             'baz', 'Baz', '', self._PROFILE_PATH3, profile_type=EXTENSION)
 
         self.assertEqual(tool.getDependenciesForProfile('other:foo'),
-                         (u'profile-other:bar', ))
+                         ('profile-other:bar', ))
         self.assertEqual(tool.getDependenciesForProfile('other:bar'), ())
         self.assertEqual(tool.getDependenciesForProfile('snapshot-some'), ())
         self.assertEqual(tool.getDependenciesForProfile(None), ())
@@ -2507,7 +2505,7 @@ _BAD_CLASS_TOOLSET_XML = """\
 
 def test_suite():
     return unittest.TestSuite((
-        unittest.makeSuite(SetupToolTests),
-        unittest.makeSuite(Test_exportToolset),
-        unittest.makeSuite(Test_importToolset),
+        unittest.defaultTestLoader.loadTestsFromTestCase(SetupToolTests),
+        unittest.defaultTestLoader.loadTestsFromTestCase(Test_exportToolset),
+        unittest.defaultTestLoader.loadTestsFromTestCase(Test_importToolset),
     ))

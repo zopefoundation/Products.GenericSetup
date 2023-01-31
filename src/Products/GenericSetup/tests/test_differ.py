@@ -15,8 +15,6 @@
 
 import unittest
 
-import six
-
 from DateTime.DateTime import DateTime
 from OFS.Folder import Folder
 from OFS.Image import File
@@ -387,11 +385,11 @@ Index: sub/again.txt
 
 
 def _DateTime_as_bytes(dt):
-    return six.text_type(dt).encode('utf-8')
+    return str(dt).encode('utf-8')
 
 
 def test_suite():
     return unittest.TestSuite((
-        unittest.makeSuite(Test_unidiff),
-        unittest.makeSuite(ConfigDiffTests),
+        unittest.defaultTestLoader.loadTestsFromTestCase(Test_unidiff),
+        unittest.defaultTestLoader.loadTestsFromTestCase(ConfigDiffTests),
     ))

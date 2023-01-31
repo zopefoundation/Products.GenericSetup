@@ -23,8 +23,6 @@ from tarfile import DIRTYPE
 from tarfile import TarFile
 from tarfile import TarInfo
 
-import six
-
 from AccessControl.class_init import InitializeClass
 from AccessControl.Permissions import view
 from AccessControl.SecurityInfo import ClassSecurityInfo
@@ -296,7 +294,7 @@ class DirectoryExportContext(BaseContext):
     def writeDataFile(self, filename, text, content_type, subdir=None):
         """ See IExportContext.
         """
-        if isinstance(text, six.text_type):
+        if isinstance(text, str):
             encoding = self.getEncoding() or 'utf-8'
             text = text.encode(encoding)
         file = self.openDataFile(filename, content_type, subdir)
@@ -436,11 +434,11 @@ class TarballExportContext(BaseContext):
             parents.pop()
 
         info = TarInfo(filename)
-        if isinstance(text, six.text_type):
+        if isinstance(text, str):
             encoding = self.getEncoding() or 'utf-8'
             text = text.encode(encoding)
 
-        if isinstance(text, six.binary_type):
+        if isinstance(text, bytes):
             stream = BytesIO(text)
             info.size = len(text)
         else:
@@ -491,10 +489,6 @@ class SnapshotExportContext(BaseContext):
             subdir = filename[:sep]
             filename = filename[sep+1:]
 
-        if six.PY2 and isinstance(text, six.text_type):
-            encoding = self.getEncoding() or 'utf-8'
-            text = text.encode(encoding)
-
         folder = self._ensureSnapshotsFolder(subdir)
 
         # MISSING: switch on content_type
@@ -509,7 +503,7 @@ class SnapshotExportContext(BaseContext):
     def getSnapshotURL(self):
         """ See IExportContext.
         """
-        return '%s/%s' % (self._tool.absolute_url(), self._snapshot_id)
+        return f'{self._tool.absolute_url()}/{self._snapshot_id}'
 
     @security.protected(ManagePortal)
     def getSnapshotFolder(self):
@@ -524,9 +518,6 @@ class SnapshotExportContext(BaseContext):
     def _createObjectByType(self, name, body, content_type):
         encoding = self.getEncoding() or 'utf-8'
 
-        if six.PY2 and isinstance(body, six.text_type):
-            body = body.encode(encoding)
-
         if name.endswith('.py'):
             ob = PythonScript(name)
             ob.write(body)
@@ -540,7 +531,7 @@ class SnapshotExportContext(BaseContext):
         if content_type in ('text/html', 'text/xml'):
             return ZopePageTemplate(name, body, content_type=content_type)
 
-        if isinstance(body, six.text_type):
+        if isinstance(body, str):
             body = body.encode(encoding)
 
         if content_type[:6] == 'image/':
@@ -607,10 +598,10 @@ class SnapshotImportContext(BaseContext):
             # OFS File Object have only one way to access the raw
             # data directly, __str__. The code explicitly forbids
             # to store unicode, so str() is safe here
-            data = six.binary_type(aq_base(object.data))
+            data = bytes(aq_base(object.data))
         else:
             data = object.read()
-        if isinstance(data, six.text_type):
+        if isinstance(data, str):
             data = data.encode('utf-8')
         return data
 

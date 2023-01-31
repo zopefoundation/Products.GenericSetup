@@ -12,20 +12,17 @@
 ##############################################################################
 """ Unit tests for import / export contexts.
 """
-from __future__ import absolute_import
 
 import logging
 import os
 import tempfile
 import time
 import unittest
+from io import BytesIO
 from string import digits
 from string import printable
 from tarfile import TarFile
 from tarfile import TarInfo
-
-import six
-from six import BytesIO
 
 from DateTime.DateTime import DateTime
 from OFS.Folder import Folder
@@ -364,7 +361,7 @@ class DirectoryExportContextTests(FilesystemTestBase, ConformsToISetupContext,
 
     def test_writeDataFile_unicode(self):
 
-        text = u'Kein Weltraum links vom Ger\xe4t'
+        text = 'Kein Weltraum links vom Ger\xe4t'
         FILENAME = 'unicode.txt'
         fqname = self._makeFile(FILENAME, printable_bytes)
 
@@ -536,7 +533,7 @@ class TarballImportContextTests(ZopeTestCase, ConformsToISetupContext,
         FILENAME = 'subdir.txt'
         SUBDIR = 'subdir'
 
-        site, tool, ctx = self._makeOne({'%s/%s' % (SUBDIR, FILENAME):
+        site, tool, ctx = self._makeOne({f'{SUBDIR}/{FILENAME}':
                                          printable_bytes})
 
         self.assertEqual(ctx.readDataFile(FILENAME, SUBDIR), printable_bytes)
@@ -561,7 +558,7 @@ class TarballImportContextTests(ZopeTestCase, ConformsToISetupContext,
 
         FILENAME = 'subdir.txt'
         SUBDIR = 'subdir'
-        PATH = '%s/%s' % (SUBDIR, FILENAME)
+        PATH = f'{SUBDIR}/{FILENAME}'
         WHEN = 999999999.0
         ctx = self._makeOne({PATH: printable_bytes}, mod_time=WHEN)[2]
 
@@ -573,7 +570,7 @@ class TarballImportContextTests(ZopeTestCase, ConformsToISetupContext,
 
         FILENAME = 'subdir.txt'
         SUBDIR = 'subdir'
-        PATH = '%s/%s' % (SUBDIR, FILENAME)
+        PATH = f'{SUBDIR}/{FILENAME}'
         WHEN = 999999999.0
         ctx = self._makeOne({PATH: printable_bytes}, mod_time=WHEN)[2]
 
@@ -601,7 +598,7 @@ class TarballImportContextTests(ZopeTestCase, ConformsToISetupContext,
 
         SUBDIR = 'subdir'
         FILENAME = 'nested.txt'
-        PATH = '%s/%s' % (SUBDIR, FILENAME)
+        PATH = f'{SUBDIR}/{FILENAME}'
 
         site, tool, ctx = self._makeOne({PATH: printable_bytes})
 
@@ -611,7 +608,7 @@ class TarballImportContextTests(ZopeTestCase, ConformsToISetupContext,
 
         SUBDIR = 'subdir'
         FILENAME = 'nested.txt'
-        PATH = '%s/%s' % (SUBDIR, FILENAME)
+        PATH = f'{SUBDIR}/{FILENAME}'
 
         site, tool, ctx = self._makeOne({PATH: printable_bytes})
 
@@ -646,7 +643,7 @@ class TarballImportContextTests(ZopeTestCase, ConformsToISetupContext,
 
         SUBDIR = 'subdir'
         FILENAME = 'nested.txt'
-        PATH = '%s/%s' % (SUBDIR, FILENAME)
+        PATH = f'{SUBDIR}/{FILENAME}'
 
         site, tool, ctx = self._makeOne({PATH: printable_bytes})
 
@@ -656,7 +653,7 @@ class TarballImportContextTests(ZopeTestCase, ConformsToISetupContext,
 
         SUBDIR = 'subdir'
         FILENAME = 'nested.txt'
-        PATH = '%s/%s' % (SUBDIR, FILENAME)
+        PATH = f'{SUBDIR}/{FILENAME}'
 
         site, tool, ctx = self._makeOne({PATH: printable_bytes})
 
@@ -670,9 +667,9 @@ class TarballImportContextTests(ZopeTestCase, ConformsToISetupContext,
 
         SUBDIR = 'subdir'
         FILENAME1 = 'nested.txt'
-        PATH1 = '%s/%s' % (SUBDIR, FILENAME1)
+        PATH1 = f'{SUBDIR}/{FILENAME1}'
         FILENAME2 = 'another.txt'
-        PATH2 = '%s/%s' % (SUBDIR, FILENAME2)
+        PATH2 = f'{SUBDIR}/{FILENAME2}'
 
         site, tool, ctx = self._makeOne({PATH1: printable_bytes,
                                          PATH2: ascii_uppercase})
@@ -688,11 +685,11 @@ class TarballImportContextTests(ZopeTestCase, ConformsToISetupContext,
 
         SUBDIR = 'subdir'
         FILENAME1 = 'nested.txt'
-        PATH1 = '%s/%s' % (SUBDIR, FILENAME1)
+        PATH1 = f'{SUBDIR}/{FILENAME1}'
         FILENAME2 = 'another.txt'
-        PATH2 = '%s/%s' % (SUBDIR, FILENAME2)
+        PATH2 = f'{SUBDIR}/{FILENAME2}'
         FILENAME3 = 'another.bak'
-        PATH3 = '%s/%s' % (SUBDIR, FILENAME3)
+        PATH3 = f'{SUBDIR}/{FILENAME3}'
 
         site, tool, ctx = self._makeOne({PATH1: printable_bytes,
                                          PATH2: ascii_uppercase,
@@ -749,7 +746,7 @@ class TarballExportContextTests(ZopeTestCase, ConformsToISetupContext,
 
     def test_writeDataFile_umlauts(self):
 
-        text = u'Kein Weltraum links vom Ger\xe4t'
+        text = 'Kein Weltraum links vom Ger\xe4t'
         now = int(time.time())
 
         site = DummySite('site').__of__(self.app)
@@ -901,7 +898,7 @@ class SnapshotExportContextTests(ZopeTestCase, ConformsToISetupContext,
     def test_writeDataFile_simple_plain_text_unicode(self):
         FILENAME = 'simple.txt'
         CONTENT_TYPE = 'text/plain'
-        CONTENT = u'Unicode, with non-ASCII: %s.' % six.unichr(150)
+        CONTENT = 'Unicode, with non-ASCII: %s.' % chr(150)
 
         site = DummySite('site').__of__(self.app)
         site.setup_tool = DummyTool('setup_tool')
@@ -1154,7 +1151,7 @@ class SnapshotImportContextTests(ZopeTestCase, ConformsToISetupContext,
                        subdir=SUBDIR)
 
         self.assertEqual(ctx.readDataFile(FILENAME, SUBDIR), printable_bytes)
-        self.assertEqual(ctx.readDataFile('%s/%s' % (SUBDIR, FILENAME)),
+        self.assertEqual(ctx.readDataFile(f'{SUBDIR}/{FILENAME}'),
                          printable_bytes)
 
     def test_getLastModified_nonesuch(self):
@@ -1181,7 +1178,7 @@ class SnapshotImportContextTests(ZopeTestCase, ConformsToISetupContext,
 
         FILENAME = 'subdir.txt'
         SUBDIR = 'subdir'
-        PATH = '%s/%s' % (SUBDIR, FILENAME)
+        PATH = f'{SUBDIR}/{FILENAME}'
         WHEN = 999999999.0
         SNAPSHOT_ID = 'getLastModified_subdir'
         tool, ctx = self._makeOne(SNAPSHOT_ID)[1:]
@@ -1230,7 +1227,7 @@ class SnapshotImportContextTests(ZopeTestCase, ConformsToISetupContext,
         SNAPSHOT_ID = 'isDirectory_nested'
         SUBDIR = 'subdir'
         FILENAME = 'nested.txt'
-        PATH = '%s/%s' % (SUBDIR, FILENAME)
+        PATH = f'{SUBDIR}/{FILENAME}'
 
         site, tool, ctx = self._makeOne(SNAPSHOT_ID)
         self._makeFile(tool, SNAPSHOT_ID, FILENAME, printable_bytes,
@@ -1285,7 +1282,7 @@ class SnapshotImportContextTests(ZopeTestCase, ConformsToISetupContext,
         SNAPSHOT_ID = 'listDirectory_nested'
         SUBDIR = 'subdir'
         FILENAME = 'nested.txt'
-        PATH = '%s/%s' % (SUBDIR, FILENAME)
+        PATH = f'{SUBDIR}/{FILENAME}'
 
         site, tool, ctx = self._makeOne(SNAPSHOT_ID)
         self._makeFile(tool, SNAPSHOT_ID, FILENAME, printable_bytes,
@@ -1353,11 +1350,12 @@ class SnapshotImportContextTests(ZopeTestCase, ConformsToISetupContext,
 
 
 def test_suite():
+    loader = unittest.defaultTestLoader
     return unittest.TestSuite((
-        unittest.makeSuite(DirectoryImportContextTests),
-        unittest.makeSuite(DirectoryExportContextTests),
-        unittest.makeSuite(TarballImportContextTests),
-        unittest.makeSuite(TarballExportContextTests),
-        unittest.makeSuite(SnapshotExportContextTests),
-        unittest.makeSuite(SnapshotImportContextTests),
+        loader.loadTestsFromTestCase(DirectoryImportContextTests),
+        loader.loadTestsFromTestCase(DirectoryExportContextTests),
+        loader.loadTestsFromTestCase(TarballImportContextTests),
+        loader.loadTestsFromTestCase(TarballExportContextTests),
+        loader.loadTestsFromTestCase(SnapshotExportContextTests),
+        loader.loadTestsFromTestCase(SnapshotImportContextTests),
     ))

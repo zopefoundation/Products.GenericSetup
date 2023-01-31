@@ -15,8 +15,6 @@
 
 from operator import itemgetter
 
-import six
-
 from Acquisition import aq_base
 from Acquisition import aq_parent
 from zope.component import adapts
@@ -49,7 +47,7 @@ class ComponentRegistryXMLAdapter(XMLAdapterBase):
     name = 'componentregistry'
 
     def _constructBlacklist(self):
-        blacklist = set((BLACKLIST_SELF,))
+        blacklist = {BLACKLIST_SELF}
         utils = getUtilitiesFor(IComponentsHandlerBlacklist)
         for _, util in utils:
             names = [_getDottedName(i) for i in util.getExcludedInterfaces()]
@@ -171,7 +169,7 @@ class ComponentRegistryXMLAdapter(XMLAdapterBase):
                 continue
 
             provided = _resolveDottedName(provided)
-            name = six.text_type(child.getAttribute('name'))
+            name = str(child.getAttribute('name'))
 
             # BBB
             for_ = child.getAttribute('for') or child.getAttribute('for_')
@@ -296,7 +294,7 @@ class ComponentRegistryXMLAdapter(XMLAdapterBase):
                 continue
 
             provided = _resolveDottedName(provided)
-            name = six.text_type(child.getAttribute('name'))
+            name = str(child.getAttribute('name'))
 
             component = child.getAttribute('component')
             component = component and _resolveDottedName(component) or None
@@ -391,9 +389,9 @@ class ComponentRegistryXMLAdapter(XMLAdapterBase):
 
             child = self._doc.createElement('adapter')
 
-            for_ = u''
+            for_ = ''
             for interface in reg_info['required']:
-                for_ = for_ + _getDottedName(interface) + u'\n           '
+                for_ = for_ + _getDottedName(interface) + '\n           '
 
             child.setAttribute('factory', reg_info['factory'])
             child.setAttribute('provides', reg_info['provided'])
@@ -422,9 +420,9 @@ class ComponentRegistryXMLAdapter(XMLAdapterBase):
 
             child = self._doc.createElement('subscriber')
 
-            for_ = u''
+            for_ = ''
             for interface in reg_info['required']:
-                for_ = for_ + _getDottedName(interface) + u'\n           '
+                for_ = for_ + _getDottedName(interface) + '\n           '
 
             child.setAttribute('factory', reg_info['factory'])
             child.setAttribute('provides', reg_info['provided'])
@@ -446,9 +444,9 @@ class ComponentRegistryXMLAdapter(XMLAdapterBase):
         for reg_info in registrations:
             child = self._doc.createElement('subscriber')
 
-            for_ = u''
+            for_ = ''
             for interface in reg_info['required']:
-                for_ = for_ + _getDottedName(interface) + u'\n           '
+                for_ = for_ + _getDottedName(interface) + '\n           '
 
             child.setAttribute('handler', reg_info['factory'])
             child.setAttribute('for', for_.strip())

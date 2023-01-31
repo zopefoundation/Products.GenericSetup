@@ -12,7 +12,6 @@
 ##############################################################################
 """ Registry unit tests.
 """
-from __future__ import absolute_import
 
 import unittest
 
@@ -51,11 +50,11 @@ def DOC_FUNC(site):
     """
 
 
-ONE_FUNC_NAME = '%s.%s' % (__name__, ONE_FUNC.__name__)
-TWO_FUNC_NAME = '%s.%s' % (__name__, TWO_FUNC.__name__)
-THREE_FUNC_NAME = '%s.%s' % (__name__, THREE_FUNC.__name__)
-FOUR_FUNC_NAME = '%s.%s' % (__name__, FOUR_FUNC.__name__)
-DOC_FUNC_NAME = '%s.%s' % (__name__, DOC_FUNC.__name__)
+ONE_FUNC_NAME = f'{__name__}.{ONE_FUNC.__name__}'
+TWO_FUNC_NAME = f'{__name__}.{TWO_FUNC.__name__}'
+THREE_FUNC_NAME = f'{__name__}.{THREE_FUNC.__name__}'
+FOUR_FUNC_NAME = f'{__name__}.{FOUR_FUNC.__name__}'
+DOC_FUNC_NAME = f'{__name__}.{DOC_FUNC.__name__}'
 
 ###############################
 #   SSR tests
@@ -428,31 +427,31 @@ _SINGLE_IMPORT_XML = """\
 </import-steps>
 """ % ONE_FUNC_NAME
 
-_ORDERED_IMPORT_XML = """\
+_ORDERED_IMPORT_XML = f"""\
 <?xml version="1.0"?>
 <import-steps>
  <import-step id="one"
              version="1"
-             handler="%s"
+             handler="{ONE_FUNC_NAME}"
              title="One Step">
   <dependency step="two" />
   One small step
  </import-step>
  <import-step id="three"
              version="3"
-             handler="%s"
+             handler="{THREE_FUNC_NAME}"
              title="Three Steps">
   Gimme three steps
  </import-step>
  <import-step id="two"
              version="2"
-             handler="%s"
+             handler="{TWO_FUNC_NAME}"
              title="Two Steps">
   <dependency step="three" />
   Texas two step
  </import-step>
 </import-steps>
-""" % (ONE_FUNC_NAME, THREE_FUNC_NAME, TWO_FUNC_NAME)
+"""
 
 ###############################
 #   ESR tests
@@ -640,26 +639,26 @@ _SINGLE_EXPORT_XML = """\
 </export-steps>
 """ % ONE_FUNC_NAME
 
-_ORDERED_EXPORT_XML = """\
+_ORDERED_EXPORT_XML = f"""\
 <?xml version="1.0"?>
 <export-steps>
  <export-step id="one"
-                handler="%s"
+                handler="{ONE_FUNC_NAME}"
                 title="One Step">
   One small step
  </export-step>
  <export-step id="three"
-                handler="%s"
+                handler="{THREE_FUNC_NAME}"
                 title="Three Steps">
   Gimme three steps
  </export-step>
  <export-step id="two"
-                handler="%s"
+                handler="{TWO_FUNC_NAME}"
                 title="Two Steps">
   Texas two step
  </export-step>
 </export-steps>
-""" % (ONE_FUNC_NAME, THREE_FUNC_NAME, TWO_FUNC_NAME)
+"""
 
 
 ###############################
@@ -1030,19 +1029,20 @@ class ProfileRegistryTests(BaseRegistryTests, ConformsToIProfileRegistry):
         # None.  This must not crash.
         registry = self._makeOne()
         self.assertEqual(registry.getProfileInfo(None),
-                         {'description': u'',
+                         {'description': '',
                           'for': None,
-                          'id': u'',
-                          'path': u'',
-                          'product': u'',
-                          'title': u'',
+                          'id': '',
+                          'path': '',
+                          'product': '',
+                          'title': '',
                          'type': None})
 
 
 def test_suite():
+    loader = unittest.defaultTestLoader
     return unittest.TestSuite((
-        unittest.makeSuite(ImportStepRegistryTests),
-        unittest.makeSuite(ExportStepRegistryTests),
-        unittest.makeSuite(ToolsetRegistryTests),
-        unittest.makeSuite(ProfileRegistryTests),
+        loader.loadTestsFromTestCase(ImportStepRegistryTests),
+        loader.loadTestsFromTestCase(ExportStepRegistryTests),
+        loader.loadTestsFromTestCase(ToolsetRegistryTests),
+        loader.loadTestsFromTestCase(ProfileRegistryTests),
     ))

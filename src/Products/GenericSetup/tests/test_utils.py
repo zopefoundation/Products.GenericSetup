@@ -13,14 +13,7 @@
 """ GenericSetup.utils unit tests
 """
 
-try:
-    from html import escape  # noqa
-    HTML_ESCAPE = True
-except ImportError:
-    HTML_ESCAPE = False
 import unittest
-
-import six
 
 from DateTime.DateTime import DateTime
 from Testing.ZopeTestCase import ZopeTestCase
@@ -52,7 +45,7 @@ _TESTED_PROPERTIES = (
     {'id': 'foo_int_nodel', 'type': 'int', 'mode': 'w'},
 )
 
-_EMPTY_PROPERTY_EXPORT = """\
+_EMPTY_PROPERTY_EXPORT = b"""\
 <?xml version="1.0" encoding="utf-8"?>
 <dummy>
  <property name="foo_boolean" type="boolean">False</property>
@@ -75,9 +68,9 @@ _EMPTY_PROPERTY_EXPORT = """\
  <property name="foo_float_nodel">0.0</property>
  <property name="foo_int_nodel">0</property>
 </dummy>
-""".encode('utf-8')
+"""
 
-_NONE_PROPERTY_EXPORT = u"""\
+_NONE_PROPERTY_EXPORT = b"""\
 <?xml version="1.0" encoding="utf-8"?>
 <dummy>
  <property name="foo_boolean" type="boolean">False</property>
@@ -99,9 +92,9 @@ _NONE_PROPERTY_EXPORT = u"""\
  <property name="foo_float_nodel">0.0</property>
  <property name="foo_int_nodel">0</property>
 </dummy>
-""".encode('utf-8')
+"""
 
-_NORMAL_PROPERTY_EXPORT = u"""\
+_NORMAL_PROPERTY_EXPORT = """\
 <?xml version="1.0" encoding="utf-8"?>
 <dummy>
  <property name="foo_boolean" type="boolean">True</property>
@@ -135,9 +128,9 @@ _NORMAL_PROPERTY_EXPORT = u"""\
  <property name="foo_float_nodel">3.1415</property>
  <property name="foo_int_nodel">1789</property>
 </dummy>
-""".encode('utf-8')
+""".encode()
 
-_NORMAL_PROPERTY_EXPORT_ISO_8859_1 = u"""\
+_NORMAL_PROPERTY_EXPORT_ISO_8859_1 = b"""\
 <?xml version="1.0" encoding="iso-8859-1"?>
 <dummy>
  <property name="foo_boolean" type="boolean">True</property>
@@ -171,7 +164,7 @@ _NORMAL_PROPERTY_EXPORT_ISO_8859_1 = u"""\
  <property name="foo_float_nodel">3.1415</property>
  <property name="foo_int_nodel">1789</property>
 </dummy>
-""".encode('iso-8859-1')
+"""
 
 _NORMAL_PROPERTY_EXPORT_OLD = b"""\
 <?xml version="1.0"?>
@@ -209,7 +202,7 @@ _NORMAL_PROPERTY_EXPORT_OLD = b"""\
 </dummy>
 """
 
-_FIXED_PROPERTY_EXPORT = u"""\
+_FIXED_PROPERTY_EXPORT = """\
 <?xml version="1.0" encoding="utf-8"?>
 <dummy>
  <property name="foo_boolean">True</property>
@@ -241,25 +234,25 @@ _FIXED_PROPERTY_EXPORT = u"""\
  <property name="foo_float_nodel">3.1415</property>
  <property name="foo_int_nodel">1789</property>
 </dummy>
-""".encode('utf-8')
+""".encode()
 
-_SPECIAL_IMPORT = """\
+_SPECIAL_IMPORT = b"""\
 <?xml version="1.0" encoding="utf-8"?>
 <dummy>
  <!-- ignore comment, import 0 as False -->
  <property name="foo_boolean0" type="boolean">0</property>
 </dummy>
-""".encode('utf-8')
+"""
 
-_I18N_IMPORT = """\
+_I18N_IMPORT = b"""\
 <?xml version="1.0" encoding="utf-8"?>
 <dummy xmlns:i18n="http://xml.zope.org/namespaces/i18n"
    i18n:domain="dummy_domain">
  <property name="foo_string" i18n:translate="">Foo String</property>
 </dummy>
-""".encode('utf-8')
+"""
 
-_NOPURGE_IMPORT = """\
+_NOPURGE_IMPORT = b"""\
 <?xml version="1.0" encoding="utf-8"?>
 <dummy>
  <property name="lines1">
@@ -275,9 +268,9 @@ _NOPURGE_IMPORT = """\
   <element value="Bar"/>
  </property>
 </dummy>
-""".encode('utf-8')
+"""
 
-_REMOVE_ELEMENT_IMPORT = """\
+_REMOVE_ELEMENT_IMPORT = b"""\
 <?xml version="1.0" encoding="utf-8"?>
 <dummy>
  <property name="lines1" purge="False">
@@ -288,46 +281,46 @@ _REMOVE_ELEMENT_IMPORT = """\
    <element value="Foo" remove="True" />
   </property>
 </dummy>
-""".encode('utf-8')
+"""
 
-_NORMAL_MARKER_EXPORT = """\
+_NORMAL_MARKER_EXPORT = b"""\
 <?xml version="1.0" encoding="utf-8"?>
 <dummy>
  <marker name="Products.GenericSetup.testing.IDummyMarker"/>
 </dummy>
-""".encode('utf-8')
+"""
 
-_ADD_IMPORT = """\
+_ADD_IMPORT = b"""\
 <?xml version="1.0" encoding="utf-8"?>
 <dummy>
  <object name="history" meta_type="Generic Setup Tool"/>
  <object name="future" meta_type="Generic Setup Tool"/>
 </dummy>
-""".encode('utf-8')
+"""
 
-_REMOVE_IMPORT = """\
+_REMOVE_IMPORT = b"""\
 <?xml version="1.0" encoding="utf-8"?>
 <dummy>
  <object name="history" remove="True"/>
  <object name="future" remove="False"/>
 </dummy>
-""".encode('utf-8')
+"""
 
-_ADD_PROPERTY_IMPORT = """\
+_ADD_PROPERTY_IMPORT = b"""\
 <?xml version="1.0" encoding="utf-8"?>
 <dummy>
  <property name="line1" type="string">Line 1</property>
  <property name="line2" type="string">Line 2</property>
 </dummy>
-""".encode('utf-8')
+"""
 
-_REMOVE_PROPERTY_IMPORT = """\
+_REMOVE_PROPERTY_IMPORT = b"""\
 <?xml version="1.0" encoding="utf-8"?>
 <dummy>
  <property name="line1" remove="True"/>
  <property name="line2" type="string" remove="False"/>
 </dummy>
-""".encode('utf-8')
+"""
 
 
 def _getDocumentElement(text):
@@ -375,7 +368,7 @@ class UtilsTests(unittest.TestCase):
 
         from ..utils import _getDottedName
 
-        dotted = u'%s' % _TEST_FUNC_NAME
+        dotted = '%s' % _TEST_FUNC_NAME
         self.assertEqual(_getDottedName(dotted), _TEST_FUNC_NAME)
         self.assertEqual(type(_getDottedName(dotted)), str)
 
@@ -407,9 +400,9 @@ class UtilsTests(unittest.TestCase):
         self.assertEqual(vfp('1000'), '1000')
         self.assertEqual(vfp(('1000',)), '1000')
         self.assertEqual(vfp(('1', '2', '3')), '1.2.3')
-        self.assertEqual(vfp((42)), '42')
-        self.assertEqual(vfp(('unknown')), 'unknown')
-        self.assertEqual(vfp((None)), 'None')
+        self.assertEqual(vfp(42), '42')
+        self.assertEqual(vfp('unknown'), 'unknown')
+        self.assertEqual(vfp(None), 'None')
 
 
 class PropertyManagerHelpersTests(unittest.TestCase):
@@ -472,12 +465,8 @@ class PropertyManagerHelpersTests(unittest.TestCase):
         obj._updateProperty('foo_date', '2000/01/01 00:00:00 UTC')
         obj._updateProperty('foo_float', '1.1')
         obj._updateProperty('foo_int', '1')
-        if six.PY2:
-            obj._updateProperty('foo_lines',
-                                u'Foo\nLines\n\xfcbrigens'.encode('utf-8'))
-        else:
-            obj._updateProperty('foo_lines',
-                                u'Foo\nLines\n\xfcbrigens')
+        obj._updateProperty('foo_lines',
+                            'Foo\nLines\n\xfcbrigens')
         obj._updateProperty('foo_long', '1')
         obj._updateProperty('foo_string', 'Foo String')
         obj._updateProperty('foo_text', 'Foo\nText')
@@ -569,7 +558,7 @@ class PropertyManagerHelpersTests(unittest.TestCase):
         self.assertEqual(type(obj.foo_int), int)
         self.assertEqual(type(obj.foo_string), str)
         self.assertEqual(type(obj.foo_tokens), tuple)
-        self.assertEqual(type(obj.foo_tokens[0]), six.binary_type)
+        self.assertEqual(type(obj.foo_tokens[0]), bytes)
 
         doc = helpers._doc = PrettyDocument()
         node = doc.createElement('dummy')
@@ -587,7 +576,7 @@ class PropertyManagerHelpersTests(unittest.TestCase):
         self.assertEqual(type(obj.foo_int), int)
         self.assertEqual(type(obj.foo_string), str)
         self.assertEqual(type(obj.foo_tokens), tuple)
-        self.assertEqual(type(obj.foo_tokens[0]), six.binary_type)
+        self.assertEqual(type(obj.foo_tokens[0]), bytes)
 
         doc = helpers._doc = PrettyDocument()
         node = doc.createElement('dummy')
@@ -609,7 +598,7 @@ class PropertyManagerHelpersTests(unittest.TestCase):
         self.assertEqual(type(obj.foo_int), int)
         self.assertEqual(type(obj.foo_string), str)
         self.assertEqual(type(obj.foo_tokens), tuple)
-        self.assertEqual(type(obj.foo_tokens[0]), six.binary_type)
+        self.assertEqual(type(obj.foo_tokens[0]), bytes)
 
         doc = helpers._doc = PrettyDocument()
         node = doc.createElement('dummy')
@@ -780,7 +769,7 @@ class PropertyManagerHelpersNonPMContextTests(PropertyManagerHelpersTests):
         obj.foo_date = DateTime('2000/01/01 00:00:00 UTC')
         obj.foo_float = 1.1
         obj.foo_int = 1
-        obj.foo_lines = ['Foo', 'Lines', u'\xfcbrigens'.encode('utf-8')]
+        obj.foo_lines = ['Foo', 'Lines', '\xfcbrigens'.encode()]
         obj.foo_long = 1
         obj.foo_string = 'Foo String'
         obj.foo_text = 'Foo\nText'
@@ -950,10 +939,7 @@ class PrettyDocumentTests(unittest.TestCase):
 
         # Output depends on the presence of html.escape
         xml_output = doc.toprettyxml(' ')
-        if HTML_ESCAPE:
-            self.assertEqual(xml_output, html_escaped)
-        else:
-            self.assertEqual(xml_output, cgi_escaped)
+        self.assertEqual(xml_output, html_escaped)
 
         # Reparse from cgi.escape representation (Python 2 only)
         # should always work
@@ -983,10 +969,7 @@ class PrettyDocumentTests(unittest.TestCase):
 
         # Output depends on the presence of html.escape
         xml_output = doc.toprettyxml(' ')
-        if HTML_ESCAPE:
-            self.assertEqual(xml_output, html_escaped)
-        else:
-            self.assertEqual(xml_output, cgi_escaped)
+        self.assertEqual(xml_output, html_escaped)
 
         # Reparse from cgi.escape representation (Python 2 only)
         # should always work
@@ -1003,11 +986,12 @@ def test_suite():
     # reimport to make sure tests are run from Products
     from .test_utils import UtilsTests
 
+    loader = unittest.defaultTestLoader
     return unittest.TestSuite((
-        unittest.makeSuite(UtilsTests),
-        unittest.makeSuite(PropertyManagerHelpersTests),
-        unittest.makeSuite(PropertyManagerHelpersNonPMContextTests),
-        unittest.makeSuite(MarkerInterfaceHelpersTests),
-        unittest.makeSuite(ObjectManagerHelpersTests),
-        unittest.makeSuite(PrettyDocumentTests),
+        loader.loadTestsFromTestCase(UtilsTests),
+        loader.loadTestsFromTestCase(PropertyManagerHelpersTests),
+        loader.loadTestsFromTestCase(PropertyManagerHelpersNonPMContextTests),
+        loader.loadTestsFromTestCase(MarkerInterfaceHelpersTests),
+        loader.loadTestsFromTestCase(ObjectManagerHelpersTests),
+        loader.loadTestsFromTestCase(PrettyDocumentTests),
     ))
