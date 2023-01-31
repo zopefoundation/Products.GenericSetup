@@ -130,7 +130,7 @@ _NORMAL_PROPERTY_EXPORT = """\
 </dummy>
 """.encode()
 
-_NORMAL_PROPERTY_EXPORT_ISO_8859_1 = b"""\
+_NORMAL_PROPERTY_EXPORT_ISO_8859_1 = """\
 <?xml version="1.0" encoding="iso-8859-1"?>
 <dummy>
  <property name="foo_boolean" type="boolean">True</property>
@@ -164,7 +164,7 @@ _NORMAL_PROPERTY_EXPORT_ISO_8859_1 = b"""\
  <property name="foo_float_nodel">3.1415</property>
  <property name="foo_int_nodel">1789</property>
 </dummy>
-"""
+""".encode('iso-8859-1')
 
 _NORMAL_PROPERTY_EXPORT_OLD = b"""\
 <?xml version="1.0"?>
