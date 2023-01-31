@@ -4,6 +4,8 @@ Changelog
 3.0.0 (unreleased)
 ------------------
 
+- Drop support for Python 2.7, 3.5, 3.6.
+
 
 2.3.0 (2022-12-16)
 ------------------
