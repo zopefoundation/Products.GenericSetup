@@ -33,11 +33,11 @@ class IComponentsSetupSchema(Interface):
     """
 
     body = Text(
-        title=u'Settings')
+        title='Settings')
 
 
 @implementer(IComponentsSetupSchema)
-class ComponentsSetupSchemaAdapter(object):
+class ComponentsSetupSchemaAdapter:
 
     adapts(IObjectManagerSite)
 

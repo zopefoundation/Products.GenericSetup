@@ -207,5 +207,6 @@ class ZCatalogXMLAdapterTests(BodyAdapterTestCase, unittest.TestCase):
 
 def test_suite():
     return unittest.TestSuite((
-        unittest.makeSuite(ZCatalogXMLAdapterTests),
+        unittest.defaultTestLoader.loadTestsFromTestCase(
+            ZCatalogXMLAdapterTests),
         ))

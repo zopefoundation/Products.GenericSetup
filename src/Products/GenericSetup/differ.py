@@ -16,8 +16,6 @@
 import difflib
 import re
 
-import six
-
 from AccessControl.class_init import InitializeClass
 from AccessControl.SecurityInfo import ClassSecurityInfo
 
@@ -51,35 +49,31 @@ def unidiff(a, b, filename_a=b'original', timestamp_a=b'',
         header, as floating point values since the epoch.
 
     """
-    if isinstance(a, six.binary_type):
+    if isinstance(a, bytes):
         a = a.splitlines()
 
-    if isinstance(b, six.binary_type):
+    if isinstance(b, bytes):
         b = b.splitlines()
 
-    if isinstance(filename_a, six.text_type):
+    if isinstance(filename_a, str):
         filename_a = filename_a.encode('utf-8')
 
-    if isinstance(filename_b, six.text_type):
+    if isinstance(filename_b, str):
         filename_b = filename_b.encode('utf-8')
 
-    if not isinstance(timestamp_a, six.binary_type):
-        timestamp_a = six.text_type(timestamp_a).encode('utf-8')
+    if not isinstance(timestamp_a, bytes):
+        timestamp_a = str(timestamp_a).encode('utf-8')
 
-    if not isinstance(timestamp_b, six.binary_type):
-        timestamp_b = six.text_type(timestamp_b).encode('utf-8')
+    if not isinstance(timestamp_b, bytes):
+        timestamp_b = str(timestamp_b).encode('utf-8')
 
     if ignore_blanks:
         a = [x for x in a if not BLANKS_REGEX.match(x)]
         b = [x for x in b if not BLANKS_REGEX.match(x)]
 
-    if six.PY2:
-        return difflib.unified_diff(a, b, filename_a, filename_b, timestamp_a,
-                                    timestamp_b, lineterm=b"")
-    else:
-        return difflib.diff_bytes(difflib.unified_diff, a, b, filename_a,
-                                  filename_b, timestamp_a, timestamp_b,
-                                  lineterm=b"")
+    return difflib.diff_bytes(difflib.unified_diff, a, b, filename_a,
+                              filename_b, timestamp_a, timestamp_b,
+                              lineterm=b"")
 
 
 class ConfigDiff:
@@ -117,7 +111,7 @@ class ConfigDiff:
             if subdir is None:
                 pathname = filename
             else:
-                pathname = '%s/%s' % (subdir, filename)
+                pathname = f'{subdir}/{filename}'
 
             if filename not in added:
                 isDirectory = self._lhs.isDirectory(pathname)
@@ -178,7 +172,7 @@ class ConfigDiff:
         if subdir is None:
             path = filename
         else:
-            path = '%s/%s' % (subdir, filename)
+            path = f'{subdir}/{filename}'
 
         lhs_file = self._lhs.readDataFile(filename, subdir)
         lhs_time = self._lhs.getLastModified(path)

@@ -817,9 +817,10 @@ class Test_importRolemap(BaseRegistryTests):
 
 
 def test_suite():
+    loader = unittest.defaultTestLoader
     return unittest.TestSuite((
-        unittest.makeSuite(RolemapExportConfiguratorTests),
-        unittest.makeSuite(RolemapImportConfiguratorTests),
-        unittest.makeSuite(Test_exportRolemap),
-        unittest.makeSuite(Test_importRolemap),
+        loader.loadTestsFromTestCase(RolemapExportConfiguratorTests),
+        loader.loadTestsFromTestCase(RolemapImportConfiguratorTests),
+        loader.loadTestsFromTestCase(Test_exportRolemap),
+        loader.loadTestsFromTestCase(Test_importRolemap),
     ))

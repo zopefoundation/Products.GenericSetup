@@ -15,6 +15,7 @@
 
 import hashlib
 import os
+from html import escape
 from inspect import getdoc
 from logging import getLogger
 from xml.dom.minidom import Document
@@ -23,14 +24,6 @@ from xml.dom.minidom import Node
 from xml.dom.minidom import _nssplit
 from xml.dom.minidom import parseString
 from xml.parsers.expat import ExpatError
-
-
-try:
-    from html import escape
-except ImportError:  # BBB Python 2
-    from cgi import escape
-
-import six
 
 from AccessControl.class_init import InitializeClass
 from AccessControl.SecurityInfo import ClassSecurityInfo
@@ -70,7 +63,7 @@ I18NURI = 'http://xml.zope.org/namespaces/i18n'
 if (
     "lines" in type_converters
     and "string" in type_converters
-    and isinstance(type_converters["lines"]("blah")[0], six.text_type)
+    and isinstance(type_converters["lines"]("blah")[0], str)
 ):
     LINES_HAS_TEXT = True
 else:
@@ -80,11 +73,11 @@ else:
 
 def _getDottedName(named):
 
-    if isinstance(named, six.string_types):
+    if isinstance(named, str):
         return str(named)
 
     try:
-        dotted = '%s.%s' % (named.__module__, named.__name__)
+        dotted = f'{named.__module__}.{named.__name__}'
     except AttributeError:
         raise ValueError('Cannot compute dotted name: %s' % named)
 
@@ -118,8 +111,7 @@ def _resolveDottedName(dotted):
 
     try:
         return resolve(dotted)
-    except ImportError:
-        # use ModuleNotFoundError when Python 3.6 is minimum supported version
+    except ModuleNotFoundError:
         return
 
 
@@ -152,7 +144,7 @@ def _version_for_print(version):
 
     Used internally when logging.
     """
-    if isinstance(version, six.string_types):
+    if isinstance(version, str):
         return version
     if isinstance(version, tuple):
         return ".".join(version)
@@ -173,7 +165,7 @@ class ImportConfiguratorBase(Implicit):
     def __init__(self, site, encoding='utf-8'):
 
         self._site = site
-        self._encoding = encoding if six.PY2 else None
+        self._encoding = None
 
     @security.protected(ManagePortal)
     def parseXML(self, xml):
@@ -184,9 +176,8 @@ class ImportConfiguratorBase(Implicit):
         if reader is not None:
             xml = reader()
 
-        if six.PY3:
-            if isinstance(xml, bytes):
-                xml = xml.decode('utf-8')
+        if isinstance(xml, bytes):
+            xml = xml.decode('utf-8')
 
         dom = parseString(xml)
         root = dom.documentElement
@@ -231,7 +222,7 @@ class ImportConfiguratorBase(Implicit):
             key = v.get(KEY, k)
 
             if DEFAULT in v and key not in info:
-                if isinstance(v[DEFAULT], six.string_types):
+                if isinstance(v[DEFAULT], str):
                     info[key] = v[DEFAULT] % info
                 else:
                     info[key] = v[DEFAULT]
@@ -294,10 +285,7 @@ class ExportConfiguratorBase(Implicit):
     def generateXML(self, **kw):
         """ Pseudo API.
         """
-        if six.PY2 and self._encoding:
-            return self._template(**kw).encode(self._encoding)
-        else:
-            return self._template(**kw)
+        return self._template(**kw)
 
 
 InitializeClass(ExportConfiguratorBase)
@@ -326,8 +314,7 @@ class _LineWrapper:
         if 0 < self._length > self._max - len(self._queue):
             self._writer.write(self._newl)
             self._length = 0
-            self._queue = '%s%s %s' % (self._indent, self._addindent,
-                                       self._queue)
+            self._queue = f'{self._indent}{self._addindent} {self._queue}'
 
         if self._queue != self._indent:
             self._writer.write(self._queue)
@@ -373,7 +360,7 @@ class _Element(Element):
             else:
                 a_value = escape(a_value, quote=True)
 
-            wrapper.queue(' %s="%s"' % (a_name, a_value))
+            wrapper.queue(f' {a_name}="{a_value}"')
 
         if self.childNodes:
             wrapper.queue('>')
@@ -386,7 +373,7 @@ class _Element(Element):
                     if textlines:
                         for textline in textlines:
                             wrapper.write('', True)
-                            wrapper.queue('%s%s' % (addindent, textline))
+                            wrapper.queue(f'{addindent}{textline}')
                 else:
                     wrapper.write('', True)
                     node.writexml(writer, indent + addindent, addindent, newl)
@@ -422,12 +409,11 @@ class PrettyDocument(Document):
             node.writexml(writer, indent, addindent, newl)
 
     def toprettyxml(self, indent='\t', newl='\n', encoding='utf-8'):
-        # `super` does not work here in python 2.7, yuck!
-        return Document.toprettyxml(self, indent, newl, encoding)
+        return super().toprettyxml(indent, newl, encoding)
 
 
 @implementer(INode)
-class NodeAdapterBase(object):
+class NodeAdapterBase:
 
     """Node im- and exporter base.
     """
@@ -523,7 +509,7 @@ class XMLAdapterBase(BodyAdapterBase):
         except ExpatError as e:
             filename = (self.filename or
                         '/'.join(self.context.getPhysicalPath()))
-            raise ExpatError('%s: %s' % (filename, e))
+            raise ExpatError(f'{filename}: {e}')
 
         # Replace the encoding with the one from the XML
         self._encoding = dom.encoding or self._encoding
@@ -540,7 +526,7 @@ class XMLAdapterBase(BodyAdapterBase):
     filename = ''  # for error reporting during import
 
 
-class ObjectManagerHelpers(object):
+class ObjectManagerHelpers:
 
     """ObjectManager in- and export helpers.
     """
@@ -621,7 +607,7 @@ class ObjectManagerHelpers(object):
                 importer.node = child
 
 
-class PropertyManagerHelpers(object):
+class PropertyManagerHelpers:
 
     """PropertyManager im- and export helpers.
 
@@ -639,7 +625,7 @@ class PropertyManagerHelpers(object):
         if not isinstance(context, PropertyManager):
             context = self._fauxAdapt(context)
 
-        super(PropertyManagerHelpers, self).__init__(context, environ)
+        super().__init__(context, environ)
 
     def _fauxAdapt(self, context):
         from OFS.PropertySheets import PropertySheet
@@ -657,7 +643,7 @@ class PropertyManagerHelpers(object):
 
             def propdict(self):
                 # PropertyManager method used by _initProperties
-                return dict([(p['id'], p) for p in self._properties])
+                return {p['id']: p for p in self._properties}
 
         return Adapted(context, self._PROPERTIES)
 
@@ -681,31 +667,31 @@ class PropertyManagerHelpers(object):
                 continue
             if isinstance(prop, (tuple, list)):
                 for value in prop:
-                    if isinstance(value, six.binary_type):
+                    if isinstance(value, bytes):
                         value = value.decode(self._encoding)
                     child = self._doc.createElement('element')
                     child.setAttribute('value', value)
                     node.appendChild(child)
             else:
                 if prop_map.get('type') == 'boolean':
-                    prop = six.u(str(bool(prop)))
+                    prop = str(bool(prop))
                 elif prop_map.get('type') == 'date':
                     if prop.timezoneNaive():
-                        prop = six.u(str(prop).rsplit(None, 1)[0])
+                        prop = str(prop).rsplit(None, 1)[0]
                     else:
-                        prop = six.u(str(prop))
-                elif isinstance(prop, six.binary_type):
+                        prop = str(prop)
+                elif isinstance(prop, bytes):
                     prop = prop.decode(self._encoding)
-                elif isinstance(prop, (six.integer_types, float)):
-                    prop = six.u(str(prop))
-                elif not isinstance(prop, six.string_types):
+                elif isinstance(prop, ((int,), float)):
+                    prop = str(prop)
+                elif not isinstance(prop, str):
                     prop = prop.decode(self._encoding)
                 child = self._doc.createTextNode(prop)
                 node.appendChild(child)
 
             if 'd' in prop_map.get('mode', 'wd') and not prop_id == 'title':
                 prop_type = prop_map.get('type', 'string')
-                node.setAttribute('type', six.u(prop_type))
+                node.setAttribute('type', prop_type)
                 select_variable = prop_map.get('select_variable', None)
                 if select_variable is not None:
                     node.setAttribute('select_variable', select_variable)
@@ -804,8 +790,6 @@ class PropertyManagerHelpers(object):
                 # if we pass a *string* to _updateProperty, all other values
                 # are converted to the right type
                 prop_value = self._getNodeText(child)
-                if six.PY2 and isinstance(prop_value, six.text_type):
-                    prop_value = prop_value.encode(self._encoding)
 
             if not self._convertToBoolean(child.getAttribute('purge')
                                           or 'True'):
@@ -824,7 +808,7 @@ class PropertyManagerHelpers(object):
                                          p not in remove_elements]) +
                                   tuple(prop_value))
 
-            if isinstance(prop_value, (six.binary_type, six.text_type)):
+            if isinstance(prop_value, (bytes, str)):
                 prop_type = obj.getPropertyType(prop_id) or 'string'
                 if prop_type in type_converters:
                     prop_converter = type_converters[prop_type]
@@ -839,11 +823,11 @@ class PropertyManagerHelpers(object):
 
 
 def _de_encode_value(prop_value, encoding, converter):
-    if isinstance(prop_value, six.binary_type):
+    if isinstance(prop_value, bytes):
         u_prop_value = prop_value.decode(encoding)
         prop_value = u_prop_value.encode(default_encoding)
     prop_value = converter(prop_value)
-    if isinstance(prop_value, six.binary_type):
+    if isinstance(prop_value, bytes):
         u_prop_value = prop_value.decode(default_encoding)
         prop_value = u_prop_value.encode(encoding)
     return prop_value
@@ -864,7 +848,7 @@ def _convert_lines(values, encoding):
     ]
 
 
-class MarkerInterfaceHelpers(object):
+class MarkerInterfaceHelpers:
 
     """Marker interface im- and export helpers.
     """
@@ -899,11 +883,11 @@ def exportObjects(obj, parent_path, context):
     """ Export subobjects recursively.
     """
     exporter = queryMultiAdapter((obj, context), IBody)
-    path = '%s%s' % (parent_path, obj.getId().replace(' ', '_'))
+    path = '{}{}'.format(parent_path, obj.getId().replace(' ', '_'))
     if exporter:
         if exporter.name:
-            path = '%s%s' % (parent_path, exporter.name)
-        filename = '%s%s' % (path, exporter.suffix)
+            path = f'{parent_path}{exporter.name}'
+        filename = f'{path}{exporter.suffix}'
         body = exporter.body
         if body is not None:
             context.writeDataFile(filename, body, exporter.mime_type)
@@ -917,12 +901,12 @@ def importObjects(obj, parent_path, context):
     """ Import subobjects recursively.
     """
     importer = queryMultiAdapter((obj, context), IBody)
-    path = '%s%s' % (parent_path, obj.getId().replace(' ', '_'))
+    path = '{}{}'.format(parent_path, obj.getId().replace(' ', '_'))
     __traceback_info__ = path
     if importer:
         if importer.name:
-            path = '%s%s' % (parent_path, importer.name)
-        filename = '%s%s' % (path, importer.suffix)
+            path = f'{parent_path}{importer.name}'
+        filename = f'{path}{importer.suffix}'
         body = context.readDataFile(filename)
         if body is not None:
             importer.filename = filename  # for error reporting
@@ -968,7 +952,7 @@ def _computeTopologicalSort(steps):
             for step in steps:
                 step_id = step['id']
                 for dependency in step['dependencies']:
-                    log_msg += '"%s" -> "%s"; ' % (step_id, dependency)
+                    log_msg += f'"{step_id}" -> "{dependency}"; '
                 if not step['dependencies']:
                     log_msg += '"%s";' % step_id
             for unresolved_key, _ignore in unresolved:
@@ -990,14 +974,13 @@ def _getProductPath(product_name):
     """
     try:
         # BBB: for GenericSetup 1.1 style product names
-        product = __import__('Products.%s' % product_name, globals(), {},
+        product = __import__(f'Products.{product_name}', globals(), {},
                              ['initialize'])
     except ImportError:
         try:
             product = __import__(product_name, globals(), {}, ['initialize'])
         except ImportError:
-            raise ValueError('Not a valid product name: %s'
-                             % product_name)
+            raise ValueError(f'Not a valid product name: {product_name}')
 
     return product.__path__[0]
 

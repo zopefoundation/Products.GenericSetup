@@ -42,6 +42,8 @@ class ProfileImportedEventTests(BaseEventTests, unittest.TestCase):
 
 def test_suite():
     suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(BeforeProfileImportEventTests))
-    suite.addTest(unittest.makeSuite(ProfileImportedEventTests))
+    suite.addTest(unittest.defaultTestLoader.loadTestsFromTestCase(
+        BeforeProfileImportEventTests))
+    suite.addTest(unittest.defaultTestLoader.loadTestsFromTestCase(
+        ProfileImportedEventTests))
     return suite

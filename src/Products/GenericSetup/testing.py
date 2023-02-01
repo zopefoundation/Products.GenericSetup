@@ -15,8 +15,6 @@
 
 from xml.dom.minidom import parseString
 
-import six
-
 from OFS.interfaces import IItem
 from Testing.ZopeTestCase.layer import ZopeLite
 from zope.component import getMultiAdapter
@@ -43,7 +41,7 @@ class DummyLogger:
 
 
 @implementer(ISetupEnviron)
-class DummySetupEnviron(object):
+class DummySetupEnviron:
 
     """Context for body im- and exporter.
     """
@@ -83,7 +81,7 @@ class BodyAdapterTestCase(_AdapterTestCaseBase):
         context = DummySetupEnviron()
         adapted = getMultiAdapter((self._obj, context), IBody)
         self.assertEqual(adapted.body, self._BODY)
-        self.assertTrue(isinstance(adapted.body, six.binary_type))
+        self.assertTrue(isinstance(adapted.body, bytes))
 
     def test_body_set(self):
         context = DummySetupEnviron()

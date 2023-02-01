@@ -13,8 +13,6 @@
 """PageTemplate export / import support.
 """
 
-import six
-
 from zope.component import adapts
 
 from ..interfaces import ISetupEnviron
@@ -33,7 +31,7 @@ class ZopePageTemplateBodyAdapter(BodyAdapterBase):
         """Export the object as a file body.
         """
         text = self.context.read()
-        if isinstance(text, six.text_type):
+        if isinstance(text, str):
             return text.encode('utf-8')
         return text
 

@@ -20,7 +20,7 @@ from Products.GenericSetup.interfaces import IBeforeProfileImportEvent
 from Products.GenericSetup.interfaces import IProfileImportedEvent
 
 
-class BaseProfileImportEvent(object):
+class BaseProfileImportEvent:
 
     def __init__(self, tool, profile_id, steps, full_import):
         self.tool = tool

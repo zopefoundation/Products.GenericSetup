@@ -78,7 +78,7 @@ class IDummyInterface2(Interface):
 
 
 @implementer(IDummyInterface)
-class DummyUtility(object):
+class DummyUtility:
     """A dummy utility."""
 
     def verify(self):
@@ -100,7 +100,7 @@ class IAnotherDummy2(Interface):
 
 
 @implementer(IAnotherDummy)
-class DummyObject(object):
+class DummyObject:
     """A dummy object to pass to the handler."""
 
     handled = 0
@@ -110,7 +110,7 @@ class DummyObject(object):
 
 
 @implementer(IAnotherDummy2)
-class DummyAdapter(object):
+class DummyAdapter:
     """A dummy adapter."""
 
     def __init__(self, context):
@@ -159,7 +159,7 @@ InitializeClass(DummyTool2)
 
 
 @implementer(IComponentsHandlerBlacklist)
-class DummyBlacklist(object):
+class DummyBlacklist:
     """A blacklist."""
 
     def getExcludedInterfaces(self):
@@ -250,7 +250,7 @@ class ComponentRegistryXMLAdapterTests(BodyAdapterTestCase, unittest.TestCase):
 
     def _populate(self, obj):
         obj.registerAdapter(DummyAdapter, required=(None,))
-        obj.registerAdapter(DummyAdapter, required=(None,), name=u'foo')
+        obj.registerAdapter(DummyAdapter, required=(None,), name='foo')
 
         obj.registerSubscriptionAdapter(DummyAdapter,
                                         required=(IAnotherDummy,))
@@ -271,20 +271,20 @@ class ComponentRegistryXMLAdapterTests(BodyAdapterTestCase, unittest.TestCase):
         util.__parent__ = aq_base(obj)
         obj._setObject(name, aq_base(util),
                        set_owner=False, suppress_events=True)
-        obj.registerUtility(aq_base(obj[name]), IDummyInterface2, name=u'foo')
+        obj.registerUtility(aq_base(obj[name]), IDummyInterface2, name='foo')
 
         tool = aq_base(obj.aq_parent['dummy_tool'])
-        obj.registerUtility(tool, IDummyInterface, name=u'dummy tool name')
+        obj.registerUtility(tool, IDummyInterface, name='dummy tool name')
 
         tool2 = aq_base(obj.aq_parent['dummy_tool2'])
-        obj.registerUtility(tool2, IDummyInterface2, name=u'dummy tool name2')
+        obj.registerUtility(tool2, IDummyInterface2, name='dummy tool name2')
 
     def _verifyImport(self, obj):
         adapted = queryAdapter(object(), IAnotherDummy2)
         self.assertTrue(IAnotherDummy2.providedBy(adapted))
         self.assertTrue(adapted.verify())
 
-        adapted = queryAdapter(object(), IAnotherDummy2, name=u'foo')
+        adapted = queryAdapter(object(), IAnotherDummy2, name='foo')
         self.assertTrue(IAnotherDummy2.providedBy(adapted))
         self.assertTrue(adapted.verify())
 
@@ -297,7 +297,7 @@ class ComponentRegistryXMLAdapterTests(BodyAdapterTestCase, unittest.TestCase):
         handle(dummy)
         self.assertEqual(dummy.handled, 1)
 
-        util = queryUtility(IDummyInterface2, name=u'foo')
+        util = queryUtility(IDummyInterface2, name='foo')
         self.assertTrue(IDummyInterface.providedBy(util))
         self.assertTrue(util.verify())
         self.assertTrue(util.__parent__ == obj)
@@ -342,7 +342,7 @@ class ComponentRegistryXMLAdapterTests(BodyAdapterTestCase, unittest.TestCase):
         gsm = getGlobalSiteManager()
         gsm.registerUtility(DummyBlacklist(),
                             IComponentsHandlerBlacklist,
-                            name=u'dummy')
+                            name='dummy')
 
         context = DummySetupEnviron()
         adapted = getMultiAdapter((obj, context), IBody)
@@ -357,13 +357,13 @@ class ComponentRegistryXMLAdapterTests(BodyAdapterTestCase, unittest.TestCase):
         gsm = getGlobalSiteManager()
         gsm.registerUtility(DummyBlacklist(),
                             IComponentsHandlerBlacklist,
-                            name=u'dummy')
+                            name='dummy')
 
         context = DummySetupEnviron()
         adapted = getMultiAdapter((obj, context), IBody)
         adapted.body = self._BODY
 
-        util = queryUtility(IDummyInterface2, name=u'foo')
+        util = queryUtility(IDummyInterface2, name='foo')
         self.assertTrue(IDummyInterface.providedBy(util))
         self.assertTrue(util.verify())
         util = queryUtility(IDummyInterface)
@@ -374,7 +374,7 @@ class ComponentRegistryXMLAdapterTests(BodyAdapterTestCase, unittest.TestCase):
         adapted = getMultiAdapter((obj, context), IBody)
         adapted.body = self._BODY
 
-        util = queryUtility(IDummyInterface2, name=u'foo')
+        util = queryUtility(IDummyInterface2, name='foo')
         self.assertTrue(IDummyInterface.providedBy(util))
         self.assertTrue(util.verify())
         util = queryUtility(IDummyInterface)
@@ -384,7 +384,7 @@ class ComponentRegistryXMLAdapterTests(BodyAdapterTestCase, unittest.TestCase):
         adapted = getMultiAdapter((obj, context), IBody)
         adapted.body = self._BODY
 
-        util = queryUtility(IDummyInterface2, name=u'foo')
+        util = queryUtility(IDummyInterface2, name='foo')
         self.assertTrue(IDummyInterface.providedBy(util))
         self.assertTrue(util.verify())
         util = queryUtility(IDummyInterface)
@@ -405,7 +405,7 @@ class ComponentRegistryXMLAdapterTests(BodyAdapterTestCase, unittest.TestCase):
         self.assertTrue(adapted is None)
 
         # This one should still exist
-        adapted = queryAdapter(object(), IAnotherDummy2, name=u'foo')
+        adapted = queryAdapter(object(), IAnotherDummy2, name='foo')
         self.assertFalse(adapted is None)
 
         dummy = DummyObject()
@@ -417,7 +417,7 @@ class ComponentRegistryXMLAdapterTests(BodyAdapterTestCase, unittest.TestCase):
         handle(dummy)
         self.assertEqual(dummy.handled, 0)
 
-        util = queryUtility(IDummyInterface2, name=u'foo')
+        util = queryUtility(IDummyInterface2, name='foo')
         name = ('Products.GenericSetup.tests.test_components.'
                 'IDummyInterface2-foo')
         self.assertTrue(util is None)
@@ -456,7 +456,7 @@ class ComponentRegistryXMLAdapterTests(BodyAdapterTestCase, unittest.TestCase):
         # Make sure our global utility is gone again
         gsm = getGlobalSiteManager()
         gsm.unregisterUtility(provided=IComponentsHandlerBlacklist,
-                              name=u'dummy')
+                              name='dummy')
 
 
 if PersistentComponents is not None:
@@ -465,7 +465,8 @@ if PersistentComponents is not None:
         from ..tests.test_components import ComponentRegistryXMLAdapterTests
 
         return unittest.TestSuite((
-            unittest.makeSuite(ComponentRegistryXMLAdapterTests),
+            unittest.defaultTestLoader.loadTestsFromTestCase(
+                ComponentRegistryXMLAdapterTests),
         ))
 else:
     def test_suite():

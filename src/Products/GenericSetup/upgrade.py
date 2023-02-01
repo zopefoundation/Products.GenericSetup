@@ -13,7 +13,6 @@
 """Upgrade steps and registry.
 """
 
-import six
 from pkg_resources import parse_version
 
 from BTrees.OOBTree import OOBTree
@@ -69,7 +68,7 @@ def _version_matches(source, step_source, step_dest, strict=False, dest=None):
     return stop > source
 
 
-class UpgradeRegistry(object):
+class UpgradeRegistry:
     """Registry of upgrade steps, by profile.
 
     Registry keys are profile ids.
@@ -130,7 +129,7 @@ class UpgradeRegistry(object):
 _upgrade_registry = UpgradeRegistry()
 
 
-class UpgradeEntity(object):
+class UpgradeEntity:
     """
     Base class for actions to be taken during an upgrade process.
     """
@@ -140,12 +139,12 @@ class UpgradeEntity(object):
         self.title = title
         if source == '*':
             source = None
-        elif isinstance(source, six.string_types):
+        elif isinstance(source, str):
             source = tuple(source.split('.'))
         self.source = source
         if dest == '*':
             dest = None
-        elif isinstance(dest, six.string_types):
+        elif isinstance(dest, str):
             dest = tuple(dest.split('.'))
         self.dest = dest
         self.description = desc
@@ -177,8 +176,7 @@ class UpgradeStep(UpgradeEntity):
     """
     def __init__(self, title, profile, source, dest, desc, handler,
                  checker=None, sortkey=0):
-        super(UpgradeStep, self).__init__(title, profile, source, dest,
-                                          desc, checker, sortkey)
+        super().__init__(title, profile, source, dest, desc, checker, sortkey)
         self.handler = handler
 
     def doStep(self, tool):
@@ -192,8 +190,7 @@ class UpgradeDepends(UpgradeEntity):
     def __init__(self, title, profile, source, dest, desc, import_profile=None,
                  import_steps=[], run_deps=False, purge=False, checker=None,
                  sortkey=0):
-        super(UpgradeDepends, self).__init__(title, profile, source, dest,
-                                             desc, checker, sortkey)
+        super().__init__(title, profile, source, dest, desc, checker, sortkey)
         self.import_profile = import_profile
         self.import_steps = import_steps
         self.run_deps = run_deps
@@ -271,7 +268,7 @@ def listUpgradeSteps(tool, profile_id, source, dest=None, quick=False):
     res = []
     profile_steps = _upgrade_registry.getUpgradeStepsForProfile(profile_id)
     # Optionally limit to a maximum destination.
-    if isinstance(dest, six.string_types):
+    if isinstance(dest, str):
         dest = tuple(dest.split('.'))
     for id, step in profile_steps.items():
         if isinstance(step, UpgradeEntity):

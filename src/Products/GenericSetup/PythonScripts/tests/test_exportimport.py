@@ -15,8 +15,6 @@
 
 import unittest
 
-import six
-
 from ...testing import BodyAdapterTestCase
 from ...testing import ExportImportZCMLLayer
 
@@ -52,12 +50,12 @@ class PythonScriptBodyAdapterTests(BodyAdapterTestCase, unittest.TestCase):
     def _verifyImport(self, obj):
         # Imported script body should be a native string
         expected = _PYTHONSCRIPT_BODY
-        if six.PY3:
-            expected = _PYTHONSCRIPT_BODY.decode('utf-8')
+        expected = _PYTHONSCRIPT_BODY.decode('utf-8')
         self.assertEqual(obj.read(), expected)
 
 
 def test_suite():
     return unittest.TestSuite((
-        unittest.makeSuite(PythonScriptBodyAdapterTests),
+        unittest.defaultTestLoader.loadTestsFromTestCase(
+            PythonScriptBodyAdapterTests),
         ))

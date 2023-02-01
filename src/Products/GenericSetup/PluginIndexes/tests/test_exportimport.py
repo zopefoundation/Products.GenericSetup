@@ -258,7 +258,7 @@ class UnchangedTests(unittest.TestCase):
         from ...testing import DummySetupEnviron
         from ..exportimport import PluggableIndexNodeAdapter
 
-        class Oddball(object):
+        class Oddball:
             def clear(*a):
                 raise AssertionError("Don't clear me!")
 
@@ -347,13 +347,14 @@ class UnchangedTests(unittest.TestCase):
 
 
 def test_suite():
+    loader = unittest.defaultTestLoader
     return unittest.TestSuite((
-        unittest.makeSuite(DateIndexNodeAdapterTests),
-        unittest.makeSuite(DateRangeIndexNodeAdapterTests),
-        unittest.makeSuite(FieldIndexNodeAdapterTests),
-        unittest.makeSuite(KeywordIndexNodeAdapterTests),
-        unittest.makeSuite(PathIndexNodeAdapterTests),
-        unittest.makeSuite(FilteredSetNodeAdapterTests),
-        unittest.makeSuite(TopicIndexNodeAdapterTests),
-        unittest.makeSuite(UnchangedTests),
+        loader.loadTestsFromTestCase(DateIndexNodeAdapterTests),
+        loader.loadTestsFromTestCase(DateRangeIndexNodeAdapterTests),
+        loader.loadTestsFromTestCase(FieldIndexNodeAdapterTests),
+        loader.loadTestsFromTestCase(KeywordIndexNodeAdapterTests),
+        loader.loadTestsFromTestCase(PathIndexNodeAdapterTests),
+        loader.loadTestsFromTestCase(FilteredSetNodeAdapterTests),
+        loader.loadTestsFromTestCase(TopicIndexNodeAdapterTests),
+        loader.loadTestsFromTestCase(UnchangedTests),
         ))

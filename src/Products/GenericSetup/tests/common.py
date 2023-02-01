@@ -17,8 +17,6 @@ import os
 import shutil
 from tarfile import TarFile
 
-import six
-
 from AccessControl.SecurityManagement import newSecurityManager
 from AccessControl.users import UnrestrictedUser
 from Testing.ZopeTestCase import ZopeTestCase
@@ -33,11 +31,10 @@ class DOMComparator:
 
     def _compareDOM(self, found_text, expected_text, debug=False):
 
-        if six.PY3:
-            if isinstance(found_text, bytes):
-                found_text = found_text.decode('utf8')
-            if isinstance(expected_text, bytes):
-                expected_text = expected_text.decode('utf8')
+        if isinstance(found_text, bytes):
+            found_text = found_text.decode('utf8')
+        if isinstance(expected_text, bytes):
+            expected_text = expected_text.decode('utf8')
 
         found_lines = [x.strip() for x in found_text.splitlines()]
         found_text = '\n'.join([i for i in found_lines if i])
@@ -92,7 +89,7 @@ def _clearTestDirectory(root_path):
 
 def _makeTestFile(filename, root_path, contents):
 
-    if isinstance(contents, six.text_type):
+    if isinstance(contents, str):
         contents = contents.encode('utf-8')
 
     path, filename = os.path.split(filename)
@@ -176,7 +173,7 @@ class DummyExportContext:
 
     def writeDataFile(self, filename, text, content_type, subdir=None):
         if subdir is not None:
-            filename = '%s/%s' % (subdir, filename)
+            filename = f'{subdir}/{filename}'
         self._wrote.append((filename, text, content_type))
 
 
@@ -210,7 +207,7 @@ class DummyImportContext:
 
         # readDataFile must return bytes, so we make sure it does.
         contents = self._files.get(filename)
-        if isinstance(contents, six.text_type):
+        if isinstance(contents, str):
             contents = contents.encode(self._encoding or 'UTF-8')
 
         return contents

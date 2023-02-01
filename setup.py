@@ -22,21 +22,17 @@ _BOUNDARY = '\n' + ('-' * 60) + '\n\n'
 
 setup(
     name='Products.GenericSetup',
-    version='2.3.1.dev0',
+    version='3.0.0.dev0',
     description='Read Zope configuration state from profile dirs / tarballs',
     long_description=README + _BOUNDARY + CHANGES,
     classifiers=[
         "Development Status :: 5 - Production/Stable",
         "Framework :: Plone :: 5.2",
         "Framework :: Plone :: 6.0",
-        "Framework :: Zope :: 4",
         "Framework :: Zope :: 5",
         "Intended Audience :: Developers",
         "License :: OSI Approved :: Zope Public License",
         "Programming Language :: Python",
-        "Programming Language :: Python :: 2.7",
-        "Programming Language :: Python :: 3.5",
-        "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
@@ -49,7 +45,7 @@ setup(
     ],
     keywords='web application server zope zope4 cmf',
     author="Zope Foundation and Contributors",
-    author_email="zope-cmf@zope.org",
+    author_email="zope-dev@zope.dev",
     url=URL,
     project_urls={
         'Documentation': 'https://productsgenericsetup.readthedocs.io',
@@ -62,10 +58,9 @@ setup(
     include_package_data=True,
     namespace_packages=['Products'],
     zip_safe=False,
-    python_requires='>=2.7,!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*',
+    python_requires='>=3.7',
     install_requires=[
         'setuptools',
-        'six',
         'Zope >= 4.0b4',
         'five.localsitemanager',
         'Products.PythonScripts',

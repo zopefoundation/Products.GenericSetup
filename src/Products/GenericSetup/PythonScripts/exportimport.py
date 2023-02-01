@@ -13,8 +13,6 @@
 """PythonScript export / import support.
 """
 
-import six
-
 from zope.component import adapts
 
 from ..interfaces import ISetupEnviron
@@ -37,7 +35,7 @@ class PythonScriptBodyAdapter(BodyAdapterBase):
     def _importBody(self, body):
         """Import the object from the file body.
         """
-        if six.PY3 and isinstance(body, six.binary_type):
+        if isinstance(body, bytes):
             body = body.decode('utf-8')
         body = body.replace('\r\n', '\n').replace('\r', '\n')
         self.context.write(body)

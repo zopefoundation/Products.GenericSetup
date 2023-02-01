@@ -20,7 +20,7 @@ class AddWithPresettingsViewBase:
     """
 
     def title(self):
-        return u'Add %s' % self.klass.meta_type
+        return 'Add %s' % self.klass.meta_type
 
     def __call__(self, add_input_name='', settings_id='', submit_add=''):
         if submit_add:

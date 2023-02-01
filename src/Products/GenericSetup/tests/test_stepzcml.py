@@ -15,18 +15,12 @@
 
 import unittest
 
+from Zope2.App import zcml
 from zope.testing.cleanup import cleanUp
 
 import Products.GenericSetup
 
 from ..registry import _import_step_registry
-
-
-# BBB for Zope 2.12
-try:
-    from Zope2.App import zcml
-except ImportError:
-    from Products.Five import zcml
 
 
 EMPTY_ZCML = '''\
@@ -60,20 +54,20 @@ class ImportStepTests(unittest.TestCase):
     def testOneStepImport(self):
         zcml.load_string(ONE_STEP_ZCML)
         self.assertEqual(_import_step_registry.listSteps(),
-                         [u'Products.GenericSetup.teststep'])
+                         ['Products.GenericSetup.teststep'])
         info = _import_step_registry.getStepMetadata(
-            u'Products.GenericSetup.teststep')
+            'Products.GenericSetup.teststep')
         self.assertEqual(info['description'],
-                         u'step description')
+                         'step description')
         self.assertEqual(info['title'],
-                         u'step title')
+                         'step title')
         self.assertEqual(info['handler'],
                          'Products.GenericSetup.initialize')
         self.assertEqual(info['id'],
-                         u'Products.GenericSetup.teststep')
+                         'Products.GenericSetup.teststep')
 
 
 def test_suite():
     return unittest.TestSuite((
-        unittest.makeSuite(ImportStepTests),
+        unittest.defaultTestLoader.loadTestsFromTestCase(ImportStepTests),
     ))

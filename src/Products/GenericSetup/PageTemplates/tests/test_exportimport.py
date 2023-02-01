@@ -47,5 +47,6 @@ class ZopePageTemplateBodyAdapterTests(BodyAdapterTestCase, unittest.TestCase):
 
 def test_suite():
     return unittest.TestSuite((
-        unittest.makeSuite(ZopePageTemplateBodyAdapterTests),
+        unittest.defaultTestLoader.loadTestsFromTestCase(
+            ZopePageTemplateBodyAdapterTests),
         ))

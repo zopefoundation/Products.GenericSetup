@@ -118,7 +118,7 @@ class UnchangedTests(unittest.TestCase):
         environ = DummySetupEnviron()
         _before = object(), object(), object()
 
-        class DummyLexicon(object):
+        class DummyLexicon:
             _wids, _words, length = _before
 
         lex = DummyLexicon()
@@ -167,8 +167,9 @@ class UnchangedTests(unittest.TestCase):
 
 
 def test_suite():
+    loader = unittest.defaultTestLoader
     return unittest.TestSuite((
-        unittest.makeSuite(ZCLexiconNodeAdapterTests),
-        unittest.makeSuite(ZCTextIndexNodeAdapterTests),
-        unittest.makeSuite(UnchangedTests),
+        loader.loadTestsFromTestCase(ZCLexiconNodeAdapterTests),
+        loader.loadTestsFromTestCase(ZCTextIndexNodeAdapterTests),
+        loader.loadTestsFromTestCase(UnchangedTests),
     ))

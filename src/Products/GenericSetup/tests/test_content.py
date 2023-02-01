@@ -14,8 +14,7 @@
 """
 
 import unittest
-
-import six
+from io import StringIO
 
 from .conformance import ConformsToIFilesystemExporter
 from .conformance import ConformsToIFilesystemImporter
@@ -495,8 +494,7 @@ class FolderishExporterImporterTests(unittest.TestCase):
             context._files['structure/%s/.properties' % id] = (
                 _PROPERTIES_TEMPLATE % id)
 
-        _ROOT_OBJECTS = '\n'.join(['%s,%s' % (id, dotted)
-                                   for id in FOLDER_IDS])
+        _ROOT_OBJECTS = '\n'.join([f'{id},{dotted}' for id in FOLDER_IDS])
 
         context._files['structure/.objects'] = _ROOT_OBJECTS
         context._files['structure/.properties'] = (
@@ -522,7 +520,7 @@ class FolderishExporterImporterTests(unittest.TestCase):
         context = DummyImportContext(site)
         # We want to add 'baz' to 'foo', without losing 'bar'
         context._files['structure/.objects'] = '\n'.join(
-            ['%s,%s' % (x, dotted) for x in ITEM_IDS])
+            [f'{x},{dotted}' for x in ITEM_IDS])
         for index in range(len(ITEM_IDS)):
             id = ITEM_IDS[index]
             context._files[
@@ -549,7 +547,7 @@ class FolderishExporterImporterTests(unittest.TestCase):
         context = DummyImportContext(site)
         # We want to add 'baz' to 'foo', without losing 'bar'
         context._files['structure/.objects'] = '\n'.join(
-            ['%s,%s' % (x, dotted) for x in ('no_adapter',)])
+            [f'{x},{dotted}' for x in ('no_adapter',)])
         importer = self._getImporter()
         importer(context)
 
@@ -570,7 +568,7 @@ class FolderishExporterImporterTests(unittest.TestCase):
 
         context = DummyImportContext(site)
         # We want to add 'baz' to 'foo', without losing 'bar'
-        correct = '\n'.join(['%s,%s' % (x, dotted) for x in ITEM_IDS])
+        correct = '\n'.join([f'{x},{dotted}' for x in ITEM_IDS])
         broken = correct + '\n\n'
         context._files['structure/.objects'] = broken
         for index in range(len(ITEM_IDS)):
@@ -933,32 +931,28 @@ def _makeFolder(id):
 def _parseCSV(text):
     from csv import reader
 
-    from six.moves import cStringIO
-    return [x for x in reader(cStringIO(text))]
+    return [x for x in reader(StringIO(text))]
 
 
 def _parseINI(text):
-    from six.moves import cStringIO
-    from six.moves.configparser import ConfigParser
+    from configparser import ConfigParser
     parser = ConfigParser()
 
     # read_file/readfp expect text, not bytes
-    if isinstance(text, six.binary_type):
+    if isinstance(text, bytes):
         text = text.decode('UTF-8')
 
-    try:
-        parser.read_file(cStringIO(text))
-    except AttributeError:  # Python 2
-        parser.readfp(cStringIO(text))
+    parser.read_file(StringIO(text))
     return parser
 
 
 def test_suite():
+    loader = unittest.defaultTestLoader
     suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(SimpleINIAwareTests))
-    suite.addTest(unittest.makeSuite(FolderishExporterImporterTests))
-    suite.addTest(unittest.makeSuite(Test_globpattern))
-    suite.addTest(unittest.makeSuite(CSVAwareFileAdapterTests))
-    suite.addTest(unittest.makeSuite(INIAwareFileAdapterTests))
-    suite.addTest(unittest.makeSuite(DAVAwareFileAdapterTests))
+    suite.addTest(loader.loadTestsFromTestCase(SimpleINIAwareTests))
+    suite.addTest(loader.loadTestsFromTestCase(FolderishExporterImporterTests))
+    suite.addTest(loader.loadTestsFromTestCase(Test_globpattern))
+    suite.addTest(loader.loadTestsFromTestCase(CSVAwareFileAdapterTests))
+    suite.addTest(loader.loadTestsFromTestCase(INIAwareFileAdapterTests))
+    suite.addTest(loader.loadTestsFromTestCase(DAVAwareFileAdapterTests))
     return suite

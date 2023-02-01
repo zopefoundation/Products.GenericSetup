@@ -13,13 +13,11 @@
 """Filesystem exporter / importer adapters.
 """
 
+from configparser import ConfigParser
 from csv import reader
 from csv import writer
-
-import six
-from six import BytesIO
-from six.moves import cStringIO
-from six.moves.configparser import ConfigParser
+from io import BytesIO
+from io import StringIO
 
 from zope.component import queryAdapter
 from zope.interface import implementer
@@ -51,7 +49,7 @@ def importSiteStructure(context):
 #   Filesystem export/import adapters
 #
 @implementer(IFilesystemExporter, IFilesystemImporter)
-class FolderishExporterImporter(object):
+class FolderishExporterImporter:
     """ Tree-walking exporter / importer for "folderish" types.
 
     Folderish instances are mapped to directories within the 'structure'
@@ -87,11 +85,11 @@ class FolderishExporterImporter(object):
         context = self.context
 
         if not root:
-            subdir = '%s/%s' % (subdir, context.getId())
+            subdir = f'{subdir}/{context.getId()}'
 
         exportable = self.listExportableItems()
 
-        stream = cStringIO()
+        stream = StringIO()
         csv_writer = writer(stream)
 
         for object_id, object, adapter in exportable:
@@ -127,7 +125,7 @@ class FolderishExporterImporter(object):
         """
         context = self.context
         if not root:
-            subdir = '%s/%s' % (subdir, context.getId())
+            subdir = f'{subdir}/{context.getId()}'
 
         prop_adapter = IINIAware(context, None)
 
@@ -146,7 +144,7 @@ class FolderishExporterImporter(object):
             preserve = []
         else:
             # Make sure ``preserve`` is a native string
-            if six.PY3 and not isinstance(preserve, str):
+            if not isinstance(preserve, str):
                 preserve = preserve.decode('UTF-8')
             preserve = _globtest(preserve, prior)
 
@@ -161,9 +159,9 @@ class FolderishExporterImporter(object):
             return
 
         dialect = 'excel'
-        if six.PY3 and not isinstance(objects, str):
+        if not isinstance(objects, str):
             objects = objects.decode('UTF-8')
-        stream = cStringIO(objects)
+        stream = StringIO(objects)
 
         rowiter = reader(stream, dialect)
         rows = tuple([i for i in rowiter if i])
@@ -252,7 +250,7 @@ def _globtest(globpattern, namelist):
 
 
 @implementer(IFilesystemExporter, IFilesystemImporter)
-class CSVAwareFileAdapter(object):
+class CSVAwareFileAdapter:
     """ Adapter for content whose "natural" representation is CSV.
     """
 
@@ -279,14 +277,14 @@ class CSVAwareFileAdapter(object):
         data = import_context.readDataFile('%s.csv' % cid, subdir)
         if data is None:
             logger = import_context.getLogger('CSAFA')
-            logger.info('no .csv file for %s/%s' % (subdir, cid))
+            logger.info(f'no .csv file for {subdir}/{cid}')
         else:
             stream = BytesIO(data)
             self.context.put_csv(stream)
 
 
 @implementer(IFilesystemExporter, IFilesystemImporter)
-class INIAwareFileAdapter(object):
+class INIAwareFileAdapter:
     """ Exporter/importer for content whose "natural" representation is an
         '.ini' file.
     """
@@ -314,13 +312,13 @@ class INIAwareFileAdapter(object):
         data = import_context.readDataFile('%s.ini' % cid, subdir)
         if data is None:
             logger = import_context.getLogger('SGAIFA')
-            logger.info('no .ini file for %s/%s' % (subdir, cid))
+            logger.info(f'no .ini file for {subdir}/{cid}')
         else:
             self.context.put_ini(data)
 
 
 @implementer(IINIAware)
-class SimpleINIAware(object):
+class SimpleINIAware:
     """ Exporter/importer for content which doesn't know from INI.
     """
 
@@ -335,7 +333,7 @@ class SimpleINIAware(object):
         """
         context = self.context
         parser = ConfigParser()
-        stream = cStringIO()
+        stream = StringIO()
         for k, v in context.propertyItems():
             parser.set('DEFAULT', k, str(v))
         parser.write(stream)
@@ -348,13 +346,13 @@ class SimpleINIAware(object):
         parser = ConfigParser()
 
         # read_file/readfp expect text, not bytes
-        if isinstance(text, six.binary_type):
+        if isinstance(text, bytes):
             text = text.decode('UTF-8')
 
         try:
-            parser.read_file(cStringIO(text))
+            parser.read_file(StringIO(text))
         except AttributeError:  # Python 2
-            parser.readfp(cStringIO(text))
+            parser.readfp(StringIO(text))
         for option, value in parser.defaults().items():
             prop_type = context.getPropertyType(option)
             if prop_type is None:
@@ -390,7 +388,7 @@ class FauxDAVResponse:
 
 
 @implementer(IFilesystemExporter, IFilesystemImporter)
-class DAVAwareFileAdapter(object):
+class DAVAwareFileAdapter:
     """ Exporter/importer for content who handle their own FTP / DAV PUTs.
     """
 
@@ -422,7 +420,7 @@ class DAVAwareFileAdapter(object):
         data = import_context.readDataFile(self._getFileName(), subdir)
         if data is None:
             logger = import_context.getLogger('SGAIFA')
-            logger.info('no .ini file for %s/%s' % (subdir, cid))
+            logger.info(f'no .ini file for {subdir}/{cid}')
         else:
             request = FauxDAVRequest(BODY=data, BODYFILE=BytesIO(data))
             response = FauxDAVResponse()
