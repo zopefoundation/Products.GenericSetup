@@ -25,9 +25,19 @@ from Products.GenericSetup.utils import _getHash
 def normalize_version(version):
     if isinstance(version, tuple):
         version = '.'.join(version)
-    elif version is None:
-        version = ''
-    return parse_version(version)
+    elif not version or version == 'unknown':
+        version = '0'
+    try:
+        return parse_version(version)
+    except Exception:
+        # Likely setuptools 66+ raises
+        # pkg_resources.extern.packaging.version.InvalidVersion
+        # but it does not feel safe to import it from that path.
+        # Older setuptools versions created a LegacyVersion when parsing to a
+        # proper number fails.  Let's use local version segments to have a
+        # strict version and still have a sort order.  See
+        # https://github.com/zopefoundation/Products.GenericSetup/issues/126
+        return parse_version(f'0+{version}')
 
 
 def _version_matches_all(version):
