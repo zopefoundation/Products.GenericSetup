@@ -34,6 +34,26 @@ normalize_version
     >>> normalize_version(('1', '1')) == normalize_version('1.1')
     True
 
+With setuptools 66+, parse_version fails for versions that would previously have been seen as LegacyVersion.
+Check that we can handle this.  We treat empty or unknown versions as zero.
+
+    >>> normalize_version('unknown') == normalize_version('0')
+    True
+    >>> normalize_version('') == normalize_version('0')
+    True
+    >>> normalize_version(None) == normalize_version('0')
+    True
+    >>> normalize_version('unknown') < normalize_version('1')
+    True
+
+We treat bad versions as '0+badversion'.
+That is harder to check here, as we want the tests to also pass for older setuptools versions.
+
+    >>> normalize_version('bad') < normalize_version('1')
+    True
+    >>> normalize_version('0+bad') < normalize_version('1')
+    True
+
 
 _version_matches_all
 -------------------

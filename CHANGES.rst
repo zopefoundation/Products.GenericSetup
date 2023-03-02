@@ -4,6 +4,9 @@ Changelog
 3.0.1 (unreleased)
 ------------------
 
+- Fix 126: Handle legacy versions in upgrades also with setuptools 66 or higher.
+  (`#126 <https://github.com/zopefoundation/Products.GenericSetup/issues/126>`_)
+
 
 3.0.0 (2023-02-01)
 ------------------
