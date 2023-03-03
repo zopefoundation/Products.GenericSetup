@@ -1,7 +1,7 @@
 Changelog
 =========
 
-3.0.1 (unreleased)
+3.0.1 (2023-03-03)
 ------------------
 
 - Fix 126: Handle legacy versions in upgrades also with setuptools 66 or higher.
