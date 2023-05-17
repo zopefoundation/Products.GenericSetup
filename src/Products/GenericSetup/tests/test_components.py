@@ -468,7 +468,6 @@ class ComponentRegistryXMLAdapterTests(BodyAdapterTestCase, unittest.TestCase):
             sm.queryUtility(ITestInterfaceType, name="test_interface"),
             ITestInterface)
 
-
     def setUp(self):
         # Create and enable a local component registry
         site = Folder()
