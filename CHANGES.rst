@@ -4,7 +4,10 @@ Changelog
 3.0.2 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Use ``component`` in the serialization of utility registrations
+  if the registered component is a "global object".
+  Fixes
+  `#6 <https://github.com/zopefoundation/Products.GenericSetup/issues/6>_`.
 
 
 3.0.1 (2023-03-03)

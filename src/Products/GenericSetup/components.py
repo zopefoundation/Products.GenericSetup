@@ -29,6 +29,7 @@ from .interfaces import IComponentsHandlerBlacklist
 from .interfaces import ISetupEnviron
 from .utils import XMLAdapterBase
 from .utils import _getDottedName
+from .utils import _isGlobalObject
 from .utils import _resolveDottedName
 
 
@@ -495,6 +496,8 @@ class ComponentRegistryXMLAdapter(XMLAdapterBase):
                         # This is a five.localsitemanager wrapped utility
                         factory = _getDottedName(type(aq_base(comp)))
                         child.setAttribute('factory', factory)
+                elif _isGlobalObject(comp):
+                    child.setAttribute('component', _getDottedName(comp))
                 else:
                     factory = _getDottedName(type(comp))
                     child.setAttribute('factory', factory)

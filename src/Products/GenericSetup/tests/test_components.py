@@ -239,6 +239,20 @@ _REMOVE_IMPORT = b"""\
 """
 
 
+_INTERFACE_COMPONENT = b"""\
+<?xml version="1.0" encoding="utf-8"?>
+<componentregistry>
+ <adapters/>
+ <subscribers/>
+ <utilities>
+  <utility name="test_interface"
+     component="Products.GenericSetup.tests.test_components.ITestInterface"
+     interface="Products.GenericSetup.tests.test_components.ITestInterfaceType"/>
+ </utilities>
+</componentregistry>
+"""
+
+
 class ComponentRegistryXMLAdapterTests(BodyAdapterTestCase, unittest.TestCase):
 
     layer = ExportImportZCMLLayer
@@ -434,6 +448,26 @@ class ComponentRegistryXMLAdapterTests(BodyAdapterTestCase, unittest.TestCase):
         util = queryUtility(IDummyInterface2, name='dummy tool name2')
         self.assertFalse(util is None)
 
+    def test_export_interface_component(self):
+        sm = self._obj
+        sm.registerUtility(ITestInterface,
+                           ITestInterfaceType,
+                           "test_interface")
+        context = DummySetupEnviron()
+        adapted = getMultiAdapter((sm, context), IBody)
+        body = adapted.body
+        self.assertEqual(body, _INTERFACE_COMPONENT)
+
+    def test_import_interface_component(self):
+        from ..components import importComponentRegistry
+        sm = self._obj
+        context = DummyImportContext(sm, False)
+        context._files['componentregistry.xml'] = _INTERFACE_COMPONENT
+        importComponentRegistry(context)
+        self.assertIs(
+            sm.queryUtility(ITestInterfaceType, name="test_interface"),
+            ITestInterface)
+
     def setUp(self):
         # Create and enable a local component registry
         site = Folder()
@@ -457,6 +491,14 @@ class ComponentRegistryXMLAdapterTests(BodyAdapterTestCase, unittest.TestCase):
         gsm = getGlobalSiteManager()
         gsm.unregisterUtility(provided=IComponentsHandlerBlacklist,
                               name='dummy')
+
+
+class ITestInterface(Interface):
+    """interface registered as utility."""
+
+
+class ITestInterfaceType(Interface):
+    """interface provided by ``ITestInterface``."""
 
 
 if PersistentComponents is not None:

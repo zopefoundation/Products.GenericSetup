@@ -115,6 +115,15 @@ def _resolveDottedName(dotted):
         return
 
 
+def _isGlobalObject(obj):
+    """Is *obj* identified by a dotted name?"""
+    try:
+        dn = _getDottedName(obj)
+        return obj is _resolveDottedName(dn)
+    except Exception:
+        return False
+
+
 def _extractDocstring(func, default_title, default_description):
     try:
         doc = getdoc(func)
