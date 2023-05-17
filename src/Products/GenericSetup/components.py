@@ -495,6 +495,8 @@ class ComponentRegistryXMLAdapter(XMLAdapterBase):
                         # This is a five.localsitemanager wrapped utility
                         factory = _getDottedName(type(aq_base(comp)))
                         child.setAttribute('factory', factory)
+                elif comp is _resolveDottedName(_getDottedName(comp)):
+                    child.setAttribute('component', _getDottedName(comp))
                 else:
                     factory = _getDottedName(type(comp))
                     child.setAttribute('factory', factory)
