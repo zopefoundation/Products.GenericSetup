@@ -152,7 +152,7 @@ def importToolset(context):
                 continue
             unwrapped = aq_base(existing)
             # don't use isinstance here as a subclass may need removing
-            if type(unwrapped) != tool_class:
+            if not isinstance(unwrapped, tool_class):
                 site._delObject(tool_id)
                 site._setObject(tool_id, tool_class())
 
@@ -1029,7 +1029,7 @@ class SetupTool(Folder):
         upgrades = listUpgradeSteps(self, profile_id, source, dest=dest)
         res = []
         for info in upgrades:
-            if type(info) == list:
+            if isinstance(info, list):
                 subset = []
                 for subinfo in info:
                     if simple:

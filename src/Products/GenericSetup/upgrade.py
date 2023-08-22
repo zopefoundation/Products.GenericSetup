@@ -125,12 +125,12 @@ class UpgradeRegistry:
             step = profile_steps.get(step_id, None)
             if step is None:
                 for key in profile_steps.keys():
-                    if type(profile_steps[key]) == list:
+                    if isinstance(profile_steps[key], list):
                         subs = dict(profile_steps[key])
                         step = subs.get(step_id, None)
                         if step is not None:
                             break
-            elif type(step) == list:
+            elif isinstance(step, list):
                 subs = dict(step)
                 step = subs.get(step_id, None)
             return step
