@@ -22,7 +22,7 @@ _BOUNDARY = '\n' + ('-' * 60) + '\n\n'
 
 setup(
     name='Products.GenericSetup',
-    version='3.0.3.dev0',
+    version='4.0.dev0',
     description='Read Zope configuration state from profile dirs / tarballs',
     long_description=README + _BOUNDARY + CHANGES,
     classifiers=[
