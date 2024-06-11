@@ -23,26 +23,98 @@ from Testing.ZopeTestCase import installProduct
 installProduct('GenericSetup')
 
 _TESTED_PROPERTIES = (
-    {'id': 'foo_boolean', 'type': 'boolean', 'mode': 'wd'},
-    {'id': 'foo_date', 'type': 'date', 'mode': 'wd'},
-    {'id': 'foo_float', 'type': 'float', 'mode': 'wd'},
-    {'id': 'foo_int', 'type': 'int', 'mode': 'wd'},
-    {'id': 'foo_lines', 'type': 'lines', 'mode': 'wd'},
-    {'id': 'foo_long', 'type': 'long', 'mode': 'wd'},
-    {'id': 'foo_string', 'type': 'string', 'mode': 'wd'},
-    {'id': 'foo_text', 'type': 'text', 'mode': 'wd'},
-    {'id': 'foo_tokens', 'type': 'tokens', 'mode': 'wd'},
-    {'id': 'foo_selection', 'type': 'selection',
-           'select_variable': 'foobarbaz', 'mode': 'wd'},
-    {'id': 'foo_mselection', 'type': 'multiple selection',
-           'select_variable': 'foobarbaz', 'mode': 'wd'},
-    {'id': 'foo_boolean0', 'type': 'boolean', 'mode': 'wd'},
-    {'id': 'foo_date_naive', 'type': 'date', 'mode': 'wd'},
-    {'id': 'foo_ro', 'type': 'string', 'mode': ''},
-    {'id': 'foo_boolean_nodel', 'type': 'boolean', 'mode': 'w'},
-    {'id': 'foo_date_nodel', 'type': 'date', 'mode': 'w'},
-    {'id': 'foo_float_nodel', 'type': 'float', 'mode': 'w'},
-    {'id': 'foo_int_nodel', 'type': 'int', 'mode': 'w'},
+    {
+        'id': 'foo_boolean',
+        'type': 'boolean',
+        'mode': 'wd'
+    },
+    {
+        'id': 'foo_date',
+        'type': 'date',
+        'mode': 'wd'
+    },
+    {
+        'id': 'foo_float',
+        'type': 'float',
+        'mode': 'wd'
+    },
+    {
+        'id': 'foo_int',
+        'type': 'int',
+        'mode': 'wd'
+    },
+    {
+        'id': 'foo_lines',
+        'type': 'lines',
+        'mode': 'wd'
+    },
+    {
+        'id': 'foo_long',
+        'type': 'long',
+        'mode': 'wd'
+    },
+    {
+        'id': 'foo_string',
+        'type': 'string',
+        'mode': 'wd'
+    },
+    {
+        'id': 'foo_text',
+        'type': 'text',
+        'mode': 'wd'
+    },
+    {
+        'id': 'foo_tokens',
+        'type': 'tokens',
+        'mode': 'wd'
+    },
+    {
+        'id': 'foo_selection',
+        'type': 'selection',
+        'select_variable': 'foobarbaz',
+        'mode': 'wd'
+    },
+    {
+        'id': 'foo_mselection',
+        'type': 'multiple selection',
+        'select_variable': 'foobarbaz',
+        'mode': 'wd'
+    },
+    {
+        'id': 'foo_boolean0',
+        'type': 'boolean',
+        'mode': 'wd'
+    },
+    {
+        'id': 'foo_date_naive',
+        'type': 'date',
+        'mode': 'wd'
+    },
+    {
+        'id': 'foo_ro',
+        'type': 'string',
+        'mode': ''
+    },
+    {
+        'id': 'foo_boolean_nodel',
+        'type': 'boolean',
+        'mode': 'w'
+    },
+    {
+        'id': 'foo_date_nodel',
+        'type': 'date',
+        'mode': 'w'
+    },
+    {
+        'id': 'foo_float_nodel',
+        'type': 'float',
+        'mode': 'w'
+    },
+    {
+        'id': 'foo_int_nodel',
+        'type': 'int',
+        'mode': 'w'
+    },
 )
 
 _EMPTY_PROPERTY_EXPORT = b"""\
@@ -130,7 +202,7 @@ _NORMAL_PROPERTY_EXPORT = """\
 </dummy>
 """.encode()
 
-_NORMAL_PROPERTY_EXPORT_ISO_8859_1 = """\
+_NORMAL_PROPERTY_EXPORT_ISO_8859_1 = b"""\
 <?xml version="1.0" encoding="iso-8859-1"?>
 <dummy>
  <property name="foo_boolean" type="boolean">True</property>
@@ -164,7 +236,7 @@ _NORMAL_PROPERTY_EXPORT_ISO_8859_1 = """\
  <property name="foo_float_nodel">3.1415</property>
  <property name="foo_int_nodel">1789</property>
 </dummy>
-""".encode('iso-8859-1')
+"""
 
 _NORMAL_PROPERTY_EXPORT_OLD = b"""\
 <?xml version="1.0"?>
@@ -398,7 +470,7 @@ class UtilsTests(unittest.TestCase):
         from ..utils import _version_for_print as vfp
 
         self.assertEqual(vfp('1000'), '1000')
-        self.assertEqual(vfp(('1000',)), '1000')
+        self.assertEqual(vfp(('1000', )), '1000')
         self.assertEqual(vfp(('1', '2', '3')), '1.2.3')
         self.assertEqual(vfp(42), '42')
         self.assertEqual(vfp('unknown'), 'unknown')
@@ -432,6 +504,7 @@ class PropertyManagerHelpersTests(unittest.TestCase):
 
         class DummyContext(PropertyManager):
             _properties = _TESTED_PROPERTIES
+
         return DummyContext
 
     def _makeContext(self):
@@ -465,8 +538,7 @@ class PropertyManagerHelpersTests(unittest.TestCase):
         obj._updateProperty('foo_date', '2000/01/01 00:00:00 UTC')
         obj._updateProperty('foo_float', '1.1')
         obj._updateProperty('foo_int', '1')
-        obj._updateProperty('foo_lines',
-                            'Foo\nLines\n\xfcbrigens')
+        obj._updateProperty('foo_lines', 'Foo\nLines\n\xfcbrigens')
         obj._updateProperty('foo_long', '1')
         obj._updateProperty('foo_string', 'Foo String')
         obj._updateProperty('foo_text', 'Foo\nText')
@@ -661,10 +733,8 @@ class PropertyManagerHelpersTests(unittest.TestCase):
         if is_bytes:
             self.assertEqual(obj.getProperty('lines1'), (b'Foo', b'Bar'))
             self.assertEqual(obj.getProperty('lines2'), (b'Foo', b'Bar'))
-            self.assertEqual(
-                obj.getProperty('lines3'),
-                (b'Gee', b'Foo', b'Bar')
-            )
+            self.assertEqual(obj.getProperty('lines3'),
+                             (b'Gee', b'Foo', b'Bar'))
         else:
             self.assertEqual(obj.getProperty('lines1'), ('Foo', 'Bar'))
             self.assertEqual(obj.getProperty('lines2'), ('Foo', 'Bar'))
@@ -685,10 +755,8 @@ class PropertyManagerHelpersTests(unittest.TestCase):
         if is_bytes:
             self.assertEqual(obj.getProperty('lines1'), (b'Foo', b'Bar'))
             self.assertEqual(obj.getProperty('lines2'), (b'Foo', b'Bar'))
-            self.assertEqual(
-                obj.getProperty('lines3'),
-                (b'Gee', b'Foo', b'Bar')
-            )
+            self.assertEqual(obj.getProperty('lines3'),
+                             (b'Gee', b'Foo', b'Bar'))
         else:
             self.assertEqual(obj.getProperty('lines1'), ('Foo', 'Bar'))
             self.assertEqual(obj.getProperty('lines2'), ('Foo', 'Bar'))
@@ -707,10 +775,10 @@ class PropertyManagerHelpersTests(unittest.TestCase):
 
         if is_bytes:
             self.assertEqual(obj.getProperty('lines1'), (b'Gee', b'Bar'))
-            self.assertEqual(obj.getProperty('lines2'), (b'Gee',))
+            self.assertEqual(obj.getProperty('lines2'), (b'Gee', ))
         else:
             self.assertEqual(obj.getProperty('lines1'), ('Gee', 'Bar'))
-            self.assertEqual(obj.getProperty('lines2'), ('Gee',))
+            self.assertEqual(obj.getProperty('lines2'), ('Gee', ))
 
     def test_initProperties_remove_properties(self):
         helpers = self._makeOne()
@@ -757,8 +825,10 @@ class PropertyManagerHelpersNonPMContextTests(PropertyManagerHelpersTests):
         return Foo(context, environ)
 
     def _getContextClass(self):
+
         class NonPropertyManager:
             pass
+
         return NonPropertyManager
 
     def _getReal(self, obj):
@@ -824,7 +894,7 @@ class MarkerInterfaceHelpersTests(unittest.TestCase):
         from zope.component.interface import provideInterface
 
         from ..testing import IDummyMarker
-        provideAdapter(MarkerInterfacesAdapter, (IItem,))
+        provideAdapter(MarkerInterfacesAdapter, (IItem, ))
         provideInterface('', IDummyMarker)
 
     def tearDown(self):
@@ -941,13 +1011,12 @@ class PrettyDocumentTests(unittest.TestCase):
         xml_output = doc.toprettyxml(' ')
         self.assertEqual(xml_output, html_escaped)
 
-        # Reparse from cgi.escape representation (Python 2 only)
-        # should always work
+        # Reparse from cgi.escape representation should always work
         e = _getDocumentElement(cgi_escaped)
         self.assertEqual(e.getAttribute('foo'), original)
 
-        # Reparse from html.escape representation (Python 3 only)
-        # should always work, even without html.escape
+        # Reparse from html.escape representation should always work, even
+        # without html.escape
         e = _getDocumentElement(html_escaped)
         self.assertEqual(e.getAttribute('foo'), original)
 

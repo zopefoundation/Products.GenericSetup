@@ -60,11 +60,8 @@ I18NURI = 'http://xml.zope.org/namespaces/i18n'
 # This is because since Zope 5.3, the lines converter gives
 # text instead of bytes.
 # See https://github.com/zopefoundation/Products.GenericSetup/issues/109
-if (
-    "lines" in type_converters
-    and "string" in type_converters
-    and isinstance(type_converters["lines"]("blah")[0], str)
-):
+if ("lines" in type_converters and "string" in type_converters
+        and isinstance(type_converters["lines"]("blah")[0], str)):
     LINES_HAS_TEXT = True
 else:
     # Older Zope
@@ -84,21 +81,21 @@ def _getDottedName(named):
     # remove leading underscore names if possible
 
     # Step 1: check if there is a short version
-    short_dotted = '.'.join([n for n in dotted.split('.')
-                             if not n.startswith('_')])
+    short_dotted = '.'.join(
+        [n for n in dotted.split('.') if not n.startswith('_')])
     if short_dotted == dotted:
         return dotted
 
     # Step 2: check if short version can be resolved
     try:
         short_resolved = _resolveDottedName(short_dotted)
-    except (ValueError, ImportError):
+    except (ValueError, ModuleNotFoundError):
         return dotted
 
     # Step 3: check if long version resolves to the same object
     try:
         resolved = _resolveDottedName(dotted)
-    except (ValueError, ImportError):
+    except (ValueError, ModuleNotFoundError):
         raise ValueError('Cannot compute dotted name: %s' % named)
     if short_resolved is not resolved:
         return dotted
@@ -164,6 +161,7 @@ def _version_for_print(version):
 # WARNING: PLEASE DON'T USE THE CONFIGURATOR PATTERN. THE RELATED BASE CLASSES
 # WILL BECOME DEPRECATED AS SOON AS GENERICSETUP ITSELF NO LONGER USES THEM.
 
+
 class ImportConfiguratorBase(Implicit):
     # old code, will become deprecated
     """ Synthesize data from XML description.
@@ -218,8 +216,8 @@ class ImportConfiguratorBase(Implicit):
 
             if not name == '#text':
                 key = node_map[name].get(KEY, str(name))
-                info[key] = info.setdefault(key, ()) + (
-                                                    self._extractNode(child),)
+                info[key] = info.setdefault(key,
+                                            ()) + (self._extractNode(child), )
 
             elif '#text' in node_map:
                 key = node_map['#text'].get(KEY, 'value')
@@ -247,22 +245,52 @@ class ImportConfiguratorBase(Implicit):
     def _getSharedImportMapping(self):
 
         return {
-          'object': {'i18n:domain': {},
-                     'name': {KEY: 'id'},
-                     'meta_type': {},
-                     'insert-before': {},
-                     'insert-after': {},
-                     'property': {KEY: 'properties', DEFAULT: ()},
-                     'object': {KEY: 'objects', DEFAULT: ()},
-                     'xmlns:i18n': {}},
-          'property': {'name': {KEY: 'id'},
-                       '#text': {KEY: 'value', DEFAULT: ''},
-                       'element': {KEY: 'elements', DEFAULT: ()},
-                       'type': {},
-                       'select_variable': {},
-                       'i18n:translate': {}},
-          'element': {'value': {KEY: None}},
-          'description': {'#text': {KEY: None, DEFAULT: ''}}}
+            'object': {
+                'i18n:domain': {},
+                'name': {
+                    KEY: 'id'
+                },
+                'meta_type': {},
+                'insert-before': {},
+                'insert-after': {},
+                'property': {
+                    KEY: 'properties',
+                    DEFAULT: ()
+                },
+                'object': {
+                    KEY: 'objects',
+                    DEFAULT: ()
+                },
+                'xmlns:i18n': {}
+            },
+            'property': {
+                'name': {
+                    KEY: 'id'
+                },
+                '#text': {
+                    KEY: 'value',
+                    DEFAULT: ''
+                },
+                'element': {
+                    KEY: 'elements',
+                    DEFAULT: ()
+                },
+                'type': {},
+                'select_variable': {},
+                'i18n:translate': {}
+            },
+            'element': {
+                'value': {
+                    KEY: None
+                }
+            },
+            'description': {
+                '#text': {
+                    KEY: None,
+                    DEFAULT: ''
+                }
+            }
+        }
 
     def _convertToBoolean(self, val):
 
@@ -337,7 +365,6 @@ class _LineWrapper:
 
 
 class _Element(Element):
-
     """minidom element with 'pretty' XML output.
     """
 
@@ -392,7 +419,6 @@ class _Element(Element):
 
 
 class PrettyDocument(Document):
-
     """minidom document with 'pretty' XML output.
     """
 
@@ -407,8 +433,13 @@ class PrettyDocument(Document):
         e.ownerDocument = self
         return e
 
-    def writexml(self, writer, indent="", addindent="", newl="",
-                 encoding='utf-8', standalone=None):
+    def writexml(self,
+                 writer,
+                 indent="",
+                 addindent="",
+                 newl="",
+                 encoding='utf-8',
+                 standalone=None):
         # `standalone` was added in Python 3.9 but is ignored here
         if encoding is None:
             writer.write('<?xml version="1.0"?>\n')
@@ -423,7 +454,6 @@ class PrettyDocument(Document):
 
 @implementer(INode)
 class NodeAdapterBase:
-
     """Node im- and exporter base.
     """
 
@@ -461,7 +491,6 @@ class NodeAdapterBase:
 
 @implementer_only(IBody)
 class BodyAdapterBase(NodeAdapterBase):
-
     """Body im- and exporter base.
     """
 
@@ -498,7 +527,6 @@ class BodyAdapterBase(NodeAdapterBase):
 
 @implementer_only(IBody)
 class XMLAdapterBase(BodyAdapterBase):
-
     """XML im- and exporter base.
     """
 
@@ -516,8 +544,8 @@ class XMLAdapterBase(BodyAdapterBase):
         try:
             dom = parseString(body)
         except ExpatError as e:
-            filename = (self.filename or
-                        '/'.join(self.context.getPhysicalPath()))
+            filename = (self.filename
+                        or '/'.join(self.context.getPhysicalPath()))
             raise ExpatError(f'{filename}: {e}')
 
         # Replace the encoding with the one from the XML
@@ -536,7 +564,6 @@ class XMLAdapterBase(BodyAdapterBase):
 
 
 class ObjectManagerHelpers:
-
     """ObjectManager in- and export helpers.
     """
 
@@ -617,7 +644,6 @@ class ObjectManagerHelpers:
 
 
 class PropertyManagerHelpers:
-
     """PropertyManager im- and export helpers.
 
       o Derived classes can supply a '_PROPERTIES' scehma, which is then used
@@ -640,6 +666,7 @@ class PropertyManagerHelpers:
         from OFS.PropertySheets import PropertySheet
 
         class Adapted(PropertySheet):
+
             def __init__(self, real, properties):
                 self._real = real
                 self._properties = properties
@@ -691,7 +718,7 @@ class PropertyManagerHelpers:
                         prop = str(prop)
                 elif isinstance(prop, bytes):
                     prop = prop.decode(self._encoding)
-                elif isinstance(prop, ((int,), float)):
+                elif isinstance(prop, ((int, ), float)):
                     prop = str(prop)
                 elif not isinstance(prop, str):
                     prop = prop.decode(self._encoding)
@@ -770,11 +797,11 @@ class PropertyManagerHelpers:
             for sub in child.childNodes:
                 if sub.nodeName == 'element':
                     value = sub.getAttribute('value')
-                    if prop_map.get('type') not in (
-                            'ulines', 'multiple selection'):
+                    if prop_map.get('type') not in ('ulines',
+                                                    'multiple selection'):
                         value = value.encode(self._encoding)
-                    if self._convertToBoolean(sub.getAttribute('remove')
-                                              or 'False'):
+                    if self._convertToBoolean(
+                            sub.getAttribute('remove') or 'False'):
                         remove_elements.append(value)
                         if value in new_elements:
                             new_elements.remove(value)
@@ -787,8 +814,8 @@ class PropertyManagerHelpers:
                 # Since Zope 5.3, lines should contain text, not bytes.
                 # https://github.com/zopefoundation/Products.GenericSetup/issues/109
                 new_elements = _convert_lines(new_elements, self._encoding)
-                remove_elements = _convert_lines(
-                    remove_elements, self._encoding)
+                remove_elements = _convert_lines(remove_elements,
+                                                 self._encoding)
 
             if prop_map.get('type') in ('lines', 'tokens', 'ulines',
                                         'multiple selection'):
@@ -800,8 +827,8 @@ class PropertyManagerHelpers:
                 # are converted to the right type
                 prop_value = self._getNodeText(child)
 
-            if not self._convertToBoolean(child.getAttribute('purge')
-                                          or 'True'):
+            if not self._convertToBoolean(
+                    child.getAttribute('purge') or 'True'):
                 # If the purge attribute is False, merge sequences
                 prop = obj.getProperty(prop_id)
                 # Before Zope 5.3, lines contained bytes.
@@ -812,10 +839,10 @@ class PropertyManagerHelpers:
                 if LINES_HAS_TEXT and obj.getPropertyType(prop_id) == 'lines':
                     prop = _convert_lines(prop, self._encoding)
                 if isinstance(prop, (tuple, list)):
-                    prop_value = (tuple([p for p in prop
-                                         if p not in prop_value and
-                                         p not in remove_elements]) +
-                                  tuple(prop_value))
+                    prop_value = (tuple([
+                        p for p in prop
+                        if p not in prop_value and p not in remove_elements
+                    ]) + tuple(prop_value))
 
             if isinstance(prop_value, (bytes, str)):
                 prop_type = obj.getPropertyType(prop_id) or 'string'
@@ -824,8 +851,9 @@ class PropertyManagerHelpers:
                     # The type_converters use the ZPublisher default_encoding
                     # for decoding bytes!
                     if self._encoding.lower() != default_encoding:
-                        prop_value = _de_encode_value(
-                            prop_value, self._encoding, prop_converter)
+                        prop_value = _de_encode_value(prop_value,
+                                                      self._encoding,
+                                                      prop_converter)
                     else:
                         prop_value = prop_converter(prop_value)
             obj._updateProperty(prop_id, prop_value)
@@ -858,7 +886,6 @@ def _convert_lines(values, encoding):
 
 
 class MarkerInterfaceHelpers:
-
     """Marker interface im- and export helpers.
     """
 
@@ -985,10 +1012,10 @@ def _getProductPath(product_name):
         # BBB: for GenericSetup 1.1 style product names
         product = __import__(f'Products.{product_name}', globals(), {},
                              ['initialize'])
-    except ImportError:
+    except ModuleNotFoundError:
         try:
             product = __import__(product_name, globals(), {}, ['initialize'])
-        except ImportError:
+        except ModuleNotFoundError:
             raise ValueError(f'Not a valid product name: {product_name}')
 
     return product.__path__[0]
