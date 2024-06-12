@@ -46,7 +46,7 @@ from ..tests.common import DummyImportContext
 
 try:
     from five.localsitemanager.registry import PersistentComponents
-except ImportError:
+except ModuleNotFoundError:
     # Avoid generating a spurious dependency
     PersistentComponents = None
 
@@ -55,7 +55,7 @@ def createComponentRegistry(context):
     enableSite(context, iface=IObjectManagerSite)
 
     components = PersistentComponents('++etc++site')
-    components.__bases__ = (base,)
+    components.__bases__ = (base, )
     components.__parent__ = aq_base(context)
     # Make sure calls to getSiteManager on me return myself
     # necessary because OFS.ObjectManager.getSiteManager expects _components
@@ -238,7 +238,6 @@ _REMOVE_IMPORT = b"""\
 </componentregistry>
 """
 
-
 _INTERFACE_COMPONENT = b"""\
 <?xml version="1.0" encoding="utf-8"?>
 <componentregistry>
@@ -263,19 +262,21 @@ class ComponentRegistryXMLAdapterTests(BodyAdapterTestCase, unittest.TestCase):
         return ComponentRegistryXMLAdapter
 
     def _populate(self, obj):
-        obj.registerAdapter(DummyAdapter, required=(None,))
-        obj.registerAdapter(DummyAdapter, required=(None,), name='foo')
+        obj.registerAdapter(DummyAdapter, required=(None, ))
+        obj.registerAdapter(DummyAdapter, required=(None, ), name='foo')
 
         obj.registerSubscriptionAdapter(DummyAdapter,
-                                        required=(IAnotherDummy,))
-        obj.registerHandler(dummy_handler, required=(IAnotherDummy,))
+                                        required=(IAnotherDummy, ))
+        obj.registerHandler(dummy_handler, required=(IAnotherDummy, ))
 
         util = DummyUtility()
         name = 'dummy_utility'
         util.__name__ = name
         util.__parent__ = aq_base(obj)
-        obj._setObject(name, aq_base(util),
-                       set_owner=False, suppress_events=True)
+        obj._setObject(name,
+                       aq_base(util),
+                       set_owner=False,
+                       suppress_events=True)
         obj.registerUtility(aq_base(obj[name]), IDummyInterface)
 
         util = DummyUtility()
@@ -283,8 +284,10 @@ class ComponentRegistryXMLAdapterTests(BodyAdapterTestCase, unittest.TestCase):
                 'IDummyInterface2-foo')
         util.__name__ = name
         util.__parent__ = aq_base(obj)
-        obj._setObject(name, aq_base(util),
-                       set_owner=False, suppress_events=True)
+        obj._setObject(name,
+                       aq_base(util),
+                       set_owner=False,
+                       suppress_events=True)
         obj.registerUtility(aq_base(obj[name]), IDummyInterface2, name='foo')
 
         tool = aq_base(obj.aq_parent['dummy_tool'])
@@ -303,8 +306,9 @@ class ComponentRegistryXMLAdapterTests(BodyAdapterTestCase, unittest.TestCase):
         self.assertTrue(adapted.verify())
 
         dummy = DummyObject()
-        results = [adap.verify() for adap in
-                   subscribers([dummy], IAnotherDummy2)]
+        results = [
+            adap.verify() for adap in subscribers([dummy], IAnotherDummy2)
+        ]
         self.assertEqual(results, [True])
 
         dummy = DummyObject()
@@ -423,8 +427,9 @@ class ComponentRegistryXMLAdapterTests(BodyAdapterTestCase, unittest.TestCase):
         self.assertFalse(adapted is None)
 
         dummy = DummyObject()
-        results = [adap.verify() for adap in
-                   subscribers([dummy], IAnotherDummy2)]
+        results = [
+            adap.verify() for adap in subscribers([dummy], IAnotherDummy2)
+        ]
         self.assertEqual(results, [])
 
         dummy = DummyObject()
@@ -450,8 +455,7 @@ class ComponentRegistryXMLAdapterTests(BodyAdapterTestCase, unittest.TestCase):
 
     def test_export_interface_component(self):
         sm = self._obj
-        sm.registerUtility(ITestInterface,
-                           ITestInterfaceType,
+        sm.registerUtility(ITestInterface, ITestInterfaceType,
                            "test_interface")
         context = DummySetupEnviron()
         adapted = getMultiAdapter((sm, context), IBody)
@@ -502,14 +506,15 @@ class ITestInterfaceType(Interface):
 
 
 if PersistentComponents is not None:
+
     def test_suite():
         # reimport to make sure tests are run from Products
         from ..tests.test_components import ComponentRegistryXMLAdapterTests
 
-        return unittest.TestSuite((
-            unittest.defaultTestLoader.loadTestsFromTestCase(
-                ComponentRegistryXMLAdapterTests),
-        ))
+        return unittest.TestSuite(
+            (unittest.defaultTestLoader.loadTestsFromTestCase(
+                ComponentRegistryXMLAdapterTests), ))
 else:
+
     def test_suite():
         return unittest.TestSuite()

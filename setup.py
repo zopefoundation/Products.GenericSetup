@@ -22,7 +22,7 @@ _BOUNDARY = '\n' + ('-' * 60) + '\n\n'
 
 setup(
     name='Products.GenericSetup',
-    version='3.0.3.dev0',
+    version='4.0.dev0',
     description='Read Zope configuration state from profile dirs / tarballs',
     long_description=README + _BOUNDARY + CHANGES,
     classifiers=[
@@ -33,11 +33,11 @@ setup(
         "Intended Audience :: Developers",
         "License :: OSI Approved :: Zope Public License",
         "Programming Language :: Python",
-        "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
         "Programming Language :: Python :: 3.11",
+        "Programming Language :: Python :: 3.12",
         "Programming Language :: Python :: Implementation :: CPython",
         "Topic :: Software Development",
         "Topic :: System :: Archiving :: Packaging",
@@ -58,7 +58,7 @@ setup(
     include_package_data=True,
     namespace_packages=['Products'],
     zip_safe=False,
-    python_requires='>=3.7',
+    python_requires='>=3.8',
     install_requires=[
         'setuptools',
         'Zope >= 4.0b4',
