@@ -100,7 +100,7 @@ Reapplying these import steps is potentially a dangerous operation.
   </td>
    <td class="text-right">#</td>
    <td>Title / Description</td>
-   <td>Handler</td>
+   <td>ID / Handler</td>
   </tr>
  </thead>
 
@@ -123,7 +123,8 @@ Reapplying these import steps is potentially a dangerous operation.
     <small tal:content="info/description">STEP DESCRIPTION</small>
    </td>
    <td>
-       <code tal:content="info/handler">DOTTED.NAME</code>
+       <label tal:content="step_id">step_id</label><br />
+       <small><code tal:content="info/handler">DOTTED.NAME</code></small>
    </td>
   </tr>
   </tal:loop>
