@@ -4,6 +4,8 @@ Changelog
 4.0 (unreleased)
 ----------------
 
+- Show import step id.
+
 - Add support for Python 3.12.
 
 - Drop support for Python 3.7.
