@@ -1,7 +1,7 @@
 Changelog
 =========
 
-4.0 (unreleased)
+4.0 (2024-10-24)
 ----------------
 
 - Show import step id.
