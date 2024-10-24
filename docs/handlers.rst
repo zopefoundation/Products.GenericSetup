@@ -50,7 +50,7 @@ node adapter
 
 import and export steps
    Top level handlers can be registered to manage import steps and / or export
-   steps and call the body adapters. 
+   steps and call the body adapters.
 
 If you use the base classes from :mod:`Products.GenericSetup.utils`, XML and
 node adapters are implemented in a very similar way. Both can mix in

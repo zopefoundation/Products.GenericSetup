@@ -573,7 +573,7 @@ Historical Changelog
 - Forward-port changes from GenericSetup 0.11 and 0.12 (which were
   created in a separate repository).
 
-- Merge sequence propertise with the purge="False" attribute rather than 
+- Merge sequence propertise with the purge="False" attribute rather than
   purgeing (the sequences are treated as sets, which means that duplicates
   are removed). This is useful in extension profiles.
 
