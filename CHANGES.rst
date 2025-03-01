@@ -4,6 +4,8 @@ Changelog
 4.1 (unreleased)
 ----------------
 
+- Replace ``pkg_resources`` with `importlib.metadata` and ``packaging``.
+
 - Add support for Python 3.13.
 
 - Drop support for Python 3.8.

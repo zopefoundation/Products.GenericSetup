@@ -12,9 +12,7 @@
 ##############################################################################
 """Upgrade steps and registry.
 """
-
-from pkg_resources import parse_version
-
+import packaging.version
 from BTrees.OOBTree import OOBTree
 
 from Products.GenericSetup.interfaces import IUpgradeSteps
@@ -28,16 +26,13 @@ def normalize_version(version):
     elif not version or version == 'unknown':
         version = '0'
     try:
-        return parse_version(version)
-    except Exception:
-        # Likely setuptools 66+ raises
-        # pkg_resources.extern.packaging.version.InvalidVersion
-        # but it does not feel safe to import it from that path.
+        return packaging.version.parse(version)
+    except packaging.version.InvalidVersion:
         # Older setuptools versions created a LegacyVersion when parsing to a
         # proper number fails.  Let's use local version segments to have a
         # strict version and still have a sort order.  See
         # https://github.com/zopefoundation/Products.GenericSetup/issues/126
-        return parse_version(f'0+{version}')
+        return packaging.version.parse(f'0+{version}')
 
 
 def _version_matches_all(version):

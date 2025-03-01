@@ -61,6 +61,7 @@ setup(
     zip_safe=False,
     python_requires='>=3.9',
     install_requires=[
+        'packaging',
         'setuptools',
         'Zope >= 4.0b4',
         'five.localsitemanager',
