@@ -16,9 +16,9 @@
 import datetime
 import sys
 import os
-import pkg_resources
+from importlib.metadata import distribution
 sys.path.append(os.path.abspath('../src'))
-rqmt = pkg_resources.require('Products.GenericSetup')[0]
+rqmt = distribution('Products.GenericSetup').version
 
 
 # If your extensions are in another directory, add it here. If the directory
@@ -51,9 +51,10 @@ copyright = '2008-%s, Zope Foundation and Contributors' % year
 # other places throughout the built documents.
 #
 # The short X.Y version.
-version = '%s.%s' % tuple(rqmt.version.split('.')[:2])
+version = '%s.%s' % tuple(rqmt.split('.')[:2])
 # The full version, including alpha/beta/rc tags.
-release = rqmt.version
+release = rqmt
+
 
 # There are two options for replacing |today|: either, you set today to some
 # non-false value, then it is used:
