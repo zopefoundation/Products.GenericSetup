@@ -4,7 +4,7 @@ Changelog
 4.0.1 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Replace ``pkg_resources`` with `importlib.metadata` and ``packaging``.
 
 
 4.0 (2024-10-24)
