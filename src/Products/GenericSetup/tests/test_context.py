@@ -131,7 +131,7 @@ class DirectoryImportContextTests(FilesystemTestBase, ConformsToISetupContext,
         ctx = self._makeOne(site, self._PROFILE_PATH)
 
         lm = ctx.getLastModified(FILENAME)
-        self.assertTrue(isinstance(lm, DateTime))
+        self.assertIsInstance(lm, DateTime)
         self.assertEqual(lm, DateTime(WHEN))
 
     def test_getLastModified_subdir(self):
@@ -145,7 +145,7 @@ class DirectoryImportContextTests(FilesystemTestBase, ConformsToISetupContext,
         ctx = self._makeOne(site, self._PROFILE_PATH)
 
         lm = ctx.getLastModified(PATH)
-        self.assertTrue(isinstance(lm, DateTime))
+        self.assertIsInstance(lm, DateTime)
         self.assertEqual(lm, DateTime(WHEN))
 
     def test_getLastModified_directory(self):
@@ -160,7 +160,7 @@ class DirectoryImportContextTests(FilesystemTestBase, ConformsToISetupContext,
         ctx = self._makeOne(site, self._PROFILE_PATH)
 
         lm = ctx.getLastModified(SUBDIR)
-        self.assertTrue(isinstance(lm, DateTime))
+        self.assertIsInstance(lm, DateTime)
         self.assertEqual(lm, DateTime(WHEN))
 
     def test_isDirectory_nonesuch(self):
@@ -222,7 +222,7 @@ class DirectoryImportContextTests(FilesystemTestBase, ConformsToISetupContext,
         self._makeFile(FILENAME, printable_bytes)
 
         self.assertEqual(len(ctx.listDirectory(None)), 1)
-        self.assertTrue(FILENAME in ctx.listDirectory(None))
+        self.assertIn(FILENAME, ctx.listDirectory(None))
 
     def test_listDirectory_simple(self):
 
@@ -256,7 +256,7 @@ class DirectoryImportContextTests(FilesystemTestBase, ConformsToISetupContext,
 
         names = ctx.listDirectory(SUBDIR)
         self.assertEqual(len(names), 1)
-        self.assertTrue('nested.txt' in names)
+        self.assertIn('nested.txt', names)
 
     def test_listDirectory_multiple(self):
 
@@ -270,8 +270,8 @@ class DirectoryImportContextTests(FilesystemTestBase, ConformsToISetupContext,
 
         names = ctx.listDirectory(SUBDIR)
         self.assertEqual(len(names), 2)
-        self.assertTrue('nested.txt' in names)
-        self.assertTrue('another.txt' in names)
+        self.assertIn('nested.txt', names)
+        self.assertIn('another.txt', names)
 
     def test_listDirectory_skip_implicit(self):
 
@@ -288,11 +288,11 @@ class DirectoryImportContextTests(FilesystemTestBase, ConformsToISetupContext,
 
         names = ctx.listDirectory(SUBDIR)
         self.assertEqual(len(names), 2)
-        self.assertTrue('nested.txt' in names)
-        self.assertTrue('another.txt' in names)
-        self.assertFalse('another.txt~' in names)
-        self.assertFalse('CVS' in names)
-        self.assertFalse('.svn' in names)
+        self.assertIn('nested.txt', names)
+        self.assertIn('another.txt', names)
+        self.assertNotIn('another.txt~', names)
+        self.assertNotIn('CVS', names)
+        self.assertNotIn('.svn', names)
 
     def test_listDirectory_skip_explicit(self):
 
@@ -310,11 +310,11 @@ class DirectoryImportContextTests(FilesystemTestBase, ConformsToISetupContext,
         names = ctx.listDirectory(SUBDIR, skip=('nested.txt',),
                                   skip_suffixes=('.bak',))
         self.assertEqual(len(names), 3)
-        self.assertFalse('nested.txt' in names)
-        self.assertFalse('nested.bak' in names)
-        self.assertTrue('another.txt' in names)
-        self.assertTrue('CVS' in names)
-        self.assertTrue('.svn' in names)
+        self.assertNotIn('nested.txt', names)
+        self.assertNotIn('nested.bak', names)
+        self.assertIn('another.txt', names)
+        self.assertIn('CVS', names)
+        self.assertIn('.svn', names)
 
 
 class DirectoryExportContextTests(FilesystemTestBase, ConformsToISetupContext,
@@ -551,7 +551,7 @@ class TarballImportContextTests(ZopeTestCase, ConformsToISetupContext,
         ctx = self._makeOne({FILENAME: printable_bytes}, mod_time=WHEN)[2]
 
         lm = ctx.getLastModified(FILENAME)
-        self.assertTrue(isinstance(lm, DateTime))
+        self.assertIsInstance(lm, DateTime)
         self.assertEqual(lm, DateTime(WHEN))
 
     def test_getLastModified_subdir(self):
@@ -563,7 +563,7 @@ class TarballImportContextTests(ZopeTestCase, ConformsToISetupContext,
         ctx = self._makeOne({PATH: printable_bytes}, mod_time=WHEN)[2]
 
         lm = ctx.getLastModified(PATH)
-        self.assertTrue(isinstance(lm, DateTime))
+        self.assertIsInstance(lm, DateTime)
         self.assertEqual(lm, DateTime(WHEN))
 
     def test_getLastModified_directory(self):
@@ -575,7 +575,7 @@ class TarballImportContextTests(ZopeTestCase, ConformsToISetupContext,
         ctx = self._makeOne({PATH: printable_bytes}, mod_time=WHEN)[2]
 
         lm = ctx.getLastModified(SUBDIR)
-        self.assertTrue(isinstance(lm, DateTime))
+        self.assertIsInstance(lm, DateTime)
         self.assertEqual(lm, DateTime(WHEN))
 
     def test_isDirectory_nonesuch(self):
@@ -629,7 +629,7 @@ class TarballImportContextTests(ZopeTestCase, ConformsToISetupContext,
         site, tool, ctx = self._makeOne({FILENAME: printable_bytes})
 
         self.assertEqual(len(ctx.listDirectory(None)), 1)
-        self.assertTrue(FILENAME in ctx.listDirectory(None))
+        self.assertIn(FILENAME, ctx.listDirectory(None))
 
     def test_listDirectory_simple(self):
 
@@ -659,7 +659,7 @@ class TarballImportContextTests(ZopeTestCase, ConformsToISetupContext,
 
         names = ctx.listDirectory(SUBDIR)
         self.assertEqual(len(names), 1)
-        self.assertTrue(FILENAME in names)
+        self.assertIn(FILENAME, names)
 
     def test_listDirectory_multiple(self):
 
@@ -676,8 +676,8 @@ class TarballImportContextTests(ZopeTestCase, ConformsToISetupContext,
 
         names = ctx.listDirectory(SUBDIR)
         self.assertEqual(len(names), 2)
-        self.assertTrue(FILENAME1 in names)
-        self.assertTrue(FILENAME2 in names)
+        self.assertIn(FILENAME1, names)
+        self.assertIn(FILENAME2, names)
 
     def test_listDirectory_skip(self):
 
@@ -698,9 +698,9 @@ class TarballImportContextTests(ZopeTestCase, ConformsToISetupContext,
         names = ctx.listDirectory(SUBDIR, skip=(FILENAME1,),
                                   skip_suffixes=('.bak',))
         self.assertEqual(len(names), 1)
-        self.assertFalse(FILENAME1 in names)
-        self.assertTrue(FILENAME2 in names)
-        self.assertFalse(FILENAME3 in names)
+        self.assertNotIn(FILENAME1, names)
+        self.assertIn(FILENAME2, names)
+        self.assertNotIn(FILENAME3, names)
 
 
 class TarballExportContextTests(ZopeTestCase, ConformsToISetupContext,
@@ -862,7 +862,7 @@ class SnapshotExportContextTests(ZopeTestCase, ConformsToISetupContext,
         snapshot = tool.snapshots._getOb('simple')
 
         self.assertEqual(len(snapshot.objectIds()), 1)
-        self.assertTrue(FILENAME in snapshot.objectIds())
+        self.assertIn(FILENAME, snapshot.objectIds())
 
         fileobj = snapshot._getOb(FILENAME)
 
@@ -886,7 +886,7 @@ class SnapshotExportContextTests(ZopeTestCase, ConformsToISetupContext,
         snapshot = tool.snapshots._getOb('simple')
 
         self.assertEqual(len(snapshot.objectIds()), 1)
-        self.assertTrue(FILENAME in snapshot.objectIds())
+        self.assertIn(FILENAME, snapshot.objectIds())
 
         fileobj = snapshot._getOb(FILENAME)
 
@@ -909,7 +909,7 @@ class SnapshotExportContextTests(ZopeTestCase, ConformsToISetupContext,
         snapshot = tool.snapshots._getOb('simple')
 
         self.assertEqual(len(snapshot.objectIds()), 1)
-        self.assertTrue(FILENAME in snapshot.objectIds())
+        self.assertIn(FILENAME, snapshot.objectIds())
 
         fileobj = snapshot._getOb(FILENAME)
 
@@ -935,7 +935,7 @@ class SnapshotExportContextTests(ZopeTestCase, ConformsToISetupContext,
         snapshot = tool.snapshots._getOb('simple')
 
         self.assertEqual(len(snapshot.objectIds()), 1)
-        self.assertTrue(FILENAME in snapshot.objectIds())
+        self.assertIn(FILENAME, snapshot.objectIds())
 
         template = snapshot._getOb(FILENAME)
 
@@ -962,7 +962,7 @@ class SnapshotExportContextTests(ZopeTestCase, ConformsToISetupContext,
         sub1 = snapshot._getOb('sub1')
 
         self.assertEqual(len(sub1.objectIds()), 1)
-        self.assertTrue(FILENAME in sub1.objectIds())
+        self.assertIn(FILENAME, sub1.objectIds())
 
         template = sub1._getOb(FILENAME)
 
@@ -992,7 +992,7 @@ class SnapshotExportContextTests(ZopeTestCase, ConformsToISetupContext,
         sub2 = sub1._getOb('sub2')
 
         self.assertEqual(len(sub2.objectIds()), 1)
-        self.assertTrue(FILENAME in sub2.objectIds())
+        self.assertIn(FILENAME, sub2.objectIds())
 
         template = sub2._getOb(FILENAME)
 
@@ -1016,7 +1016,7 @@ class SnapshotExportContextTests(ZopeTestCase, ConformsToISetupContext,
         self.assertEqual(len(snapshot.objectIds()), 2)
 
         for id in ['foo.txt', 'bar.txt']:
-            self.assertTrue(id in snapshot.objectIds())
+            self.assertIn(id, snapshot.objectIds())
 
 
 class SnapshotImportContextTests(ZopeTestCase, ConformsToISetupContext,
@@ -1171,7 +1171,7 @@ class SnapshotImportContextTests(ZopeTestCase, ConformsToISetupContext,
                        mod_time=WHEN)
 
         lm = ctx.getLastModified(FILENAME)
-        self.assertTrue(isinstance(lm, DateTime))
+        self.assertIsInstance(lm, DateTime)
         self.assertEqual(lm, DateTime(WHEN))
 
     def test_getLastModified_subdir(self):
@@ -1186,7 +1186,7 @@ class SnapshotImportContextTests(ZopeTestCase, ConformsToISetupContext,
                        mod_time=WHEN, subdir=SUBDIR)
 
         lm = ctx.getLastModified(PATH)
-        self.assertTrue(isinstance(lm, DateTime))
+        self.assertIsInstance(lm, DateTime)
         self.assertEqual(lm, DateTime(WHEN))
 
     def test_getLastModified_directory(self):
@@ -1200,7 +1200,7 @@ class SnapshotImportContextTests(ZopeTestCase, ConformsToISetupContext,
                        mod_time=WHEN, subdir=SUBDIR)
 
         lm = ctx.getLastModified(SUBDIR)
-        self.assertTrue(isinstance(lm, DateTime))
+        self.assertIsInstance(lm, DateTime)
         self.assertEqual(lm, DateTime(WHEN))
 
     def test_isDirectory_nonesuch(self):
@@ -1265,7 +1265,7 @@ class SnapshotImportContextTests(ZopeTestCase, ConformsToISetupContext,
         self._makeFile(tool, SNAPSHOT_ID, FILENAME, printable_bytes)
 
         self.assertEqual(len(ctx.listDirectory(None)), 1)
-        self.assertTrue(FILENAME in ctx.listDirectory(None))
+        self.assertIn(FILENAME, ctx.listDirectory(None))
 
     def test_listDirectory_simple(self):
 
@@ -1302,7 +1302,7 @@ class SnapshotImportContextTests(ZopeTestCase, ConformsToISetupContext,
 
         names = ctx.listDirectory(SUBDIR)
         self.assertEqual(len(names), 1)
-        self.assertTrue(FILENAME in names)
+        self.assertIn(FILENAME, names)
 
     def test_listDirectory_multiple(self):
 
@@ -1321,8 +1321,8 @@ class SnapshotImportContextTests(ZopeTestCase, ConformsToISetupContext,
 
         names = ctx.listDirectory(SUBDIR)
         self.assertEqual(len(names), 2)
-        self.assertTrue(FILENAME1 in names)
-        self.assertTrue(FILENAME2 in names)
+        self.assertIn(FILENAME1, names)
+        self.assertIn(FILENAME2, names)
 
     def test_listDirectory_skip(self):
 
@@ -1344,9 +1344,9 @@ class SnapshotImportContextTests(ZopeTestCase, ConformsToISetupContext,
         names = ctx.listDirectory(SUBDIR, skip=(FILENAME1,),
                                   skip_suffixes=('.bak',))
         self.assertEqual(len(names), 1)
-        self.assertFalse(FILENAME1 in names)
-        self.assertTrue(FILENAME2 in names)
-        self.assertFalse(FILENAME3 in names)
+        self.assertNotIn(FILENAME1, names)
+        self.assertIn(FILENAME2, names)
+        self.assertNotIn(FILENAME3, names)
 
 
 def test_suite():

@@ -487,7 +487,7 @@ class SnapshotExportContext(BaseContext):
         sep = filename.rfind('/')
         if sep != -1:
             subdir = filename[:sep]
-            filename = filename[sep+1:]
+            filename = filename[sep + 1:]
 
         folder = self._ensureSnapshotsFolder(subdir)
 
@@ -587,7 +587,7 @@ class SnapshotImportContext(BaseContext):
         sep = filename.rfind('/')
         if sep != -1:
             subdir = filename[:sep]
-            filename = filename[sep+1:]
+            filename = filename[sep + 1:]
         try:
             snapshot = self._getSnapshotFolder(subdir)
             object = snapshot._getOb(filename)

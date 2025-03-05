@@ -357,4 +357,4 @@ def test_suite():
         loader.loadTestsFromTestCase(FilteredSetNodeAdapterTests),
         loader.loadTestsFromTestCase(TopicIndexNodeAdapterTests),
         loader.loadTestsFromTestCase(UnchangedTests),
-        ))
+    ))

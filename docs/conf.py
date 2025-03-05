@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #
 # Products.GenericSetup documentation build configuration file, created by
 # sphinx-quickstart on Sat Sep 27 12:26:01 2008.
@@ -14,9 +13,12 @@
 # serve to show the default value.
 
 import datetime
-import sys
 import os
+import sys
+
 import pkg_resources
+
+
 sys.path.append(os.path.abspath('../src'))
 rqmt = pkg_resources.require('Products.GenericSetup')[0]
 
@@ -24,7 +26,7 @@ rqmt = pkg_resources.require('Products.GenericSetup')[0]
 # If your extensions are in another directory, add it here. If the directory
 # is relative to the documentation root, use os.path.abspath to make it
 # absolute, like shown here.
-#sys.path.append(os.path.abspath('some/directory'))
+# sys.path.append(os.path.abspath('some/directory'))
 
 # General configuration
 # ---------------------
@@ -57,9 +59,9 @@ release = rqmt.version
 
 # There are two options for replacing |today|: either, you set today to some
 # non-false value, then it is used:
-#today = ''
+# today = ''
 # Else, today_fmt is used as the format for a strftime call.
-#today_fmt = '%B %d, %Y'
+# today_fmt = '%B %d, %Y'
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
@@ -67,25 +69,25 @@ exclude_patterns = ['_build']
 
 
 # List of documents that shouldn't be included in the build.
-#unused_docs = []
+# unused_docs = []
 
-# List of directories, relative to source directories, that shouldn't be searched
-# for source files.
-#exclude_dirs = []
+# List of directories, relative to source directories, that shouldn't be
+# searched for source files.
+# exclude_dirs = []
 
-# The reST default role (used for this markup: `text`) to use for all documents.
-#default_role = None
+# The reST default role (used for this markup: `text`) to use for all documents
+# default_role = None
 
 # If true, '()' will be appended to :func: etc. cross-reference text.
-#add_function_parentheses = True
+# add_function_parentheses = True
 
 # If true, the current module name will be prepended to all description
 # unit titles (such as .. function::).
-#add_module_names = True
+# add_module_names = True
 
 # If true, sectionauthor and moduleauthor directives will be shown in the
 # output. They are ignored by default.
-#show_authors = False
+# show_authors = False
 
 # The name of the Pygments (syntax highlighting) style to use.
 pygments_style = 'sphinx'
@@ -100,59 +102,59 @@ html_theme = 'default'
 
 # The name for this set of Sphinx documents.  If None, it defaults to
 # "<project> v<release> documentation".
-#html_title = None
+# html_title = None
 
 # A shorter title for the navigation bar.  Default is the same as html_title.
-#html_short_title = None
+# html_short_title = None
 
 # The name of an image file (within the static path) to place at the top of
 # the sidebar.
-#html_logo = None
+# html_logo = None
 
 # The name of an image file (within the static path) to use as favicon of the
 # docs.  This file should be a Windows icon file (.ico) being 16x16 or 32x32
 # pixels large.
-#html_favicon = None
+# html_favicon = None
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-#html_static_path = ['.static']
+# html_static_path = ['.static']
 
 # If not '', a 'Last updated on:' timestamp is inserted at every page bottom,
 # using the given strftime format.
-#html_last_updated_fmt = '%b %d, %Y'
+# html_last_updated_fmt = '%b %d, %Y'
 
 # If true, SmartyPants will be used to convert quotes and dashes to
 # typographically correct entities.
-#html_use_smartypants = True
+# html_use_smartypants = True
 
 # Custom sidebar templates, maps document names to template names.
-#html_sidebars = {}
+# html_sidebars = {}
 
 # Additional templates that should be rendered to pages, maps page names to
 # template names.
-#html_additional_pages = {}
+# html_additional_pages = {}
 
 # If false, no module index is generated.
-#html_use_modindex = True
+# html_use_modindex = True
 
 # If false, no index is generated.
-#html_use_index = True
+# html_use_index = True
 
 # If true, the index is split into individual pages for each letter.
-#html_split_index = False
+# html_split_index = False
 
 # If true, the reST sources are included in the HTML build as _sources/<name>.
-#html_copy_source = True
+# html_copy_source = True
 
 # If true, an OpenSearch description file will be output, and all pages will
 # contain a <link> tag referring to it.  The value of this option must be the
 # base URL from which the finished HTML is served.
-#html_use_opensearch = ''
+# html_use_opensearch = ''
 
 # If nonempty, this is the file name suffix for HTML files (e.g. ".xhtml").
-#html_file_suffix = ''
+# html_file_suffix = ''
 
 # Output file base name for HTML help builder.
 htmlhelp_basename = 'ProductsGenericSetupdoc'
@@ -162,34 +164,38 @@ htmlhelp_basename = 'ProductsGenericSetupdoc'
 # ------------------------
 
 # The paper size ('letter' or 'a4').
-#latex_paper_size = 'letter'
+# latex_paper_size = 'letter'
 
 # The font size ('10pt', '11pt' or '12pt').
-#latex_font_size = '10pt'
+# latex_font_size = '10pt'
 
 # Grouping the document tree into LaTeX files. List of tuples
-# (source start file, target name, title, author, document class [howto/manual]).
+# (source start file, target name, title, author,
+# document class [howto/manual]).
 latex_documents = [
-  ('index', 'ProductsGenericSetup.tex', 'Products.GenericSetup Documentation',
-   'Zope CMF Developers', 'manual'),
+    ('index',
+     'ProductsGenericSetup.tex',
+     'Products.GenericSetup Documentation',
+     'Zope CMF Developers',
+     'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
 # the title page.
-#latex_logo = None
+# latex_logo = None
 
 # For "manual" documents, if this is true, then toplevel headings are parts,
 # not chapters.
-#latex_use_parts = False
+# latex_use_parts = False
 
 # Additional stuff for the LaTeX preamble.
-#latex_preamble = ''
+# latex_preamble = ''
 
 # Documents to append as an appendix to all manuals.
-#latex_appendices = []
+# latex_appendices = []
 
 # If false, no module index is generated.
-#latex_use_modindex = True
+# latex_use_modindex = True
 
 # -- Options for manual page output ---------------------------------------
 
@@ -201,7 +207,7 @@ man_pages = [
 ]
 
 # If true, show URL addresses after external links.
-#man_show_urls = False
+# man_show_urls = False
 
 
 # -- Options for Texinfo output -------------------------------------------
@@ -210,22 +216,22 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-  ('index', 'productsgenericsetup', 'Products.GenericSetup Documentation',
-   'Zope CMF Developers', 'productsgenericsetup',
-   'One line description of project.', 'Miscellaneous'),
+    ('index', 'productsgenericsetup', 'Products.GenericSetup Documentation',
+     'Zope CMF Developers', 'productsgenericsetup',
+     'One line description of project.', 'Miscellaneous'),
 ]
 
 # Documents to append as an appendix to all manuals.
-#texinfo_appendices = []
+# texinfo_appendices = []
 
 # If false, no module index is generated.
-#texinfo_domain_indices = True
+# texinfo_domain_indices = True
 
 # How to display URL addresses: 'footnote', 'no', or 'inline'.
-#texinfo_show_urls = 'footnote'
+# texinfo_show_urls = 'footnote'
 
 # If true, do not generate a @detailmenu in the "Top" node's menu.
-#texinfo_no_detailmenu = False
+# texinfo_no_detailmenu = False
 
 
 # Example configuration for intersphinx: refer to the Python standard library.

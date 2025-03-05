@@ -58,4 +58,4 @@ def test_suite():
     return unittest.TestSuite((
         unittest.defaultTestLoader.loadTestsFromTestCase(
             PythonScriptBodyAdapterTests),
-        ))
+    ))

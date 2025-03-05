@@ -87,6 +87,7 @@ class UpgradeRegistry:
       - id -> step for single steps
       - id -> [ (id1, step1), (id2, step2) ] for nested steps
     """
+
     def __init__(self):
         self._registry = GlobalRegistryStorage(IUpgradeSteps)
 
@@ -143,6 +144,7 @@ class UpgradeEntity:
     """
     Base class for actions to be taken during an upgrade process.
     """
+
     def __init__(self, title, profile, source, dest, desc, checker=None,
                  sortkey=0):
         self.id = _getHash(title, source, dest, sortkey)
@@ -184,6 +186,7 @@ class UpgradeEntity:
 class UpgradeStep(UpgradeEntity):
     """A step to upgrade a component.
     """
+
     def __init__(self, title, profile, source, dest, desc, handler,
                  checker=None, sortkey=0):
         super().__init__(title, profile, source, dest, desc, checker, sortkey)
@@ -197,6 +200,7 @@ class UpgradeDepends(UpgradeEntity):
     """A specialized upgrade step that re-runs a particular import
     step from the profile.
     """
+
     def __init__(self, title, profile, source, dest, desc, import_profile=None,
                  import_steps=[], run_deps=False, purge=False, checker=None,
                  sortkey=0):
@@ -247,7 +251,7 @@ def _extractStepInfo(tool, id, step, source, dest=None):
     proposed = step.isProposed(tool, source, dest=dest)
     if not proposed and not _version_matches(
             source, step.source, step.dest, dest=dest
-            ):
+    ):
         return
     info = {
         'id': id,
@@ -258,7 +262,7 @@ def _extractStepInfo(tool, id, step, source, dest=None):
         'description': step.description,
         'proposed': proposed,
         'sortkey': step.sortkey,
-        }
+    }
     return info
 
 

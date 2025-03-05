@@ -52,8 +52,8 @@ class ZCLexiconNodeAdapter(NodeAdapterBase):
         for child in node.childNodes:
             if child.nodeName == 'element':
                 element = element_factory.instantiate(
-                      child.getAttribute('group'),
-                      child.getAttribute('name'))
+                    child.getAttribute('group'),
+                    child.getAttribute('name'))
                 pipeline.append(element)
         pipeline = tuple(pipeline)
         if self.context._pipeline != pipeline:
@@ -108,7 +108,7 @@ class ZCTextIndexNodeAdapter(NodeAdapterBase):
         for child in node.childNodes:
             if child.nodeName == 'indexed_attr':
                 indexed_attrs.append(
-                                  child.getAttribute('value'))
+                    child.getAttribute('value'))
         if self.context._indexed_attrs != indexed_attrs:
             self.context._indexed_attrs = indexed_attrs
             self.context.clear()
