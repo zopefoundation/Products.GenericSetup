@@ -81,7 +81,7 @@ class BodyAdapterTestCase(_AdapterTestCaseBase):
         context = DummySetupEnviron()
         adapted = getMultiAdapter((self._obj, context), IBody)
         self.assertEqual(adapted.body, self._BODY)
-        self.assertTrue(isinstance(adapted.body, bytes))
+        self.assertIsInstance(adapted.body, bytes)
 
     def test_body_set(self):
         context = DummySetupEnviron()

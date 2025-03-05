@@ -199,14 +199,15 @@ class RolemapImportConfigurator(ImportConfiguratorBase):
     def _getImportMapping(self):
 
         return {
-          'rolemap': {'roles': {CONVERTER: self._convertToUnique, DEFAULT: ()},
-                      'permissions': {CONVERTER: self._convertToUnique}},
-          'roles': {'role': {KEY: None}},
-          'role': {'name': {KEY: None}},
-          'permissions': {'permission': {KEY: None, DEFAULT: ()}},
-          'permission': {'name': {},
-                         'role': {KEY: 'roles'},
-                         'acquire': {CONVERTER: self._convertToBoolean}}}
+            'rolemap': {
+                'roles': {CONVERTER: self._convertToUnique, DEFAULT: ()},
+                'permissions': {CONVERTER: self._convertToUnique}},
+            'roles': {'role': {KEY: None}},
+            'role': {'name': {KEY: None}},
+            'permissions': {'permission': {KEY: None, DEFAULT: ()}},
+            'permission': {'name': {},
+                           'role': {KEY: 'roles'},
+                           'acquire': {CONVERTER: self._convertToBoolean}}}
 
 
 InitializeClass(RolemapImportConfigurator)

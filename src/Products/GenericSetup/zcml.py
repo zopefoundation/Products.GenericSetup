@@ -107,7 +107,7 @@ def registerProfile(_context, name='default', title=None, description=None,
         callable=_profile_registry.registerProfile,
         args=(name, title, description, directory, product, provides, for_,
               pre_handler, post_handler),
-        )
+    )
 
 
 # genericsetup:exportStep
@@ -140,7 +140,7 @@ def exportStep(context, name, handler, title=None, description=None):
         discriminator=('exportStep', name),
         callable=_export_step_registry.registerStep,
         args=(name, handler, title, description),
-        )
+    )
 
 
 # genericsetup:importStep
@@ -202,7 +202,7 @@ class importStep:
             callable=_import_step_registry.registerStep,
             args=(self.name, None, self.handler, self.dependencies, self.title,
                   self.description),
-            )
+        )
 
 
 # genericsetup:upgradeStep
@@ -272,12 +272,12 @@ class IUpgradeDependsSubDirective(Interface):
     title = zope.schema.TextLine(
         title="Title",
         required=True,
-        )
+    )
 
     description = zope.schema.TextLine(
         title="Upgrade dependency description",
         required=False,
-        )
+    )
 
     import_profile = zope.schema.TextLine(
         title="GenericSetup profile id to load, if not the same as the "
@@ -287,17 +287,17 @@ class IUpgradeDependsSubDirective(Interface):
         title="Import steps to rerun",
         required=False,
         value_type=zope.schema.TextLine(title="Import step"),
-        )
+    )
 
     run_deps = zope.schema.Bool(
         title="Run import step dependencies?",
         required=False,
-        )
+    )
 
     purge = zope.schema.Bool(
         title="Import steps w/ purge=True?",
         required=False,
-        )
+    )
 
 
 class IUpgradeDependsDirective(IUpgradeStepsDirective,
@@ -317,7 +317,7 @@ def upgradeStep(_context, title, profile, handler, description=None,
             'upgradeStep', profile, source, destination, handler, sortkey),
         callable=_registerUpgradeStep,
         args=(step,),
-        )
+    )
 
 
 def upgradeDepends(_context, title, profile, description=None,
@@ -332,7 +332,7 @@ def upgradeDepends(_context, title, profile, description=None,
                        import_profile, str(import_steps), checker, sortkey),
         callable=_registerUpgradeStep,
         args=(step,),
-        )
+    )
 
 
 class upgradeSteps:
@@ -362,7 +362,7 @@ class upgradeSteps:
                 self.sortkey),
             callable=_registerNestedUpgradeStep,
             args=(step, self.id),
-            )
+        )
 
     def upgradeDepends(self, _context, title, description=None,
                        import_profile=None, import_steps=[], run_deps=False,
@@ -379,7 +379,7 @@ class upgradeSteps:
                 import_profile, str(import_steps), checker, self.sortkey),
             callable=_registerNestedUpgradeStep,
             args=(step, self.id),
-            )
+        )
 
     def __call__(self):
         return ()

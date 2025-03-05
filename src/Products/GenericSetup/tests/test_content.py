@@ -86,8 +86,8 @@ class SimpleINIAwareTests(unittest.TestCase, ConformsToIINIAware):
         adapter.put_ini('[DEFAULT]\ntitle = Foo \ndescription = bar ')
         props = context.propdict()
         self.assertEqual(len(props), 2)
-        self.assertTrue('title' in props)
-        self.assertTrue('description' in props)
+        self.assertIn('title', props)
+        self.assertIn('description', props)
         self.assertEqual(context.title, 'Foo')
         self.assertEqual(context.description, 'bar')
 

@@ -318,19 +318,19 @@ class ComponentRegistryXMLAdapterTests(BodyAdapterTestCase, unittest.TestCase):
         util = queryUtility(IDummyInterface2, name='foo')
         self.assertTrue(IDummyInterface.providedBy(util))
         self.assertTrue(util.verify())
-        self.assertTrue(util.__parent__ == obj)
+        self.assertEqual(util.__parent__, obj)
         name = ('Products.GenericSetup.tests.test_components.'
                 'IDummyInterface2-foo')
         self.assertEqual(util.__name__, name)
-        self.assertTrue(name in obj.objectIds())
+        self.assertIn(name, obj.objectIds())
 
         util = queryUtility(IDummyInterface)
         self.assertTrue(IDummyInterface.providedBy(util))
         self.assertTrue(util.verify())
-        self.assertTrue(util.__parent__ == obj)
+        self.assertEqual(util.__parent__, obj)
         name = 'dummy_utility'
         self.assertEqual(util.__name__, name)
-        self.assertTrue(name in obj.objectIds())
+        self.assertIn(name, obj.objectIds())
 
         util = queryUtility(IDummyInterface, name='dummy tool name')
         self.assertTrue(IDummyInterface.providedBy(util))
@@ -366,8 +366,8 @@ class ComponentRegistryXMLAdapterTests(BodyAdapterTestCase, unittest.TestCase):
         adapted = getMultiAdapter((obj, context), IBody)
 
         body = adapted.body
-        self.assertFalse(b'IComponentsHandlerBlacklist' in body)
-        self.assertFalse(b'test_components.IDummyInterface"' in body)
+        self.assertNotIn(b'IComponentsHandlerBlacklist', body)
+        self.assertNotIn(b'test_components.IDummyInterface"', body)
 
     def test_blacklist_set(self):
         obj = self._obj
@@ -385,7 +385,7 @@ class ComponentRegistryXMLAdapterTests(BodyAdapterTestCase, unittest.TestCase):
         self.assertTrue(IDummyInterface.providedBy(util))
         self.assertTrue(util.verify())
         util = queryUtility(IDummyInterface)
-        self.assertTrue(util is None)
+        self.assertIsNone(util)
 
         # now in update mode
         context._should_purge = False
@@ -396,7 +396,7 @@ class ComponentRegistryXMLAdapterTests(BodyAdapterTestCase, unittest.TestCase):
         self.assertTrue(IDummyInterface.providedBy(util))
         self.assertTrue(util.verify())
         util = queryUtility(IDummyInterface)
-        self.assertTrue(util is None)
+        self.assertIsNone(util)
 
         # and again in update mode
         adapted = getMultiAdapter((obj, context), IBody)
@@ -406,7 +406,7 @@ class ComponentRegistryXMLAdapterTests(BodyAdapterTestCase, unittest.TestCase):
         self.assertTrue(IDummyInterface.providedBy(util))
         self.assertTrue(util.verify())
         util = queryUtility(IDummyInterface)
-        self.assertTrue(util is None)
+        self.assertIsNone(util)
 
     def test_remove_components(self):
         from ..components import importComponentRegistry
@@ -420,11 +420,11 @@ class ComponentRegistryXMLAdapterTests(BodyAdapterTestCase, unittest.TestCase):
         importComponentRegistry(context)
 
         adapted = queryAdapter(object(), IAnotherDummy2)
-        self.assertTrue(adapted is None)
+        self.assertIsNone(adapted)
 
         # This one should still exist
         adapted = queryAdapter(object(), IAnotherDummy2, name='foo')
-        self.assertFalse(adapted is None)
+        self.assertIsNotNone(adapted)
 
         dummy = DummyObject()
         results = [
@@ -439,19 +439,19 @@ class ComponentRegistryXMLAdapterTests(BodyAdapterTestCase, unittest.TestCase):
         util = queryUtility(IDummyInterface2, name='foo')
         name = ('Products.GenericSetup.tests.test_components.'
                 'IDummyInterface2-foo')
-        self.assertTrue(util is None)
-        self.assertFalse(name in obj.objectIds())
+        self.assertIsNone(util)
+        self.assertNotIn(name, obj.objectIds())
 
         util = queryUtility(IDummyInterface)
-        self.assertTrue(util is None)
-        self.assertFalse('dummy_utility' in obj.objectIds())
+        self.assertIsNone(util)
+        self.assertNotIn('dummy_utility', obj.objectIds())
 
         util = queryUtility(IDummyInterface, name='dummy tool name')
-        self.assertTrue(util is None)
+        self.assertIsNone(util)
 
         # This one should still exist
         util = queryUtility(IDummyInterface2, name='dummy tool name2')
-        self.assertFalse(util is None)
+        self.assertIsNotNone(util)
 
     def test_export_interface_component(self):
         sm = self._obj

@@ -391,12 +391,12 @@ class SetupTool(Folder):
         __traceback_info__ = profile_id
 
         result = self._runImportStepsFromContext(
-                            purge_old=purge_old,
-                            profile_id=profile_id,
-                            archive=archive,
-                            ignore_dependencies=ignore_dependencies,
-                            blacklisted_steps=blacklisted_steps,
-                            dependency_strategy=dependency_strategy)
+            purge_old=purge_old,
+            profile_id=profile_id,
+            archive=archive,
+            ignore_dependencies=ignore_dependencies,
+            blacklisted_steps=blacklisted_steps,
+            dependency_strategy=dependency_strategy)
         if profile_id is None:
             prefix = 'import-all-from-tar'
         else:
@@ -747,7 +747,7 @@ class SetupTool(Folder):
             'title': info['title'],
             'sortable_title': info['title'].lower(),
             'type': 'snapshot',
-            } for info in self.listSnapshotInfo()]
+        } for info in self.listSnapshotInfo()]
         s_infos.sort(key=itemgetter(order_by))
         p_infos = [{
             'id': 'profile-%s' % info['id'],
@@ -755,7 +755,7 @@ class SetupTool(Folder):
             'title': info['title'],
             'sortable_title': info['title'].lower(),
             'type': readableType(info['type']),
-            } for info in self.listProfileInfo()]
+        } for info in self.listProfileInfo()]
         p_infos.sort(key=itemgetter(order_by))
 
         return tuple(s_infos + p_infos)
@@ -1006,7 +1006,7 @@ class SetupTool(Folder):
     @security.protected(ManagePortal)
     def listUpgrades(
             self, profile_id, show_old=False, dest=None, simple=False,
-            ):
+    ):
         """Get the list of available upgrades for a profile.
 
         With 'show_old=True', we show all upgrades, also ones that have been

@@ -190,11 +190,11 @@ class RolemapImportConfiguratorTests(BaseRegistryTests):
         roles = rolemap_info['roles']
 
         self.assertEqual(len(roles), 5)
-        self.assertTrue('Anonymous' in roles)
-        self.assertTrue('Authenticated' in roles)
-        self.assertTrue('Manager' in roles)
-        self.assertTrue('Owner' in roles)
-        self.assertTrue('ZZZ' in roles)
+        self.assertIn('Anonymous', roles)
+        self.assertIn('Authenticated', roles)
+        self.assertIn('Manager', roles)
+        self.assertIn('Owner', roles)
+        self.assertIn('ZZZ', roles)
 
     def test_parseXML_acquired_permission(self):
 
@@ -214,8 +214,8 @@ class RolemapImportConfiguratorTests(BaseRegistryTests):
 
         p_roles = permission['roles']
         self.assertEqual(len(p_roles), 2)
-        self.assertTrue('Manager' in p_roles)
-        self.assertTrue('Owner' in p_roles)
+        self.assertIn('Manager', p_roles)
+        self.assertIn('Owner', p_roles)
 
     def test_parseXML_unacquired_permission(self):
 
@@ -235,8 +235,8 @@ class RolemapImportConfiguratorTests(BaseRegistryTests):
 
         p_roles = permission['roles']
         self.assertEqual(len(p_roles), 2)
-        self.assertTrue('Manager' in p_roles)
-        self.assertTrue('Owner' in p_roles)
+        self.assertIn('Manager', p_roles)
+        self.assertIn('Owner', p_roles)
 
     def test_parseXML_unacquired_permission_added_role(self):
 
@@ -250,11 +250,11 @@ class RolemapImportConfiguratorTests(BaseRegistryTests):
         roles = rolemap_info['roles']
 
         self.assertEqual(len(roles), 5)
-        self.assertTrue('Anonymous' in roles)
-        self.assertTrue('Authenticated' in roles)
-        self.assertTrue('Manager' in roles)
-        self.assertTrue('Owner' in roles)
-        self.assertTrue('ZZZ' in roles)
+        self.assertIn('Anonymous', roles)
+        self.assertIn('Authenticated', roles)
+        self.assertIn('Manager', roles)
+        self.assertIn('Owner', roles)
+        self.assertIn('ZZZ', roles)
 
         self.assertEqual(len(rolemap_info['permissions']), 1)
         permission = rolemap_info['permissions'][0]
@@ -264,9 +264,9 @@ class RolemapImportConfiguratorTests(BaseRegistryTests):
 
         p_roles = permission['roles']
         self.assertEqual(len(p_roles), 3)
-        self.assertTrue('Manager' in p_roles)
-        self.assertTrue('Owner' in p_roles)
-        self.assertTrue('ZZZ' in p_roles)
+        self.assertIn('Manager', p_roles)
+        self.assertIn('Owner', p_roles)
+        self.assertIn('ZZZ', p_roles)
 
 
 _EMPTY_EXPORT = """\

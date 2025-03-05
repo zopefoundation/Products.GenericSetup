@@ -967,26 +967,26 @@ class ObjectManagerHelpersTests(ZopeTestCase):
     def test__initObjects(self):
         helpers = self._makeOne()
         obj = helpers.context
-        self.assertFalse('history' in obj.objectIds())
+        self.assertNotIn('history', obj.objectIds())
 
         # Add two objects
         node = _getDocumentElement(_ADD_IMPORT)
         helpers._initObjects(node)
-        self.assertTrue('history' in obj.objectIds())
-        self.assertTrue('future' in obj.objectIds())
+        self.assertIn('history', obj.objectIds())
+        self.assertIn('future', obj.objectIds())
 
         # Remove one
         node = _getDocumentElement(_REMOVE_IMPORT)
         helpers._initObjects(node)
-        self.assertFalse('history' in obj.objectIds())
-        self.assertTrue('future' in obj.objectIds())
+        self.assertNotIn('history', obj.objectIds())
+        self.assertIn('future', obj.objectIds())
 
         # Removing it a second time should not throw an
         # AttributeError.
         node = _getDocumentElement(_REMOVE_IMPORT)
         helpers._initObjects(node)
-        self.assertFalse('history' in obj.objectIds())
-        self.assertTrue('future' in obj.objectIds())
+        self.assertNotIn('history', obj.objectIds())
+        self.assertIn('future', obj.objectIds())
 
 
 class PrettyDocumentTests(unittest.TestCase):

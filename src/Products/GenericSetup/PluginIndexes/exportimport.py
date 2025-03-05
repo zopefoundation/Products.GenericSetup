@@ -54,7 +54,7 @@ class PluggableIndexNodeAdapter(NodeAdapterBase):
         for child in node.childNodes:
             if child.nodeName == 'indexed_attr':
                 indexed_attrs.append(
-                                  child.getAttribute('value'))
+                    child.getAttribute('value'))
         if _before != indexed_attrs:
             self.context.indexed_attrs = indexed_attrs
             self.context.clear()
@@ -155,7 +155,7 @@ class FilteredSetNodeAdapter(NodeAdapterBase):
         """
         _before = self.context.expr
         self.context.setExpression(
-                              node.getAttribute('expression'))
+            node.getAttribute('expression'))
         _after = self.context.expr
         if _before != _after:
             self.context.clear()

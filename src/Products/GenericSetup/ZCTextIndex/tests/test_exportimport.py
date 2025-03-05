@@ -130,9 +130,9 @@ class UnchangedTests(unittest.TestCase):
             adapted.node = parseString(_XML).documentElement  # no raise
         finally:
             del element_factory._groups['gs']
-        self.assertTrue(lex._wids is _before[0])
-        self.assertTrue(lex._words is _before[1])
-        self.assertTrue(lex.length is _before[2])
+        self.assertIs(lex._wids, _before[0])
+        self.assertIs(lex._words, _before[1])
+        self.assertIs(lex.length, _before[2])
 
     def test_ZCTextIndex(self):
         from xml.dom.minidom import parseString
