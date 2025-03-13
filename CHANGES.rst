@@ -1,7 +1,7 @@
 Changelog
 =========
 
-5.0.0 (unreleased)
+5.0.0 (2025-03-13)
 ------------------
 
 - Replace ``pkg_resources`` with `importlib.metadata` and ``packaging``.
