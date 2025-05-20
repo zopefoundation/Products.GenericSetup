@@ -1,6 +1,9 @@
+# Generated from:
+# https://github.com/zopefoundation/meta/tree/master/config/zope-product
 [build-system]
 requires = [
-    "setuptools <= 75.6.0",
+    "setuptools == 78.1.1",
+    "wheel",
 ]
 build-backend = "setuptools.build_meta"
 
@@ -26,6 +29,3 @@ exclude_lines = [
 
 [tool.coverage.html]
 directory = "parts/htmlcov"
-# 
-# Generated from:
-# https://github.com/zopefoundation/meta/tree/master/config/zope-product
