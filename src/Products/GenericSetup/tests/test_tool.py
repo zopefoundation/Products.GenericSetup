@@ -267,13 +267,11 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
 
         self.assertEqual(site.title, TITLE.upper())
 
-        global _before_import_events
         self.assertEqual(len(_before_import_events), 1)
         self.assertEqual(_before_import_events[0].profile_id, 'snapshot-dummy')
         self.assertEqual(_before_import_events[0].steps, ['simple'])
         self.assertEqual(_before_import_events[0].full_import, False)
 
-        global _after_import_events
         self.assertEqual(len(_after_import_events), 1)
         self.assertEqual(_after_import_events[0].profile_id, 'snapshot-dummy')
         self.assertEqual(_after_import_events[0].steps, ['simple'])
@@ -302,14 +300,12 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
         self.assertEqual(result['messages']['dependent'], 'Uppercased title')
         self.assertEqual(site.title, TITLE.replace(' ', '_').upper())
 
-        global _before_import_events
         self.assertEqual(len(_before_import_events), 1)
         self.assertEqual(_before_import_events[0].profile_id, 'snapshot-dummy')
         self.assertEqual(_before_import_events[0].steps,
                          ['dependable', 'dependent'])
         self.assertEqual(_before_import_events[0].full_import, False)
 
-        global _after_import_events
         self.assertEqual(len(_after_import_events), 1)
         self.assertEqual(_after_import_events[0].profile_id, 'snapshot-dummy')
         self.assertEqual(_after_import_events[0].steps,
@@ -339,13 +335,11 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
 
         self.assertEqual(site.title, TITLE.upper())
 
-        global _before_import_events
         self.assertEqual(len(_before_import_events), 1)
         self.assertEqual(_before_import_events[0].profile_id, 'snapshot-dummy')
         self.assertEqual(_before_import_events[0].steps, ['dependent'])
         self.assertEqual(_before_import_events[0].full_import, False)
 
-        global _after_import_events
         self.assertEqual(len(_after_import_events), 1)
         self.assertEqual(_after_import_events[0].profile_id, 'snapshot-dummy')
         self.assertEqual(_after_import_events[0].steps, ['dependent'])
