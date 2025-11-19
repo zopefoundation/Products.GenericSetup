@@ -1040,12 +1040,12 @@ class PrettyDocumentTests(unittest.TestCase):
         xml_output = doc.toprettyxml(' ')
         self.assertEqual(xml_output, html_escaped)
 
-        # Reparse from cgi.escape representation (Python 2 only)
+        # Reparse from cgi.escape representation
         # should always work
         e = _getDocumentElement(cgi_escaped)
         self.assertEqual(e.childNodes[0].nodeValue, original)
 
-        # Reparse from html.escape representation (Python 3 only)
+        # Reparse from html.escape representation
         # should always work, even without html.escape
         e = _getDocumentElement(html_escaped)
         self.assertEqual(e.childNodes[0].nodeValue, original)
