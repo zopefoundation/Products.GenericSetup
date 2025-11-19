@@ -21,7 +21,7 @@ _BOUNDARY = '\n' + ('-' * 60) + '\n\n'
 
 setup(
     name='Products.GenericSetup',
-    version='5.1.0.dev0',
+    version='5.1.0',
     description='Read Zope configuration state from profile dirs / tarballs',
     long_description=README + _BOUNDARY + CHANGES,
     long_description_content_type='text/x-rst',
@@ -64,6 +64,7 @@ setup(
     extras_require=dict(
         docs=['Sphinx', 'repoze.sphinx.autointerface', 'furo'],
     ),
+    include_package_data=True,
     entry_points="""
     [zope2.initialize]
     Products.GenericSetup = Products.GenericSetup:initialize

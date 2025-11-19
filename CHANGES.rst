@@ -1,8 +1,10 @@
 Changelog
 =========
 
-5.1.0 (unreleased)
+5.1.0 (2025-11-19)
 ------------------
+
+- Switch to PEP 420 native namespace.
 
 - Add support for Python 3.14.
 
