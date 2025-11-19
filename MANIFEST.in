@@ -7,10 +7,13 @@ include buildout.cfg
 include tox.ini
 include .pre-commit-config.yaml
 
-recursive-include src *.py
 recursive-include docs *.py
 recursive-include docs *.rst
+recursive-include docs *.txt
 recursive-include docs Makefile
+
+recursive-include src *.py
+include *.yaml
 recursive-include src *.png
 recursive-include src *.xml
 recursive-include src *.zpt

@@ -19,7 +19,7 @@ from importlib.metadata import distribution
 
 
 sys.path.append(os.path.abspath('../src'))
-rqmt = distribution('Products.GenericSetup').version
+rqmt = distribution('Products.GenericSetup')
 
 
 # If your extensions are in another directory, add it here. If the directory
@@ -38,7 +38,7 @@ extensions = ['sphinx.ext.autodoc']
 templates_path = ['_templates']
 
 # The suffix of source filenames.
-source_suffix = '.rst'
+source_suffix = {'.rst': 'restructuredtext'}
 
 # The master toctree document.
 master_doc = 'index'
@@ -46,15 +46,15 @@ master_doc = 'index'
 # General substitutions.
 year = datetime.datetime.now().year
 project = 'Products.GenericSetup'
-copyright = '2008-%s, Zope Foundation and Contributors' % year
+copyright = f'2008-{year}, Zope Foundation and Contributors'
 
 # The default replacements for |version| and |release|, also used in various
 # other places throughout the built documents.
 #
 # The short X.Y version.
-version = '%s.%s' % tuple(rqmt.split('.')[:2])
+version = '%s.%s' % tuple(rqmt.version.split('.')[:2])
 # The full version, including alpha/beta/rc tags.
-release = rqmt
+release = rqmt.version
 
 
 # There are two options for replacing |today|: either, you set today to some
@@ -98,7 +98,7 @@ pygments_style = 'sphinx'
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
-html_theme = 'default'
+html_theme = 'furo'
 
 # The name for this set of Sphinx documents.  If None, it defaults to
 # "<project> v<release> documentation".

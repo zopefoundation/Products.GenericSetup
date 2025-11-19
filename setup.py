@@ -1,6 +1,5 @@
 import os
 
-from setuptools import find_packages
 from setuptools import setup
 
 
@@ -22,7 +21,7 @@ _BOUNDARY = '\n' + ('-' * 60) + '\n\n'
 
 setup(
     name='Products.GenericSetup',
-    version='5.0.1.dev0',
+    version='5.1.0.dev0',
     description='Read Zope configuration state from profile dirs / tarballs',
     long_description=README + _BOUNDARY + CHANGES,
     long_description_content_type='text/x-rst',
@@ -34,11 +33,11 @@ setup(
         "Intended Audience :: Developers",
         "License :: OSI Approved :: Zope Public License",
         "Programming Language :: Python",
-        "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
         "Programming Language :: Python :: 3.11",
         "Programming Language :: Python :: 3.12",
         "Programming Language :: Python :: 3.13",
+        "Programming Language :: Python :: 3.14",
         "Programming Language :: Python :: Implementation :: CPython",
         "Topic :: Software Development",
         "Topic :: System :: Archiving :: Packaging",
@@ -54,22 +53,16 @@ setup(
         'Issue tracker': '%s/issues' % URL,
     },
     license="ZPL-2.1",
-    packages=find_packages('src'),
-    package_dir={'': 'src'},
-    include_package_data=True,
-    namespace_packages=['Products'],
-    zip_safe=False,
-    python_requires='>=3.9',
+    python_requires='>=3.10',
     install_requires=[
         'packaging',
-        'setuptools',
         'Zope >= 4.0b4',
         'five.localsitemanager',
         'Products.PythonScripts',
         'Products.ZCatalog',
     ],
     extras_require=dict(
-        docs=['Sphinx', 'repoze.sphinx.autointerface'],
+        docs=['Sphinx', 'repoze.sphinx.autointerface', 'furo'],
     ),
     entry_points="""
     [zope2.initialize]

@@ -2,7 +2,7 @@
 # https://github.com/zopefoundation/meta/tree/master/config/zope-product
 [meta]
 template = "zope-product"
-commit-id = "86991c1d"
+commit-id = "9fcd3d67"
 
 [python]
 with-pypy = false
@@ -10,7 +10,7 @@ with-sphinx-doctests = false
 with-windows = false
 with-future-python = false
 with-macos = false
-with-docs = false
+with-docs = true
 
 [coverage]
 fail-under = 92
@@ -20,15 +20,18 @@ known_first_party = "Products.PluginIndexes, Products.ZCTextIndex, Products.ZCat
 
 [manifest]
 additional-rules = [
-    "recursive-include docs *.py",
-    "recursive-include docs *.rst",
-    "recursive-include docs Makefile",
+    "include *.yaml",
     "recursive-include src *.png",
     "recursive-include src *.xml",
     "recursive-include src *.zpt",
     "recursive-include src *.pt",
     "recursive-include src *.txt",
     "recursive-include src *.zcml",
+    ]
+
+[check-manifest]
+additional-ignores = [
+    "docs/_build/html/_static/scripts/*",
     ]
 
 [tox]
