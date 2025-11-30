@@ -1,11 +1,71 @@
-# Generated from:
-# https://github.com/zopefoundation/meta/tree/master/config/zope-product
+# Generated with zope.meta (https://zopemeta.readthedocs.io/) from:
+# https://github.com/zopefoundation/meta/tree/master/src/zope/meta/zope-product
 [build-system]
 requires = [
     "setuptools >= 78.1.1,< 81",
     "wheel",
 ]
 build-backend = "setuptools.build_meta"
+
+
+[project]
+name = "Products.GenericSetup"
+version = "5.2.dev0"
+description = "Read Zope configuration state from profile dirs / tarballs"
+license = "ZPL-2.1"
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Framework :: Plone :: 5.2",
+    "Framework :: Plone :: 6.0",
+    "Framework :: Zope :: 5",
+    "Intended Audience :: Developers",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Programming Language :: Python :: Implementation :: CPython",
+    "Topic :: Software Development",
+    "Topic :: System :: Archiving :: Packaging",
+    "Topic :: System :: Installation/Setup",
+]
+dynamic = ["readme"]
+requires-python = ">=3.10"
+authors = [
+    {name = "Zope Foundation and contributors",email = "zope-dev@zope.dev"},
+]
+maintainers = [
+    {name = "Plone Foundation and contributors",email = "zope-dev@zope.dev"},
+]
+dependencies = [
+    "packaging",
+    "Zope >= 4.0b4",
+    "five.localsitemanager",
+    "Products.PythonScripts",
+    "Products.ZCatalog",
+]
+keywords = [
+    "web",
+    "application",
+    "server",
+    "zope",
+    "zope4",
+    "cmf",
+]
+
+[project.optional-dependencies]
+docs = [
+    "Sphinx",
+    "repoze.sphinx.autointerface",
+    "furo",
+]
+
+[project.urls]
+Documentation = "https://productsgenericsetup.readthedocs.io"
+"Source code" = "https://github.com/zopefoundation/Products.GenericSetup"
+"Issue tracker" = "https://github.com/zopefoundation/Products.GenericSetup/issues"
+Source = "https://github.com/zopefoundation/Products.GenericSetup"
 
 [tool.coverage.run]
 branch = true
@@ -29,3 +89,7 @@ exclude_lines = [
 
 [tool.coverage.html]
 directory = "parts/htmlcov"
+
+[tool.setuptools.dynamic]
+readme = {file = ["README.rst", "CHANGES.rst"]}
+
