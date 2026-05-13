@@ -34,25 +34,29 @@ _FILENAME = 'rolemap.xml'
 
 
 def importRolemap(context):
-    """ Import roles / permission map from an XML file.
+    """Import roles / permission map from an XML file.
 
-    o 'context' must implement IImportContext.
+    -   'context' must implement ``IImportContext``.
+    -   Register via Python.
 
-    o Register via Python:
+        ..  code-block:: python
 
-      registry = site.setup_tool.setup_steps
-      registry.registerStep('importRolemap', '20040518-01',
-                            Products.GenericSetup.rolemap.importRolemap,
-                            (), 'Role / Permission import',
-                            'Import roles and map roles to permissions')
+            registry = site.setup_tool.setup_steps
+            registry.registerStep('importRolemap', '20040518-01',
+                                Products.GenericSetup.rolemap.importRolemap,
+                                (), 'Role / Permission import',
+                                'Import roles and map roles to permissions')
 
-    o Register via XML:
+    -   Register via XML.
 
-      <setup-step id="importRolemap"
+        ..  code-block:: xml
+
+            <setup-step id="importRolemap"
                   version="20040518-01"
                   handler="Products.GenericSetup.rolemap.importRolemap"
                   title="Role / Permission import"
-      >Import additional roles, and map roles to permissions.</setup-step>
+                >Import additional roles, and map roles to permissions.
+            </setup-step>
 
     """
     site = context.getSite()
