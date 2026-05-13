@@ -6,6 +6,8 @@ Changelog
 
 - Move package metadata from setup.py to pyproject.toml.
 
+- Fix malformed docstring in ``rolemap.importRolemap``.
+
 
 5.1.0 (2025-11-19)
 ------------------
