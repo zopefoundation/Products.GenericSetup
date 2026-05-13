@@ -55,7 +55,8 @@ def importRolemap(context):
                   version="20040518-01"
                   handler="Products.GenericSetup.rolemap.importRolemap"
                   title="Role / Permission import"
-            >Import additional roles, and map roles to permissions.</setup-step>
+                >Import additional roles, and map roles to permissions.
+            </setup-step>
 
     """
     site = context.getSite()
