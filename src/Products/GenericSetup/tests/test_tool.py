@@ -500,7 +500,7 @@ class SetupToolTests(FilesystemTestBase, TarballTester, ConformsToISetupTool):
         self.assertEqual(len(logged), 1)
 
         # Check acess restriction on log files
-        logged = [x for x in tool.objectIds('File')]
+        logged = [*tool.objectIds('File')]
         for file_id in logged:
             file_ob = tool._getOb(file_id)
             self.check_restricted_access(file_ob)

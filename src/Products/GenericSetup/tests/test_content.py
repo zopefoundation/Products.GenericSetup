@@ -931,7 +931,7 @@ def _makeFolder(id):
 def _parseCSV(text):
     from csv import reader
 
-    return [x for x in reader(StringIO(text))]
+    return [*reader(StringIO(text))]
 
 
 def _parseINI(text):
