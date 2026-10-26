@@ -865,8 +865,7 @@ class SetupTool(Folder):
         """Return the last upgraded version for the specified profile.
         """
         prefix = 'profile-'
-        if profile_id.startswith(prefix):
-            profile_id = profile_id[len(prefix):]
+        profile_id = profile_id.removeprefix(prefix)
         version = self._profile_upgrade_versions.get(profile_id, UNKNOWN)
         return version
 
@@ -878,8 +877,7 @@ class SetupTool(Folder):
             self.unsetLastVersionForProfile(profile_id)
             return
         prefix = 'profile-'
-        if profile_id.startswith(prefix):
-            profile_id = profile_id[len(prefix):]
+        profile_id = profile_id.removeprefix(prefix)
         if isinstance(version, str):
             version = tuple(version.split('.'))
         if not isinstance(self._profile_upgrade_versions, PersistentMapping):
@@ -893,8 +891,7 @@ class SetupTool(Folder):
         """Unset the last upgraded version for the specified profile.
         """
         prefix = 'profile-'
-        if profile_id.startswith(prefix):
-            profile_id = profile_id[len(prefix):]
+        profile_id = profile_id.removeprefix(prefix)
         if profile_id not in self._profile_upgrade_versions:
             return
         if not isinstance(self._profile_upgrade_versions, PersistentMapping):
@@ -1226,8 +1223,7 @@ class SetupTool(Folder):
                 return SnapshotImportContext(self, context_id, should_purge,
                                              encoding)
             prefix = 'profile-'
-            if context_id.startswith(prefix):
-                context_id = context_id[len(prefix):]
+            context_id = context_id.removeprefix(prefix)
             info = _profile_registry.getProfileInfo(context_id)
             if info.get('product'):
                 path = os.path.join(_getProductPath(info['product']),

@@ -101,8 +101,7 @@ class UpgradeRegistry:
         that id.
         """
         prefix = 'profile-'
-        if profile_id.startswith(prefix):
-            profile_id = profile_id[len(prefix):]
+        profile_id = profile_id.removeprefix(prefix)
         profile_steps = self._registry.get(profile_id)
         if profile_steps is None:
             self._registry[profile_id] = OOBTree()
@@ -114,8 +113,7 @@ class UpgradeRegistry:
         profile, or None if it doesn't exist.
         """
         prefix = 'profile-'
-        if profile_id.startswith(prefix):
-            profile_id = profile_id[len(prefix):]
+        profile_id = profile_id.removeprefix(prefix)
         profile_steps = self._registry.get(profile_id)
         if profile_steps is not None:
             step = profile_steps.get(step_id, None)

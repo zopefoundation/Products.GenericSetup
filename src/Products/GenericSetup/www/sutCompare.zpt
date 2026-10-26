@@ -97,7 +97,7 @@ configuration sets.
 <input type="hidden" name="missing_as_empty:int:default" value="0" />
 <input type="checkbox" name="missing_as_empty:boolean" value="1"
        tal:attributes="checked request/missing_as_empty | nothing" />
-Treat missing files as empty 
+Treat missing files as empty
 
 <br />
 
@@ -116,7 +116,7 @@ Ignore lines of whitespace
 <hr />
 
 <div tal:condition="python: lhs and rhs" >
-    
+
 <div tal:define="mae request/missing_as_empty | nothing;
                  ib request/ignore_blanks | nothing;
                  mcc nocall: context/manage_compareConfigurations;
